@@ -1,21 +1,15 @@
 <template>
-  <div id="app">
-    <Students />
-    <footer class="info">
-      <h4>Seng302 Example</h4>
-    </footer>
+  <div id="appContainer">
+    <div id="pageContent">
+        <router-view/>
+    </div>
   </div>
 </template>
 
+
 <script>
-  import Students from './components/Students'
-  // app Vue instance
   const app = {
     name: 'app',
-    components: {
-      Students
-    },
-    // app initial state
     data: () => {
       return {
       }

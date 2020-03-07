@@ -1,0 +1,24 @@
+[
+  {
+    "lastname": "Benson",
+    "firstname": "Maurice",
+    "middlename": "Jack",
+    "nickname": "Jacky",
+    "email": "jacky@google.com",
+    "password": "jacky'sSecuredPwd",
+    "bio": "Jacky loves to ride his bike on crazy mountains.",
+    "birthday": "1985-12-20",
+    "gender": "Male"
+  },
+  {
+    "lastname": "Jordan",
+    "firstname": "Mahira",
+    "middlename": "Anne",
+    "nickname": "Hira",
+    "email": "mahira.j@gmail.com",
+    "password": "3ncrypt3d!",
+    "bio": "Eating is my favourite hobby",
+    "birthday": "1992-11-27",
+    "gender": "Female"
+  }
+]
