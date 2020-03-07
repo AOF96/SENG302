@@ -1,12 +1,10 @@
-package com.springvuegradle.seng302example;
+package com.springvuegradle.Hakinakina;
 
-import org.springframework.boot.ApplicationRunner;
+import com.springvuegradle.Hakinakina.entity.*;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.SpringApplication;
-import java.util.*;
-import java.util.stream.Stream;
-
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -14,21 +12,33 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-@SpringBootApplication
-public class Seng302ExampleApplication {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
 
+/**
+ * Main class for application
+ */
+@SpringBootApplication
+public class Main {
+
+	/**
+	 * Launches Spring application
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		SpringApplication.run(Seng302ExampleApplication.class, args);
+		SpringApplication.run(Main.class, args);
 	}
 
 	@Bean
-	CommandLineRunner init(StudentRepository repository) {
+	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository) {
 		return args -> {
-			Stream.of("Campbell Mercer", "Matthew Minnish", "Dr Moffat", "Fabien Gilson", "I Am Brose").forEach(name -> {
-				Student student = new Student(name);
-				repository.save(student);
-			});
-			repository.findAll().forEach(System.out::println);
+			String[] countryCodes = Locale.getISOCountries();
+			for (String countryCode : countryCodes) {
+				Locale obj = new Locale("", countryCode);
+				countryRepository.save(new PassportCountry(obj.getCountry(), obj.getDisplayCountry()));
+			}
 		};
 	}
 
