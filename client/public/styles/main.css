@@ -90,13 +90,17 @@ body{
 .signup-row > input:first-child{
   margin-right:15px;
 }
-#signupText-birthday{
+#signupText-birthday ,#fitnessLevelText{
     color: #777777;
     font-size: 13px;
     font-weight: 400;
     padding-top: 9px;
     padding-right: 15px;
     padding-left: 15px;
+}
+
+#levels{
+    width: calc(100% - 106px) !important;
 }
 #credentials-box hr{
     border: 0;

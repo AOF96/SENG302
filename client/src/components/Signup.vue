@@ -27,6 +27,17 @@
           <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
         </div>
         <div class="signup-row">
+        <h3 id="fitnessLevelText">Fitness Level</h3>
+        <select id="levels">
+          <option value="volvo">0</option>
+          <option value="saab">1</option>
+          <option value="opel">2</option>
+          <option value="audi">3</option>
+          <option value="audi">4</option>
+          <option value="audi">5</option>
+        </select>
+        </div>
+        <div class="signup-row">
           <input v-model="user.password1" class="signupInput-password" name="pass1" type="password" placeholder="Password*" required>
         </div>
         <div class="signup-row">
