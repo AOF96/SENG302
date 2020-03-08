@@ -333,6 +333,17 @@ body{
 .emailBlock.emailSecondary h4{
     color:rgba(0,0,0,0.75);
     text-align: left;
+    display: inline-block;
+    padding-right: 5px;
+    cursor:pointer;
+}
+.editIcon{
+    display: inline-table;
+    fill: #717171;
+    width: 20px;
+    height: 20px;
+    transform: translate(2px,5px);
+    cursor: pointer;
 }
 .setPrimaryButton{
     position: absolute;
@@ -396,4 +407,40 @@ body{
     margin: 20px;
     margin-left: 0;
     margin-top: 0;
+}
+#cover{
+    width:100%;
+    height:100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 101;
+}
+.floatingBox{
+    position: fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+    background:white;
+    border-radius:14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    z-index: 102;
+}
+#editEmailBox{
+    width:300px;
+    height:200px;
+}
+.fade-enter-active, .fade-leave-active{
+    transition:all .3s ease;
+}
+.fadeup-enter-active, .fadeup-leave-active {
+    transition:all .25s ease .08s;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+.fadeup-enter, .fadeup-leave-to {
+    opacity: 0;
+    transform:translate(-50%, calc(-50% + 50px));
 }
