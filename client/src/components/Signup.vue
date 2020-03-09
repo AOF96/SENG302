@@ -28,8 +28,8 @@
         </div>
         <div class="signup-row">
         <h3 id="fitnessLevelText">Fitness Level</h3>
-        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Select your level"  value="Fitness" required>
-          <option selected disabled hidden>Select your level</option>
+        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+       <option selected disabled hidden>Select your level</option>
           <option >0</option>
           <option >1</option>
           <option >2</option>
@@ -94,8 +94,9 @@ const ERR_MSG_PASS_NUMBER = 'Password must include at least 1 number'
 const ERR_MSG_PASS_LENGTH = 'Password must be longer than 8 characters'
 const ERR_MSG_PASS_LOWERCASE = 'Password must include lowercase characters'
 const ERR_MSG_PASS_UPPERCASE = 'Password must include uppercases characters'
-const DEFAULT_ALL_ERR_MSG = 'Please fill all required inputs\n'
 const ERR_MSG_FITNESS = 'Please select your Fitness level'
+const DEFAULT_ALL_ERR_MSG = 'Please fill all required inputs\n'
+
 
 
 export default {
@@ -115,7 +116,7 @@ export default {
         password1: '',
         password2: '',
         message: '',
-        fitnesslevel:'FitnessLevel',
+        fitnesslevel: 'FitnessLevel',
       },
       err_msg: {
         fname: ERR_MSG_FNAME,
@@ -144,7 +145,7 @@ export default {
         gender: this.user.gender != 'Gender',
         email: /[^\s]+@[^\s]+/.test(this.user.email),
         birthday: this.user.birthday != '',
-        fitnesslevel: this.user.fitnesslevel != '',
+        fitnesslevel: this.user.fitnesslevel != 'FitnessLevel',
         password: {
           match: this.user.password1 == this.user.password2,
           length: /.{8,}/.test(this.user.password1),
