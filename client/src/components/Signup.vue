@@ -76,12 +76,12 @@ import router from "../router";
 import {
   getEncryptPassword
 } from "../common.js"
-const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io'
+const SERVER_URL = 'http://127.0.0.1:9499/'
 
 import NavBar from '@/components/NavBar'
 import {
   userInfo
-} from '../globals';
+} from '../globals'//4967d4f4-8301-42d1-a778-e3d150633644.mock.pstm;
 
 const ERR_MSG_FNAME = 'Please enter your First name'
 const ERR_MSG_LNAME = 'Please enter your Last name'
@@ -209,12 +209,16 @@ export default {
       axios.post(SERVER_URL + '/createprofile', {
           firstname: this.user.fname,
           lastname: this.user.lname,
+          middlename: this.user.lname,
           nickname: this.user.nickname,
-          Gender: this.user.gender,
-          Email: this.user.email,
-          Birthday: this.user.birthday,
-          Password1: getEncryptPassword(this.user.password1),
-          Password2: getEncryptPassword(this.user.password2),
+          gender: this.user.gender,
+          email: this.user.email,
+          fitness: 0,
+          additional_email: null,
+          date_of_birth: this.user.birthday,
+          password: getEncryptPassword(this.user.password1),
+          //password2: getEncryptPassword(this.user.password2),
+          passport: null
         })
         .then((response) => {
           console.log(response);

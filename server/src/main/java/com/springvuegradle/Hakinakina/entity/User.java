@@ -32,9 +32,11 @@ public class User {
     @JsonProperty("middlename")
     private String middleName;
 
+    @JsonProperty("gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @JsonProperty("password1")
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
 

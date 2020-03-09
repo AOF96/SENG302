@@ -53,7 +53,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Get gender
         String genderString = getValueString(node, "gender");
         Gender gender = null;
-        switch (genderString) {
+        switch (genderString.toLowerCase()) {
             case("male"):
                 gender = Gender.MALE;
                 break;
