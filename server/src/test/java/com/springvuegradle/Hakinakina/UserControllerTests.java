@@ -45,7 +45,6 @@ public class UserControllerTests {
         emailRepository.deleteAll();
     }
 
-
     @Test
     public void createProfileTest() throws Exception {
         String json = "{\n" +
@@ -102,7 +101,7 @@ public class UserControllerTests {
                 2, "jacky'sSecuredPwd");
         userRepository.save(user2);
 
-        ArrayList<String> expected = new ArrayList<String>();
+        ArrayList<String> expected = new ArrayList<>();
         expected.add("1 Maurice Benson");
         expected.add("2 John Smith");
 
@@ -304,5 +303,161 @@ public class UserControllerTests {
         this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide a valid gender. male, female or non-binary."));
+    }
+
+    @Test
+    public void editUserNoFirstName() throws Exception {
+        User editNoFirstNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        editNoFirstNameTest.setMiddleName("Jack");
+        userRepository.save(editNoFirstNameTest);
+
+        String json = "{\n" +
+                "  \"profile_id\": \"editNoFirstNameTest.getUser_id()\",\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
+    }
+
+    @Test
+    public void editUserNoLastName() throws Exception {
+        User editNoLastNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        editNoLastNameTest.setMiddleName("Jack");
+        userRepository.save(editNoLastNameTest);
+
+        String json = "{\n" +
+                "  \"profile_id\": \"editNoLastNameTest.getUser_id()\",\n" +
+                "  \"lastname\": \"\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
+    }
+
+    /*
+    @Test
+    public void editUserNoMiddleName() throws Exception {
+        User editNoMiddleNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        userRepository.save(editNoMiddleNameTest);
+
+        String json = "{\n" +
+                "  \"profile_id\": \"editNoMiddleNameTest.getUser_id()\",\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
+    } */
+
+    @Test
+    public void editUserNoEmail() throws Exception {
+        User editNoEmailTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        editNoEmailTest.setMiddleName("Jack");
+        userRepository.save(editNoEmailTest);
+
+        String json = "{\n" +
+                "  \"profile_id\": \"editNoEmailTest.getUser_id()\",\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid email."));
+    }
+
+    @Test
+    public void editUserNoDateOfBirth() throws Exception {
+        User editNoDateOfBirthTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        editNoDateOfBirthTest.setMiddleName("Jack");
+        userRepository.save(editNoDateOfBirthTest);
+
+        String json = "{\n" +
+                "  \"profile_id\": \"editNoDateOfBirthTest.getUser_id()\",\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd."));
+    }
+
+    @Test
+    public void editUserNoGender() throws Exception {
+        User editNoGenderTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        editNoGenderTest.setMiddleName("Jack");
+        userRepository.save(editNoGenderTest);
+
+        String json = "{\n" +
+                "  \"profile_id\": \"editNoGenderTest.getUser_id()\",\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"\",\n" +
+                "  \"fitness\": \"3\"\n" +
+                "}";
+
+        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid gender. male, female or non-binary."));
     }
 }
