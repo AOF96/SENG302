@@ -8,6 +8,8 @@
         <router-link to="/settings/email"><div class="settingsNavItem">Emails</div></router-link>
         <hr>
         <router-link to="/settings/password"><div class="settingsNavItem">Password</div></router-link>
+        <hr>
+        <router-link to="/settings/fitness"><div class="settingsNavItem">Fitness Level</div></router-link>
       </div>
     </div>
 </template>

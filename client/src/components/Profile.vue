@@ -35,6 +35,7 @@
           bio: userInfo.bio,
           email: userInfo.email,
           birthday: userInfo.birthday,
+          fitnesslevel: userInfo.fitnesslevel,
           myJson: json,
           showNewButton: false,
           notFull: true ,

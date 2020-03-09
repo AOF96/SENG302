@@ -384,7 +384,7 @@ body{
     margin-top: 0;
     display:inline;
 }
-#addEmailButton{
+#addEmailButton, #updateFitnessButton{
     padding: 8px 16px;
     border-radius: 50px;
     font-size: 15px;

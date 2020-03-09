@@ -28,13 +28,14 @@
         </div>
         <div class="signup-row">
         <h3 id="fitnessLevelText">Fitness Level</h3>
-        <select id="levels">
-          <option value="volvo">0</option>
-          <option value="saab">1</option>
-          <option value="opel">2</option>
-          <option value="audi">3</option>
-          <option value="audi">4</option>
-          <option value="audi">5</option>
+        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Select your level"  value="Fitness" required>
+          <option selected disabled hidden>Select your level</option>
+          <option >0</option>
+          <option >1</option>
+          <option >2</option>
+          <option >3</option>
+          <option >4</option>
+          <option >5</option>
         </select>
         </div>
         <div class="signup-row">
@@ -94,6 +95,7 @@ const ERR_MSG_PASS_LENGTH = 'Password must be longer than 8 characters'
 const ERR_MSG_PASS_LOWERCASE = 'Password must include lowercase characters'
 const ERR_MSG_PASS_UPPERCASE = 'Password must include uppercases characters'
 const DEFAULT_ALL_ERR_MSG = 'Please fill all required inputs\n'
+const ERR_MSG_FITNESS = 'Please select your Fitness level'
 
 
 export default {
@@ -113,6 +115,7 @@ export default {
         password1: '',
         password2: '',
         message: '',
+        fitnesslevel:'FitnessLevel',
       },
       err_msg: {
         fname: ERR_MSG_FNAME,
@@ -120,6 +123,7 @@ export default {
         gender: ERR_MSG_GENDER,
         email: ERR_MSG_EMAIL,
         birthday: ERR_MSG_BIRTHDAY,
+        fitnesslevel: ERR_MSG_FITNESS,
         password: {
           match: ERR_MSG_PASS_MATCH,
           number: ERR_MSG_PASS_NUMBER,
@@ -140,6 +144,7 @@ export default {
         gender: this.user.gender != 'Gender',
         email: /[^\s]+@[^\s]+/.test(this.user.email),
         birthday: this.user.birthday != '',
+        fitnesslevel: this.user.fitnesslevel != '',
         password: {
           match: this.user.password1 == this.user.password2,
           length: /.{8,}/.test(this.user.password1),
@@ -189,6 +194,7 @@ export default {
       this.user.birthday = ''
       this.user.password1 = ''
       this.user.password2 = ''
+      this.user.fitnesslevel = 'FitnessLevel'
     },
 
     submitSignUp() {
@@ -205,6 +211,7 @@ export default {
       userInfo.gender = this.user.gender;
       userInfo.email = this.user.email;
       userInfo.birthday = this.user.birthday;
+      userInfo.fitnesslevel = this.user.fitnesslevel;
 
       axios.post(SERVER_URL + '/createprofile', {
           firstname: this.user.fname,
@@ -215,6 +222,7 @@ export default {
           Birthday: this.user.birthday,
           Password1: getEncryptPassword(this.user.password1),
           Password2: getEncryptPassword(this.user.password2),
+          fitnesslevel: this.user.fitnesslevel
         })
         .then((response) => {
           console.log(response);
