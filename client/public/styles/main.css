@@ -344,6 +344,11 @@ body{
     height: 20px;
     transform: translate(2px,5px);
     cursor: pointer;
+    opacity: 0;
+    transition: all .15s ease;
+}
+.emailSecondary:hover .editIcon{
+    opacity: 1;
 }
 .setPrimaryButton{
     position: absolute;
@@ -401,7 +406,7 @@ body{
     background: #ffffff;
     border: 2px solid #1cca92;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all .2s ease;
     text-decoration: none;
     float: right;
     margin: 20px;
@@ -428,14 +433,51 @@ body{
     z-index: 102;
 }
 #editEmailBox{
-    width:300px;
-    height:200px;
+    max-width:400px;
+    width:calc(100% - 30px);
+}
+#editEmailBox h1{
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(0,0,0,0.85);
+  padding: 15px;
+}
+#editEmailInput{
+  padding: 10px 15px;
+    margin: 0 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    width: calc(100% - 62px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+}
+#editEmailButton{
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 15px;
+  color: #1cca92;
+  right: 20px;
+  font-weight: 500;
+  background: #ffffff;
+  border: 2px solid #1cca92;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  float: right;
+  margin: 15px;
+  margin-top: 0px;
+}
+#addEmailButton:hover, #editEmailButton:hover{
+    background: #1cca92;
+    color: #ffffff;
 }
 .fade-enter-active, .fade-leave-active{
-    transition:all .3s ease;
+    transition:all .25s ease;
 }
 .fadeup-enter-active, .fadeup-leave-active {
-    transition:all .25s ease .08s;
+    transition:all .2s ease .02s;
 }
 .fade-enter, .fade-leave-to {
     opacity: 0;
