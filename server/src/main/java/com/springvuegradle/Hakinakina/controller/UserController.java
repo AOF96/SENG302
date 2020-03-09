@@ -40,14 +40,23 @@ public class UserController {
     }
 
     /**
-     * Processes create user request and puts user into repository if email is unique
+     * Processes create user request and puts user into repository if email is unique and all required fields have
+     * been provided
      * @param user
      * @return success or error message
      */
     @PostMapping("/createprofile")
     @ResponseStatus(HttpStatus.OK)
     public String createProfile(@RequestBody User user) {
-        if (!userService.emailExists(user.getPrimaryEmail())) {
+        if (user.getLastName().equals("") || user.getMiddleName().equals("") || user.getFirstName().equals("")) {
+            return responseHandler.formatErrorResponse(400, "Please provide you're full name. First, middle and last names are required.");
+        } else if (user.getPrimaryEmail().equals("")) {
+            return responseHandler.formatErrorResponse(400, "Please provide a valid email.");
+        }  else if (user.getBirthDate() == null) {
+            return responseHandler.formatErrorResponse(400, "Please provide a valid date of birth, yyyy-mm-dd.");
+        } else if (user.getGender() == null) {
+            return responseHandler.formatErrorResponse(400, "Please provide a valid gender. male, female or non-binary.");
+        } else if (!userService.emailExists(user.getPrimaryEmail())) {
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(201, "User created");
         } else {
@@ -64,8 +73,18 @@ public class UserController {
     @PostMapping("/editprofile")
     @ResponseStatus(HttpStatus.OK)
     public String editUser(@RequestBody User user) {
-        userRepository.save(user);
-        return responseHandler.formatSuccessResponse(201, "User updated");
+        if (user.getLastName().equals("") || user.getMiddleName().equals("") || user.getFirstName().equals("")) {
+            return responseHandler.formatErrorResponse(400, "Please provide you're full name. First, middle and last names are required.");
+        } else if (user.getPrimaryEmail().equals("")) {
+            return responseHandler.formatErrorResponse(400, "Please provide a valid email.");
+        }  else if (user.getBirthDate() == null) {
+            return responseHandler.formatErrorResponse(400, "Please provide a valid date of birth, yyyy-mm-dd.");
+        } else if (user.getGender() == null) {
+            return responseHandler.formatErrorResponse(400, "Please provide a valid gender. male, female or non-binary.");
+        } else {
+            userRepository.save(user);
+            return responseHandler.formatSuccessResponse(201, "User updated");
+        }
     }
 
 

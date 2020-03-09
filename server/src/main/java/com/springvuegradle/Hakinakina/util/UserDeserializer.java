@@ -48,7 +48,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String firstName = getValueString(node, "firstname");
         String primaryEmail = getValueString(node, "email");
         String password = getValueString(node, "password");
-        Date dateOfBirth = Date.valueOf(node.get("date_of_birth").asText());
+        String dateOfBirth = getValueString(node,"date_of_birth");
         Integer fitnessLevel = getValueInt(node, "fitness");
         // Get gender
         String genderString = getValueString(node, "gender");

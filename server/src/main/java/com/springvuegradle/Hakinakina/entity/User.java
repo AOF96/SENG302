@@ -69,11 +69,15 @@ public class User {
 
     protected User() {}
 
-    public User(String firstName, String lastName, String primaryEmail, Date birthDate, Gender gender, int fitnessLevel, String password) {
+    public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        this.birthDate = birthDate;
+        if (birthDate.equals("")) {
+            this.birthDate = null;
+        } else {
+            this.birthDate = Date.valueOf(birthDate);
+        }
         this.fitnessLevel = fitnessLevel;
         this.primaryEmail = primaryEmail;
 
