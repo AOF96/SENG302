@@ -81,7 +81,7 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
         this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
@@ -91,14 +91,14 @@ public class UserControllerTests {
 
     @Test
     public void getAllUsersTest() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
         this.mockMvc.perform(get("/users"))
                 .andExpect(jsonPath("$.Users").value("1 Maurice Benson"));
 
-        User user2 = new User("John", "Smith", "jacky2@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user2 = new User("John", "Smith", "jacky2@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user2);
 
@@ -112,7 +112,7 @@ public class UserControllerTests {
 
     @Test
     public void getOneUserTest() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
@@ -131,7 +131,7 @@ public class UserControllerTests {
 
     @Test
     public void loginCheckTest() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "123");
         userRepository.save(user);
         String json = "{\n" +
@@ -146,7 +146,7 @@ public class UserControllerTests {
 
     @Test
     public void changePasswordTest() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
@@ -170,7 +170,7 @@ public class UserControllerTests {
 
     @Test
     public void changePasswordWithNoUserWithIDTest() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
@@ -184,5 +184,125 @@ public class UserControllerTests {
         this.mockMvc.perform(post("/editpassword").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("No user with that ID"));
+    }
+
+    @Test
+    public void createUserNoFirstName() throws Exception {
+        String json = "{\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("Please provide you're full name. First, middle and last names are required."));
+    }
+
+    @Test
+    public void createUserNoMiddleName() throws Exception {
+        String json = "{\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("Please provide you're full name. First, middle and last names are required."));
+    }
+
+    @Test
+    public void createUserNoLastName() throws Exception {
+        String json = "{\n" +
+                "  \"lastname\": \"\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("Please provide you're full name. First, middle and last names are required."));
+    }
+
+    @Test
+    public void createUserNoEmail() throws Exception {
+        String json = "{\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("Please provide a valid email."));
+    }
+
+    @Test
+    public void createUserNoDateOfBirth() throws Exception {
+        String json = "{\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("Please provide a valid date of birth, yyyy-mm-dd."));
+    }
+
+    @Test
+    public void createUserNoGender() throws Exception {
+        String json = "{\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky\",\n" +
+                "  \"email\": \"jacky@google.com\",\n" +
+                "  \"password\": \"jacky'sSecuredPwd\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"\",\n" +
+                "  \"fitness\": \"3\"\n"  +
+                "}";
+
+        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("Please provide a valid gender. male, female or non-binary."));
     }
 }

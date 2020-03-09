@@ -74,13 +74,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public String editUser(@RequestBody User user) {
         if (user.getLastName().equals("") || user.getMiddleName().equals("") || user.getFirstName().equals("")) {
-            return responseHandler.formatErrorResponse(400, "Please provide you're full name. First, middle and last names are required.");
+            return responseHandler.formatErrorResponse(400, "You cannot delete required fields. Please provide you're full name. First, middle and last names are required.");
         } else if (user.getPrimaryEmail().equals("")) {
-            return responseHandler.formatErrorResponse(400, "Please provide a valid email.");
+            return responseHandler.formatErrorResponse(400, "You cannot delete required fields. Please provide a valid email.");
         }  else if (user.getBirthDate() == null) {
-            return responseHandler.formatErrorResponse(400, "Please provide a valid date of birth, yyyy-mm-dd.");
+            return responseHandler.formatErrorResponse(400, "You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd.");
         } else if (user.getGender() == null) {
-            return responseHandler.formatErrorResponse(400, "Please provide a valid gender. male, female or non-binary.");
+            return responseHandler.formatErrorResponse(400, "You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
         } else {
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(201, "User updated");

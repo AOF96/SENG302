@@ -27,7 +27,7 @@ public class EmailTests {
 
         long millis=System.currentTimeMillis();
         java.sql.Date date = new java.sql.Date(millis);
-        User user = new User("John", "Smith", "email@email.com", Date.valueOf("1985-12-20"), Gender.MALE, 3,
+        User user = new User("John", "Smith", "email@email.com", "1985-12-20", Gender.MALE, 3,
                 "JohnS");
         userRepository.save(user);
 
