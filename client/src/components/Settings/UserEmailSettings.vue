@@ -124,7 +124,9 @@ export default {
     },
 
     editEmail() {
-      if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
+      if (this.secondary_emails.includes(this.editEmailInput) || this.editEmailInput == this.primary_email) {
+        alert("Please enter an email that has not been used before.");
+      } else if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
         const index = this.secondary_emails.indexOf(this.tempOldEmail);
         this.secondary_emails[index] = this.editEmailInput;
         this.showEditBox = false;
