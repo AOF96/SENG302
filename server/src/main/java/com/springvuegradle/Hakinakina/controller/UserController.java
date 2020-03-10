@@ -45,7 +45,7 @@ public class UserController {
      * @param user
      * @return success or error message
      */
-    @PostMapping("/createprofile")
+    @PostMapping("/profiles")
     @ResponseStatus(HttpStatus.OK)
     public String createProfile(@RequestBody User user) {
         if (user.getLastName().equals("") || user.getMiddleName().equals("") || user.getFirstName().equals("")) {
@@ -70,7 +70,7 @@ public class UserController {
         return userService.editEmail(request);
     }
 
-    @PostMapping("/editprofile")
+    @PutMapping("/profiles/{profileId}")
     @ResponseStatus(HttpStatus.OK)
     public String editUser(@RequestBody User user) {
         if (user.getLastName().equals("") || user.getMiddleName().equals("") || user.getFirstName().equals("")) {
@@ -91,9 +91,9 @@ public class UserController {
     /**
      * Processes get users request
      *
-     * @return List of users
+     * @return List of profiles
      */
-    @GetMapping("/users")
+    @GetMapping("/profiles")
     public String getAllUsers() {
         List<User> users = userRepository.findAll();
         return responseHandler.formatGetUsers(users);
@@ -101,12 +101,12 @@ public class UserController {
 
     /**
      * Processes request to retrieve certain user and returns
-     * @param userId
+     * @param profileId
      * @return Specific user
      */
-    @GetMapping("/user/{id}")
-    public String getOneUser(@PathVariable("id") long userId) {
-        Optional<User> optional = userRepository.findById(userId);
+    @GetMapping("/profiles/{profile_id}")
+    public String getOneUser(@PathVariable("profile_id") long profileId) {
+        Optional<User> optional = userRepository.findById(profileId);
         if (optional.isPresent()) {
             User user = optional.get();
             return responseHandler.formatGetUser(user);
@@ -137,7 +137,7 @@ public class UserController {
      * @param jsonString The JSON body passed as a string.
      * @return isLogin Whether the attempt was correct or not.
      */
-    @GetMapping("/checklogin")
+    @PostMapping("/login")
     public String checkLogin(@RequestBody String jsonString){
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("attempt");
