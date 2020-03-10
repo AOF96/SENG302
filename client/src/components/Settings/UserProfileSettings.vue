@@ -20,7 +20,7 @@
             </select>
 
             <h2>Passport Countries</h2>
-            <select class="editProfileInput" v-model="passportCountries" name="passportCountries" placeholder="Passport Countries" value="Passport Countries" required>
+            <select class="editProfileInput" v-model="passportCountries"  placeholder="Passport Countries" value="Passport Countries" required>
                 <option selected disabled hidden>Passport Countries</option>
                 <option v-for="country in countries" v-bind:key="country">{{country}}</option>
             </select>
@@ -46,7 +46,9 @@
 </template>
 
 <script>
+    import axios from 'axios'
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
+const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
 import {
     userInfo
 } from "../../globals";
@@ -63,26 +65,38 @@ export default {
             gender: userInfo.gender,
             birthday: userInfo.birthday,
             passportCountries: userInfo.passportCountries,
-            countries: this.getCountries(),
+            countries: [],
             bio: userInfo.bio,
             fitnesslevel: userInfo.fitnesslevel,
+
+
         }
     },
+    mounted() {
+            axios.get(COUNTRIES_URL)
+                .then((response) => {
+                    const data = response.data;
+                    const countries = []
+                    for (let country in data) {
+                        countries.push(data[country].name)
+                    }
+                    this.countries = countries;
+                    console.log(countries);
+                })
+                .catch(error => console.log(error));
+        },
     methods: {
         updateUserInfo() {
-            if(this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitnesslevel != ""){
-              userInfo.firstname = this.fname;
-              userInfo.lastname = this.lname;
-              userInfo.nickname = this.nickname;
-              userInfo.gender = this.gender;
-              userInfo.birthday = this.birthday;
-              userInfo.bio = this.bio;
-              userInfo.fitnesslevel = this.fitnesslevel;
-              alert("Profile info updated.");
+            if (this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitnesslevel != "") {
+                userInfo.firstname = this.fname;
+                userInfo.lastname = this.lname;
+                userInfo.nickname = this.nickname;
+                userInfo.gender = this.gender;
+                userInfo.birthday = this.birthday;
+                userInfo.bio = this.bio;
+                userInfo.fitnesslevel = this.fitnesslevel;
+                alert("Profile info updated.");
             }
-        },
-        getCountries() {
-            return ['New zealand', 'Australia']
         }
     }
 }
