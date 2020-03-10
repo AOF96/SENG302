@@ -195,7 +195,7 @@ export default {
       this.user.birthday = ''
       this.user.password1 = ''
       this.user.password2 = ''
-      this.user.fitnesslevel = 'FitnessLevel'
+      this.user.fitnesslevel = '1'
     },
 
     submitSignUp() {
@@ -213,6 +213,7 @@ export default {
       userInfo.email = this.user.email;
       userInfo.birthday = this.user.birthday;
       userInfo.fitnesslevel = this.user.fitnesslevel;
+      console.log(userInfo.fitnesslevel);
 
       axios.post(SERVER_URL + '/createprofile', {
           firstname: this.user.fname,
@@ -231,7 +232,6 @@ export default {
         }, (error) => {
           console.log(error)
         })
-      this.init()
     }
   }
 }
