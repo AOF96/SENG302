@@ -19,7 +19,7 @@
                 <option>Male</option>
             </select>
             <h2>Fitness Level</h2>
-            <select class="editProfileInput editProfileInputGender" v-model="fitnesslevel" name="fitnesslevel" placeholder="fitnesslevel" value="fitnesslevel" required>
+            <select class="editProfileInput editProfileInputGender" v-model="fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
                 <option selected disabled hidden>Fitness Level</option>
                 <option >0</option>
                 <option >1</option>
@@ -56,19 +56,19 @@ export default {
             gender: userInfo.gender,
             birthday: userInfo.birthday,
             bio: userInfo.bio,
-            fitnesslevel: userInfo.fitnesslevel
+            fitness: userInfo.fitness
         }
     },
     methods: {
         updateUserInfo() {
-            if(this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitnesslevel != ""){
+            if(this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitness != ""){
               userInfo.firstname = this.fname;
               userInfo.lastname = this.lname;
               userInfo.nickname = this.nickname;
               userInfo.gender = this.gender;
               userInfo.birthday = this.birthday;
               userInfo.bio = this.bio;
-              userInfo.fitnesslevel = this.fitnesslevel;
+              userInfo.fitness = this.fitness;
               alert("Profile info updated.");
             }
         }

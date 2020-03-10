@@ -212,8 +212,8 @@ export default {
       userInfo.gender = this.user.gender;
       userInfo.email = this.user.email;
       userInfo.birthday = this.user.birthday;
-      userInfo.fitnesslevel = this.user.fitnesslevel;
-      console.log(userInfo.fitnesslevel);
+      userInfo.fitness = this.user.fitnesslevel;
+      console.log(userInfo.fitness);
 
       axios.post(SERVER_URL + '/createprofile', {
           firstname: this.user.fname,
