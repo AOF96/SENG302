@@ -128,6 +128,39 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
+    public String addEmails(String request, long userId) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = null;
+
+        try {
+            node = objectMapper.readValue(request, JsonNode.class);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Error parsing add email request");
+            return responseHandler.formatErrorResponse(400, "Incorrect request format");
+        }
+
+        User user = userRepository.findById(userId).get();
+        int currentNumEmails = user.getEmails().size();
+        List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
+
+        ArrayList<String> secondaryEmails = new ArrayList<>();
+        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
+            secondaryEmails.add(node1.asText());
+        }
+
+        if (currentNumEmails + secondaryEmails.size() > 4) {
+            return responseHandler.formatErrorResponse(400, "Cannot add more than 4 secondary emails");
+        } else {
+            for (String email : secondaryEmails) {
+                Email emailToAdd = new Email(email);
+                emailRepository.save(emailToAdd);
+                user.addEmail(emailToAdd);
+            }
+        }
+        userRepository.save(user);
+        return responseHandler.formatErrorResponse(201, "New emails successfully added");
+    }
+
 //    public String editProfile(String request) {
 //        String response = null;
 //

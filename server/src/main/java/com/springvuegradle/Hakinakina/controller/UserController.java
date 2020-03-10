@@ -61,6 +61,12 @@ public class UserController {
         return userService.editEmail(request);
     }
 
+    @PostMapping("/profiles/{profileId}/emails")
+    @ResponseStatus(HttpStatus.OK)
+    public String addEmails(@RequestBody String request, @PathVariable("profileId") long userId) {
+        return userService.addEmails(request, userId);
+    }
+
     @PostMapping("/editprofile")
     @ResponseStatus(HttpStatus.OK)
     public String editUser(@RequestBody User user) {
