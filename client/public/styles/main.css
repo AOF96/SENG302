@@ -155,10 +155,18 @@ body{
 .floatClear{
     clear:both;
 }
+#userQuickInfoWrap{
+    float: left;
+    margin-top: 36px;
+}
 #userName{
     font-size: 18px;
-    float: left;
-    margin-top: 45px;
+}
+#userFitnessLevel{
+    color: #7f7f7f;
+    font-size: 13px;
+    font-weight: 500;
+    padding-top: 3px;
 }
 #userNickname{
     color: #7f7f7f;
