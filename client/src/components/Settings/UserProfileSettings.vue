@@ -20,9 +20,17 @@
             </select>
 
             <h2>Passport Countries</h2>
-            <select class="editProfileInput" v-model="passportCountries"  placeholder="Passport Countries" value="Passport Countries" required>
+            <button v-on:click="addPassportCountries()">Add passport countries</button>
+            <select 
+                class="editProfileInput" 
+                v-model="passportCountries.countries" 
+                name="passportCountries" 
+                placeholder="Passport Countries" 
+                value="Passport Countries" 
+                required
+            >
                 <option selected disabled hidden>Passport Countries</option>
-                <option v-for="country in countries" v-bind:key="country">{{country}}</option>
+                <option v-for="country in passportCountries.countries_option" v-bind:key="country">{{country}}</option>
             </select>
 
             <h2>Fitness Level</h2>
@@ -64,40 +72,45 @@ export default {
             nickname: userInfo.nickname,
             gender: userInfo.gender,
             birthday: userInfo.birthday,
-            passportCountries: userInfo.passportCountries,
-            countries: [],
             bio: userInfo.bio,
             fitnesslevel: userInfo.fitnesslevel,
-
-
+            passportCountries: {
+                countries: userInfo.passportCountries,
+                countries_option: [],
+                num_of_countries: 1
+            },
         }
     },
     mounted() {
-            axios.get(COUNTRIES_URL)
-                .then((response) => {
-                    const data = response.data;
-                    const countries = []
-                    for (let country in data) {
-                        countries.push(data[country].name)
-                    }
-                    this.countries = countries;
-                    console.log(countries);
-                })
-                .catch(error => console.log(error));
-        },
+        axios.get(COUNTRIES_URL)
+            .then((response) => {
+                const data = response.data;
+                const countries = []
+                for (let country in data) {
+                    countries.push(data[country].name)
+                }
+                this.passportCountries.countries_option = countries;
+            })
+            .catch(error => console.log(error));
+    },
     methods: {
         updateUserInfo() {
-            if (this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitnesslevel != "") {
-                userInfo.firstname = this.fname;
-                userInfo.lastname = this.lname;
-                userInfo.nickname = this.nickname;
-                userInfo.gender = this.gender;
-                userInfo.birthday = this.birthday;
-                userInfo.bio = this.bio;
-                userInfo.fitnesslevel = this.fitnesslevel;
-                alert("Profile info updated.");
+            if(this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitnesslevel != ""){
+              userInfo.firstname = this.fname;
+              userInfo.lastname = this.lname;
+              userInfo.nickname = this.nickname;
+              userInfo.gender = this.gender;
+              userInfo.passportCountries = this.passportCountries.countries;
+              userInfo.birthday = this.birthday;
+              userInfo.bio = this.bio;
+              userInfo.fitnesslevel = this.fitnesslevel;
+              alert("Profile info updated.");
             }
+        },
+        addPassportCountries() {
+            this.passportCountries.num_of_countries++
         }
+        
     }
 }
 </script>
