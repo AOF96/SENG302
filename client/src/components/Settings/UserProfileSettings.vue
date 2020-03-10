@@ -18,6 +18,13 @@
                 <option>Female</option>
                 <option>Male</option>
             </select>
+
+            <h2>Passport Countries</h2>
+            <select class="editProfileInput" v-model="passportCountries" name="passportCountries" placeholder="Passport Countries" value="Passport Countries" required>
+                <option selected disabled hidden>Passport Countries</option>
+                <option v-for="country in countries" v-bind:key="country">{{country}}</option>
+            </select>
+
             <h2>Fitness Level</h2>
             <select class="editProfileInput editProfileInputGender" v-model="fitnesslevel" name="fitnesslevel" placeholder="fitnesslevel" value="fitnesslevel" required>
                 <option selected disabled hidden>Fitness Level</option>
@@ -55,8 +62,10 @@ export default {
             nickname: userInfo.nickname,
             gender: userInfo.gender,
             birthday: userInfo.birthday,
+            passportCountries: userInfo.passportCountries,
+            countries: this.getCountries(),
             bio: userInfo.bio,
-            fitnesslevel: userInfo.fitnesslevel
+            fitnesslevel: userInfo.fitnesslevel,
         }
     },
     methods: {
@@ -71,6 +80,9 @@ export default {
               userInfo.fitnesslevel = this.fitnesslevel;
               alert("Profile info updated.");
             }
+        },
+        getCountries() {
+            return ['New zealand', 'Australia']
         }
     }
 }
