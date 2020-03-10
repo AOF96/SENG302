@@ -5,11 +5,13 @@
     <div id="credentials-box">
       <h1>Sign Up</h1>
       <h2>Create an account</h2>
+
       <form @submit.prevent>
         <div class="signup-row">
           <input class="flName" v-model="user.fname" name="fname" type="text" placeholder="First Name*" required>
           <input class="flName" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
+
         <div class="signup-row">
           <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
           <select v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
@@ -19,31 +21,37 @@
             <option>Male</option>
           </select>
         </div>
+
         <div class="signup-row">
           <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
+        
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
           <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
         </div>
+
         <div class="signup-row">
-        <h3 id="fitnessLevelText">Fitness Level</h3>
-        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
-       <option selected disabled hidden>Select your level</option>
-          <option >0</option>
-          <option >1</option>
-          <option >2</option>
-          <option >3</option>
-          <option >4</option>
-          <option >5</option>
-        </select>
+          <h3 id="fitnessLevelText">Fitness Level</h3>
+          <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+            <option selected disabled hidden>Select your level</option>
+            <option >0</option>
+            <option >1</option>
+            <option >2</option>
+            <option >3</option>
+            <option >4</option>
+            <option >5</option>
+          </select>
         </div>
+
         <div class="signup-row">
           <input v-model="user.password1" class="signupInput-password" name="pass1" type="password" placeholder="Password*" required>
         </div>
+
         <div class="signup-row">
           <input v-model="user.password2" class="signupInput-password" name="pass2" type="password" placeholder="Password Again*" required>
         </div>
+
         <ul class="validation-errors">
           <li v-if="!validation.password.match">
             {{ this.err_msg.password.match }}
@@ -213,7 +221,6 @@ export default {
       userInfo.email = this.user.email;
       userInfo.birthday = this.user.birthday;
       userInfo.fitnesslevel = this.user.fitnesslevel;
-      console.log(userInfo.fitnesslevel);
 
       axios.post(SERVER_URL + '/createprofile', {
           firstname: this.user.fname,
