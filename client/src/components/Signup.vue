@@ -7,8 +7,8 @@
       <h2>Create an account</h2>
       <form @submit.prevent>
         <div class="signup-row">
-          <input class="flName" v-model="user.fname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="flName" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
+          <input class="flName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
+          <input class="flName" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
         <div class="signup-row">
           <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
@@ -20,7 +20,7 @@
           </select>
         </div>
         <div class="signup-row">
-          <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
+          <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
@@ -76,7 +76,7 @@ import router from "../router";
 import {
   getEncryptPassword
 } from "../common.js"
-const SERVER_URL = 'http://127.0.0.1:9499/'
+const SERVER_URL = 'https://localhost:9499'
 
 import NavBar from '@/components/NavBar'
 import {
@@ -104,19 +104,21 @@ export default {
   data() {
     return {
       user: {
-        fname: '',
-        lname: '',
+        firstname: '',
+        lastname: '',
+        middlename: '',
         nickname: '',
         gender: 'Gender',
-        email: '',
+        primary_email: '',
         birthday: '',
         password1: '',
         password2: '',
         message: '',
+        bio: '',
       },
       err_msg: {
-        fname: ERR_MSG_FNAME,
-        lname: ERR_MSG_LNAME,
+        firstname: ERR_MSG_FNAME,
+        lastname: ERR_MSG_LNAME,
         gender: ERR_MSG_GENDER,
         email: ERR_MSG_EMAIL,
         birthday: ERR_MSG_BIRTHDAY,
@@ -135,10 +137,10 @@ export default {
   computed: {
     validation() {
       return {
-        fname: this.user.fname != '',
-        lname: this.user.lname != '',
+        firstname: this.user.firstname != '',
+        lastname: this.user.lastname != '',
         gender: this.user.gender != 'Gender',
-        email: /[^\s]+@[^\s]+/.test(this.user.email),
+        primary_email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
         birthday: this.user.birthday != '',
         password: {
           match: this.user.password1 == this.user.password2,
@@ -181,14 +183,16 @@ export default {
 
   methods: {
     init() {
-      this.user.fname = ''
-      this.user.lname = ''
+      this.user.firstname = ''
+      this.user.lastname = ''
+      this.user.middlename = ''
       this.user.nickname = ''
       this.user.gender = 'Gender'
-      this.user.email = ''
+      this.user.primary_email = ''
       this.user.birthday = ''
       this.user.password1 = ''
       this.user.password2 = ''
+      this.user.bio = ''
     },
 
     submitSignUp() {
@@ -199,26 +203,25 @@ export default {
       }
 
       userInfo.isLogin = true;
-      userInfo.firstname = this.user.fname;
-      userInfo.lastname = this.user.lname;
+      userInfo.firstname = this.user.firstname;
+      userInfo.lastname = this.user.lastname;
+      userInfo.middlename = this.user.middlename;
       userInfo.nickname = this.user.nickname;
       userInfo.gender = this.user.gender;
-      userInfo.email = this.user.email;
+      userInfo.primary_email = this.user.primary_email;
       userInfo.birthday = this.user.birthday;
+      userInfo.bio = this.user.bio;
 
-      axios.post(SERVER_URL + '/createprofile', {
-          firstname: this.user.fname,
-          lastname: this.user.lname,
-          middlename: this.user.lname,
+      axios.post(SERVER_URL + '/profiles', {
+          lastname: this.user.lastname,
+          firstname: this.user.firstname,
+          middlename: this.user.middlename,
           nickname: this.user.nickname,
-          gender: this.user.gender,
-          email: this.user.email,
-          fitness: 0,
-          additional_email: null,
-          date_of_birth: this.user.birthday,
+          primary_email: this.user.primary_email,
           password: getEncryptPassword(this.user.password1),
-          //password2: getEncryptPassword(this.user.password2),
-          passport: null
+          bio: this.user.bio,
+          date_of_birth: this.user.birthday,
+          gender: this.user.gender
         })
         .then((response) => {
           console.log(response);
