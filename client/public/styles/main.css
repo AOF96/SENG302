@@ -401,3 +401,8 @@ body{
     margin-left: 0;
     margin-top: 0;
 }
+
+
+#example {
+    padding-right: 17px;
+}
