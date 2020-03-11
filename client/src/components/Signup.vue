@@ -20,7 +20,7 @@
           </select>
         </div>
         <div class="signup-row">
-          <input v-model="user.bio" class="signupInput-bio" name="bio" type="text" placeholder="Bio">
+          <textarea v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
         </div>
         <div class="signup-row">
           <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
