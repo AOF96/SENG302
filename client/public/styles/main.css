@@ -76,7 +76,7 @@ body{
 #credentials-box .signupInput-birthday{
   padding: 8px 12px;
 }
-.signupInput-email, .signupInput-password{
+.signupInput-email, .signupInput-password, .signupInput-bio{
   margin-right:0 !important;
 }
 .loginInput-email, .loginInput-password{

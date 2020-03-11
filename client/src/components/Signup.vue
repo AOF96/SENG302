@@ -20,6 +20,9 @@
           </select>
         </div>
         <div class="signup-row">
+          <input v-model="user.bio" class="signupInput-bio" name="bio" type="text" placeholder="Bio">
+        </div>
+        <div class="signup-row">
           <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
         <div class="signup-row">
@@ -108,6 +111,7 @@ export default {
         lname: '',
         nickname: '',
         gender: 'Gender',
+        bio: '',
         email: '',
         birthday: '',
         password1: '',
@@ -185,6 +189,7 @@ export default {
       this.user.lname = ''
       this.user.nickname = ''
       this.user.gender = 'Gender'
+      this.user.bio = ''
       this.user.email = ''
       this.user.birthday = ''
       this.user.password1 = ''
@@ -202,6 +207,7 @@ export default {
       userInfo.firstname = this.user.fname;
       userInfo.lastname = this.user.lname;
       userInfo.nickname = this.user.nickname;
+      userInfo.bio = this.user.bio;
       userInfo.gender = this.user.gender;
       userInfo.email = this.user.email;
       userInfo.birthday = this.user.birthday;
@@ -212,6 +218,7 @@ export default {
           middlename: this.user.lname,
           nickname: this.user.nickname,
           gender: this.user.gender,
+          bio: this.user.bio,
           email: this.user.email,
           fitness: 0,
           additional_email: null,
