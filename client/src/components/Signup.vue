@@ -7,12 +7,15 @@
       <h2>Create an account</h2>
       <form @submit.prevent>
         <div class="signup-row">
-          <input class="flName" v-model="user.fname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="flName" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
+          <input class="fmName" v-model="user.fname" name="fname" type="text" placeholder="First Name*" required>
+          <input v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name" class="fmName">
+        </div>
+        <div class="signup-row">
+          <input class="signupInput-lastname" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
         <div class="signup-row">
           <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
-          <select v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
+          <select v-model="user.gender" name="gender" placeholder="Gender"  value="Gender" required>
             <option selected disabled hidden>Gender</option>
             <option>Non-Binary</option>
             <option>Female</option>
@@ -109,6 +112,7 @@ export default {
       user: {
         fname: '',
         lname: '',
+        mname: '',
         nickname: '',
         gender: 'Gender',
         bio: '',
@@ -188,6 +192,7 @@ export default {
       this.user.fname = ''
       this.user.lname = ''
       this.user.nickname = ''
+      this.user.mname = ''
       this.user.gender = 'Gender'
       this.user.bio = ''
       this.user.email = ''
@@ -206,6 +211,7 @@ export default {
       userInfo.isLogin = true;
       userInfo.firstname = this.user.fname;
       userInfo.lastname = this.user.lname;
+      userInfo.middlename = this.user.mname;
       userInfo.nickname = this.user.nickname;
       userInfo.bio = this.user.bio;
       userInfo.gender = this.user.gender;
@@ -215,7 +221,7 @@ export default {
       axios.post(SERVER_URL + '/createprofile', {
           firstname: this.user.fname,
           lastname: this.user.lname,
-          middlename: this.user.lname,
+          middlename: this.user.mname,
           nickname: this.user.nickname,
           gender: this.user.gender,
           bio: this.user.bio,

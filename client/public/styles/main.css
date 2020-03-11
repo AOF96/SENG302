@@ -76,7 +76,7 @@ body{
 #credentials-box .signupInput-birthday{
   padding: 8px 12px;
 }
-.signupInput-email, .signupInput-password, .signupInput-bio{
+.signupInput-email, .signupInput-password, .signupInput-lastname{
   margin-right:0 !important;
 }
 .loginInput-email, .loginInput-password{
@@ -318,7 +318,7 @@ body{
     resize: none;
 }
 
-.flName{
+.fmName{
     width: calc(50% - 40px) !important;
 }
 .settingsContent h3{
