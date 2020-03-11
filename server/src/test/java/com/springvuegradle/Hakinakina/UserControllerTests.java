@@ -47,6 +47,7 @@ public class UserControllerTests {
 
     @Test
     public void createProfileTest() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -67,6 +68,7 @@ public class UserControllerTests {
 
     @Test
     public void cannotCreateProfileWithExistingEmailTest() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -90,6 +92,7 @@ public class UserControllerTests {
 
     @Test
     public void getAllUsersTest() throws Exception {
+        //TODO Update test
         User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
@@ -111,6 +114,7 @@ public class UserControllerTests {
 
     @Test
     public void getOneUserTest() throws Exception {
+        //TODO Update test
         User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
@@ -121,6 +125,7 @@ public class UserControllerTests {
 
     @Test
     public void getAllEmailsTest() throws Exception {
+        //TODO Update test
         Email email = new Email("email@gmail.com");
         emailRepository.save(email);
 
@@ -130,6 +135,7 @@ public class UserControllerTests {
 
     @Test
     public void loginCheckTest() throws Exception {
+        //TODO Update test
         User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "123");
         userRepository.save(user);
@@ -187,6 +193,7 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoFirstName() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"\",\n" +
@@ -207,6 +214,7 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoMiddleName() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -227,6 +235,7 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoLastName() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -247,6 +256,7 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoEmail() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -267,6 +277,7 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoDateOfBirth() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -287,6 +298,7 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoGender() throws Exception {
+        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -307,6 +319,7 @@ public class UserControllerTests {
 
     @Test
     public void editUserNoFirstName() throws Exception {
+        //TODO Update test
         User editNoFirstNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoFirstNameTest.setMiddleName("Jack");
@@ -333,6 +346,7 @@ public class UserControllerTests {
 
     @Test
     public void editUserNoLastName() throws Exception {
+        //TODO Update test
         User editNoLastNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoLastNameTest.setMiddleName("Jack");
@@ -385,6 +399,7 @@ public class UserControllerTests {
 
     @Test
     public void editUserNoEmail() throws Exception {
+        //TODO Update test
         User editNoEmailTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoEmailTest.setMiddleName("Jack");
@@ -411,6 +426,7 @@ public class UserControllerTests {
 
     @Test
     public void editUserNoDateOfBirth() throws Exception {
+        //TODO Update test
         User editNoDateOfBirthTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoDateOfBirthTest.setMiddleName("Jack");
@@ -437,6 +453,7 @@ public class UserControllerTests {
 
     @Test
     public void editUserNoGender() throws Exception {
+        //TODO Update test
         User editNoGenderTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoGenderTest.setMiddleName("Jack");

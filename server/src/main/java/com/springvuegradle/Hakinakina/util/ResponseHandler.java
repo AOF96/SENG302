@@ -2,6 +2,8 @@ package com.springvuegradle.Hakinakina.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +19,13 @@ public class ResponseHandler {
      * @param statusCode
      * @param content
      */
-    public String formatSuccessResponse(int statusCode, String content) {
-        return String.format("{\n" +
+    public ResponseEntity formatSuccessResponse(int statusCode, String content) {
+        String details =  String.format("{\n" +
                 "\"StatusCode\": \"%d\",\n" +
                 "\"Content\": \"%s\"\n" +
                 "}", statusCode, content);
+
+        return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
     }
 
     /**
@@ -30,13 +34,15 @@ public class ResponseHandler {
      * @param statusCode
      * @param error
      */
-    public String formatErrorResponse(int statusCode, String error) {
-        return String.format("{\n" +
+    public ResponseEntity formatErrorResponse(int statusCode, String error) {
+        String details = String.format("{\n" +
                 "\"StatusCode\": \"%d\",\n" +
                 "\"Errors\": [\n" +
                 "\"%s\"\n" +
                 "]\n" +
                 "}", statusCode, error);
+
+        return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
     }
 
     /**
@@ -45,31 +51,34 @@ public class ResponseHandler {
      * @param statusCode
      * @param errors
      */
-    public String formatErrorResponse(int statusCode, ArrayList<String> errors) {
-        return String.format("{\n" +
+    public ResponseEntity formatErrorResponse(int statusCode, ArrayList<String> errors) {
+        //TODO Format errors better
+        String details = String.format("{\n" +
                 "\"StatusCode\": \"%d\",\n" +
                 "\"Errors\": [\n" +
                 "\"%s\"\n" +
                 "]\n" +
                 "}", statusCode, errors);
+
+        return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
     }
 
-    public String formatGetUsers(List<User> users) {
-        String response = "{\n\"Users\": [\n";
+    public ResponseEntity formatGetUsers(List<User> users) {
+        String userList = "{\n\"Users\": [\n";
         int firstCheck = 0;
         for (User user: users) {
             if (firstCheck == 0) {
-                response += String.format("\"%d %s %s\"", user.getUser_id(), user.getFirstName(), user.getLastName());
+                userList += String.format("\"%d %s %s\"", user.getUser_id(), user.getFirstName(), user.getLastName());
                 firstCheck = 1;
             } else {
-                response += String.format(",\n\"%d %s %s\"", user.getUser_id(), user.getFirstName(), user.getLastName());
+                userList += String.format(",\n\"%d %s %s\"", user.getUser_id(), user.getFirstName(), user.getLastName());
             }
         }
-        response += "\n]\n}";
-        return response;
+        userList += "\n]\n}";
+        return new ResponseEntity(userList, HttpStatus.OK);
     }
 
-    public String formatGetUser(User user) {
+    public ResponseEntity formatGetUser(User user) {
         ObjectMapper objectMapper = new ObjectMapper();
         String userStr = null;
         try {
@@ -77,6 +86,6 @@ public class ResponseHandler {
         } catch (Exception exception) {
             ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
         }
-        return userStr;
+        return new ResponseEntity(userStr, HttpStatus.OK);
     }
 }
