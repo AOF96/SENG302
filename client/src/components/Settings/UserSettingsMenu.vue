@@ -8,6 +8,8 @@
         <router-link to="/settings/email"><div class="settingsNavItem">Emails</div></router-link>
         <hr>
         <router-link to="/settings/password"><div class="settingsNavItem">Password</div></router-link>
+        <hr>
+        <router-link to="/settings/passport_countries"><div class="settingsNavItem">Passport Countries</div></router-link>
       </div>
     </div>
 </template>

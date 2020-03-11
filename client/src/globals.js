@@ -4,6 +4,7 @@ export const userInfo = {
     nickname:null,  
     gender:null, 
     email:null, 
+    passportCountries: ['Australia', 'Newzealand'],
     secondaryEmails: [], 
     birthday:null,
     bio: null,

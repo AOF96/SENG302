@@ -19,20 +19,6 @@
                 <option>Male</option>
             </select>
 
-            <h2>Passport Countries</h2>
-            <button v-on:click="addPassportCountries()">Add passport countries</button>
-            <select 
-                class="editProfileInput" 
-                v-model="passportCountries.countries" 
-                name="passportCountries" 
-                placeholder="Passport Countries" 
-                value="Passport Countries" 
-                required
-            >
-                <option selected disabled hidden>Passport Countries</option>
-                <option v-for="country in passportCountries.countries_option" v-bind:key="country">{{country}}</option>
-            </select>
-
             <h2>Fitness Level</h2>
             <select class="editProfileInput editProfileInputGender" v-model="fitnesslevel" name="fitnesslevel" placeholder="fitnesslevel" value="fitnesslevel" required>
                 <option selected disabled hidden>Fitness Level</option>
@@ -54,9 +40,7 @@
 </template>
 
 <script>
-    import axios from 'axios'
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
-const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
 import {
     userInfo
 } from "../../globals";
@@ -74,24 +58,7 @@ export default {
             birthday: userInfo.birthday,
             bio: userInfo.bio,
             fitnesslevel: userInfo.fitnesslevel,
-            passportCountries: {
-                countries: userInfo.passportCountries,
-                countries_option: [],
-                num_of_countries: 1
-            },
         }
-    },
-    mounted() {
-        axios.get(COUNTRIES_URL)
-            .then((response) => {
-                const data = response.data;
-                const countries = []
-                for (let country in data) {
-                    countries.push(data[country].name)
-                }
-                this.passportCountries.countries_option = countries;
-            })
-            .catch(error => console.log(error));
     },
     methods: {
         updateUserInfo() {
