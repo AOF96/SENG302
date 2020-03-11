@@ -6,9 +6,9 @@
         <hr>
         <form @submit.prevent>
             <h2>First Name</h2>
-            <input class="editProfileInput" type="text" name="fname" v-model="fname" placeholder="First Name*" required>
+            <input class="editProfileInput" type="text" name="fname" v-model="firstname" placeholder="First Name*" required>
             <h2>Last Name</h2>
-            <input class="editProfileInput" type="text" name="lname" v-model="lname" placeholder="Last Name*" required>
+            <input class="editProfileInput" type="text" name="lname" v-model="lastname" placeholder="Last Name*" required>
             <h2>Nickname</h2>
             <input class="editProfileInput" type="text" name="nickname" v-model="nickname" placeholder="Nickname">
             <h2>Gender</h2>
@@ -32,7 +32,7 @@
             <input v-model="birthday" class="editProfileInput" name="birthday" type="date" required>
             <h2>Bio</h2>
             <textarea class="editProfileTextarea" name="bio" v-model="bio" placeholder="Write about yourself"></textarea>
-            <button id="settingsProfileSubmit" v-on:click="updateUserInfo()" type="submit">Update Profile</button>
+            <button id="settingsProfileSubmit" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
 </div>
@@ -43,6 +43,10 @@ import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {
     userInfo
 } from "../../globals";
+import axios from "axios";
+import router from "../../router";
+
+const SERVER_URL = 'https://abf397d3-e348-43f3-965f-c8fba9ee56f1.mock.pstmn.io';
 
 export default {
     components: {
@@ -50,20 +54,21 @@ export default {
     },
     data() {
         return {
-            fname: userInfo.firstname,
-            lname: userInfo.lastname,
+            firstname: userInfo.firstname,
+            lastname: userInfo.lastname,
             nickname: userInfo.nickname,
             gender: userInfo.gender,
             birthday: userInfo.birthday,
             bio: userInfo.bio,
-            fitness: userInfo.fitness
+            fitness: userInfo.fitness,
+            profile_id: userInfo.profile_id
         }
     },
     methods: {
         updateUserInfo() {
-            if(this.fname != "" && this.lname != "" && this.gender != "" && this.birthday != "" && this.fitness != ""){
-              userInfo.firstname = this.fname;
-              userInfo.lastname = this.lname;
+            if(this.firstname != "" && this.lastname != "" && this.gender != "" && this.birthday != "" && this.fitness != ""){
+              userInfo.firstname = this.firstname;
+              userInfo.lastname = this.lastname;
               userInfo.nickname = this.nickname;
               userInfo.gender = this.gender;
               userInfo.birthday = this.birthday;
@@ -71,6 +76,25 @@ export default {
               userInfo.fitness = this.fitness;
               alert("Profile info updated.");
             }
+        },
+
+        updateProfile() {
+            axios.put(SERVER_URL + '/profiles/' + '1', {
+                firstname: this.firstname,
+                lastname: this.lastname,
+                nickname: this.nickname,
+                gender: this.gender,
+                bio: this.bio,
+                primary_email: this.email,
+                birthday: this.birthday,
+                fitness: this.fitness
+            })
+            .then((response) => {
+                console.log(response);
+                router.push('Profile');
+            }, (error) => {
+                console.log(error)
+            })
         }
     }
 }

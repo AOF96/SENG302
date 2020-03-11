@@ -1,4 +1,5 @@
 export const userInfo = {
+    profile_id: null,
     firstname: null,
     lastname:null, 
     nickname:null,
