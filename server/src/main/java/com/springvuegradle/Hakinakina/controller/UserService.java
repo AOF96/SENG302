@@ -38,22 +38,37 @@ public class UserService {
      * @param request
      * @return reply to client
      */
-    public String editEmail(EditEmailRequest request, long userId) {
-        String primaryEmail = request.getPrimary_email();
-        List<String> additionalEmails = request.getAdditional_email();
+    public String editEmail(String request) {
+        String response = null;
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = null;
+        try {
+            node = objectMapper.readValue(request, JsonNode.class);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Error parsing email edit request");
+            response = responseHandler.formatErrorResponse(400, "Incorrect request format");
+        }
+
+        long userId = node.get("profile_id").asLong();
         User user = userRepository.findById(userId).get();
-        String response = "";
+
+        String primaryEmail = node.get("primary_email").asText();
+        List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
+
+        ArrayList<String> secondaryEmails = new ArrayList<>();
+        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
+            secondaryEmails.add(node1.asText());
+        }
+
         String currentPrimary = user.getPrimaryEmail();
 
-        if (!primaryEmail.equals(currentPrimary) && response == "") {
-            System.out.println("Switching primary email");
-            response = switchPrimaryEmail(user, primaryEmail, currentPrimary, additionalEmails);
-
-        } else if (response == "") {
-            response = updateSecondaryEmails(user, additionalEmails);
-            System.out.println("Editing secondary email");
+        if (!primaryEmail.equals(currentPrimary) && response == null) {
+            response = switchPrimaryEmail(user, primaryEmail, currentPrimary, secondaryEmails);
+        } else if (response == null) {
+            response = updateSecondaryEmails(user, secondaryEmails);
         }
+
         return response;
     }
 
@@ -64,7 +79,7 @@ public class UserService {
      * @param currentPrimary
      * @param secondaryEmails
      */
-    public String switchPrimaryEmail(User user, String newPrimary, String currentPrimary, List<String> secondaryEmails) {
+    public String switchPrimaryEmail(User user, String newPrimary, String currentPrimary, ArrayList<String> secondaryEmails) {
         if (secondaryEmails.contains(user.getPrimaryEmail()) && emailRepository.findEmailByString(newPrimary).getUser() == user) {
             user.setPrimaryEmail(newPrimary);
             user.removeEmail(emailRepository.findEmailByString(newPrimary));
@@ -87,7 +102,7 @@ public class UserService {
      * @param user
      * @param secondaryEmails
      */
-    public String updateSecondaryEmails(User user, List<String> secondaryEmails) {
+    public String updateSecondaryEmails(User user, ArrayList<String> secondaryEmails) {
         Set<Email> emailsToRemove = new HashSet<>();
         for (Email currentEmail : user.getEmails()) {
             if (!secondaryEmails.contains(currentEmail.getEmail())) {
