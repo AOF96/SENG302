@@ -6,17 +6,18 @@
         <hr>
         <h3>Primary email</h3>
         <div class="emailBlock">
-            <h4>{{primary_email}}</h4>
+            <h4>{{ user.email }}</h4>
         </div>
         <h3>Secondary emails:</h3>
-        <div class="emailBlock emailSecondary" v-for="email in secondary_emails" v-bind:key="email">
+        <div class="emailBlock emailSecondary" v-for="email in user.secondaryEmails" v-bind:key="email">
             <h4>{{email}}</h4>
             <button class="setPrimaryButton" v-on:click="updatePrimaryEmail(email)">Set Primary</button>
             <svg class="removeEmailButton" v-on:click="removeEmail(email)" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                 <path d="M0 0h24v24H0z" fill="none" /></svg>
         </div>
-        <div v-if="this.secondary_emails.length < 4">
+        <!-- <div v-if="user.secondaryEmails.length < 4"> -->
+        <div v-if="1 < 4">
           <form @submit.prevent>
             <input id="addEmailInput" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
             <button id="addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
@@ -27,6 +28,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {
     userInfo
@@ -47,11 +49,11 @@ export default {
             newEmail: '',
         }
     },
+    computed: {
+        ...mapState(['user'])
+    },
     methods: {
-        updateGlobals() {
-            userInfo.email = this.primary_email;
-            userInfo.secondaryEmails = this.secondary_emails;
-        },
+        ...mapActions(['updateUserEmail']),
 
         /*
            Adds a new email into the secondary emails lists. Prevents the user from entering empty text or from trying to
@@ -76,7 +78,7 @@ export default {
                     return;
                 }
                 this.secondary_emails.push(this.textInput);
-                this.updateGlobals();
+                this.updateUserEmail()
                 var tempThis = this;
                 setTimeout(function() {
                   tempThis.textInput = "";
@@ -96,7 +98,7 @@ export default {
             }
             this.secondary_emails.push(this.primary_email);
             this.primary_email = secondaryEmail;
-            this.updateGlobals();
+            this.updateUserEmail()
         },
 
         /* Function that removes an email from the secondary emails list */
@@ -113,7 +115,7 @@ export default {
                 this.showButton = true;
             }
 
-            this.updateGlobals();
+            this.updateUserEmail()
         }
     }
 }

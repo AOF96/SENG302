@@ -6,17 +6,17 @@
       <div id="profileWrap">
         <div id="profilePublicInfo">
           <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
-          <h1 id="userName">{{ user.firstname }} {{ lastname }} <span id="userNickname">({{ nickname }})</span></h1>
+          <h1 id="userName">{{ user.firstName }} {{ user.lastName }} <span id="userNickname">({{ user.nickName }})</span></h1>
           <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
           <div class="floatClear"></div>
         </div>
       </div>
 
       <div class="profileInfo">
-          <p class="profileInfoP">Gender: {{gender}}</p><br>
-          <p class="profileInfoP">DOB: {{birthday}}</p><br>
-          <p class="profileInfoP">Primary Email: {{email}}</p><br>
-          <p class="profileInfoP">Bio: {{bio}}</p>
+          <p class="profileInfoP">Gender: {{ user.gender }}</p><br>
+          <p class="profileInfoP">DOB: {{ user.birthday }}</p><br>
+          <p class="profileInfoP">Primary Email: {{ user.email }}</p><br>
+          <p class="profileInfoP">Bio: {{ user.bio }}</p>
       </div>
     </div>
 </template>
@@ -26,28 +26,12 @@
 
   import NavBar from '@/components/NavBar'
   import json from '../../public/json/data.json'
-  import {userInfo} from '../globals';
   const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
 
   export default {
     name: "Profile",
     components: {
         NavBar
-    },
-    data: function() {
-      return {
-          lastname: userInfo.lastname,
-          middlename: userInfo.middlename,
-          nickname :userInfo.nickname,
-          gender:userInfo.gender,
-          bio: userInfo.bio,
-          email: userInfo.email,
-          birthday: userInfo.birthday,
-          myJson: json,
-          showNewButton: false,
-          notFull: true ,
-          textInput: ""
-      }
     },
     computed: {
       ...mapGetters(['user'])
