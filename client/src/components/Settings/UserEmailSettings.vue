@@ -16,7 +16,7 @@
                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                 <path d="M0 0h24v24H0z" fill="none" /></svg>
         </div>
-        <div v-if="this.secondary_emails.length < 4">
+        <div v-if="this.secondary_emails.length < this.limit_num_email">
           <form @submit.prevent>
             <input id="addEmailInput" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
             <button id="addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
@@ -33,6 +33,7 @@ import {
 } from "../../globals";
 import axios from "axios";
 const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+const LIMIT_NUM_EMAIL = 4
 
 export default {
     components: {
@@ -45,6 +46,7 @@ export default {
             showButton: true,
             textInput: '',
             newEmail: '',
+            limit_num_email: LIMIT_NUM_EMAIL
         }
     },
     methods: {

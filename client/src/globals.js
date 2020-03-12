@@ -7,8 +7,9 @@ export const userInfo = {
     email:null, 
     secondaryEmails: [], 
     profile_id: null,
+    passportCountries: ['Australia', 'Newzealand'],
     birthday:null,
     bio: null,
-    isLogin: false,
-    fitness:null,
+    isLogin: true,
+    fitnesslevel:null,
 }

@@ -18,15 +18,16 @@
                 <option>Female</option>
                 <option>Male</option>
             </select>
+
             <h2>Fitness Level</h2>
-            <select class="editProfileInput editProfileInputGender" v-model="fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
+            <select class="editProfileInput editProfileInputGender" v-model="fitnesslevel" name="fitnesslevel" placeholder="fitness" value="fitness" required>
                 <option selected disabled hidden>Fitness Level</option>
-                <option >0</option>
-                <option >1</option>
-                <option >2</option>
-                <option >3</option>
-                <option >4</option>
-                <option >5</option>
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
             </select>
             <h2>Birthday</h2>
             <input v-model="birthday" class="editProfileInput" name="birthday" type="date" required>
@@ -60,7 +61,7 @@ export default {
             gender: userInfo.gender,
             birthday: userInfo.birthday,
             bio: userInfo.bio,
-            fitness: userInfo.fitness,
+            fitnesslevel: userInfo.fitnesslevel,
             profile_id: userInfo.profile_id
         }
     },
@@ -71,9 +72,10 @@ export default {
               userInfo.lastname = this.lastname;
               userInfo.nickname = this.nickname;
               userInfo.gender = this.gender;
+              userInfo.passportCountries = this.passportCountries.countries;
               userInfo.birthday = this.birthday;
               userInfo.bio = this.bio;
-              userInfo.fitness = this.fitness;
+              userInfo.fitnesslevel = this.fitnesslevel;
               alert("Profile info updated.");
             }
         },
@@ -87,7 +89,7 @@ export default {
                 bio: this.bio,
                 primary_email: this.email,
                 birthday: this.birthday,
-                fitness: this.fitness
+                fitness: this.fitnesslevel
             })
             .then((response) => {
                 console.log(response);
@@ -95,6 +97,9 @@ export default {
             }, (error) => {
                 console.log(error)
             })
+        },
+        addPassportCountries() {
+            this.passportCountries.num_of_countries++;
         }
     }
 }

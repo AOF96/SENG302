@@ -13,6 +13,7 @@
             <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
             <div class="floatClear"></div>
           </div>
+          <PassportCountries/>
       </div>
 
 
@@ -32,6 +33,7 @@
 <script>
   import axios from 'axios'
   import NavBar from '@/components/NavBar'
+  import PassportCountries from '@/components/modules/passportCountries'
   import json from '../../public/json/data.json'
   import {userInfo} from '../globals';
   const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
@@ -39,7 +41,8 @@
   export default {
     name: "Profile",
     components: {
-        NavBar
+        NavBar,
+        PassportCountries
     },
     data: function() {
       return {
@@ -51,7 +54,7 @@
           bio: userInfo.bio,
           email: userInfo.email,
           birthday: userInfo.birthday,
-          fitnesslevel: userInfo.fitness,
+          fitnesslevel: userInfo.fitnesslevel,
           myJson: json,
           showNewButton: false,
           notFull: true ,

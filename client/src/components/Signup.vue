@@ -5,11 +5,13 @@
     <div id="credentials-box">
       <h1>Sign Up</h1>
       <h2>Create an account</h2>
+
       <form @submit.prevent>
         <div class="signup-row">
           <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
           <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name*" required>
         </div>
+
         <div class="signup-row">
           <input class="signupInput-lastname" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
@@ -22,9 +24,11 @@
             <option>Male</option>
           </select>
         </div>
+
         <div class="signup-row">
           <textarea v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
         </div>
+
         <div class="signup-row">
           <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
@@ -32,6 +36,7 @@
           <h3 id="signupText-birthday">Birthday</h3>
           <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
         </div>
+
         <div class="signup-row">
         <h3 id="fitnessLevelText">Fitness Level</h3>
         <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
@@ -44,12 +49,15 @@
           <option>5</option>
         </select>
         </div>
+
         <div class="signup-row">
           <input v-model="user.password1" class="signupInput-password" name="pass1" type="password" placeholder="Password*" required>
         </div>
+
         <div class="signup-row">
           <input v-model="user.password2" class="signupInput-password" name="pass2" type="password" placeholder="Password Again*" required>
         </div>
+
         <ul class="validation-errors">
           <li v-if="!validation.password.match">
             {{ this.err_msg.password.match }}
@@ -226,8 +234,7 @@ export default {
       userInfo.primary_email = this.user.primary_email;
       userInfo.birthday = this.user.birthday;
       userInfo.bio = this.user.bio;
-      userInfo.fitness = this.user.fitnesslevel;
-      console.log(userInfo.fitness);
+      userInfo.fitnesslevel = this.user.fitnesslevel;
 
       axios.post(SERVER_URL + '/profiles', {
           lastname: this.user.lastname,
