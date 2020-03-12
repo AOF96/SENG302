@@ -11,8 +11,11 @@
           <input class="flName" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
         <div class="signup-row">
+          <input class="signupInput-lastname" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
+        </div>
+        <div class="signup-row">
           <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
-          <select v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
+          <select v-model="user.gender" name="gender" placeholder="Gender"  value="Gender" required>
             <option selected disabled hidden>Gender</option>
             <option>Non-Binary</option>
             <option>Female</option>
@@ -21,6 +24,9 @@
         </div>
         <div class="signup-row">
           <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
+          <textarea v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
+        </div>
+        <div class="signup-row">
         </div>
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
@@ -187,6 +193,7 @@ export default {
       this.user.lastname = ''
       this.user.middlename = ''
       this.user.nickname = ''
+      this.user.mname = ''
       this.user.gender = 'Gender'
       this.user.primary_email = ''
       this.user.birthday = ''
@@ -207,6 +214,7 @@ export default {
       userInfo.lastname = this.user.lastname;
       userInfo.middlename = this.user.middlename;
       userInfo.nickname = this.user.nickname;
+      userInfo.bio = this.user.bio;
       userInfo.gender = this.user.gender;
       userInfo.primary_email = this.user.primary_email;
       userInfo.birthday = this.user.birthday;

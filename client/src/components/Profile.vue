@@ -11,7 +11,20 @@
             <div class="floatClear"></div>
           </div>
       </div>
+
+
+        <div class="example">
+            <label >Gender: {{gender}}</label><br>
+            <label >DOB: {{birthday}}</label><br>
+            <label >Primary Email: {{email}}</label><br>
+            <label >Bio: {{bio}}</label>
+
+        </div>
+
+
     </div>
+
+
 </template>
 <script>
   import axios from 'axios'
@@ -116,5 +129,15 @@
     button {
         margin-left: 8px;
     }
+
+  .example {
+
+      padding-top:10px;
+      padding-left: 586px;
+      background: white;
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+      border-radius: 14px;
+      position: relative;
+  }
 
 </style>
