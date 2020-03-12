@@ -96,7 +96,7 @@ public class UserControllerTests {
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
-        this.mockMvc.perform(get("/users"))
+        this.mockMvc.perform(get("/profiles"))
                 .andExpect(jsonPath("$.Users").value("1 Maurice Benson"));
 
         User user2 = new User("John", "Smith", "jacky2@google.com", "1985-12-20", Gender.MALE,
@@ -329,7 +329,7 @@ public class UserControllerTests {
                 "}";
 
         this.mockMvc.perform(put("/profiles/"  + editNoFirstNameTest.getUser_id()).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.StatusCode").value("403"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
     }
 
@@ -355,35 +355,9 @@ public class UserControllerTests {
                 "}";
 
         this.mockMvc.perform(put("/profiles/" + editNoLastNameTest.getLastName()).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.StatusCode").value("403"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
     }
-
-    /*
-    @Test
-    public void editUserNoMiddleName() throws Exception {
-        User editNoMiddleNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
-                2, "jacky'sSecuredPwd");
-        userRepository.save(editNoMiddleNameTest);
-
-        String json = "{\n" +
-                "  \"profile_id\": \"editNoMiddleNameTest.getUser_id()\",\n" +
-                "  \"lastname\": \"Benson\",\n" +
-                "  \"firstname\": \"Maurice\",\n" +
-                "  \"middlename\": \"\",\n" +
-                "  \"nickname\": \"Jacky\",\n" +
-                "  \"email\": \"jacky@google.com\",\n" +
-                "  \"password\": \"jacky'sSecuredPwd\",\n" +
-                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
-                "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
-                "  \"fitness\": \"3\"\n"  +
-                "}";
-
-        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
-                .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
-    } */
 
     @Test
     public void editUserNoEmail() throws Exception {
@@ -408,7 +382,7 @@ public class UserControllerTests {
                 "}";
 
         this.mockMvc.perform(put("/profiles/" + editNoEmailTest.getPrimaryEmail()).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.StatusCode").value("403"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid email."));
     }
 
@@ -434,7 +408,7 @@ public class UserControllerTests {
                 "}";
 
         this.mockMvc.perform(put("/profiles/" + editNoDateOfBirthTest.getBirthDate()).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.StatusCode").value("403"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd."));
     }
 

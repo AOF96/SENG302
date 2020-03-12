@@ -178,22 +178,20 @@ public class UserService {
             messages.add("You cannot delete required fields. Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {
-            messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
+            messages.add("You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd.");
         }
         if (user.getGender() == null) {
             messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
         }
-
         if(user.getFitnessLevel() < 0 & user.getFitnessLevel() > 5){
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
         }
 
-
         if (!messages.isEmpty()) {
+            return responseHandler.formatErrorResponse(403, messages);
+        } else {
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(200, "User updated");
-        } else {
-            return responseHandler.formatErrorResponse(403, messages);
         }
     }
 
