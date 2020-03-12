@@ -46,7 +46,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Get compulsory attributes
         String lastName = getValueString(node, "lastname");
         String firstName = getValueString(node, "firstname");
-        String primaryEmail = getValueString(node, "email");
+        String primaryEmail = getValueString(node, "primary_email");
         String password = getValueString(node, "password");
         Date dateOfBirth = Date.valueOf(node.get("date_of_birth").asText());
         Integer fitnessLevel = getValueInt(node, "fitness");
@@ -70,7 +70,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String nickName = getValueString(node, "nickname");
         String bio = getValueString(node, "bio");
         // Get passport countries
-        Set<PassportCountry> userCountries = getPassportCountries(node, "passport");
+        Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
 
         // Create user with compulsory attributes
         User user = new User(firstName, lastName, primaryEmail, dateOfBirth, gender, fitnessLevel, password);
