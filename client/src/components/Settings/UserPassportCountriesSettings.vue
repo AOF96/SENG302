@@ -83,6 +83,7 @@ export default {
             this.update()
         },
         addPassportCountries() {
+            if(this.adding_country == "") return
             // axios.post(SERVER_URL + '/editPassportCountries', {
             //         passportCountries: this.adding_country //should be matched the column name
             //     })
