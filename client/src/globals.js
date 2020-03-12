@@ -9,5 +9,5 @@ export const userInfo = {
     secondaryEmails: [], 
     birthday:null,
     bio: null,
-    isLogin: false
+    isLogin: true
 }

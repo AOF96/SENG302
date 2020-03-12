@@ -6,7 +6,7 @@
         <hr>
         <form @submit.prevent>
             <h2>First Name</h2>
-            <input class="editProfileInput" type="text" name="fname" v-model="fname" placeholder="First Name*" required>
+            <input class="editProfileInput" type="text" name="fname" v-model="user.firstname" placeholder="First Name*" required>
             <h2>Last Name</h2>
             <input class="editProfileInput" type="text" name="lname" v-model="lname" placeholder="Last Name*" required>
             <h2>Nickname</h2>
@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {
     userInfo
@@ -40,13 +42,15 @@ export default {
     },
     data() {
         return {
-            fname: userInfo.firstname,
             lname: userInfo.lastname,
             nickname: userInfo.nickname,
             gender: userInfo.gender,
             birthday: userInfo.birthday,
             bio: userInfo.bio
         }
+    },
+    computed: {
+      ...mapGetters(['user'])
     },
     methods: {
         updateUserInfo() {
