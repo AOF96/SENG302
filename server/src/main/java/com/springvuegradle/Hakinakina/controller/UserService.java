@@ -173,11 +173,15 @@ public class UserService {
         //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
-        if (user.getLastName().isBlank() || user.getMiddleName().isBlank() || user.getFirstName().isBlank()) {
-            messages.add("You cannot delete required fields. Please provide you're full name. First, middle and last names are required.");
+        if (user.getLastName() == null || user.getFirstName() == null) {
+            messages.add("Please provide your full name. First and last names are required.");
+        } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
+            messages.add("Please provide your full name. First and last names are required.");
         }
-        if (user.getPrimaryEmail().isBlank()) {
-            messages.add("You cannot delete required fields. Please provide a valid email.");
+        if (user.getPrimaryEmail() == null) {
+            messages.add("Please provide a valid email.");
+        } else if (user.getPrimaryEmail().isBlank()) {
+            messages.add("Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {
             messages.add("You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd.");

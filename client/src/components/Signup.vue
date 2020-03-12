@@ -9,7 +9,7 @@
       <form @submit.prevent>
         <div class="signup-row">
           <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name*" required>
+          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name">
         </div>
 
         <div class="signup-row">
@@ -245,7 +245,7 @@ export default {
           password: this.user.password1,
           bio: this.user.bio,
           date_of_birth: this.user.birthday,
-          gender: this.user.gender
+          gender: this.user.gender,
           fitnesslevel: this.user.fitnesslevel
         })
         .then((response) => {

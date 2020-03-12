@@ -46,13 +46,14 @@
     },
     data: function() {
       return {
+          profileId: userInfo.profile_id,
           firstname: userInfo.firstname,
           lastname: userInfo.lastname,
           middlename: userInfo.middlename,
           nickname :userInfo.nickname,
           gender:userInfo.gender,
           bio: userInfo.bio,
-          email: userInfo.email,
+          email: userInfo.primary_email,
           birthday: userInfo.birthday,
           fitnesslevel: userInfo.fitnesslevel,
           myJson: json,

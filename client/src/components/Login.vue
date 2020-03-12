@@ -63,13 +63,13 @@
                                 console.log(responseData);
                                 console.log(responseCode);
 
-                                userInfo.profileId = responseData.profile_id;
+                                userInfo.profile_id = responseData.profile_id;
                                 userInfo.firstname = responseData.firstname;
                                 userInfo.lastname = responseData.lastname;
                                 userInfo.middlename = responseData.middlename;
                                 userInfo.nickname = responseData.nickname;
                                 userInfo.gender = responseData.gender;
-                                userInfo.email = responseData.primary_email;
+                                userInfo.primary_email = responseData.primary_email;
                                 userInfo.birthday = responseData.date_of_birth;
                                 userInfo.isLogin = true;
 
