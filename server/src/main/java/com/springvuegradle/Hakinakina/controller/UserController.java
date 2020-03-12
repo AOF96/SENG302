@@ -55,10 +55,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/editemail")
+
+    /** this used to be @PostMapping (editEmail)
+     * # PUT /profiles/{profileId}/emails
+     * {
+     *   "primary_email": "triplej@google.com",
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *   ]
+     * }*/
+    @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public String editEmails(@RequestBody String request) {
-        return userService.editEmail(request);
+    public String editEmails(@RequestBody EditEmailRequest request, @PathVariable("profileId") long userId) {
+        return userService.editEmail(request, userId);
     }
 
     @PostMapping("/profiles/{profileId}/emails")

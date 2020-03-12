@@ -57,7 +57,7 @@ public class User {
     @JsonIgnore
     private String salt;
 
-    @JsonProperty("email")
+    @JsonProperty("primary_email")
     private String primaryEmail;
 
     @JsonProperty("additional_email")
