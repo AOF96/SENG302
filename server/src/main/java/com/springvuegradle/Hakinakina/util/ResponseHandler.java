@@ -20,12 +20,7 @@ public class ResponseHandler {
      * @param content
      */
     public ResponseEntity formatSuccessResponse(int statusCode, String content) {
-        String details =  String.format("{\n" +
-                "\"StatusCode\": \"%d\",\n" +
-                "\"Content\": \"%s\"\n" +
-                "}", statusCode, content);
-
-        return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
+        return new ResponseEntity(content, HttpStatus.valueOf(statusCode));
     }
 
     /**
