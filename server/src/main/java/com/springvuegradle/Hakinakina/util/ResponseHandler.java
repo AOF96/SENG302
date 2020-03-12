@@ -53,12 +53,19 @@ public class ResponseHandler {
      */
     public ResponseEntity formatErrorResponse(int statusCode, ArrayList<String> errors) {
         //TODO Format errors better
+
+        String allErrors = "";
+        for (String error: errors){
+            allErrors +=  "\n" + "\"" + error + "\"";
+        }
+        System.out.println(errors);
+
         String details = String.format("{\n" +
                 "\"StatusCode\": \"%d\",\n" +
-                "\"Errors\": [\n" +
-                "\"%s\"\n" +
+                "\"Errors\": [" +
+                "%s\n" +
                 "]\n" +
-                "}", statusCode, errors);
+                "}", statusCode, allErrors);
 
         return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
     }

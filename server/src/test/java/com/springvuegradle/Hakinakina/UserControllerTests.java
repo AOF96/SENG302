@@ -5,6 +5,7 @@ import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -47,7 +47,6 @@ public class UserControllerTests {
 
     @Test
     public void createProfileTest() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -61,7 +60,7 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("201"))
                 .andExpect(jsonPath("$.Content").value("User created"));
     }
@@ -85,8 +84,8 @@ public class UserControllerTests {
         User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("403"))
                 .andExpect(jsonPath("$.Errors").value("Email already exists"));
     }
 
@@ -108,24 +107,22 @@ public class UserControllerTests {
         expected.add("1 Maurice Benson");
         expected.add("2 John Smith");
 
-        this.mockMvc.perform(get("/users"))
+        this.mockMvc.perform(get("/profiles"))
                 .andExpect(jsonPath("$.Users").value(expected));
     }
 
     @Test
     public void getOneUserTest() throws Exception {
-        //TODO Update test
         User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
-        this.mockMvc.perform(get("/user/" + user.getUser_id()))
+        this.mockMvc.perform(get("/profiles/" + user.getUser_id()))
                 .andExpect(jsonPath("$.firstname").value("Maurice"));
     }
 
     @Test
     public void getAllEmailsTest() throws Exception {
-        //TODO Update test
         Email email = new Email("email@gmail.com");
         emailRepository.save(email);
 
@@ -135,7 +132,6 @@ public class UserControllerTests {
 
     @Test
     public void loginCheckTest() throws Exception {
-        //TODO Update test
         User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "123");
         userRepository.save(user);
@@ -144,7 +140,7 @@ public class UserControllerTests {
                 "  \"attempt\": \"123\"" +
                 "}";
 
-        this.mockMvc.perform(get("/checklogin").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("200"))
                 .andExpect(jsonPath("$.Content").value("Login is correct"));
     }
@@ -165,8 +161,8 @@ public class UserControllerTests {
                 "\n}";
 
         this.mockMvc.perform(post("/editpassword").contentType(MediaType.APPLICATION_JSON).content(json))
-            .andExpect(jsonPath("$.StatusCode").value("200"))
-            .andExpect(jsonPath("$.Content").value("Successfully changed the password"));
+                .andExpect(jsonPath("$.StatusCode").value("200"))
+                .andExpect(jsonPath("$.Content").value("Successfully changed the password"));
 
         User userUpdated = userRepository.findUserByEmail("jacky@google.com");
         assertEquals(userUpdated.getPassword(), EncryptionUtil.getEncryptedPassword("mynewpwd", userUpdated.getSalt()));
@@ -193,7 +189,6 @@ public class UserControllerTests {
 
     @Test
     public void createUserNoFirstName() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"\",\n" +
@@ -207,14 +202,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide you're full name. First, middle and last names are required."));
     }
 
     @Test
     public void createUserNoMiddleName() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -228,14 +222,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide you're full name. First, middle and last names are required."));
     }
 
     @Test
     public void createUserNoLastName() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -249,14 +242,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide you're full name. First, middle and last names are required."));
     }
 
     @Test
     public void createUserNoEmail() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -270,14 +262,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide a valid email."));
     }
 
     @Test
     public void createUserNoDateOfBirth() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -291,14 +282,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide a valid date of birth, yyyy-mm-dd."));
     }
 
     @Test
     public void createUserNoGender() throws Exception {
-        //TODO Update test
         String json = "{\n" +
                 "  \"lastname\": \"Benson\",\n" +
                 "  \"firstname\": \"Maurice\",\n" +
@@ -312,14 +302,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/createprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("Please provide a valid gender. male, female or non-binary."));
     }
 
     @Test
     public void editUserNoFirstName() throws Exception {
-        //TODO Update test
         User editNoFirstNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoFirstNameTest.setMiddleName("Jack");
@@ -339,14 +328,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put("/profiles/"  + editNoFirstNameTest.getUser_id()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
     }
 
     @Test
     public void editUserNoLastName() throws Exception {
-        //TODO Update test
         User editNoLastNameTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoLastNameTest.setMiddleName("Jack");
@@ -366,7 +354,7 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put("/profiles/" + editNoLastNameTest.getLastName()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide you're full name. First, middle and last names are required."));
     }
@@ -419,14 +407,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put("/profiles/" + editNoEmailTest.getPrimaryEmail()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid email."));
     }
 
     @Test
     public void editUserNoDateOfBirth() throws Exception {
-        //TODO Update test
         User editNoDateOfBirthTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoDateOfBirthTest.setMiddleName("Jack");
@@ -446,14 +433,13 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
-        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put("/profiles/" + editNoDateOfBirthTest.getBirthDate()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd."));
     }
 
     @Test
     public void editUserNoGender() throws Exception {
-        //TODO Update test
         User editNoGenderTest = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         editNoGenderTest.setMiddleName("Jack");
@@ -473,8 +459,8 @@ public class UserControllerTests {
                 "  \"fitness\": \"3\"\n" +
                 "}";
 
-        this.mockMvc.perform(post("/editprofile").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(jsonPath("$.StatusCode").value("400"))
+        this.mockMvc.perform(put("/profiles/" + editNoGenderTest.getGender()).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("403"))
                 .andExpect(jsonPath("$.Errors").value("You cannot delete required fields. Please provide a valid gender. male, female or non-binary."));
     }
 }
