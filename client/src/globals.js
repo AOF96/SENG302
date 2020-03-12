@@ -8,6 +8,6 @@ export const userInfo = {
     secondaryEmails: [],
     birthday:null,
     bio: null,
-    isLogin: false,
-    fitness:null,
+    isLogin: true,
+    fitnesslevel:null,
 }

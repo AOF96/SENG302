@@ -25,7 +25,7 @@
         <div class="signup-row">
           <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
-        
+
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
           <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>

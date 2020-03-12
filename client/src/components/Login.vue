@@ -76,7 +76,7 @@
                                                 userInfo.email = currentUser.email,
                                                 userInfo.birthday = currentUser.birthday,
                                                 userInfo.isLogin = true,
-                                                userInfo.fitness = currentUser.fitnesslevel,
+                                                userInfo.fitnesslevel = currentUser.fitnesslevel,
                                                 userInfo.profile_id = currentUser.profile_id
 
                                             console.log(response.data.msg1);
