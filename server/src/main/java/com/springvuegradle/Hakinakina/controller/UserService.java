@@ -137,11 +137,14 @@ public class UserService {
         //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
-        if (user.getLastName() == null || user.getFirstName() == null ||
-                user.getLastName().isBlank() || user.getFirstName().isBlank()) {
-            messages.add("Please provide you're full name. First and last names are required.");
+        if (user.getLastName() == null || user.getFirstName() == null) {
+            messages.add("Please provide your full name. First and last names are required.");
+        } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
+            messages.add("Please provide your full name. First and last names are required.");
         }
-        if (user.getPrimaryEmail() == null || user.getPrimaryEmail().isBlank()) {
+        if (user.getPrimaryEmail() == null) {
+            messages.add("Please provide a valid email.");
+        } else if (user.getPrimaryEmail().isBlank()) {
             messages.add("Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {

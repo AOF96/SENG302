@@ -13,11 +13,11 @@
       </div>
 
 
-        <div class="example">
-            <label >Gender: {{gender}}</label><br>
-            <label >DOB: {{birthday}}</label><br>
-            <label >Primary Email: {{email}}</label><br>
-            <label >Bio: {{bio}}</label>
+        <div class="profileInfo">
+            <p class="profileInfoP" >Gender: {{gender}}</p><br>
+            <p class="profileInfoP">DOB: {{birthday}}</p><br>
+            <p class="profileInfoP">Primary Email: {{email}}</p><br>
+            <p class="profileInfoP">Bio: {{bio}}</p>
 
         </div>
 
@@ -130,14 +130,24 @@
         margin-left: 8px;
     }
 
-  .example {
+  .profileInfo {
 
-      padding-top:10px;
-      padding-left: 586px;
+      width: calc(100% - 30px);
+      max-width: 760px;
+      display: block;
+      margin: 0 auto;
+      position: relative;
+
+
       background: white;
       box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
       border-radius: 14px;
-      position: relative;
+
+      padding: 25px 15px;
   }
 
+    .profileInfoP {
+        padding: 1px 10px;
+        font-family: Roboto;
+    }
 </style>
