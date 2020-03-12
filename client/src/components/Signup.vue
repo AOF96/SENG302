@@ -7,11 +7,11 @@
       <h2>Create an account</h2>
       <form @submit.prevent>
         <div class="signup-row">
-          <input class="flName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="flName" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
+          <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
+          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name*" required>
         </div>
         <div class="signup-row">
-          <input class="signupInput-lastname" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
+          <input class="signupInput-lastname" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
         <div class="signup-row">
           <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
@@ -23,10 +23,10 @@
           </select>
         </div>
         <div class="signup-row">
-          <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
           <textarea v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
         </div>
         <div class="signup-row">
+          <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
