@@ -23,6 +23,7 @@ import java.util.Set;
 public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")
+    @Column(name = "user_id")
     private Long userID;
 
     @JsonProperty("firstname")
