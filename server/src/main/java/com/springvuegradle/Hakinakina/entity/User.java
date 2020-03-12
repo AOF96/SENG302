@@ -3,6 +3,7 @@ package com.springvuegradle.Hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import com.springvuegradle.Hakinakina.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,6 +22,7 @@ import java.util.Set;
 @JsonDeserialize(using=UserDeserializer.class)
 public class User {
     @Id @GeneratedValue
+    @JsonProperty("profile_id")
     private Long userID;
 
     @JsonProperty("firstname")
@@ -36,7 +38,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @JsonProperty("password1")
+    @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
 
@@ -46,11 +48,12 @@ public class User {
     private String nickName;
 
     @JsonProperty("date_of_birth")
+    @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
     private int fitnessLevel;
 
-    @JsonProperty("passport")
+    @JsonProperty("passports")
     @JsonSerialize(using=PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
@@ -59,7 +62,7 @@ public class User {
     @JsonIgnore
     private String salt;
 
-    @JsonProperty("email")
+    @JsonProperty("primary_email")
     private String primaryEmail;
 
     @JsonProperty("additional_email")

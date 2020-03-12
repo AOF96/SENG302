@@ -137,12 +137,11 @@ public class UserService {
         //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
-        System.out.println(user.getFitnessLevel());
-
-        if (user.getLastName().isBlank() || user.getMiddleName().isBlank() || user.getFirstName().isBlank()) {
-            messages.add("Please provide you're full name. First, middle and last names are required.");
+        if (user.getLastName() == null || user.getFirstName() == null ||
+                user.getLastName().isBlank() || user.getFirstName().isBlank()) {
+            messages.add("Please provide you're full name. First and last names are required.");
         }
-        if (user.getPrimaryEmail().isBlank()) {
+        if (user.getPrimaryEmail() == null || user.getPrimaryEmail().isBlank()) {
             messages.add("Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {
@@ -151,9 +150,9 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
-            messages.add("Please select the fitness level in the range 0 and 5");
-        }
+//        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
+//            messages.add("Please select the fitness level in the range 0 and 5");
+//        }
 
         if (messages.isEmpty()) {
             if (emailExists(user.getPrimaryEmail())) {

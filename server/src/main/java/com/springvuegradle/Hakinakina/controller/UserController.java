@@ -117,7 +117,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity checkLogin(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        String attempt = (String) json.get("attempt");
+        String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
         ResponseEntity response = null;
@@ -131,7 +131,7 @@ public class UserController {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-                response = responseHandler.formatSuccessResponse(200, "Login is correct");
+                response = responseHandler.formatSuccessResponse(201, user.toJson());
             } else {
                 response = responseHandler.formatErrorResponse(400, "Incorrect password");
             }

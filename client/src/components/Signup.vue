@@ -79,10 +79,10 @@
 <script>
 import axios from 'axios'
 import router from "../router";
-import {
-  getEncryptPassword
-} from "../common.js"
-const SERVER_URL = 'https://localhost:9499'
+// import {
+//   getEncryptPassword
+// } from "../common.js"
+const SERVER_URL = 'http://localhost:9499'
 
 import NavBar from '@/components/NavBar'
 import {
@@ -226,7 +226,7 @@ export default {
           middlename: this.user.middlename,
           nickname: this.user.nickname,
           primary_email: this.user.primary_email,
-          password: getEncryptPassword(this.user.password1),
+          password: this.user.password1,
           bio: this.user.bio,
           date_of_birth: this.user.birthday,
           gender: this.user.gender
