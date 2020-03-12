@@ -10,4 +10,4 @@ export const userInfo = {
     birthday:null,
     bio: null,
     isLogin: false
-}
+};
