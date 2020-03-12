@@ -66,7 +66,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
 
         // Get other attributes if they exist
-        Integer userId = getValueInt(node, "profile_id");
         String middleName = getValueString(node, "middlename");
         String nickName = getValueString(node, "nickname");
         String bio = getValueString(node, "bio");
@@ -88,9 +87,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
         if (bio != null) {
             user.setBio(bio);
-        }
-        if (userId != null) {
-            user.setUser_id((long) userId);
         }
 
         return user;

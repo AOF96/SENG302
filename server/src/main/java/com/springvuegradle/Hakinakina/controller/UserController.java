@@ -61,13 +61,13 @@ public class UserController {
         return userService.editEmail(request);
     }
 
-    @PostMapping("/editprofile")
+    @PutMapping("/profiles/{profileId}")
     @ResponseStatus(HttpStatus.OK)
-    public String editUser(@RequestBody User user) {
+    public String editUser(@RequestBody User user, @PathVariable("profileId") long profileId) {
+        user.setUser_id(profileId);
         userRepository.save(user);
         return responseHandler.formatSuccessResponse(201, "User updated");
     }
-
 
     /**
      * Processes get users request

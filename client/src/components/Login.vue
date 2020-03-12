@@ -76,7 +76,8 @@
                                                 userInfo.email = currentUser.email,
                                                 userInfo.birthday = currentUser.birthday,
                                                 userInfo.isLogin = true,
-                                                userInfo.fitnesslevel = currentUser.fitnesslevel
+                                                userInfo.fitness = currentUser.fitnesslevel,
+                                                userInfo.profile_id = currentUser.profile_id
 
                                             console.log(response.data.msg1);
                                             router.push('Profile');

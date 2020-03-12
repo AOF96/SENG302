@@ -9,5 +9,5 @@ export const userInfo = {
     birthday:null,
     bio: null,
     isLogin: false,
-    fitnesslevel:null,
+    fitness:null,
 }

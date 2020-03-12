@@ -32,16 +32,16 @@
         </div>
 
         <div class="signup-row">
-          <h3 id="fitnessLevelText">Fitness Level</h3>
-          <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
-            <option selected disabled hidden>Select your level</option>
-            <option >0</option>
-            <option >1</option>
-            <option >2</option>
-            <option >3</option>
-            <option >4</option>
-            <option >5</option>
-          </select>
+        <h3 id="fitnessLevelText">Fitness Level</h3>
+        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+       <option selected disabled hidden>Select your level</option>
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+        </select>
         </div>
 
         <div class="signup-row">
@@ -124,7 +124,7 @@ export default {
         password1: '',
         password2: '',
         message: '',
-        fitnesslevel: 'FitnessLevel',
+        fitnesslevel: '1',
       },
       err_msg: {
         fname: ERR_MSG_FNAME,
