@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -184,5 +183,34 @@ public class UserControllerTests {
         this.mockMvc.perform(post("/editpassword").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("No user with that ID"));
+    }
+
+    @Test
+    public void editUser() throws Exception {
+        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        userRepository.save(user);
+
+        String jsonRequest = "{\n" +
+                "  \"lastname\": \"Benson\",\n" +
+                "  \"firstname\": \"Maurice\",\n" +
+                "  \"middlename\": \"Jack\",\n" +
+                "  \"nickname\": \"Jacky boi\",\n" +
+                "  \"primary_email\": \"jacky@google.com\",\n" +
+                "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+                "  \"date_of_birth\": \"1985-12-20\",\n" +
+                "  \"gender\": \"male\",\n" +
+                "  \"fitness\": 4,\n" +
+                "  \"passports\": [\n" +
+                "    \"United States of America\",\n" +
+                "    \"Thailand\"\n" +
+                "  ]\n" +
+                "}";
+
+        long id = userRepository.findUserByEmail("jacky@google.com").getUser_id();
+
+        this.mockMvc.perform(put("/profiles/" + id).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
+                .andExpect(jsonPath("$.StatusCode").value("201"))
+                .andExpect(jsonPath("$.Content").value("User updated"));
     }
 }
