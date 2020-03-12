@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 public class Email {
     @Id @GeneratedValue
+    @Column(name = "email_id")
     private Long emailID;
 
     private String email;

@@ -142,7 +142,7 @@ public class UserControllerTests {
                 "}";
 
         this.mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().is(201));
+                .andExpect(status().is(200));
     }
 
     @Test

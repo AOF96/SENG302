@@ -27,12 +27,15 @@ public class User {
     private Long userID;
 
     @JsonProperty("firstname")
+    @Column(name = "first_name")
     private String firstName;
 
     @JsonProperty("lastname")
+    @Column(name = "last_name")
     private String lastName;
 
     @JsonProperty("middlename")
+    @Column(name = "middle_name")
     private String middleName;
 
     @JsonProperty("gender")
@@ -46,12 +49,15 @@ public class User {
     private String bio;
 
     @JsonProperty("nickname")
+    @Column(name = "nick_name")
     private String nickName;
 
     @JsonProperty("date_of_birth")
+    @Column(name = "date_of_birth")
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @Column(name = "fitness_level")
     private int fitnessLevel;
 
     @JsonProperty("passports")
@@ -64,6 +70,7 @@ public class User {
     private String salt;
 
     @JsonProperty("primary_email")
+    @Column(name = "primary_email")
     private String primaryEmail;
 
     @JsonProperty("additional_email")
