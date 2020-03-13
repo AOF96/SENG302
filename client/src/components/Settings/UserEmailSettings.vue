@@ -47,7 +47,7 @@ import {
   userInfo
 } from "../../globals";
 import axios from "axios";
-const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+const SERVER_URL = 'localhost:9499';
 
 export default {
   components: {
@@ -79,11 +79,11 @@ export default {
       if (this.secondary_emails.includes(textInput) || textInput == this.primary_email) {
         alert("Please enter an email that has not been used before");
       } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
-        axios.post(SERVER_URL + '/editemail', {
-            new_email: textInput
+        axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
+            aditional_email: [textInput]
           })
           .then((response) => {
-            console.log(response.data.msg3);
+            console.log(response);
           }, (error) => {
             console.log(error);
           });
