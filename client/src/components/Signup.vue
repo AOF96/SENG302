@@ -65,7 +65,7 @@ import router from "../router";
 import {
   getEncryptPassword
 } from "../common.js"
-const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io'
+const SERVER_URL = 'http://localhost:9499'
 
 import NavBar from '@/components/NavBar'
 import {
@@ -195,7 +195,7 @@ export default {
       userInfo.email = this.user.email;
       userInfo.birthday = this.user.birthday;
 
-      axios.post(SERVER_URL + '/createprofile', {
+      axios.post(SERVER_URL + '/profiles', {
           firstname: this.user.fname,
           lastname: this.user.lname,
           nickname: this.user.nickname,

@@ -30,6 +30,8 @@
 
 <script>
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
+import axios from 'axios'
+const SERVER_URL = 'http://localhost:9499'
 import {
     userInfo
 } from "../../globals";
@@ -57,9 +59,26 @@ export default {
               userInfo.gender = this.gender;
               userInfo.birthday = this.birthday;
               userInfo.bio = this.bio;
+              userInfo.fitness = this.fitness;
+              userInfo.passports = this.passports;
               alert("Profile info updated.");
+                axios.post(SERVER_URL + '/profile/' + userInfo.profileId, {
+                    lastname: this.lastname,
+                    firstname: this.firstname,
+                    middlename: this.middlename,
+                    nickname: this.nickname,
+                    primary_email: this.primary_email,
+                    gender: this.gender,
+                    birthday: this.birthday,
+                    bio: this.bio,
+                    fitness: this.fitness,
+                    passport: this.passport
+                })
+            } else {
+                alert("Please fill all required fields");
             }
         }
-    }
+            }
+
 }
 </script>
