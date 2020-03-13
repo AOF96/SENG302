@@ -47,7 +47,7 @@ import {
   userInfo
 } from "../../globals";
 import axios from "axios";
-const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+const SERVER_URL = 'localhost:9499';
 
 export default {
   components: {
@@ -79,27 +79,21 @@ export default {
       if (this.secondary_emails.includes(textInput) || textInput == this.primary_email) {
         alert("Please enter an email that has not been used before");
       } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
-        axios.post(SERVER_URL + '/editemail', {
-            new_email: textInput
-          })
-          .then((response) => {
-            console.log(response.data.msg3);
-          }, (error) => {
-            console.log(error);
-          });
-
-        if (this.secondary_emails.length === 4) {
-          alert("You already have 5 emails, delete one if you want to add more.");
-          this.showButton = false;
-          return;
-        }
         this.secondary_emails.push(this.textInput);
         this.updateGlobals();
         var tempThis = this;
         setTimeout(function() {
-          tempThis.textInput = "";
+            tempThis.textInput = "";
         }, 10);
-
+        axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
+            primary_email: this.primary_email,
+            aditional_email: this.secondary_emails
+        })
+        .then((response) => {
+            console.log(response);
+        }, (error) => {
+            console.log(error);
+        });
       }
     },
 
@@ -115,6 +109,15 @@ export default {
       this.secondary_emails.push(this.primary_email);
       this.primary_email = secondaryEmail;
       this.updateGlobals();
+      axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
+          primary_email: this.primary_email,
+          aditional_email: this.secondary_emails
+      })
+      .then((response) => {
+          console.log(response);
+      }, (error) => {
+          console.log(error);
+      });
     },
 
     openEmailEditBox(secondaryEmail) {
@@ -130,9 +133,15 @@ export default {
         const index = this.secondary_emails.indexOf(this.tempOldEmail);
         this.secondary_emails[index] = this.editEmailInput;
         this.showEditBox = false;
-        //
-        //  Send update to server
-        //
+        axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
+            primary_email: this.primary_email,
+            aditional_email: this.secondary_emails
+        })
+        .then((response) => {
+            console.log(response);
+        }, (error) => {
+            console.log(error);
+        });
       }
     },
 
@@ -149,8 +158,16 @@ export default {
       if (this.secondary_emails.length > 0) {
         this.showButton = true;
       }
-
       this.updateGlobals();
+      axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
+          primary_email: this.primary_email,
+          aditional_email: this.secondary_emails
+      })
+      .then((response) => {
+          console.log(response);
+      }, (error) => {
+          console.log(error);
+      });
     }
   }
 }
