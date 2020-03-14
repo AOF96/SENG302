@@ -4,15 +4,19 @@ import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 
 /**
  * Rest controller class for controlling requests about Users
@@ -115,31 +119,39 @@ public class UserController {
      * @return isLogin Whether the attempt was correct or not.
      */
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody String jsonString) {
+    public ResponseEntity checkLogin(@RequestBody String jsonString, HttpServletResponse response) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        ResponseEntity response = null;
-
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
-            response = responseHandler.formatErrorResponse(400, "Email does not exist");
+            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
         }
 
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-                response = responseHandler.formatSuccessResponse(200, user.toJson());
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+//                // create a cookie
+//                Cookie cookie = new Cookie("SID", sessionToken);
+//                cookie.setMaxAge(60*60*24*365);
+//                cookie.setSecure(false);
+//                cookie.setHttpOnly(true);
+//                cookie.setPath("/");
+//                response.addCookie(cookie);
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\"1: \"" + sessionToken + "\"}]", HttpStatus.OK);
             } else {
-                response = responseHandler.formatErrorResponse(400, "Incorrect password");
+                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "can't check password");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
         }
-
-        return response;
     }
 
     @PostMapping("/editpassword")
