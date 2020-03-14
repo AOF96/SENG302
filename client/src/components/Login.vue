@@ -26,7 +26,6 @@
 </template>
 
 <script>
-
     import axios from 'axios'
     import router from "../router";
     //import {getEncryptPassword} from "../common.js"
@@ -48,43 +47,49 @@
             }
         },
 
-        methods: {
-            submitLogin() {
-                if (this.email.trim(), this.password.trim()) {
-                    axios.post(SERVER_URL + '/login', {
-                        email: this.email,
-                        password: this.password,
-                    })
-                        .then((response) => {
-                            var responseData = response.data;
-                            var responseCode = response.status;
-
-                            if (responseCode == 201) {
-                                console.log(responseData);
-                                console.log(responseCode);
-
-                                userInfo.profileId = responseData.profile_id;
-                                userInfo.firstname = responseData.firstname;
-                                userInfo.lastname = responseData.lastname;
-                                userInfo.middlename = responseData.middlename;
-                                userInfo.nickname = responseData.nickname;
-                                userInfo.gender = responseData.gender;
-                                userInfo.email = responseData.primary_email;
-                                userInfo.birthday = responseData.date_of_birth;
-                                userInfo.isLogin = true;
-
-                                router.push('Profile');
-                            } else {
-                                alert(responseData);
-                            }
-                        }, (error) => {
-                            console.log(error);
+        methods:
+            {
+                setCookie(cname, cvalue, exdays) {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                    var expires = "expires=" + d.toUTCString();
+                    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+                },
+                submitLogin() {
+                    if (this.email.trim(), this.password.trim()) {
+                        axios.post(SERVER_URL + '/login', {
+                            email: this.email,
+                            password: this.password,
                         })
-                } else {
-                    alert("Please fill all required fields");
+                            .then((response) => {
+                                var responseData = response.data[0];
+                                var responseCode = response.status;
+
+                                if (responseCode == 201) {
+                                    var token = response.data[1].sessionToken;
+                                    userInfo.profileId = responseData.profile_id;
+                                    userInfo.firstname = responseData.firstname;
+                                    userInfo.lastname = responseData.lastname;
+                                    userInfo.middlename = responseData.middlename;
+                                    userInfo.nickname = responseData.nickname;
+                                    userInfo.gender = responseData.gender;
+                                    userInfo.email = responseData.primary_email;
+                                    userInfo.birthday = responseData.date_of_birth;
+                                    userInfo.isLogin = true;
+                                    this.setCookie("s_id", token, 365);
+                                    router.push('Profile');
+                                } else {
+                                    alert(responseData);
+                                }
+                            }, (error) => {
+                                console.log(error);
+                            })
+                    } else {
+                        alert("Please fill all required fields");
+                    }
                 }
             }
-        }
+
     }
 
 

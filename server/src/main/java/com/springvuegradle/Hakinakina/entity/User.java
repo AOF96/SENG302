@@ -79,6 +79,10 @@ public class User {
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
     private Set<Email> emails = new HashSet<>();
 
+    @JsonProperty("session_tokens")
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    private Set<Session> sessionToken = new HashSet<>();
+
     protected User() {}
 
     public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
@@ -107,6 +111,11 @@ public class User {
         email.setUser(this);
     }
 
+    public void addSession(Session session) {
+        sessionToken.add(session);
+        session.setUser(this);
+    }
+
     public void removeEmail(Email email) {
         email.removeUser();
         emails.remove(email);
@@ -127,6 +136,10 @@ public class User {
 
     public Set<Email> getEmails() {
         return emails;
+    }
+
+    public Set<Session> getSessions() {
+        return sessionToken;
     }
 
     public String getPrimaryEmail() {

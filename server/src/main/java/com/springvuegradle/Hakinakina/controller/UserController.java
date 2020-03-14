@@ -136,6 +136,8 @@ public class UserController {
                 //Generate session token
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                user.addSession(session_token);
 //                // create a cookie
 //                Cookie cookie = new Cookie("SID", sessionToken);
 //                cookie.setMaxAge(60*60*24*365);
@@ -144,7 +146,7 @@ public class UserController {
 //                cookie.setPath("/");
 //                response.addCookie(cookie);
 
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\"1: \"" + sessionToken + "\"}]", HttpStatus.OK);
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             } else {
                 return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }
