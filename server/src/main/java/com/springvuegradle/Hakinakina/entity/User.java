@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
+import com.sun.tools.jconsole.JConsoleContext;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -90,6 +91,7 @@ public class User {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
+        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {
