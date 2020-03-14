@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * An enum to represent a User's gender
  */
 public enum Gender {
-    @JsonProperty("male")
+    @JsonProperty("Male")
     MALE,
-    @JsonProperty("female")
+    @JsonProperty("Female")
     FEMALE,
-    @JsonProperty("non_binary")
+    @JsonProperty("Non_binary")
     NON_BINARY
 }

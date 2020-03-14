@@ -131,7 +131,7 @@ public class UserController {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-                response = responseHandler.formatSuccessResponse(200, user.toJson());
+                response = responseHandler.formatSuccessResponse(201, user.toJson());
             } else {
                 response = responseHandler.formatErrorResponse(400, "Incorrect password");
             }
