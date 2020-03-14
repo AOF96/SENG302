@@ -18,7 +18,8 @@
   import NavBar from '@/components/NavBar'
   import json from '../../public/json/data.json'
   import {userInfo} from '../globals';
-  const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+  //const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+  const SERVER_URL = 'http://localhost:9499/';
 
   export default {
     name: "Profile",

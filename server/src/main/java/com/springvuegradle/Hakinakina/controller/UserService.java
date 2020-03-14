@@ -6,9 +6,12 @@ import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Class for user profile request actions
@@ -37,8 +40,19 @@ public class UserService {
      * Takes an edit email request and updates the repositories appropriately
      * @param request
      * @return reply to client
-     */
-    public String editEmail(String request) {
+     *
+     *edits email
+     *
+     * PUT /profiles/{profileId}/emails
+     * {
+     *   "primary_email": "triplej@google.com",
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *   ]
+     * }
+     * */
+    public String editEmail(String request, long userId) {
         String response = null;
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -50,7 +64,7 @@ public class UserService {
             response = responseHandler.formatErrorResponse(400, "Incorrect request format");
         }
 
-        long userId = node.get("profile_id").asLong();
+        //long userId = node.get("profile_id").asLong();
         User user = userRepository.findById(userId).get();
 
         String primaryEmail = node.get("primary_email").asText();
@@ -71,6 +85,8 @@ public class UserService {
 
         return response;
     }
+
+
 
     /**
      * Switches primary email with secondary email
@@ -95,6 +111,7 @@ public class UserService {
             return responseHandler.formatSuccessResponse(400, "Could not switch email");
         }
     }
+
 
     /**
      * Updates the users secondary emails to match the new set
@@ -128,6 +145,16 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
+    /** adds email
+     * POST /profiles/{profileId}/emails
+     * {
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *     ]
+     * }
+     *
+     * */
     public String addEmails(String request, long userId) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = null;

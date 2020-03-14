@@ -6,6 +6,7 @@ import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -55,12 +56,34 @@ public class UserController {
         }
     }
 
-    @PostMapping("/editemail")
+    /**edits email
+     *
+     * PUT /profiles/{profileId}/emails
+     * {
+     *   "primary_email": "triplej@google.com",
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *   ]
+     * }
+     * */
+    @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public String editEmails(@RequestBody String request) {
-        return userService.editEmail(request);
+    public String editEmail(@RequestBody String request, @PathVariable("profileId") long userId) {
+        return userService.editEmail(request, userId);
     }
 
+
+    /** adds email
+     * POST /profiles/{profileId}/emails
+     * {
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *     ]
+     * }
+     *
+     * */
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
     public String addEmails(@RequestBody String request, @PathVariable("profileId") long userId) {
