@@ -32,7 +32,7 @@ public class Main {
 	}
 
 	@Bean
-	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository) {
+	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository) {
 		return args -> {
 			String[] countryCodes = Locale.getISOCountries();
 			for (String countryCode : countryCodes) {

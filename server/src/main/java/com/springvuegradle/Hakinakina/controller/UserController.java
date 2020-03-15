@@ -27,6 +27,7 @@ public class UserController {
     public UserRepository userRepository;
     public PassportCountryRepository countryRepository;
     public EmailRepository emailRepository;
+    public SessionRepository sessionRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private UserService userService;
@@ -37,11 +38,13 @@ public class UserController {
      * @param userRepository    The repository containing Users
      * @param countryRepository The repository containing PassportCountries
      * @param emailRepository   The repository containing Emails
+     * @param sessionRepository The repository containing Sessions
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, UserService userService) {
+    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
+        this.sessionRepository = sessionRepository;
         this.userService = userService;
     }
 
@@ -138,13 +141,7 @@ public class UserController {
                 String sessionToken = randomToken.getToken(40);
                 Session session_token = new Session(sessionToken);
                 user.addSession(session_token);
-//                // create a cookie
-//                Cookie cookie = new Cookie("SID", sessionToken);
-//                cookie.setMaxAge(60*60*24*365);
-//                cookie.setSecure(false);
-//                cookie.setHttpOnly(true);
-//                cookie.setPath("/");
-//                response.addCookie(cookie);
+                sessionRepository.insertToken(sessionToken, user.getUser_id());
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             } else {
