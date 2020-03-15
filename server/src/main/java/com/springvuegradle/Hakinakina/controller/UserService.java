@@ -132,17 +132,23 @@ public class UserService {
             emailRepository.delete(emailToRemove);
         }
 
+        String emailsAdded = "";
         for (String newEmail : secondaryEmails) {
-            if (emailRepository.findEmailByString(newEmail) == null) {
+            if (emailRepository.findEmailByString(newEmail) == null && !newEmail.equals("")) {
                 Email emailToAdd = new Email(newEmail);
                 emailRepository.save(emailToAdd);
                 user.addEmail(emailToAdd);
+                emailsAdded += newEmail + ", ";
             }
         }
 
         userRepository.save(user);
 
-        return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
+        if (emailsAdded.equals("")) {
+            return responseHandler.formatErrorResponse(400, "No emails successfully updated, emails either in use or empty");
+        } else {
+            return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
+        }
     }
 
     /** adds email

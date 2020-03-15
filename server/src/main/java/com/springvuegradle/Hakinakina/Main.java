@@ -39,12 +39,6 @@ public class Main {
 				Locale obj = new Locale("", countryCode);
 				countryRepository.save(new PassportCountry(obj.getCountry(), obj.getDisplayCountry()));
 			}
-
-			// For debugging purposes
-			User u = new User("You", "Me", "triplej@msn.com", null, null, 4, "password");
-			u.addEmail(new Email("triplej@google.com"));
-			u.addEmail(new Email("triplej@xtra.co.nz"));
-			userRepository.save(u);
 		};
 	}
 
