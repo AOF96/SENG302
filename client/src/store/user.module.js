@@ -9,7 +9,8 @@ const state = {
     secondaryEmails: [], 
     birthday: null,
     bio: null,
-    isLogin: true
+    isLogin: true,
+    password: null
   }
 }
 
@@ -66,10 +67,31 @@ const mutations = {
     if(data.isLogin != ""){
       state.user.isLogin = data.isLogin
     }
+  },
+  setUserPassword(state, data) {
+    if(data.password != ""){
+      state.user.password = data.password
+    }
+  },
+  login(state) {
+    state.user.isLogin = true
   }
 }
 
 const actions = {
+  createUserProfile({ commit }, data) {
+    commit('setUserFirstName', data)
+    commit('setUserLastName', data)
+    commit('setUserMiddleName', data)
+    commit('setUserNickName', data)
+    commit('setUserEmail', data)
+    commit('setUserGender', data)
+    commit('setUserBirthday', data)
+    commit('setUserBio', data)
+    commit('setUserPassword', data)
+    commit('login', data)
+    alert("Profile info updated.");
+  },
   updateUserProfile({ commit }, data) {
     commit('setUserFirstName', data)
     commit('setUserLastName', data)
