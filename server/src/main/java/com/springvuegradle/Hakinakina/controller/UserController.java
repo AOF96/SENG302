@@ -157,7 +157,7 @@ public class UserController {
     }
 
     @PostMapping("/editpassword")
-    public ResponseEntity editPassword(@RequestBody String jsonString) {
+    public ResponseEntity editPassword(@RequestBody String jsonString, @CookieValue(name = "s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         long id = Long.valueOf((int) json.get("profile_id"));
         String oldPassword = (String) json.get("old_password");
@@ -168,13 +168,17 @@ public class UserController {
         Optional<User> getUser = userRepository.findById(id);
         if (getUser.isPresent()) {
             User user = getUser.get();
-            try {
-                String salt = EncryptionUtil.getNewSalt();
-                user.setSalt(salt);
-                user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
-                userRepository.save(user);
-                response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
-            } catch (Exception e) {
+            if(user.getSessions().contains(sessionToken)){
+                try {
+                    String salt = EncryptionUtil.getNewSalt();
+                    user.setSalt(salt);
+                    user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                    userRepository.save(user);
+                    response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
+                } catch (Exception e) {
+                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                }
+            }else{
                 response = responseHandler.formatErrorResponse(400, "Error while creating new password");
             }
         } else {
