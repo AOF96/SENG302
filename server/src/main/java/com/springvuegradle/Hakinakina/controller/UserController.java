@@ -152,11 +152,25 @@ public class UserController {
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        String response = null;
+        String response;
+
+        if (!newPassword.equals(repeatPassword)) {
+            return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
+        }
 
         Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
+
+            try {
+                String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                if (!user.getPassword().equals(encryptedPassword)) {
+                    return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                }
+            } catch (Exception e) {
+                return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+            }
+
             try {
                 String salt = EncryptionUtil.getNewSalt();
                 user.setSalt(salt);

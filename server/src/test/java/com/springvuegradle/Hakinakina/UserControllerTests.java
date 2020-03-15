@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -97,15 +98,15 @@ public class UserControllerTests {
         userRepository.save(user);
 
         this.mockMvc.perform(get("/users"))
-                .andExpect(jsonPath("$.Users").value("1 Maurice Benson"));
+                .andExpect(jsonPath("$.Users").value(user.getUser_id() + " Maurice Benson"));
 
         User user2 = new User("John", "Smith", "jacky2@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user2);
 
         ArrayList<String> expected = new ArrayList<String>();
-        expected.add("1 Maurice Benson");
-        expected.add("2 John Smith");
+        expected.add(user.getUser_id() + " Maurice Benson");
+        expected.add(user2.getUser_id() + " John Smith");
 
         this.mockMvc.perform(get("/users"))
                 .andExpect(jsonPath("$.Users").value(expected));
@@ -154,7 +155,7 @@ public class UserControllerTests {
         String oldPassword = user.getPassword();
         long id = user.getUser_id();
         String json = "{" +
-                "\n\"old_password\": \"myoldpwd\"," +
+                "\n\"old_password\": \"jacky'sSecuredPwd\"," +
                 "\n\"new_password\": \"mynewpwd\"," +
                 "\n\"repeat_password\": \"mynewpwd\"" +
                 "\n}";
@@ -183,5 +184,43 @@ public class UserControllerTests {
         this.mockMvc.perform(put("/profiles/" + 1000 + "/password").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("No user with that ID"));
+    }
+
+    @Test
+    public void repeatPasswordIncorrect() throws Exception {
+        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        userRepository.save(user);
+
+        String oldPassword = user.getPassword();
+        long id = user.getUser_id();
+        String json = "{" +
+                "\n\"old_password\": \"jacky'sSecuredPwd\"," +
+                "\n\"new_password\": \"mynewpwd\"," +
+                "\n\"repeat_password\": \"ZaCsv1234\"" +
+                "\n}";
+
+        this.mockMvc.perform(put("/profiles/" + id + "/password").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("newPassword and repeatPassword do no match"));
+    }
+
+    @Test
+    public void oldPasswordIncorrect() throws Exception {
+        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+                2, "jacky'sSecuredPwd");
+        userRepository.save(user);
+
+        String oldPassword = user.getPassword();
+        long id = user.getUser_id();
+        String json = "{" +
+                "\n\"old_password\": \"jackySecuredPwd\"," +
+                "\n\"new_password\": \"mynewpwd\"," +
+                "\n\"repeat_password\": \"mynewpwd\"" +
+                "\n}";
+
+        this.mockMvc.perform(put("/profiles/" + id + "/password").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.StatusCode").value("400"))
+                .andExpect(jsonPath("$.Errors").value("oldPassword is incorrect"));
     }
 }
