@@ -18,6 +18,17 @@
                 <option>Female</option>
                 <option>Male</option>
             </select>
+
+            <h2>Fitness Level</h2>
+            <select class="editProfileInput editProfileInputGender" v-model="fitnesslevel" name="fitnesslevel" placeholder="fitness" value="fitness" required>
+                <option selected disabled hidden>Fitness Level</option>
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
             <h2>Birthday</h2>
             <input v-model="user.birthday" class="editProfileInput" name="birthday" type="date" required>
             <h2>Bio</h2>
@@ -32,6 +43,10 @@
 import { mapState, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
+import axios from "axios";
+import router from "../../router";
+
+const SERVER_URL = 'http://localhost:9499';
 
 export default {
     components: {
@@ -42,6 +57,29 @@ export default {
     },
     methods: {
         ...mapActions(['updateUserProfile']),
+        methods: {
+            updateProfile() {
+                axios.put(SERVER_URL + '/profiles/' + this.user.profile_id, {
+                    firstname: this.user.firstName,
+                    lastname: this.user.lastName,
+                    nickname: this.user.nickName,
+                    gender: this.gender,
+                    bio: this.bio,
+                    primary_email: this.user.email,
+                    date_of_birth: this.user.birthday,
+                    fitness: this.user.fitnesslevel
+                })
+                .then((response) => {
+                    console.log(response);
+                    router.push('Profile');
+                }, (error) => {
+                    console.log(error)
+                })
+            },
+            addPassportCountries() {
+                this.passportCountries.num_of_countries++;
+            }
+        }
     }
 }
 </script>

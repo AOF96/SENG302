@@ -9,7 +9,9 @@ const state = {
     secondaryEmails: [], 
     birthday: null,
     bio: null,
-    isLogin: true
+    isLogin: true,
+    fitnesslevel: null,
+    profile_id: null
   }
 }
 

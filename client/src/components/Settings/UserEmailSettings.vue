@@ -32,6 +32,7 @@ import { mapState, mapActions } from 'vuex'
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import axios from "axios";
 const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+const LIMIT_NUM_EMAIL = 4
 
 export default {
     components: {
@@ -42,6 +43,7 @@ export default {
             showButton: true,
             textInput: '',
             newEmail: '',
+            limit_num_email: LIMIT_NUM_EMAIL
         }
     },
     computed: {

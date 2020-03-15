@@ -6,8 +6,8 @@ import Login from '@/components/Login.vue'
 import UserProfileSettings from '@/components/Settings/UserProfileSettings'
 import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
+import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
 import {userInfo} from './globals';
-
 
 Vue.use(VueRouter)
 
@@ -36,6 +36,10 @@ const routes = [
         path: '/settings/email',
         component: UserEmailSettings
     },
+    {
+        path: '/settings/passport_countries',
+        component: UserPassportCountriesSettings
+    }
 ]
 
 const router = new VueRouter({
