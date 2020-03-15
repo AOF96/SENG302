@@ -1,11 +1,12 @@
 export const userInfo = {
-    firstname: null, 
-    lastname:null, 
+    profileId: 1,
+    firstname: "Maurice",
+    lastname:"Benson",
     nickname:null,  
     gender:null, 
     email:null, 
     secondaryEmails: [], 
     birthday:null,
     bio: null,
-    isLogin: false
+    isLogin: true
 }

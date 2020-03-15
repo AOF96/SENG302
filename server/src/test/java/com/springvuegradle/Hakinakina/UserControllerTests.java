@@ -21,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -153,13 +154,12 @@ public class UserControllerTests {
         String oldPassword = user.getPassword();
         long id = user.getUser_id();
         String json = "{" +
-                "\n\"profile_id\": " + id + "," +
                 "\n\"old_password\": \"myoldpwd\"," +
                 "\n\"new_password\": \"mynewpwd\"," +
                 "\n\"repeat_password\": \"mynewpwd\"" +
                 "\n}";
 
-        this.mockMvc.perform(post("/editpassword").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put("/profiles/" + id + "/password").contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(jsonPath("$.StatusCode").value("200"))
             .andExpect(jsonPath("$.Content").value("Successfully changed the password"));
 
@@ -175,13 +175,12 @@ public class UserControllerTests {
         userRepository.save(user);
 
         String json = "{" +
-                "\n\"profile_id\": 1000," +
                 "\n\"old_password\": \"myoldpwd\"," +
                 "\n\"new_password\": \"mynewpwd\"," +
                 "\n\"repeat_password\": \"mynewpwd\"" +
                 "\n}";
 
-        this.mockMvc.perform(post("/editpassword").contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put("/profiles/" + 1000 + "/password").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.StatusCode").value("400"))
                 .andExpect(jsonPath("$.Errors").value("No user with that ID"));
     }

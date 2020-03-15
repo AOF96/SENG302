@@ -146,16 +146,15 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/editpassword")
-    public String editPassword(@RequestBody String jsonString) {
+    @PutMapping("/profiles/{profileId}/password")
+    public String editPassword(@RequestBody String jsonString, @PathVariable Long profileId) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        long id = Long.valueOf((int) json.get("profile_id"));
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
         String response = null;
 
-        Optional<User> getUser = userRepository.findById(id);
+        Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
             try {
@@ -171,7 +170,6 @@ public class UserController {
         else {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");
         }
-
         return response;
     }
 
