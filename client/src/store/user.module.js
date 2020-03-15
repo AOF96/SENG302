@@ -16,8 +16,12 @@ const state = {
 const getters = {
   user(state) {
     return state.user
+  },
+  isLoggedIn(state) {
+    return state.user.isLogin;
   }
-}
+
+};
 
 const mutations = {
   setUser(state, data) {
@@ -66,8 +70,14 @@ const mutations = {
     if(data.isLogin != ""){
       state.user.isLogin = data.isLogin
     }
-  }
-}
+  },
+  userLogout() {
+    console.log(state.user)
+    state.user.isLogin = false;
+    console.log(state.user)
+  },
+
+};
 
 const actions = {
   updateUserProfile({ commit }, data) {
@@ -84,8 +94,11 @@ const actions = {
     commit('setUserEmail', data)
     commit('setUserSecondaryEmails', data)
     alert("Email updated.");
+  },
+  logout({commit, data}) {
+    commit('userLogout', data);
   }
-}
+};
 
 export default {
   state,

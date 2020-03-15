@@ -6,10 +6,11 @@ import Login from '@/components/Login.vue'
 import UserProfileSettings from '@/components/Settings/UserProfileSettings'
 import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
-import {userInfo} from './globals';
+import store from '@/store/index.js';
+//import {userInfo} from './globals';
 
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
     {
@@ -36,27 +37,29 @@ const routes = [
         path: '/settings/email',
         component: UserEmailSettings
     },
-]
+];
 
 const router = new VueRouter({
     routes,
     mode: 'history'
-})
+});
 
 router.beforeEach((to, from, next) => {
     if (to.path == "/Signup" || to.path == "/login") {
-        if (userInfo.isLogin) {
+        if (store.getters.user.isLogin) {
             next('/Profile')
         } else {
             next()
         }
     } else {
-        if(userInfo.isLogin){
+        console.log(store.getters);
+        console.log(store.getters.user.isLogin);
+        if(store.getters.user.isLogin){
             next()
         } else {
             next('/login')
         }
     }
-})
+});
 
 export default router

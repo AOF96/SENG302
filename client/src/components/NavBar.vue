@@ -1,24 +1,24 @@
 <template>
     <header>
-        <router-link to="/Signup" v-if="!isLogin">
+        <router-link to="/Signup" v-if="!user.isLogin">
             <button id="headerNavButton" class="signup">
                 Sign Up
             </button>
         </router-link>
 
-        <router-link to="/Login" v-if="!isLogin">
+        <router-link to="/Login" v-if="!user.isLogin">
             <button id="headerNavButton" class="login">
                 Login
             </button>
         </router-link>
 
-        <router-link to="/Login" v-if="isLogin">
+        <router-link to="/Login" v-if="user.isLogin">
             <button id="headerNavButton" class="login" v-on:click="logout">
                 Logout
             </button>
         </router-link>
 
-        <router-link to="/profile" v-if="isLogin">
+        <router-link to="/profile" v-if="user.isLogin">
             <button id="headerNavButton" class="myaccount">
                 Profile
             </button>
@@ -27,19 +27,24 @@
 </template>
 
 <script>
-    import {userInfo} from '@/globals';
+    //import {userInfo} from '@/globals';
+    import { mapGetters, mapActions } from 'vuex';
 
     export default {
         name: "NavBar",
         computed: {
-            isLogin() {
-                return userInfo.isLogin
-            }
+            // isLogin() {
+            //     return userInfo.isLogin
+            // },
+
+            ...mapGetters(['user'])
+
         },
         methods: {
-            logout() {
-                userInfo.isLogin = false
-            },
+            // logout() {
+            //     userInfo.isLogin = false
+            // },
+            ...mapActions(['logout'])
         }
     }
 </script>
