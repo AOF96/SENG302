@@ -31,6 +31,7 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     /**
      * Method to deserialize user creation JSON to user object
+     *
      * @param jp
      * @param ctxt
      * @return
@@ -48,13 +49,13 @@ public class UserDeserializer extends StdDeserializer<User> {
         String firstName = getValueString(node, "firstname");
         String primaryEmail = getValueString(node, "primary_email");
         String password = getValueString(node, "password");
-        String dateOfBirth = getValueString(node,"date_of_birth");
+        String dateOfBirth = getValueString(node, "date_of_birth");
         Integer fitnessLevel = getValueInt(node, "fitness");
         // Get gender
         String genderString = getValueString(node, "gender");
         Gender gender = null;
         switch (genderString.toLowerCase()) {
-            case("male"):
+            case ("male"):
                 gender = Gender.MALE;
                 break;
             case ("female"):
@@ -66,7 +67,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
 
         // Get other attributes if they exist
-        Integer userId = getValueInt(node, "profile_id");
         String middleName = getValueString(node, "middlename");
         String nickName = getValueString(node, "nickname");
         String bio = getValueString(node, "bio");
@@ -88,9 +88,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
         if (bio != null) {
             user.setBio(bio);
-        }
-        if (userId != null) {
-            user.setUser_id((long) userId);
         }
 
         return user;
@@ -130,6 +127,7 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     /**
      * Returns set of PassportCountry in user creation request
+     *
      * @param node
      * @param field
      * @return
