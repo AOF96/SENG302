@@ -10,6 +10,6 @@ export const userInfo = {
     passportCountries: ['Australia', 'Newzealand'],
     birthday:null,
     bio: null,
-    isLogin: true,
-    fitnesslevel:null,
+    isLogin: false,
+    fitnesslevel: null,
 }

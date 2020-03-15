@@ -91,7 +91,7 @@ const actions = {
     commit('setUserBirthday', data)
     commit('setUserBio', data)
     commit('setUserPassword', data)
-    commit('login', data)
+    commit('login')
     alert("Profile info updated.");
   },
   updateUserProfile({ commit }, data) {

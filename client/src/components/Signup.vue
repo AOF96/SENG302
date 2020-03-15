@@ -198,6 +198,16 @@ export default {
       }
 
       this.createUserProfile(this.user)
+      console.log(this.user.firstName)
+      console.log(this.user.lastName)
+      console.log(this.user.middleName)
+      console.log(this.user.nickName)
+      console.log(this.user.email)
+      console.log(this.password1)
+      console.log(this.user.bio)
+      console.log(this.user.birthday)
+      console.log(this.user.gender)
+      console.log(this.user.fitnesslevel)
 
       axios.post(SERVER_URL + '/profiles', {
           firstname: this.user.firstName,
