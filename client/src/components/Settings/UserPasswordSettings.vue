@@ -17,15 +17,11 @@
 </template>
 
 <script>
-  import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
-  import axios from 'axios'
-  import {
-      userInfo,
-      helper
-  } from "../../globals";
+  import UserSettingsMenu from '@/components/Settings/UserSettingsMenu';
+  import {userInfo} from "../../globals";
+  import {apiUser} from "../../api";
 
 
-  const SERVER_URL = 'http://localhost:9499';
   export default {
     components: {
       UserSettingsMenu
@@ -56,16 +52,7 @@
             if(this.validation.length){
               if(this.validation.number){
                 if(this.validation.uppercase){
-                    axios(SERVER_URL + '/profiles/' + userInfo.profileId + '/password', {
-                      method: "put",
-                      withCredentials: true,
-                      headers: {'Authorization': helper.getCookie("s_id")},
-                      data: {
-                          old_password: this.password,
-                          new_password: this.newPassword,
-                          repeat_password: this.confirmPassword
-                      }
-                    });
+                    apiUser.changePassword(userInfo.profileId, this.password, this.newPassword, this.confirmPassword);
                     console.log("Request sent");
                   alert("Password updated")
                 }else{alert("Must contain at least one uppercase character.");}
