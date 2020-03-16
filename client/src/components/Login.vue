@@ -32,8 +32,6 @@
   //import {getEncryptPassword} from "../common.js"
 
   import NavBar from '@/components/NavBar'
-  // import {userInfo} from '../globals';
-
   const SERVER_URL = 'http://localhost:9499';
 
   export default {
@@ -41,12 +39,6 @@
     components: {
       NavBar
     },
-    // data() {
-    //   return {
-    //     email: "",
-    //     password: ""
-    //   }
-    // },
     computed: {
       ...mapGetters(['user']),
 
@@ -55,8 +47,6 @@
       ...mapActions(['updateUserProfile']),
 
       submitLogin() {
-        console.log(this.user.email.trim());
-        console.log(this.user.password.trim());
         if (this.user.email.trim(), this.user.password.trim()) {
           axios.post(SERVER_URL + '/login', {
             email: this.user.email,
@@ -70,21 +60,7 @@
                 console.log(responseData);
                 console.log(responseCode);
 
-
                 this.updateUserProfile(responseData[0]);
-
-
-
-                // userInfo.profile_id = responseData.profile_id;
-                // userInfo.firstname = responseData.firstname;
-                // userInfo.lastname = responseData.lastname;
-                // userInfo.middlename = responseData.middlename;
-                // userInfo.nickname = responseData.nickname;
-                // userInfo.gender = responseData.gender;
-                // userInfo.primary_email = responseData.primary_email;
-                // userInfo.birthday = responseData.date_of_birth;
-                // userInfo.isLogin = true;
-
                 router.push('Profile');
               } else {
                   alert(responseData);
