@@ -22,9 +22,13 @@ export const apiUser = {
     new_password: new_password,
     repeat_password: repeat_password
   }),
-  // Update the user's emails
-  updateEmails: (user_id, primary_email, aditional_email) => instance.post('/profiles/'+user_id+'/emails', {
+  // Add additional emails
+  addEmails: (user_id, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
+    additional_email: additional_email
+  }),
+  // Edit the user's emails
+  editEmail: (user_id, primary_email, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
     primary_email: primary_email,
-    aditional_email: aditional_email
+    additional_email: additional_email
   })
 }

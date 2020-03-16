@@ -82,7 +82,7 @@ export default {
         setTimeout(function() {
             tempThis.textInput = "";
         }, 10);
-        apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
+        apiUser.addEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
       }
     },
 
@@ -98,7 +98,7 @@ export default {
       this.secondary_emails.push(this.primary_email);
       this.primary_email = secondaryEmail;
       this.updateGlobals();
-      apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
+      apiUser.editEmail(userInfo.profileId, this.primary_email, this.secondary_emails);
     },
 
     openEmailEditBox(secondaryEmail) {
@@ -114,7 +114,7 @@ export default {
         const index = this.secondary_emails.indexOf(this.tempOldEmail);
         this.secondary_emails[index] = this.editEmailInput;
         this.showEditBox = false;
-        apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
+        apiUser.editEmail(userInfo.profileId, this.editEmailInput);
       }
     },
 
@@ -132,7 +132,7 @@ export default {
         this.showButton = true;
       }
       this.updateGlobals();
-      apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
+      apiUser.editEmail(userInfo.profileId, this.primary_email, this.secondary_emails);
     }
   }
 }
