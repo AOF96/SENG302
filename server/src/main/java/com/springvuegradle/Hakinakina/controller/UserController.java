@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -153,19 +152,31 @@ public class UserController {
         }
     }
 
-    @PostMapping("/editpassword")
-    public ResponseEntity editPassword(@RequestBody String jsonString, @CookieValue(name = "s_id") String sessionToken) {
+    @PutMapping("/profiles/{profileId}/password")
+    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue(name = "s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        long id = Long.valueOf((int) json.get("profile_id"));
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        ResponseEntity response = null;
+        ResponseEntity response;
 
-        Optional<User> getUser = userRepository.findById(id);
+        if (!newPassword.equals(repeatPassword)) {
+            return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
+        }
+
+        Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
             if(user.getSessions().contains(sessionToken)){
+                try {
+                    String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                    if (!user.getPassword().equals(encryptedPassword)) {
+                        return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                    }
+                } catch (Exception e) {
+                    return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+                }
+
                 try {
                     String salt = EncryptionUtil.getNewSalt();
                     user.setSalt(salt);
@@ -181,7 +192,6 @@ public class UserController {
         } else {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");
         }
-
         return response;
     }
 

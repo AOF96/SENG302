@@ -18,15 +18,23 @@
 
 <script>
   import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
+  import axios from 'axios'
+  import {
+      userInfo
+  } from "../../globals";
+
+
+  const SERVER_URL = 'http://localhost:9499';
   export default {
     components: {
       UserSettingsMenu
     },
     data () {
       return {
-        password: '',
-        newPassword: '',
-        confirmPassword: '',
+          profileId: userInfo.profileId,
+          password: '',
+          newPassword: '',
+          confirmPassword: '',
       }
     },
     computed: {
@@ -47,6 +55,12 @@
             if(this.validation.length){
               if(this.validation.number){
                 if(this.validation.uppercase){
+                    console.log("Request sent");
+                    axios.put(SERVER_URL + '/profiles/' + userInfo.profileId + '/password', {
+                        old_password: this.password,
+                        new_password: this.newPassword,
+                        repeat_password: this.confirmPassword
+                    });
                   alert("Password updated")
                 }else{alert("Must contain at least one uppercase character.");}
               }else{alert("Must contain at least one number.");}
