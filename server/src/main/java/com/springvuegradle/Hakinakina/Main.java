@@ -40,7 +40,7 @@ public class Main {
 	}
 
 	@Bean
-	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository) {
+	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository) {
 		return args -> {
 			URL url = new URL("https://restcountries.eu/rest/v2/all");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();

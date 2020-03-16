@@ -56,7 +56,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -77,7 +77,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -198,7 +198,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -218,7 +218,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -237,7 +237,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -257,7 +257,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -277,7 +277,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -323,7 +323,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -349,7 +349,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -375,7 +375,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 
@@ -401,7 +401,7 @@ public class UserControllerTests {
                 "  \"password\": \"jacky'sSecuredPwd\",\n" +
                 "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
                 "  \"date_of_birth\": \"\",\n" +
-                "  \"gender\": \"male\",\n" +
+                "  \"gender\": \"Male\",\n" +
                 "  \"fitness\": \"3\"\n"  +
                 "}";
 

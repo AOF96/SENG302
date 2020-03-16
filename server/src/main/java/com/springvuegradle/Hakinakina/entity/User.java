@@ -3,7 +3,6 @@ package com.springvuegradle.Hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import com.springvuegradle.Hakinakina.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -78,6 +77,10 @@ public class User {
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
     private Set<Email> emails = new HashSet<>();
 
+    @JsonProperty("session_tokens")
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    private Set<Session> sessionToken = new HashSet<>();
+
     protected User() {}
 
     public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
@@ -90,6 +93,7 @@ public class User {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
+        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {
@@ -107,6 +111,11 @@ public class User {
     public void addEmail(Email email) {
         emails.add(email);
         email.setUser(this);
+    }
+
+    public void addSession(Session session) {
+        sessionToken.add(session);
+        session.setUser(this);
     }
 
     public void removeEmail(Email email) {
@@ -129,6 +138,10 @@ public class User {
 
     public Set<Email> getEmails() {
         return emails;
+    }
+
+    public Set<Session> getSessions() {
+        return sessionToken;
     }
 
     public String getPrimaryEmail() {

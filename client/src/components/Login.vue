@@ -26,7 +26,6 @@
 </template>
 
 <script>
-
     import axios from 'axios'
     import router from "../router";
     //import {getEncryptPassword} from "../common.js"
@@ -80,12 +79,15 @@
                         }, (error) => {
                             console.log(error);
                         })
-                } else {
-                    alert("Please fill all required fields");
                 }
-            }
+            },
+            setCookie(cname, cvalue, exdays) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                var expires = "expires=" + d.toUTCString();
+                document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            },
         }
+
     }
-
-
 </script>

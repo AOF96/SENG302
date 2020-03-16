@@ -86,13 +86,13 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 import router from "../router";
 import { mapState, mapActions } from 'vuex'
 // import {
 //   getEncryptPassword
 // } from "../common.js"
-const SERVER_URL = 'http://localhost:9499'
+const SERVER_URL = 'http://localhost:9499';
 
 import NavBar from '@/components/NavBar'
 
@@ -160,31 +160,31 @@ export default {
     },
 
     all_err_msg() {
-      const validation = this.validation
-      const fields = Object.keys(validation)
+      const validation = this.validation;
+      const fields = Object.keys(validation);
 
-      let err_msg = DEFAULT_ALL_ERR_MSG
+      let err_msg = DEFAULT_ALL_ERR_MSG;
       for (let i in fields) {
-        const field = fields[i]
+        const field = fields[i];
         if (!validation[field]) {
-          err_msg += '\n'
+          err_msg += '\n';
           err_msg += this.err_msg[field]
         }
-        const keys = Object.keys(validation[field])
+        const keys = Object.keys(validation[field]);
         for (let i in keys) {
-          const key = keys[i]
+          const key = keys[i];
           if (!validation[field][key]) {
-            err_msg += '\n'
-            err_msg += this.err_msg[field][key]
+            err_msg += '\n';
+            err_msg += this.err_msg[field][key];
           }
         }
       }
-      return err_msg
+      return err_msg;
     },
 
     valid() {
-      const valid = (this.all_err_msg == DEFAULT_ALL_ERR_MSG)
-      return valid
+      const valid = (this.all_err_msg == DEFAULT_ALL_ERR_MSG);
+      return valid;
     }
   },
 
@@ -192,8 +192,8 @@ export default {
     ...mapActions(['createUserProfile']),
     submitSignUp() {
       if (!this.valid) {
-        alert(this.all_err_msg)
-        this.failed = true
+        alert(this.all_err_msg);
+        this.failed = true;
         return
       }
 
