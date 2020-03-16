@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +121,7 @@ public class UserController {
      * @return isLogin Whether the attempt was correct or not.
      */
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody String jsonString) {
+    public ResponseEntity checkLogin(@RequestBody String jsonString, HttpServletResponse response) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
@@ -173,33 +172,46 @@ public class UserController {
         }
     }
 
-    @PostMapping("/editpassword")
-    public ResponseEntity editPassword(@RequestBody String jsonString) {
+    @PutMapping("/profiles/{profileId}/password")
+    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @RequestHeader("Authorization") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        long id = Long.valueOf((int) json.get("profile_id"));
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        ResponseEntity response = null;
+        ResponseEntity response;
 
-        System.out.println(jsonString);
+        if (!newPassword.equals(repeatPassword)) {
+            return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
+        }
 
-        Optional<User> getUser = userRepository.findById(id);
+        Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
-            try {
-                String salt = EncryptionUtil.getNewSalt();
-                user.setSalt(salt);
-                user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
-                userRepository.save(user);
-                response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
-            } catch (Exception e) {
+            if(user.getSessions().contains(sessionToken)){
+                try {
+                    String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                    if (!user.getPassword().equals(encryptedPassword)) {
+                        return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                    }
+                } catch (Exception e) {
+                    return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+                }
+
+                try {
+                    String salt = EncryptionUtil.getNewSalt();
+                    user.setSalt(salt);
+                    user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                    userRepository.save(user);
+                    response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
+                } catch (Exception e) {
+                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                }
+            }else{
                 response = responseHandler.formatErrorResponse(400, "Error while creating new password");
             }
         } else {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");
         }
-
         return response;
     }
 
