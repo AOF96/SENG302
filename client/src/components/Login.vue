@@ -7,11 +7,11 @@
         <h2>Sign in to your account</h2>
         <form @submit.prevent>
           <div class="signup-row">
-            <input type="email" v-model="email" class="loginInput-email" name="email" placeholder="Email"
+            <input type="email" v-model="user.email" class="loginInput-email" name="email" placeholder="Email"
               required>
           </div>
           <div class="signup-row">
-            <input type="password" v-model="password" class="loginInput-password" name="password"
+            <input type="password" v-model="user.password" class="loginInput-password" name="password"
               placeholder="Password" required>
           </div>
           <hr>
@@ -28,30 +28,39 @@
 <script>
   import axios from 'axios'
   import router from "../router";
+  import { mapGetters, mapActions} from 'vuex';
   //import {getEncryptPassword} from "../common.js"
 
   import NavBar from '@/components/NavBar'
   // import {userInfo} from '../globals';
 
-  const SERVER_URL = 'http://localhost:9499'
+  const SERVER_URL = 'http://localhost:9499';
 
   export default {
     name: 'Login',
     components: {
       NavBar
     },
-    data() {
-      return {
-        email: "",
-        password: ""
-      }
+    // data() {
+    //   return {
+    //     email: "",
+    //     password: ""
+    //   }
+    // },
+    computed: {
+      ...mapGetters(['user']),
+
     },
     methods: {
+      ...mapActions(['updateUserProfile']),
+
       submitLogin() {
-        if (this.email.trim(), this.password.trim()) {
+        console.log(this.user.email.trim());
+        console.log(this.user.password.trim());
+        if (this.user.email.trim(), this.user.password.trim()) {
           axios.post(SERVER_URL + '/login', {
-            email: this.email,
-            password: this.password,
+            email: this.user.email,
+            password: this.user.password,
           })
             .then((response) => {
               var responseData = response.data;
@@ -60,6 +69,11 @@
               if (responseCode == 201) {
                 console.log(responseData);
                 console.log(responseCode);
+
+
+                this.updateUserProfile(responseData[0]);
+
+
 
                 // userInfo.profile_id = responseData.profile_id;
                 // userInfo.firstname = responseData.firstname;
