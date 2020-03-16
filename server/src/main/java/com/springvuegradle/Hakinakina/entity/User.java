@@ -21,34 +21,45 @@ import java.util.Set;
 @JsonDeserialize(using=UserDeserializer.class)
 public class User {
     @Id @GeneratedValue
+    @JsonProperty("profile_id")
+    @Column(name = "user_id")
     private Long userID;
 
     @JsonProperty("firstname")
+    @Column(name = "first_name")
     private String firstName;
 
     @JsonProperty("lastname")
+    @Column(name = "last_name")
     private String lastName;
 
     @JsonProperty("middlename")
+    @Column(name = "middle_name")
     private String middleName;
 
+    @JsonProperty("gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
 
     private String bio;
 
     @JsonProperty("nickname")
+    @Column(name = "nick_name")
     private String nickName;
 
     @JsonProperty("date_of_birth")
+    @Column(name = "date_of_birth")
+    @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @Column(name = "fitness_level")
     private int fitnessLevel;
 
-    @JsonProperty("passport")
+    @JsonProperty("passports")
     @JsonSerialize(using=PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
@@ -57,7 +68,8 @@ public class User {
     @JsonIgnore
     private String salt;
 
-    @JsonProperty("email")
+    @JsonProperty("primary_email")
+    @Column(name = "primary_email")
     private String primaryEmail;
 
     @JsonProperty("additional_email")
@@ -65,14 +77,23 @@ public class User {
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
     private Set<Email> emails = new HashSet<>();
 
+    @JsonProperty("session_tokens")
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    private Set<Session> sessionToken = new HashSet<>();
+
     protected User() {}
 
-    public User(String firstName, String lastName, String primaryEmail, Date birthDate, Gender gender, int fitnessLevel, String password) {
+    public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        this.birthDate = birthDate;
+        if (birthDate.equals("")) {
+            this.birthDate = null;
+        } else {
+            this.birthDate = Date.valueOf(birthDate);
+        }
         this.fitnessLevel = fitnessLevel;
+        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {
@@ -86,6 +107,11 @@ public class User {
     public void addEmail(Email email) {
         emails.add(email);
         email.setUser(this);
+    }
+
+    public void addSession(Session session) {
+        sessionToken.add(session);
+        session.setUser(this);
     }
 
     public void removeEmail(Email email) {
@@ -108,6 +134,10 @@ public class User {
 
     public Set<Email> getEmails() {
         return emails;
+    }
+
+    public Set<Session> getSessions() {
+        return sessionToken;
     }
 
     public String getPrimaryEmail() {

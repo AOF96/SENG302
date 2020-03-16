@@ -1,7 +1,8 @@
 export const userInfo = {
-    profileId: 1050,
+    profileId: null,
     firstname: null,
     lastname:null,
+    middlename:null,
     nickname:null,
     gender:null,
     email:null,
@@ -10,5 +11,5 @@ export const userInfo = {
     bio: null,
     fitness: 3,
     passports: [],
-    isLogin: true
+    isLogin: false
 }

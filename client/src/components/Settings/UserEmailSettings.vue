@@ -43,11 +43,8 @@
 
 <script>
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
-import {
-  userInfo
-} from "../../globals";
-import axios from "axios";
-const SERVER_URL = 'localhost:9499';
+import {userInfo} from "../../globals";
+import {apiUser} from "../../api";
 
 export default {
   components: {
@@ -85,15 +82,7 @@ export default {
         setTimeout(function() {
             tempThis.textInput = "";
         }, 10);
-        axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
-            primary_email: this.primary_email,
-            aditional_email: this.secondary_emails
-        })
-        .then((response) => {
-            console.log(response);
-        }, (error) => {
-            console.log(error);
-        });
+        apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
       }
     },
 
@@ -109,15 +98,7 @@ export default {
       this.secondary_emails.push(this.primary_email);
       this.primary_email = secondaryEmail;
       this.updateGlobals();
-      axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
-          primary_email: this.primary_email,
-          aditional_email: this.secondary_emails
-      })
-      .then((response) => {
-          console.log(response);
-      }, (error) => {
-          console.log(error);
-      });
+      apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
     },
 
     openEmailEditBox(secondaryEmail) {
@@ -133,15 +114,7 @@ export default {
         const index = this.secondary_emails.indexOf(this.tempOldEmail);
         this.secondary_emails[index] = this.editEmailInput;
         this.showEditBox = false;
-        axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
-            primary_email: this.primary_email,
-            aditional_email: this.secondary_emails
-        })
-        .then((response) => {
-            console.log(response);
-        }, (error) => {
-            console.log(error);
-        });
+        apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
       }
     },
 
@@ -159,15 +132,7 @@ export default {
         this.showButton = true;
       }
       this.updateGlobals();
-      axios.post(SERVER_URL + '/profiles/'+userInfo.profileId+'/emails', {
-          primary_email: this.primary_email,
-          aditional_email: this.secondary_emails
-      })
-      .then((response) => {
-          console.log(response);
-      }, (error) => {
-          console.log(error);
-      });
+      apiUser.updateEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
     }
   }
 }

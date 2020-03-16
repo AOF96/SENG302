@@ -26,15 +26,14 @@
 </template>
 
 <script>
-
     import axios from 'axios'
     import router from "../router";
-    import {getEncryptPassword} from "../common.js"
+    //import {getEncryptPassword} from "../common.js"
 
     import NavBar from '@/components/NavBar'
     import {userInfo} from '../globals';
 
-    const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io'
+    const SERVER_URL = 'http://localhost:9499'
 
     export default {
         name: 'Login',
@@ -48,54 +47,49 @@
             }
         },
 
-        methods: {
-            submitLogin() {
-                if (this.email.trim(), this.password.trim()) {
-                    axios.post(SERVER_URL + '/login', {
-                        email: this.email,
-                        password: getEncryptPassword(this.password),
-                    })
-                        .then((response) => {
-                            var users = response.data;
-                            var registeredUser = false;
-
-                            if  (/[^\s]+@[^\s]+/.test(this.email)) {
-
-                                for (var i = 0; i < users.length; i++) {
-                                    var currentUser = users[i];
-
-                                    // Checking if the user exists
-                                    if (this.email == currentUser.email) {
-                                        registeredUser = true;
-                                        if (getEncryptPassword(this.password) == currentUser.password) {
-                                            userInfo.firstname = currentUser.firstname,
-                                                userInfo.lastname = currentUser.lastname,
-                                                userInfo.middlename = currentUser.middlename,
-                                                userInfo.nickname = currentUser.nickname,
-                                                userInfo.gender = currentUser.gender,
-                                                userInfo.email = currentUser.email,
-                                                userInfo.birthday = currentUser.birthday,
-                                                userInfo.isLogin = true
-
-                                            console.log(response.data.msg1);
-                                            router.push('Profile');
-                                        } else {
-                                            alert("Invalid password or email");
-                                        }
-                                    }
-                                }
-                                if (!registeredUser) {
-                                    alert('Email entered is not registered');
-                                }
-                            }
-                        }, (error) => {
-                            console.log(error);
+        methods:
+            {
+                setCookie(cname, cvalue, exdays) {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                    var expires = "expires=" + d.toUTCString();
+                    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+                },
+                submitLogin() {
+                    if (this.email.trim(), this.password.trim()) {
+                        axios.post(SERVER_URL + '/login', {
+                            email: this.email,
+                            password: this.password,
                         })
-                } else {
-                    alert("Please fill all required fields");
+                            .then((response) => {
+                                var responseData = response.data[0];
+                                var responseCode = response.status;
+
+                                if (responseCode == 201) {
+                                    var token = response.data[1].sessionToken;
+                                    userInfo.profileId = responseData.profile_id;
+                                    userInfo.firstname = responseData.firstname;
+                                    userInfo.lastname = responseData.lastname;
+                                    userInfo.middlename = responseData.middlename;
+                                    userInfo.nickname = responseData.nickname;
+                                    userInfo.gender = responseData.gender;
+                                    userInfo.email = responseData.primary_email;
+                                    userInfo.birthday = responseData.date_of_birth;
+                                    userInfo.isLogin = true;
+                                    this.setCookie("s_id", token, 365);
+                                    router.push('Profile');
+                                } else {
+                                    alert(responseData);
+                                }
+                            }, (error) => {
+                                console.log(error);
+                            })
+                    } else {
+                        alert("Please fill all required fields");
+                    }
                 }
             }
-        }
+
     }
 
 
