@@ -173,7 +173,7 @@ public class UserController {
                 try {
                     String salt = EncryptionUtil.getNewSalt();
                     user.setSalt(salt);
-                    user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                    user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
                     userRepository.save(user);
                     response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
                 } catch (Exception e) {

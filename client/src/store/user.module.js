@@ -74,27 +74,18 @@ const mutations = {
       state.user.isLogin = data.isLogin
     }
   },
-  userLogout() {
-    console.log(state.user);
-    state.user.isLogin = false;
-    console.log(state.user);
+  userLogin(state) {
+    state.user.isLogin = true
   },
-
+  userLogout() {
+    state.user.isLogin = false;
+  },
   setUserPassword(state, data) {
     if(data.password != ""){
       state.user.password = data.password
     }
   },
-  login(state) {
-    state.user.isLogin = true
-  }
-
-};
-
-
-
-
-
+}
 
 const actions = {
   createUserProfile({ commit }, data) {
@@ -107,8 +98,8 @@ const actions = {
     commit('setUserBirthday', data)
     commit('setUserBio', data)
     commit('setUserPassword', data)
-    commit('login')
-    alert("Profile info updated.");
+    commit('userLogin')
+    alert("Profile info updated.")
   },
   updateUserProfile({ commit }, data) {
     commit('setUserFirstName', data)
@@ -118,15 +109,16 @@ const actions = {
     commit('setUserGender', data)
     commit('setUserBirthday', data)
     commit('setUserBio', data)
-    alert("Profile info updated.");
+    alert("Profile info updated.")
   },
   updateUserEmail({ commit }, data) {
     commit('setUserEmail', data)
     commit('setUserSecondaryEmails', data)
-    alert("Email updated.");
+    alert("Email updated.")
   },
-  logout({commit, data}) {
-    commit('userLogout', data);
+  logout({ commit }) {
+    console.log('logged out')
+    commit('userLogout')
   }
 };
 
