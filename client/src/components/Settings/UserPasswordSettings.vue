@@ -20,7 +20,8 @@
   import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
   import axios from 'axios'
   import {
-      userInfo
+      userInfo,
+      helper
   } from "../../globals";
 
 
@@ -58,6 +59,7 @@
                     axios(SERVER_URL + '/profiles/' + userInfo.profileId + '/password', {
                       method: "put",
                       withCredentials: true,
+                      headers: {'Authorization': helper.getCookie("s_id")},
                       data: {
                           old_password: this.password,
                           new_password: this.newPassword,

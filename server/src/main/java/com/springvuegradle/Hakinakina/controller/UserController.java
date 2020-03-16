@@ -153,7 +153,7 @@ public class UserController {
     }
 
     @PutMapping("/profiles/{profileId}/password")
-    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue(name = "s_id") String sessionToken) {
+    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @RequestHeader("Authorization") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
