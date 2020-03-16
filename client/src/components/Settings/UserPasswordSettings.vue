@@ -55,12 +55,16 @@
             if(this.validation.length){
               if(this.validation.number){
                 if(this.validation.uppercase){
-                    console.log("Request sent");
-                    axios.put(SERVER_URL + '/profiles/' + userInfo.profileId + '/password', {
-                        old_password: this.password,
-                        new_password: this.newPassword,
-                        repeat_password: this.confirmPassword
+                    axios(SERVER_URL + '/profiles/' + userInfo.profileId + '/password', {
+                      method: "put",
+                      withCredentials: true,
+                      data: {
+                          old_password: this.password,
+                          new_password: this.newPassword,
+                          repeat_password: this.confirmPassword
+                      }
                     });
+                    console.log("Request sent");
                   alert("Password updated")
                 }else{alert("Must contain at least one uppercase character.");}
               }else{alert("Must contain at least one number.");}
