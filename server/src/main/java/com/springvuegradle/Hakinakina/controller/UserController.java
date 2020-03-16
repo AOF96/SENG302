@@ -122,7 +122,7 @@ public class UserController {
      * @return isLogin Whether the attempt was correct or not.
      */
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody String jsonString, HttpServletResponse response) {
+    public ResponseEntity checkLogin(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
@@ -153,6 +153,26 @@ public class UserController {
         }
     }
 
+    /**
+     * Logs out the current user
+     *
+     * @param jsonString the request header passed as a string
+     * @return message and status to notify if log out was successful
+     * */
+    @PostMapping("/logout")
+    public ResponseEntity checkLogout(@RequestHeader String jsonString) {
+        Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
+        //TODO Get the token from the request header, need to specify the cookie name that we want
+        String token = (String) json.get("cookie");
+        try {
+            sessionRepository.removeToken(token);
+            return new ResponseEntity("User logged out", HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "couldn't log out");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
+
     @PostMapping("/editpassword")
     public ResponseEntity editPassword(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
@@ -161,6 +181,8 @@ public class UserController {
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
         ResponseEntity response = null;
+
+        System.out.println(jsonString);
 
         Optional<User> getUser = userRepository.findById(id);
         if (getUser.isPresent()) {
