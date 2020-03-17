@@ -65,7 +65,11 @@ public class UserController {
     }
 
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user) {
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId) {
+        user.setUser_id(profileId);
+        user.setSalt(userRepository.findById(profileId).get().getSalt());
+        user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
+        userRepository.save(user);
         return userService.validateEditUser(user);
     }
 
@@ -180,7 +184,7 @@ public class UserController {
                 try {
                     String salt = EncryptionUtil.getNewSalt();
                     user.setSalt(salt);
-                    user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                    user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
                     userRepository.save(user);
                     response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
                 } catch (Exception e) {
