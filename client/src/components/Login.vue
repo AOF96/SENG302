@@ -59,7 +59,7 @@
               if (responseCode == 201) {
                 console.log(responseData);
                 console.log(responseCode);
-
+                this.setCookie("s_id", responseData[1]["sessionToken"], 365)
                 this.updateUserProfile(responseData[0]);
                 router.push('Profile');
               } else {
