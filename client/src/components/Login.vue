@@ -7,7 +7,7 @@
         <h2>Sign in to your account</h2>
         <form @submit.prevent>
           <div class="signup-row">
-            <input type="email" v-model="user.email" class="loginInput-email" name="email" placeholder="Email"
+            <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
               required>
           </div>
           <div class="signup-row">
@@ -47,9 +47,9 @@
       ...mapActions(['updateUserProfile']),
 
       submitLogin() {
-        if (this.user.email.trim(), this.user.password.trim()) {
+        if (this.user.primary_email.trim(), this.user.password.trim()) {
           axios.post(SERVER_URL + '/login', {
-            email: this.user.email,
+            email: this.user.primary_email,
             password: this.user.password,
           })
             .then((response) => {

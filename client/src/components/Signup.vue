@@ -8,15 +8,15 @@
 
       <form @submit.prevent>
         <div class="signup-row">
-          <input class="fmName" v-model="user.firstName" name="fname" type="text" placeholder="First Name*" required>
-          <input class="fmName" v-model="user.middleName" name="middlename" type="text" placeholder="Middle Name*" required>
+          <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
+          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name*" required>
         </div>
 
         <div class="signup-row">
-          <input class="signupInput-lastname" v-model="user.lastName" name="lname" type="text" placeholder="Last Name*" required>
+          <input class="signupInput-lastname" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
         </div>
         <div class="signup-row">
-          <input v-model="user.nickName" name="nickname" type="text" placeholder="Nickname">
+          <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
           <select v-model="user.gender" name="gender" placeholder="Gender"  value="Gender" required>
             <option selected disabled hidden>Gender</option>
             <option>Non-Binary</option>
@@ -30,16 +30,16 @@
         </div>
 
         <div class="signup-row">
-          <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
+          <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
         </div>
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
-          <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
+          <input v-model="user.date_of_birth" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
         </div>
 
         <div class="signup-row">
         <h3 id="fitnessLevelText">Fitness Level</h3>
-        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+        <select id="levels" v-model="user.fitnessLevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
        <option selected disabled hidden>Select your level</option>
           <option>0</option>
           <option>1</option>
@@ -144,12 +144,12 @@ export default {
 
     validation() {
       return {
-        firstname: this.user.firstName != '',
-        lastname: this.user.lastName != '',
+        firstname: this.user.firstname != '',
+        lastname: this.user.lastname != '',
         gender: this.user.gender != 'Gender',
-        email: /[^\s]+@[^\s]+/.test(this.user.email),
-        birthday: this.user.birthday != '',
-        fitnesslevel: this.user.fitnesslevel != 'FitnessLevel',
+        email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
+        birthday: this.user.date_of_birth != '',
+        fitnesslevel: this.user.fitnessLevel != 'FitnessLevel',
         password: {
           match: this.password1 == this.password2,
           length: /.{8,}/.test(this.password1),
@@ -202,16 +202,16 @@ export default {
       this.createUserProfile(this.user)
 
       axios.post(SERVER_URL + '/profiles', {
-          firstname: this.user.firstName,
-          lastname: this.user.lastName,
-          middlename: this.user.middleName,
-          nickname: this.user.nickName,
-          primary_email: this.user.email,
+          firstname: this.user.firstname,
+          lastname: this.user.lastname,
+          middlename: this.user.middlename,
+          nickname: this.user.nickname,
+          primary_email: this.user.primary_email,
           password: this.password1,
           bio: this.user.bio,
-          date_of_birth: this.user.birthday,
+          date_of_birth: this.user.date_of_birth,
           gender: this.user.gender,
-          fitnesslevel: this.user.fitnesslevel
+          fitnessLevel: this.user.fitnessLevel
         })
         .then((response) => {
           console.log(response);

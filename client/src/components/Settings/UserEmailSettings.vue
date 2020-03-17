@@ -6,10 +6,10 @@
         <hr>
         <h3>Primary email</h3>
         <div class="emailBlock">
-            <h4>{{ user.email }}</h4>
+            <h4>{{ user.primary_email }}</h4>
         </div>
         <h3>Secondary emails:</h3>
-        <div class="emailBlock emailSecondary" v-for="email in user.secondaryEmails" v-bind:key="email">
+        <div class="emailBlock emailSecondary" v-for="email in user.additional_email" v-bind:key="email">
             <h4>{{email}}</h4>
             <button class="setPrimaryButton" v-on:click="updatePrimaryEmail(email)">Set Primary</button>
             <svg class="removeEmailButton" v-on:click="removeEmail(email)" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">

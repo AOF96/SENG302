@@ -1,16 +1,16 @@
 const state = {
   user: {
-    firstName: null,
-    lastName: null,
-    middleName: null,
-    nickName: null,
+    firstname: null,
+    lastname: null,
+    middlename: null,
+    nickname: null,
     gender: null,
-    email: null,
-    secondaryEmails: [],
-    birthday: null,
+    primary_email: null,
+    additional_email: [],
+    date_of_birth: null,
     bio: null,
-    isLogin: true,
-    fitnesslevel: null,
+    isLogin: false,
+    fitnessLevel: null,
     profile_id: null,
     password: null,
     passports: []
@@ -33,19 +33,19 @@ const mutations = {
   },
   setUserFirstName(state, data) {
     if(data.firstname != ""){
-      state.user.firstName = data.firstname;
+      state.user.firstname = data.firstname;
     }
   },
   setUserLastName(state, data) {
     if(data.lastname != ""){
-      state.user.lastName = data.lastName;
+      state.user.lastname = data.lastname;
     }
   },
   setUserMiddleName(state, data) {
-    state.user.middleName = data.middlename;
+    state.user.middlename = data.middlename;
   },
   setUserNickName(state, data) {
-    state.user.nickName = data.nickname;
+    state.user.nickname = data.nickname;
   },
   setUserGender(state, data) {
     if(data.gender != ""){
@@ -54,15 +54,15 @@ const mutations = {
   },
   setUserEmail(state, data) {
     if(data.primary_email != ""){
-      state.user.email = data.primary_email;
+      state.user.primary_email = data.primary_email;
     }
   },
   setUserSecondaryEmails(state, data) {
-    state.user.secondaryEmails = data.additional_email;
+    state.user.additional_email = data.additional_email;
   },
   setUserBirthday(state, data) {
     if(data.birthday != ""){
-      state.user.birthday = data.date_of_birth;
+      state.user.date_of_birth = data.date_of_birth;
     }
   },
   setUserBio(state, data) {
@@ -75,7 +75,7 @@ const mutations = {
   },
 
   setUserFitnessLevel(state, data) {
-    state.user.fitnesslevel = data.fitnessLevel;
+    state.user.fitnessLevel = data.fitnessLevel;
   },
 
   setUserIsLogin(state, data) {
