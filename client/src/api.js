@@ -30,5 +30,7 @@ export const apiUser = {
   editEmail: (user_id, primary_email, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
     primary_email: primary_email,
     additional_email: additional_email
-  })
+  }),
+  //Get all emails
+  getAllEmails: () => instance.get('/emails')
 }

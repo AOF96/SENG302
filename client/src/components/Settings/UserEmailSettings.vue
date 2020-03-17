@@ -59,7 +59,8 @@ export default {
       newEmail: '',
       tempOldEmail: '',
       editEmailInput: '',
-      showEditBox: false
+      showEditBox: false,
+      emails: apiUser.getAllEmails()
     }
   },
   methods: {
@@ -72,8 +73,8 @@ export default {
        Adds a new email into the secondary emails lists. Prevents the user from entering empty text or from trying to
        enter an existing email.
     */
-    addEmail(textInput) {
-      if (this.secondary_emails.includes(textInput) || textInput == this.primary_email) {
+    addEmail(textInput){
+      if (this.secondary_emails.includes(textInput) || textInput == this.primary_email || this.emails.includes(textInput)) {
         alert("Please enter an email that has not been used before");
       } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
         this.secondary_emails.push(this.textInput);
@@ -90,7 +91,7 @@ export default {
      Function that updates the primary email of an user by picking one from the secondary emails list and adding the
      previous primary email to the secondary list.
      */
-    updatePrimaryEmail(secondaryEmail) {
+    updatePrimaryEmail(secondaryEmail){
       const index = this.secondary_emails.indexOf(secondaryEmail);
       if (index > -1) {
         this.secondary_emails.splice(index, 1);
