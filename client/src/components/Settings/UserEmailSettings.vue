@@ -74,7 +74,7 @@ export default {
        enter an existing email.
     */
     addEmail(textInput){
-      if (this.secondary_emails.includes(textInput) || textInput == this.primary_email || this.emails.includes(textInput)) {
+      if (this.secondary_emails.includes(textInput) || textInput == this.primary_email) {
         alert("Please enter an email that has not been used before");
       } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
         this.secondary_emails.push(this.textInput);
