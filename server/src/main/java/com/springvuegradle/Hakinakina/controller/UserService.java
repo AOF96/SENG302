@@ -7,6 +7,7 @@ import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.*;
@@ -340,6 +341,10 @@ public class UserService {
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(200, "User updated");
         }
+    }
+
+    public ResponseEntity getAllEmails() {
+        return responseHandler.formatSuccessResponse(200, "Emails found");
     }
 
 }
