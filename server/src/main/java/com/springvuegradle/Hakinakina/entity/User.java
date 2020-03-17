@@ -98,7 +98,11 @@ public class User {
 
         try {
             this.salt = EncryptionUtil.getNewSalt();
-            this.password = EncryptionUtil.getEncryptedPassword(password, this.salt);
+            if (password == null) {
+                this.password = null;
+            } else {
+                this.password = EncryptionUtil.getEncryptedPassword(password, this.salt);
+            }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Error while creating password.");
         }
@@ -192,7 +196,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setEncryptedPassword(String password) {
         this.password = password;
     }
 
