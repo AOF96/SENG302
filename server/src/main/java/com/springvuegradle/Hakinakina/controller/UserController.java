@@ -125,7 +125,7 @@ public class UserController {
      * @return isLogin Whether the attempt was correct or not.
      */
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody String jsonString, HttpServletResponse response) {
+    public ResponseEntity checkLogin(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
@@ -156,18 +156,15 @@ public class UserController {
     }
 
     /**
-     * Logs out the current user
+     * Logs out the current user and deletes the entry in the Session table
      *
-     * @param jsonString the request header passed as a string
+     * @param sessionToken token stored in the cookie to identify the user
      * @return message and status to notify if log out was successful
      * */
     @PostMapping("/logout")
-    public ResponseEntity checkLogout(@RequestHeader String jsonString) {
-        Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        //TODO Get the token from the request header, need to specify the cookie name that we want
-        String token = (String) json.get("cookie");
+    public ResponseEntity checkLogout(@CookieValue("s_id") String sessionToken) {
         try {
-            sessionRepository.removeToken(token);
+            sessionRepository.removeToken(sessionToken);
             return new ResponseEntity("User logged out", HttpStatus.OK);
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "couldn't log out");
@@ -175,6 +172,11 @@ public class UserController {
         }
     }
 
+    /**
+     *  Processes to edit user password
+     *
+     * @param sessionToken token stored in the cookie to identify the user
+     * */
     @PutMapping("/profiles/{profileId}/password")
     public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);

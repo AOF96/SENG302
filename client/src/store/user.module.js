@@ -1,3 +1,5 @@
+import {apiUser} from "../api";
+
 const state = {
   user: {
     firstname: null,
@@ -95,6 +97,7 @@ const mutations = {
   },
   userLogout() {
     state.user.isLogin = false;
+    apiUser.logout();
   },
   setUserPassword(state, data) {
     if(data.password != ""){
