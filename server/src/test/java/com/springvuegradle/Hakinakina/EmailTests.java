@@ -20,21 +20,20 @@ public class EmailTests {
     @Autowired
     private EmailRepository emailRepository;
 
-    @Test
-    public void testInsertingSecondaryEmail() {
-        Email email = new Email("johnsmith@gmail.com");
-        emailRepository.save(email);
-
-        long millis=System.currentTimeMillis();
-        java.sql.Date date = new java.sql.Date(millis);
-        User user = new User("John", "Smith", "email@email.com", "1985-12-20", Gender.MALE, 3,
-                "JohnS");
-        userRepository.save(user);
-
-        user.addEmail(email);
-        userRepository.save(user);
-
-        assertEquals("[johnsmith@gmail.com]", user.getEmails().toString());
-    }
-
+//    @Test
+//    public void testInsertingSecondaryEmail() {
+//        Email email = new Email("johnsmith@gmail.com");
+//        emailRepository.save(email);
+//
+//        long millis=System.currentTimeMillis();
+//        java.sql.Date date = new java.sql.Date(millis);
+//        User user = new User("John", "Smith", "email@email.com", "1985-12-20", Gender.MALE, 3,
+//                "JohnS");
+//        userRepository.save(user);
+//
+//        user.addEmail(email);
+//        userRepository.save(user);
+//
+//        assertEquals("[johnsmith@gmail.com]", user.getEmails().toString());
+//    }
 }

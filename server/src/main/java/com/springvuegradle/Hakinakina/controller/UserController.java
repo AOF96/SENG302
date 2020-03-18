@@ -4,15 +4,18 @@ import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 
 /**
  * Rest controller class for controlling requests about Users
@@ -23,6 +26,7 @@ public class UserController {
     public UserRepository userRepository;
     public PassportCountryRepository countryRepository;
     public EmailRepository emailRepository;
+    public SessionRepository sessionRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private UserService userService;
@@ -33,11 +37,13 @@ public class UserController {
      * @param userRepository    The repository containing Users
      * @param countryRepository The repository containing PassportCountries
      * @param emailRepository   The repository containing Emails
+     * @param sessionRepository The repository containing Sessions
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, UserService userService) {
+    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
+        this.sessionRepository = sessionRepository;
         this.userService = userService;
     }
 
@@ -124,53 +130,94 @@ public class UserController {
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        ResponseEntity response = null;
-
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
-            response = responseHandler.formatErrorResponse(400, "Email does not exist");
+            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
         }
 
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-                response = responseHandler.formatSuccessResponse(201, user.toJson());
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                sessionRepository.insertToken(sessionToken, user.getUser_id());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             } else {
-                response = responseHandler.formatErrorResponse(400, "Incorrect password");
+                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "can't check password");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
         }
-
-        return response;
     }
 
-    @PostMapping("/editpassword")
-    public ResponseEntity editPassword(@RequestBody String jsonString) {
+    /**
+     * Logs out the current user and deletes the entry in the Session table
+     *
+     * @param sessionToken token stored in the cookie to identify the user
+     * @return message and status to notify if log out was successful
+     * */
+    @PostMapping("/logout")
+    public ResponseEntity checkLogout(@CookieValue("s_id") String sessionToken) {
+        try {
+            sessionRepository.removeToken(sessionToken);
+            return new ResponseEntity("User logged out", HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "couldn't log out");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     *  Processes to edit user password
+     *
+     * @param sessionToken token stored in the cookie to identify the user
+     * */
+    @PutMapping("/profiles/{profileId}/password")
+    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        long id = Long.valueOf((int) json.get("profile_id"));
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        ResponseEntity response = null;
+        ResponseEntity response;
 
-        Optional<User> getUser = userRepository.findById(id);
+        if (!newPassword.equals(repeatPassword)) {
+            return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
+        }
+
+        Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
-            try {
-                String salt = EncryptionUtil.getNewSalt();
-                user.setSalt(salt);
-                user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
-                userRepository.save(user);
-                response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
-            } catch (Exception e) {
+            //TODO Add method to check token
+            if(false){
+                try {
+                    String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                    if (!user.getPassword().equals(encryptedPassword)) {
+                        return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                    }
+                } catch (Exception e) {
+                    return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+                }
+
+                try {
+                    String salt = EncryptionUtil.getNewSalt();
+                    user.setSalt(salt);
+                    user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                    userRepository.save(user);
+                    response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
+                } catch (Exception e) {
+                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                }
+            }else{
                 response = responseHandler.formatErrorResponse(400, "Error while creating new password");
             }
         } else {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");
         }
-
         return response;
     }
 

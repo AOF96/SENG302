@@ -3,7 +3,6 @@ package com.springvuegradle.Hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import com.springvuegradle.Hakinakina.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -23,15 +22,19 @@ import java.util.Set;
 public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")
+    @Column(name = "user_id")
     private Long userID;
 
     @JsonProperty("firstname")
+    @Column(name = "first_name")
     private String firstName;
 
     @JsonProperty("lastname")
+    @Column(name = "last_name")
     private String lastName;
 
     @JsonProperty("middlename")
+    @Column(name = "middle_name")
     private String middleName;
 
     @JsonProperty("gender")
@@ -45,12 +48,15 @@ public class User {
     private String bio;
 
     @JsonProperty("nickname")
+    @Column(name = "nick_name")
     private String nickName;
 
     @JsonProperty("date_of_birth")
+    @Column(name = "date_of_birth")
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @Column(name = "fitness_level")
     private int fitnessLevel;
 
     @JsonProperty("passports")
@@ -63,11 +69,12 @@ public class User {
     private String salt;
 
     @JsonProperty("primary_email")
+    @Column(name = "primary_email")
     private String primaryEmail;
 
     @JsonProperty("additional_email")
     @JsonSerialize(using=EmailSerializer.class)
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
 
     protected User() {}
@@ -82,6 +89,7 @@ public class User {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
+        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {

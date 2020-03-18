@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "Passport_Country")
 public class PassportCountry {
     @Id
+    @Column(name = "country_id")
     private String countryId;
 
     private String name;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,15 @@ public class UserService {
     private UserRepository userRepository;
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
-
+    private SessionRepository sessionRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
-                       PassportCountryRepository countryRepository) {
+                       PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
+        this.sessionRepository = sessionRepository;
     }
 
     public boolean emailExists(String email) {
@@ -161,8 +163,14 @@ public class UserService {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
                 userRepository.save(user);
-                return responseHandler.formatSuccessResponse(201, "User created");
+                sessionRepository.insertToken(sessionToken, user.getUser_id());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
         } else {
             return responseHandler.formatErrorResponse(400, messages);

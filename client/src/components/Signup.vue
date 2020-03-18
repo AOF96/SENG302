@@ -9,7 +9,7 @@
       <form @submit.prevent>
         <div class="signup-row">
           <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name">
+          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name*" required>
         </div>
 
         <div class="signup-row">
@@ -34,12 +34,12 @@
         </div>
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
-          <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
+          <input v-model="user.date_of_birth" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
         </div>
 
         <div class="signup-row">
         <h3 id="fitnessLevelText">Fitness Level</h3>
-        <select id="levels" v-model="user.fitnesslevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+        <select id="levels" v-model="user.fitnessLevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
        <option selected disabled hidden>Select your level</option>
           <option>0</option>
           <option>1</option>
@@ -51,11 +51,11 @@
         </div>
 
         <div class="signup-row">
-          <input v-model="user.password1" class="signupInput-password" name="pass1" type="password" placeholder="Password*" required>
+          <input v-model="password1" class="signupInput-password" name="pass1" type="password" placeholder="Password*" required>
         </div>
 
         <div class="signup-row">
-          <input v-model="user.password2" class="signupInput-password" name="pass2" type="password" placeholder="Password Again*" required>
+          <input v-model="password2" class="signupInput-password" name="pass2" type="password" placeholder="Password Again*" required>
         </div>
 
         <ul class="validation-errors">
@@ -86,17 +86,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import router from "../router";
-// import {
-//   getEncryptPassword
-// } from "../common.js"
-const SERVER_URL = 'http://localhost:9499'
+import { mapState, mapActions } from 'vuex'
+import { apiUser, helperFunction } from '../api'
 
 import NavBar from '@/components/NavBar'
-import {
-  userInfo
-} from '../globals'//4967d4f4-8301-42d1-a778-e3d150633644.mock.pstm;
 
 const ERR_MSG_FNAME = 'Please enter your First name'
 const ERR_MSG_LNAME = 'Please enter your Last name'
@@ -120,20 +114,8 @@ export default {
   },
   data() {
     return {
-      user: {
-        firstname: '',
-        lastname: '',
-        middlename: '',
-        nickname: '',
-        gender: 'Gender',
-        primary_email: '',
-        birthday: '',
-        password1: '',
-        password2: '',
-        message: '',
-        fitnesslevel: '1',
-        bio: '',
-      },
+      password1: '',
+      password2: '',
       err_msg: {
         firstname: ERR_MSG_FNAME,
         lastname: ERR_MSG_LNAME,
@@ -154,106 +136,74 @@ export default {
   },
 
   computed: {
+    ...mapState(['user']),
+
     validation() {
       return {
         firstname: this.user.firstname != '',
         lastname: this.user.lastname != '',
         gender: this.user.gender != 'Gender',
-        primary_email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
-        birthday: this.user.birthday != '',
-        fitnesslevel: this.user.fitnesslevel != 'FitnessLevel',
+        email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
+        birthday: this.user.date_of_birth != '',
+        fitnesslevel: this.user.fitnessLevel != 'FitnessLevel',
         password: {
-          match: this.user.password1 == this.user.password2,
-          length: /.{8,}/.test(this.user.password1),
-          number: /\d/.test(this.user.password1),
-          lowercase: /[a-z]/.test(this.user.password1),
-          uppercase: /[A-Z]/.test(this.user.password1),
+          match: this.password1 == this.password2,
+          length: /.{8,}/.test(this.password1),
+          number: /\d/.test(this.password1),
+          lowercase: /[a-z]/.test(this.password1),
+          uppercase: /[A-Z]/.test(this.password1),
         },
       }
     },
 
     all_err_msg() {
-      const validation = this.validation
-      const fields = Object.keys(validation)
+      const validation = this.validation;
+      const fields = Object.keys(validation);
 
-      let err_msg = DEFAULT_ALL_ERR_MSG
+      let err_msg = DEFAULT_ALL_ERR_MSG;
       for (let i in fields) {
-        const field = fields[i]
+        const field = fields[i];
         if (!validation[field]) {
-          err_msg += '\n'
+          err_msg += '\n';
           err_msg += this.err_msg[field]
         }
-        const keys = Object.keys(validation[field])
+        const keys = Object.keys(validation[field]);
         for (let i in keys) {
-          const key = keys[i]
+          const key = keys[i];
           if (!validation[field][key]) {
-            err_msg += '\n'
-            err_msg += this.err_msg[field][key]
+            err_msg += '\n';
+            err_msg += this.err_msg[field][key];
           }
         }
       }
-      return err_msg
+      return err_msg;
     },
 
     valid() {
-      const valid = (this.all_err_msg == DEFAULT_ALL_ERR_MSG)
-      return valid
+      const valid = (this.all_err_msg == DEFAULT_ALL_ERR_MSG);
+      return valid;
     }
   },
 
   methods: {
-    init() {
-      this.user.firstname = ''
-      this.user.lastname = ''
-      this.user.middlename = ''
-      this.user.nickname = ''
-      this.user.mname = ''
-      this.user.gender = 'Gender'
-      this.user.primary_email = ''
-      this.user.birthday = ''
-      this.user.password1 = ''
-      this.user.password2 = ''
-      this.user.bio = ''
-      this.user.fitnesslevel = '1'
-    },
+    ...mapActions(['createUserProfile']),
 
     submitSignUp() {
       if (!this.valid) {
-        alert(this.all_err_msg)
-        this.failed = true
-        return
+        alert(this.all_err_msg);
+        this.failed = true;
+        return;
       }
 
-      userInfo.isLogin = true;
-      userInfo.firstname = this.user.firstname;
-      userInfo.lastname = this.user.lastname;
-      userInfo.middlename = this.user.middlename;
-      userInfo.nickname = this.user.nickname;
-      userInfo.bio = this.user.bio;
-      userInfo.gender = this.user.gender;
-      userInfo.primary_email = this.user.primary_email;
-      userInfo.birthday = this.user.birthday;
-      userInfo.bio = this.user.bio;
-      userInfo.fitnesslevel = this.user.fitnesslevel;
-
-      axios.post(SERVER_URL + '/profiles', {
-          lastname: this.user.lastname,
-          firstname: this.user.firstname,
-          middlename: this.user.middlename,
-          nickname: this.user.nickname,
-          primary_email: this.user.primary_email,
-          password: this.user.password1,
-          bio: this.user.bio,
-          date_of_birth: this.user.birthday,
-          gender: this.user.gender,
-          fitnesslevel: this.user.fitnesslevel
-        })
-        .then((response) => {
-          console.log(response);
-          router.push('Profile');
-        }, (error) => {
-          console.log(error)
-        })
+      apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
+        console.log(response.data);
+        this.createUserProfile(response.data[0]);
+        helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
+        router.push('Profile');
+      }, (error) => {
+        alert("An error occured");
+        console.log(error)
+      })
     }
   }
 }
