@@ -7,7 +7,8 @@ import UserProfileSettings from '@/components/Settings/UserProfileSettings'
 import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
 import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
-import store from '@/store/index.js';
+import UserActivitySettings from "./components/Settings/UserActivitySettings";
+//import store from '@/store/index.js';
 
 
 Vue.use(VueRouter);
@@ -44,6 +45,10 @@ const routes = [
         path: '/settings/passport_countries',
         component: UserPassportCountriesSettings
     },
+    {
+        path: '/settings/activities',
+        component: UserActivitySettings
+    },
 ];
 
 
@@ -52,7 +57,7 @@ const router = new VueRouter({
     routes,
     mode: 'history'
 });
-
+/*
 router.beforeEach((to, from, next) => {
     console.log('start routering to.path=' + to.path)
     console.log('user.isLogin=' + store.getters.user.isLogin)
@@ -72,5 +77,5 @@ router.beforeEach((to, from, next) => {
         }
     }
 })
-
+*/
 export default router
