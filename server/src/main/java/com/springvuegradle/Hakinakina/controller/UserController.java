@@ -193,7 +193,7 @@ public class UserController {
         if (getUser.isPresent()) {
             User user = getUser.get();
             //TODO Add method to check token
-            if(false){
+            if(sessionRepository.findUserIdByToken(sessionToken).getUser().getUser_id() == profileId){
                 try {
                     String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
                     if (!user.getPassword().equals(encryptedPassword)) {
