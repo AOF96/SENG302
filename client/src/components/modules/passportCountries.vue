@@ -4,7 +4,9 @@
     <div id="passportCountries">
         <div class="passportCountry">
             <img src="https://restcountries.eu/data/nzl.svg">
-            <h2>New Zealand</h2>
+            <h2 v-for="country in passport_countries" v-bind:key="country">
+                    {{country}}
+            </h2>
             <div class="floatClear"></div>
         </div>
     </div>
@@ -12,14 +14,19 @@
 </template>
 
 <script>
+  import {userInfo} from "../../globals";
+
   export default {
     data () {
       return {
-        password: '',
-        newPassword: '',
-        confirmPassword: '',
+          passport_countries: userInfo.passportCountries,
+
       }
     },
+
+       mounted() {
+         console.log(this.passport_countries);
+       },
     computed: {
       // validation() {
       //   return {
