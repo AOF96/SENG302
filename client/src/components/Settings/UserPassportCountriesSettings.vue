@@ -46,7 +46,7 @@ export default {
         return {
             passport_countries: userInfo.passportCountries,
             countries_option: [],
-            adding_country: [],
+            adding_country: "",
             num_of_countries: 1,
         }
     },
@@ -72,7 +72,7 @@ export default {
     methods: {
         update() {
             userInfo.passportCountries = this.passport_countries
-            this.adding_country = ''
+            this.adding_country = ""
         },
         removePassportCountries(country) {
             const index = this.passport_countries.indexOf(country)
@@ -83,7 +83,7 @@ export default {
             this.update()
         },
         addPassportCountries() {
-            if(this.adding_country == "") return
+            if(!this.adding_country) return
             // axios.post(SERVER_URL + '/editPassportCountries', {
             //         passportCountries: this.adding_country //should be matched the column name
             //     })
