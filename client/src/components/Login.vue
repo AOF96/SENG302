@@ -29,6 +29,7 @@
   import axios from 'axios'
   import router from "../router";
   import { mapGetters, mapActions} from 'vuex';
+  import { helperFunction } from '../api'
   //import {getEncryptPassword} from "../common.js"
 
   import NavBar from '@/components/NavBar'
@@ -59,7 +60,7 @@
               if (responseCode == 201) {
                 console.log(responseData);
                 console.log(responseCode);
-                this.setCookie("s_id", responseData[1]["sessionToken"], 365)
+                helperFunction.addCookie("s_id", responseData.data[1]["sessionToken"], 365);
                 this.updateUserProfile(responseData[0]);
                 router.push('Profile');
               } else {
@@ -69,13 +70,7 @@
                 console.log(error);
             })
         }
-      },
-      setCookie(cname, cvalue, exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-      },
+      }
     }
   }
 </script>

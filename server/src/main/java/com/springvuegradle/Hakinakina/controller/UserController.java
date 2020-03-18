@@ -56,7 +56,7 @@ public class UserController {
      */
     @PostMapping("/profiles")
     public ResponseEntity createProfile(@RequestBody User user) {
-        return userService.validateCreateProfile(user, sessionRepository);
+        return userService.validateCreateProfile(user);
     }
 
     @PostMapping("/editemail")
@@ -143,7 +143,6 @@ public class UserController {
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
                 Session session_token = new Session(sessionToken);
-                user.addSession(session_token);
                 sessionRepository.insertToken(sessionToken, user.getUser_id());
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
@@ -171,7 +170,8 @@ public class UserController {
         Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
-            if(user.getSessions().contains(sessionToken)){
+            //TODO Add method to check token
+            if(false){
                 try {
                     String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
                     if (!user.getPassword().equals(encryptedPassword)) {
