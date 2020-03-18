@@ -90,7 +90,6 @@ public class User {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
-        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {

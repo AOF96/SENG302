@@ -209,7 +209,7 @@ export default {
         document.getElementById("missing_field").hidden = false;
         document.getElementById("missing_field").innerText = error.response.data.Errors;
         console.log(error)
-      })
+      });
     }
   }
 }
