@@ -194,10 +194,11 @@ export default {
         this.failed = true;
         return;
       }
-      apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.user.password, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
+
+      apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
         console.log(response.data);
-        helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
         this.createUserProfile(response.data[0]);
+        helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
         router.push('Profile');
       }, (error) => {
         alert("An error occured");

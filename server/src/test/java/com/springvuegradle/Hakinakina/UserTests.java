@@ -50,14 +50,14 @@ public class UserTests {
 //        Assertions.assertEquals("Maurice", userRepository.findById(userId).get().getFirstName());
 //    }
 
-    @Test
-    public void testCreatingPassportCountry() {
-        PassportCountry country = new PassportCountry("NZ", "New Zealand");
-        countryRepository.save(country);
-        String countryId = country.getCountryId();
-
-        Assertions.assertEquals("NZ", countryRepository.findCountryByName("New Zealand").getCountryId());
-    }
+//    @Test
+//    public void testCreatingPassportCountry() {
+//        PassportCountry country = new PassportCountry("NZ", "New Zealand");
+//        countryRepository.save(country);
+//        String countryId = country.getCountryId();
+//
+//        Assertions.assertEquals("NZ", countryRepository.findCountryByName("New Zealand").getCountryId());
+//    }
 
 //    @Test
 //    public void testAddingPassportToUser() {
