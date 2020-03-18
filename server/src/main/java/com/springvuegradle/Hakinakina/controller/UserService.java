@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Class for user profile request actions
@@ -35,11 +38,12 @@ public class UserService {
 
     /**
      * Takes an edit email request and updates the repositories appropriately
+     *
      * @param request
      * @return reply to client
      */
-    public String editEmail(String request) {
-        String response = null;
+    public ResponseEntity editEmail(String request) {
+        ResponseEntity response = null;
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = null;
@@ -74,12 +78,13 @@ public class UserService {
 
     /**
      * Switches primary email with secondary email
+     *
      * @param user
      * @param newPrimary
      * @param currentPrimary
      * @param secondaryEmails
      */
-    public String switchPrimaryEmail(User user, String newPrimary, String currentPrimary, ArrayList<String> secondaryEmails) {
+    public ResponseEntity<String> switchPrimaryEmail(User user, String newPrimary, String currentPrimary, ArrayList<String> secondaryEmails) {
         if (secondaryEmails.contains(user.getPrimaryEmail()) && emailRepository.findEmailByString(newPrimary).getUser() == user) {
             user.setPrimaryEmail(newPrimary);
             user.removeEmail(emailRepository.findEmailByString(newPrimary));
@@ -102,7 +107,7 @@ public class UserService {
      * @param user
      * @param secondaryEmails
      */
-    public String updateSecondaryEmails(User user, ArrayList<String> secondaryEmails) {
+    public ResponseEntity updateSecondaryEmails(User user, ArrayList<String> secondaryEmails) {
         Set<Email> emailsToRemove = new HashSet<>();
         for (Email currentEmail : user.getEmails()) {
             if (!secondaryEmails.contains(currentEmail.getEmail())) {
@@ -128,86 +133,72 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
-//    public String editProfile(String request) {
-//        String response = null;
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        JsonNode node = null;
-//        try {
-//            node = objectMapper.readValue(request, JsonNode.class);
-//        } catch (Exception e) {
-//            ErrorHandler.printProgramException(e, "Error parsing profile edit request");
-//            response = responseHandler.formatErrorResponse(400, "Incorrect request format");
+    public ResponseEntity validateCreateProfile(User user) {
+        //TODO Check for fields that are set to null
+        ArrayList<String> messages = new ArrayList<String>();
+
+        if (user.getLastName() == null || user.getFirstName() == null) {
+            messages.add("Please provide your full name. First and last names are required.");
+        } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
+            messages.add("Please provide your full name. First and last names are required.");
+        }
+        if (user.getPrimaryEmail() == null) {
+            messages.add("Please provide a valid email.");
+        } else if (user.getPrimaryEmail().isBlank()) {
+            messages.add("Please provide a valid email.");
+        }
+        if (user.getBirthDate() == null) {
+            messages.add("Please provide a valid date of birth, yyyy-mm-dd.");
+        }
+        if (user.getGender() == null) {
+            messages.add("Please provide a valid gender. male, female or non-binary.");
+        }
+//        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
+//            messages.add("Please select the fitness level in the range 0 and 5");
 //        }
-//
-//        if (response == null) {
-//            long userId = node.get("profile_id").asLong();
-//            User user = userRepository.findById(userId).get();
-//
-//            String lastName = node.get("lastname").asText();
-//            if (lastName == null) {
-//                lastName = user.getLastName();
-//            }
-//            String firstName = node.get("firstname").asText();
-//            if (firstName == null) {
-//                firstName = user.getFirstName();
-//            }
-//            String middleName = node.get("middlename").asText();
-//            if (middleName == null) {
-//                middleName = user.getMiddleName();
-//            }
-//            /*String nickName = node.get("nickname").asText();
-//            if (nickName == null) {
-//                nickName = user.getNickName();
-//            }*/
-//            String bio = node.get("bio").asText();
-//            if (bio == null) {
-//                bio = user.getBio();
-//            }
-//            String dateOfBirth = node.get("date_of_birth").asText();
-//            java.sql.Date date;
-//            if (dateOfBirth == null) {
-//                date = user.getBirthDate();
-//            } else {
-//                date = Date.valueOf(dateOfBirth);
-//            }
-//            String gender = node.get("gender").asText();
-//            Gender newGender;
-//            if (gender == null) {
-//                newGender = user.getGender();
-//            } else {
-//                newGender = Gender.valueOf(gender);
-//            }
-//            String email = node.get("email").asText();
-//            if (email == null) {
-//                email = user.getLastName();
-//            }
-//            int fitness = node.get("fitness").asInt();
-//            String password = user.getPassword();
-//            String nickName = user.getNickName();
-//
-//            User newUser = new User(firstName, lastName, middleName, newGender, password, bio, nickName, date, fitness, email);
-//
-//            List<JsonNode> passportNodes = node.findValues("passport");
-//            ArrayList<String> passportCountries = new ArrayList<>();
-//            for (JsonNode currentNode : passportNodes.get(0)) {
-//                passportCountries.add(currentNode.asText());
-//            }
-//
-//            if (passportCountries != null) {
-//                for (int i = 0; i < passportCountries.size(); i++) {
-//                    String country = passportCountries.get(i);
-//                    PassportCountry newPassportCountry = countryRepository.findCountryByName("New Zealand");
-//                    newUser.addPassportCountry(newPassportCountry);
-//                }
-//            }
-//
-//            newUser.setUser_id(user.getUser_id());
-//
-//            userRepository.save(newUser);
-//            userRepository.delete(user);
-//            responseHandler.formatSuccessResponse(600, "User edited successfully");
-//        }
-//        return response;
-//    }
+
+        if (messages.isEmpty()) {
+            if (emailExists(user.getPrimaryEmail())) {
+                return responseHandler.formatErrorResponse(403, "Email already exists");
+            } else {
+                userRepository.save(user);
+                return responseHandler.formatSuccessResponse(201, "User created");
+            }
+        } else {
+            return responseHandler.formatErrorResponse(400, messages);
+        }
+    }
+
+    public ResponseEntity validateEditUser(User user) {
+        //TODO Check for fields that are set to null
+        ArrayList<String> messages = new ArrayList<String>();
+
+        if (user.getLastName() == null || user.getFirstName() == null) {
+            messages.add("Please provide your full name. First and last names are required.");
+        } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
+            messages.add("Please provide your full name. First and last names are required.");
+        }
+        if (user.getPrimaryEmail() == null) {
+            messages.add("Please provide a valid email.");
+        } else if (user.getPrimaryEmail().isBlank()) {
+            messages.add("Please provide a valid email.");
+        }
+        if (user.getBirthDate() == null) {
+            messages.add("You cannot delete required fields. Please provide a valid date of birth, yyyy-mm-dd.");
+        }
+        if (user.getGender() == null) {
+            messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
+        }
+        if(user.getFitnessLevel() < 0 & user.getFitnessLevel() > 5){
+            messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
+        }
+
+        if (!messages.isEmpty()) {
+            return responseHandler.formatErrorResponse(403, messages);
+        } else {
+            userRepository.save(user);
+            return responseHandler.formatSuccessResponse(200, "User updated");
+        }
+    }
+
 }

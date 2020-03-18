@@ -8,13 +8,16 @@
 
       <form @submit.prevent>
         <div class="signup-row">
-          <input class="flName" v-model="user.fname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="flName" v-model="user.lname" name="lname" type="text" placeholder="Last Name*" required>
+          <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
+          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name">
         </div>
 
         <div class="signup-row">
+          <input class="signupInput-lastname" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required>
+        </div>
+        <div class="signup-row">
           <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname">
-          <select v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
+          <select v-model="user.gender" name="gender" placeholder="Gender"  value="Gender" required>
             <option selected disabled hidden>Gender</option>
             <option>Non-Binary</option>
             <option>Female</option>
@@ -23,9 +26,12 @@
         </div>
 
         <div class="signup-row">
-          <input v-model="user.email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
+          <textarea v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
         </div>
 
+        <div class="signup-row">
+          <input v-model="user.primary_email" class="signupInput-email" name="email" type="email" placeholder="Email*" required>
+        </div>
         <div class="signup-row">
           <h3 id="signupText-birthday">Birthday</h3>
           <input v-model="user.birthday" class="signupInput-birthday" name="birthday" type="date" placeholder="Birthday" required>
@@ -82,15 +88,15 @@
 <script>
 import axios from 'axios'
 import router from "../router";
-import {
-  getEncryptPassword
-} from "../common.js"
-const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io'
+// import {
+//   getEncryptPassword
+// } from "../common.js"
+const SERVER_URL = 'http://localhost:9499'
 
 import NavBar from '@/components/NavBar'
 import {
   userInfo
-} from '../globals';
+} from '../globals'//4967d4f4-8301-42d1-a778-e3d150633644.mock.pstm;
 
 const ERR_MSG_FNAME = 'Please enter your First name'
 const ERR_MSG_LNAME = 'Please enter your Last name'
@@ -115,20 +121,22 @@ export default {
   data() {
     return {
       user: {
-        fname: '',
-        lname: '',
+        firstname: '',
+        lastname: '',
+        middlename: '',
         nickname: '',
         gender: 'Gender',
-        email: '',
+        primary_email: '',
         birthday: '',
         password1: '',
         password2: '',
         message: '',
         fitnesslevel: '1',
+        bio: '',
       },
       err_msg: {
-        fname: ERR_MSG_FNAME,
-        lname: ERR_MSG_LNAME,
+        firstname: ERR_MSG_FNAME,
+        lastname: ERR_MSG_LNAME,
         gender: ERR_MSG_GENDER,
         email: ERR_MSG_EMAIL,
         birthday: ERR_MSG_BIRTHDAY,
@@ -148,10 +156,10 @@ export default {
   computed: {
     validation() {
       return {
-        fname: this.user.fname != '',
-        lname: this.user.lname != '',
+        firstname: this.user.firstname != '',
+        lastname: this.user.lastname != '',
         gender: this.user.gender != 'Gender',
-        email: /[^\s]+@[^\s]+/.test(this.user.email),
+        primary_email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
         birthday: this.user.birthday != '',
         fitnesslevel: this.user.fitnesslevel != 'FitnessLevel',
         password: {
@@ -195,14 +203,17 @@ export default {
 
   methods: {
     init() {
-      this.user.fname = ''
-      this.user.lname = ''
+      this.user.firstname = ''
+      this.user.lastname = ''
+      this.user.middlename = ''
       this.user.nickname = ''
+      this.user.mname = ''
       this.user.gender = 'Gender'
-      this.user.email = ''
+      this.user.primary_email = ''
       this.user.birthday = ''
       this.user.password1 = ''
       this.user.password2 = ''
+      this.user.bio = ''
       this.user.fitnesslevel = '1'
     },
 
@@ -214,23 +225,27 @@ export default {
       }
 
       userInfo.isLogin = true;
-      userInfo.firstname = this.user.fname;
-      userInfo.lastname = this.user.lname;
+      userInfo.firstname = this.user.firstname;
+      userInfo.lastname = this.user.lastname;
+      userInfo.middlename = this.user.middlename;
       userInfo.nickname = this.user.nickname;
+      userInfo.bio = this.user.bio;
       userInfo.gender = this.user.gender;
-      userInfo.email = this.user.email;
+      userInfo.primary_email = this.user.primary_email;
       userInfo.birthday = this.user.birthday;
+      userInfo.bio = this.user.bio;
       userInfo.fitnesslevel = this.user.fitnesslevel;
 
-      axios.post(SERVER_URL + '/createprofile', {
-          firstname: this.user.fname,
-          lastname: this.user.lname,
+      axios.post(SERVER_URL + '/profiles', {
+          lastname: this.user.lastname,
+          firstname: this.user.firstname,
+          middlename: this.user.middlename,
           nickname: this.user.nickname,
-          Gender: this.user.gender,
-          Email: this.user.email,
-          Birthday: this.user.birthday,
-          Password1: getEncryptPassword(this.user.password1),
-          Password2: getEncryptPassword(this.user.password2),
+          primary_email: this.user.primary_email,
+          password: this.user.password1,
+          bio: this.user.bio,
+          date_of_birth: this.user.birthday,
+          gender: this.user.gender,
           fitnesslevel: this.user.fitnesslevel
         })
         .then((response) => {

@@ -1,10 +1,15 @@
 package com.springvuegradle.Hakinakina;
 
 import com.springvuegradle.Hakinakina.entity.*;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.json.GsonJsonParser;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -12,10 +17,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Main class for application
@@ -34,11 +42,22 @@ public class Main {
 	@Bean
 	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository) {
 		return args -> {
-			String[] countryCodes = Locale.getISOCountries();
-			for (String countryCode : countryCodes) {
-				Locale obj = new Locale("", countryCode);
-				countryRepository.save(new PassportCountry(obj.getCountry(), obj.getDisplayCountry()));
+			URL url = new URL("https://restcountries.eu/rest/v2/all");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+			InputStream is = connection.getInputStream();
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+
+			JSONParser parser = new JSONParser();
+			JSONArray data = (JSONArray) parser.parse(rd.readLine());
+
+			for (Object country : data) {
+				JSONObject countryJson = (JSONObject) country;
+				String name = countryJson.get("name").toString();
+				String code = countryJson.get("alpha2Code").toString();
+				countryRepository.save(new PassportCountry(code, name));
 			}
+
 		};
 	}
 
@@ -49,7 +68,7 @@ public class Main {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
 		// *** URL below needs to match the Vue client URL and port ***
-		config.setAllowedOrigins(new ArrayList(Arrays.asList("http://localhost:9000", "http://localhost:9500", "https://csse-s302g0.canterbury.ac.nz/test", "https://csse-s302g0.canterbury.ac.nz/prod")));
+		config.setAllowedOrigins(new ArrayList(Arrays.asList("http://127.0.0.1:9500", "http://127.0.0.1:9499", "http://localhost:9000", "http://localhost:9500", "https://csse-s302g0.canterbury.ac.nz/test", "https://csse-s302g0.canterbury.ac.nz/prod")));
 		config.setAllowedMethods(Collections.singletonList("*"));
 		config.setAllowedHeaders(Collections.singletonList("*"));
 		source.registerCorsConfiguration("/**", config);

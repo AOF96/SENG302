@@ -25,7 +25,7 @@ public class JSONParserTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
         User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                Date.valueOf("1985-12-20"), Gender.MALE, 3,
+                "1985-12-20", Gender.MALE, 3,
                 "jacky'sSecuredPwd");
 
         JSONParser parser = new JSONParser();

@@ -6,6 +6,7 @@ import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -28,9 +29,10 @@ public class UserController {
 
     /**
      * Contructs a UserController, passing in the repositories so that they can be accessed.
-     * @param userRepository The repository containing Users
+     *
+     * @param userRepository    The repository containing Users
      * @param countryRepository The repository containing PassportCountries
-     * @param emailRepository The repository containing Emails
+     * @param emailRepository   The repository containing Emails
      */
     public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, UserService userService) {
         this.userRepository = userRepository;
@@ -40,54 +42,51 @@ public class UserController {
     }
 
     /**
-     * Processes create user request and puts user into repository if email is unique
+     * Processes create user request and puts user into repository if email is unique and all required fields have
+     * been provided
+     *
      * @param user
      * @return success or error message
      */
-    @PostMapping("/createprofile")
-    @ResponseStatus(HttpStatus.OK)
-    public String createProfile(@RequestBody User user) {
-        if (!userService.emailExists(user.getPrimaryEmail())) {
-            userRepository.save(user);
-            return responseHandler.formatSuccessResponse(201, "User created");
-        } else {
-            return responseHandler.formatErrorResponse(400, "Email already exists");
-        }
+    @PostMapping("/profiles")
+    public ResponseEntity createProfile(@RequestBody User user) {
+        return userService.validateCreateProfile(user);
     }
 
     @PostMapping("/editemail")
-    @ResponseStatus(HttpStatus.OK)
-    public String editEmails(@RequestBody String request) {
+    public ResponseEntity editEmails(@RequestBody String request) {
         return userService.editEmail(request);
     }
 
     @PutMapping("/profiles/{profileId}")
-    @ResponseStatus(HttpStatus.OK)
-    public String editUser(@RequestBody User user, @PathVariable("profileId") long profileId) {
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId) {
         user.setUser_id(profileId);
+        user.setSalt(userRepository.findById(profileId).get().getSalt());
+        user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
         userRepository.save(user);
-        return responseHandler.formatSuccessResponse(201, "User updated");
+        return userService.validateEditUser(user);
     }
 
     /**
      * Processes get users request
      *
-     * @return List of users
+     * @return List of profiles
      */
-    @GetMapping("/users")
-    public String getAllUsers() {
+    @GetMapping("/profiles")
+    public ResponseEntity getAllUsers() {
         List<User> users = userRepository.findAll();
         return responseHandler.formatGetUsers(users);
     }
 
     /**
      * Processes request to retrieve certain user and returns
-     * @param userId
+     *
+     * @param profileId
      * @return Specific user
      */
-    @GetMapping("/user/{id}")
-    public String getOneUser(@PathVariable("id") long userId) {
-        Optional<User> optional = userRepository.findById(userId);
+    @GetMapping("/profiles/{profile_id}")
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
+        Optional<User> optional = userRepository.findById(profileId);
         if (optional.isPresent()) {
             User user = optional.get();
             return responseHandler.formatGetUser(user);
@@ -115,16 +114,17 @@ public class UserController {
      * Check if the user's login credentials are correct. First finds a user with the same email. Then checks if the
      * entered password matches the actual password. This is done by encrypting the attempt using the same salt as the
      * actual password, then checking for equality.
+     *
      * @param jsonString The JSON body passed as a string.
      * @return isLogin Whether the attempt was correct or not.
      */
-    @GetMapping("/checklogin")
-    public String checkLogin(@RequestBody String jsonString){
+    @PostMapping("/login")
+    public ResponseEntity checkLogin(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        String attempt = (String) json.get("attempt");
+        String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        String response = null;
+        ResponseEntity response = null;
 
         User user = userRepository.findUserByEmail(email);
 
@@ -135,7 +135,7 @@ public class UserController {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-                response = responseHandler.formatSuccessResponse(200, "Login is correct");
+                response = responseHandler.formatSuccessResponse(201, user.toJson());
             } else {
                 response = responseHandler.formatErrorResponse(400, "Incorrect password");
             }
@@ -147,13 +147,13 @@ public class UserController {
     }
 
     @PostMapping("/editpassword")
-    public String editPassword(@RequestBody String jsonString) {
+    public ResponseEntity editPassword(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         long id = Long.valueOf((int) json.get("profile_id"));
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        String response = null;
+        ResponseEntity response = null;
 
         Optional<User> getUser = userRepository.findById(id);
         if (getUser.isPresent()) {
@@ -161,14 +161,13 @@ public class UserController {
             try {
                 String salt = EncryptionUtil.getNewSalt();
                 user.setSalt(salt);
-                user.setPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
                 userRepository.save(user);
                 response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
             } catch (Exception e) {
                 response = responseHandler.formatErrorResponse(400, "Error while creating new password");
             }
-        }
-        else {
+        } else {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");
         }
 
@@ -179,6 +178,6 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
     @ExceptionHandler(IllegalArgumentException.class)
     public void badIdExceptionHandler() {
-    //Nothing to do
+        //Nothing to do
     }
 }

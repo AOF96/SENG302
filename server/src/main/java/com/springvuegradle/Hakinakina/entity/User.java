@@ -3,6 +3,7 @@ package com.springvuegradle.Hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import com.springvuegradle.Hakinakina.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,6 +22,7 @@ import java.util.Set;
 @JsonDeserialize(using=UserDeserializer.class)
 public class User {
     @Id @GeneratedValue
+    @JsonProperty("profile_id")
     private Long userID;
 
     @JsonProperty("firstname")
@@ -32,9 +34,11 @@ public class User {
     @JsonProperty("middlename")
     private String middleName;
 
+    @JsonProperty("gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
 
@@ -44,11 +48,12 @@ public class User {
     private String nickName;
 
     @JsonProperty("date_of_birth")
+    @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
     private int fitnessLevel;
 
-    @JsonProperty("passport")
+    @JsonProperty("passports")
     @JsonSerialize(using=PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
@@ -57,7 +62,7 @@ public class User {
     @JsonIgnore
     private String salt;
 
-    @JsonProperty("email")
+    @JsonProperty("primary_email")
     private String primaryEmail;
 
     @JsonProperty("additional_email")
@@ -67,17 +72,25 @@ public class User {
 
     protected User() {}
 
-    public User(String firstName, String lastName, String primaryEmail, Date birthDate, Gender gender, int fitnessLevel, String password) {
+    public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        this.birthDate = birthDate;
+        if (birthDate.equals("")) {
+            this.birthDate = null;
+        } else {
+            this.birthDate = Date.valueOf(birthDate);
+        }
         this.fitnessLevel = fitnessLevel;
         this.primaryEmail = primaryEmail;
 
         try {
             this.salt = EncryptionUtil.getNewSalt();
-            this.password = EncryptionUtil.getEncryptedPassword(password, this.salt);
+            if (password == null) {
+                this.password = null;
+            } else {
+                this.password = EncryptionUtil.getEncryptedPassword(password, this.salt);
+            }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Error while creating password.");
         }
@@ -162,7 +175,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setEncryptedPassword(String password) {
         this.password = password;
     }
 

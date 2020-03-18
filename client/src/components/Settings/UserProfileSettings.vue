@@ -47,7 +47,7 @@ import {
 import axios from "axios";
 import router from "../../router";
 
-const SERVER_URL = 'https://abf397d3-e348-43f3-965f-c8fba9ee56f1.mock.pstmn.io';
+const SERVER_URL = 'http://localhost:9499';
 
 export default {
     components: {
@@ -81,14 +81,14 @@ export default {
         },
 
         updateProfile() {
-            axios.put(SERVER_URL + '/profiles/' + '1', {
+            axios.put(SERVER_URL + '/profiles/' + userInfo.profile_id, {
                 firstname: this.firstname,
                 lastname: this.lastname,
                 nickname: this.nickname,
                 gender: this.gender,
                 bio: this.bio,
-                primary_email: this.email,
-                birthday: this.birthday,
+                primary_email: userInfo.primary_email,
+                date_of_birth: this.birthday,
                 fitness: this.fitnesslevel
             })
             .then((response) => {

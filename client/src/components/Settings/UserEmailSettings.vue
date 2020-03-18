@@ -41,7 +41,7 @@ export default {
     },
     data() {
         return {
-            primary_email: userInfo.email,
+            primary_email: userInfo.primary_email,
             secondary_emails: userInfo.secondaryEmails,
             showButton: true,
             textInput: '',
@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         updateGlobals() {
-            userInfo.email = this.primary_email;
+            userInfo.primary_email = this.primary_email;
             userInfo.secondaryEmails = this.secondary_emails;
         },
 
