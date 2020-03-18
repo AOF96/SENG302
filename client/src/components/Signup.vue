@@ -9,7 +9,7 @@
       <form @submit.prevent>
         <div class="signup-row">
           <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
-          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name*" required>
+          <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name">
         </div>
 
         <div class="signup-row">
@@ -197,9 +197,14 @@ export default {
 
       apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
         console.log(response.data);
-        this.createUserProfile(response.data[0]);
-        helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
-        router.push('Profile');
+
+        if (response.status === 201) {
+            this.createUserProfile(response.data[0]);
+            helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
+            router.push('Profile');
+        } else (
+            alert(response.data)
+        )
       }, (error) => {
         alert("An error occured");
         console.log(error)

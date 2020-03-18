@@ -7,6 +7,7 @@
         <h2>Sign in to your account</h2>
         <form @submit.prevent>
           <div class="signup-row">
+            <h6 id="email_exist">Email does not exist</h6>
             <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
               required>
           </div>
@@ -48,17 +49,17 @@
       submitLogin() {
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {
-            var responseData = response.data;
-            var responseCode = response.status;
+            const responseData = response.data;
+            const responseCode = response.status;
+            console.log("work");
 
-            if (responseCode == 201) {
-              console.log(responseData);
-              console.log(responseCode);
+            if (responseCode === 201) {
               helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
               this.updateUserProfile(responseData[0]);
               router.push('Profile');
             } else {
-                alert(responseData);
+              console.log("what");
+              alert(responseData);
             }
           }, (error) => {
             console.log(error);
