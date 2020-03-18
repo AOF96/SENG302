@@ -9,6 +9,17 @@ const SERVER_URL = 'http://localhost:9499'
 //   if (parts.length == 2) return parts.pop().split(";").shift();
 // }
 
+export const helperFunction = {
+  addCookie: (cname, cvalue, exdays) => {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+}
+
+
+
 const instance = axios.create({
   baseURL: SERVER_URL,
   timeout: 5000,

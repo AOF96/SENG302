@@ -22,7 +22,6 @@ public class Session {
 
     public void setUser(User user) {
         this.user = user;
-        user.getSessions().add(this);
     }
 
 }

@@ -23,14 +23,15 @@ public class UserService {
     private UserRepository userRepository;
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
-
+    private SessionRepository sessionRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
-                       PassportCountryRepository countryRepository) {
+                       PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
+        this.sessionRepository = sessionRepository;
     }
 
     public boolean emailExists(String email) {
@@ -134,7 +135,7 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
-    public ResponseEntity validateCreateProfile(User user, SessionRepository sessionRepository) {
+    public ResponseEntity validateCreateProfile(User user) {
         //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -166,9 +167,8 @@ public class UserService {
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
                 Session session_token = new Session(sessionToken);
-                user.addSession(session_token);
-                sessionRepository.insertToken(sessionToken, user.getUser_id());
                 userRepository.save(user);
+                sessionRepository.insertToken(sessionToken, user.getUser_id());
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }

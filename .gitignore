@@ -35,3 +35,5 @@ out/
 .vscode/
 
 client/npm-debug.log
+
+server/src/main/resources/application.properties
