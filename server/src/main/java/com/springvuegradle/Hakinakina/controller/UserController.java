@@ -56,7 +56,7 @@ public class UserController {
      */
     @PostMapping("/profiles")
     public ResponseEntity createProfile(@RequestBody User user) {
-        return userService.validateCreateProfile(user);
+        return userService.validateCreateProfile(user, sessionRepository);
     }
 
     @PostMapping("/editemail")
