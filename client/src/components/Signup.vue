@@ -208,7 +208,7 @@ export default {
       }, (error) => {
         alert("An error occured");
         console.log(error)
-      })
+      });
     }
   }
 }

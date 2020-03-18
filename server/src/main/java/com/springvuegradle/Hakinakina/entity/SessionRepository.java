@@ -8,7 +8,7 @@ public interface SessionRepository extends JpaRepository<Session, String>{
         @Query(value = "Insert INTO Session (token, user_user_id) VALUES (?, ?)", nativeQuery = true)
         Session insertToken(String token, Long user_id);
 
-        @Query(value = "Select * From Session s Where s.token = ?", nativeQuery = true)
+        @Query(value = "SELECT * FROM Session WHERE token = ?", nativeQuery = true)
         Session findUserIdByToken(String token);
 
         @Query(value = "DELETE FROM Session WHERE token = ?", nativeQuery = true)
