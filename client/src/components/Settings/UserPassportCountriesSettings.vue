@@ -3,7 +3,7 @@
     <UserSettingsMenu />
     <div>
         <h2>Passport Countries</h2>
-        <div v-for="country in passport_countries" v-bind:key="country">
+        <div v-for="country in user.user.tmp_passports" v-bind:key="country">
             <h4>{{country}}</h4>
             <button v-on:click="removePassportCountries(country)">remove</button>
         </div>
@@ -23,6 +23,7 @@
                 </option>
             </select>
             <button v-on:click="addPassportCountries()">Add passport countries</button>
+            <button v-on:click="updatePassports(user.user)">Save Changes</button>
           </form>
         </div>
     </div>
@@ -31,12 +32,11 @@
 
 <script>
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
-import {
-    userInfo
-} from "../../globals";
+
+
 import axios from "axios";
-// const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
+import { mapState, mapActions } from 'vuex'
 
 export default {
     components: {
@@ -44,11 +44,13 @@ export default {
     },
     data() {
         return {
-            passport_countries: userInfo.passportCountries,
             countries_option: [],
             adding_country: "",
             num_of_countries: 1,
         }
+    },
+    computed: {
+        ...mapState(['user']),
     },
     created: function() {
         axios.get(COUNTRIES_URL)
@@ -60,27 +62,31 @@ export default {
                     countries.push(country_name)
                 }
 
-                for(let country of this.passport_countries) {
+                for(let country of this.user.user.passports) {
                     const index = countries.indexOf(country)
-                    if (index == -1) continue
+                    if (index === -1) continue
                     countries.splice(index, 1)
                 }
                 this.countries_option = countries
             })
             .catch(error => console.log(error))
     },
+    mounted() {
+        this.startUp()
+    },
     methods: {
-        update() {
-            userInfo.passportCountries = this.passport_countries
-            this.adding_country = ""
+        ...mapActions(['updatePassports', 'updateTmpPassports']),
+         startUp() {
+            console.log('init')
+            this.user.user.tmp_passports = this.user.user.passports.slice()
         },
         removePassportCountries(country) {
-            const index = this.passport_countries.indexOf(country)
-            if (index == -1) return
-            this.passport_countries.splice(index, 1)
+            const index = this.user.user.tmp_passports.indexOf(country)
+            if (index === -1) return
+            this.user.user.tmp_passports.splice(index, 1)
             this.countries_option.push(country)
             this.countries_option.sort()
-            this.update()
+            this.updateTmpPassports(this.user.user)
         },
         addPassportCountries() {
             if(!this.adding_country) return
@@ -92,12 +98,13 @@ export default {
             //     }, (error) => {
             //         console.log(error)
             //     })
-            this.passport_countries.push(this.adding_country)
+            this.user.user.tmp_passports.push(this.adding_country)
             const index = this.countries_option.indexOf(this.adding_country)
             if (index == -1) return
             this.countries_option.splice(index, 1)
-            this.update()
-        },
+            this.adding_country = ""
+            this.updateTmpPassports(this.user.user)
+        }
     }
 }
 </script>

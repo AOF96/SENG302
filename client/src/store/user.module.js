@@ -11,9 +11,10 @@ const state = {
     bio: null,
     isLogin: false,
     fitnessLevel: null,
-    profile_id: null,
+    user_id: null,
     password: null,
-    passports: []
+    passports: [],
+    tmp_passports: []
   }
 };
 
@@ -59,7 +60,7 @@ const mutations = {
   },
   setUserID(state, data) {
     if(data.user_id != ""){
-      state.user.profileId = data.user_id;
+      state.user.user_id = data.user_id;
     }
   },
   setUserSecondaryEmails(state, data) {
@@ -75,14 +76,15 @@ const mutations = {
       state.user.bio = data.bio;
     }
   },
-  setUserPassports(state, data) {
-      state.user.passports = data.passports;
+  setUserPassports(state) {
+      state.user.passports = state.user.tmp_passports.slice();
   },
-
+  setUserTmpPassports(state, data) {
+    state.user.tmp_passports = data.tmp_passports;
+  },
   setUserFitnessLevel(state, data) {
     state.user.fitnessLevel = data.fitnessLevel;
   },
-
   setUserIsLogin(state, data) {
     if(data.isLogin != ""){
       state.user.isLogin = data.isLogin
@@ -99,7 +101,6 @@ const mutations = {
       state.user.password = data.password
     }
   }
-
 }
 
 const actions = {
@@ -137,10 +138,14 @@ const actions = {
     alert("Email updated.")
   },
   logout({ commit }) {
-    console.log('logged out')
     commit('userLogout')
+  },
+  updatePassports({commit}, data){
+    commit('setUserPassports', data)
+  },
+  updateTmpPassports({commit}, data){
+    commit('setUserTmpPassports', data)
   }
-
 };
 
 export default {
