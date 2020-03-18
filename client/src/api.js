@@ -2,13 +2,6 @@ import axios from 'axios'
 
 const SERVER_URL = 'http://localhost:9499'
 
-//Might need if cookies break again
-// function getCookie(name){
-//   var value = "; "+document.cookie;
-//   var parts = value.split("; "+name+"=");
-//   if (parts.length == 2) return parts.pop().split(";").shift();
-// }
-
 export const helperFunction = {
   addCookie: (cname, cvalue, exdays) => {
     var d = new Date();
@@ -18,13 +11,10 @@ export const helperFunction = {
   }
 }
 
-
-
 const instance = axios.create({
   baseURL: SERVER_URL,
   timeout: 5000,
-  withCredentials: true,
-  //headers: {'Authorization': getCookie("s_id")}
+  withCredentials: true
 });
 
 export const apiUser = {
@@ -47,8 +37,13 @@ export const apiUser = {
     gender: gender,
     fitnessLevel: fitnessLevel
   }),
-  logout: () => instance.post('/logout').then(
-    function () {
-      document.cookie = "s_id = ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
-    })
+  // Submit user login request to the server
+  login: (email, password) => instance.post('/login', {
+    email: email,
+    password: password
+  }),
+  // Removes session cookie and posts server request to remove the token from the database
+  logout: () => instance.post('/logout').then(function () {
+    document.cookie = "s_id = ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
+  })
 }

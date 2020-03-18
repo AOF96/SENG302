@@ -26,14 +26,12 @@
 </template>
 
 <script>
-  import axios from 'axios'
   import router from "../router";
   import { mapGetters, mapActions} from 'vuex';
-  import { helperFunction } from '../api'
+  import { apiUser, helperFunction } from '../api'
   //import {getEncryptPassword} from "../common.js"
 
   import NavBar from '@/components/NavBar'
-  const SERVER_URL = 'http://localhost:9499';
 
   export default {
     name: 'Login',
@@ -49,26 +47,22 @@
 
       submitLogin() {
         if (this.user.primary_email.trim(), this.user.password.trim()) {
-          axios.post(SERVER_URL + '/login', {
-            email: this.user.primary_email,
-            password: this.user.password,
-          })
-            .then((response) => {
-              var responseData = response.data;
-              var responseCode = response.status;
+          apiUser.login(this.user.primary_email, this.user.password).then((response) => {
+            var responseData = response.data;
+            var responseCode = response.status;
 
-              if (responseCode == 201) {
-                console.log(responseData);
-                console.log(responseCode);
-                helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
-                this.updateUserProfile(responseData[0]);
-                router.push('Profile');
-              } else {
-                  alert(responseData);
-              }
-            }, (error) => {
-                console.log(error);
-            })
+            if (responseCode == 201) {
+              console.log(responseData);
+              console.log(responseCode);
+              helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
+              this.updateUserProfile(responseData[0]);
+              router.push('Profile');
+            } else {
+                alert(responseData);
+            }
+          }, (error) => {
+            console.log(error);
+          });
         }
       }
     }
