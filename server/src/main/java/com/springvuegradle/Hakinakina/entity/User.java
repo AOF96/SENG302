@@ -56,6 +56,7 @@ public class User {
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @JsonProperty("fitnessLevel")
     @Column(name = "fitness_level")
     private int fitnessLevel;
 
@@ -89,7 +90,6 @@ public class User {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
-        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {

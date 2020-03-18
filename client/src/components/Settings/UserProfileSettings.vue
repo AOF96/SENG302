@@ -7,6 +7,8 @@
         <form @submit.prevent>
             <h2>First Name</h2>
             <input class="editProfileInput" type="text" name="fname" v-model="user.firstname" placeholder="First Name*" required>
+            <h2>Middle Name</h2>
+            <input class="editProfileInput" type="text" name="lname" v-model="user.middlename" placeholder="Middle Name" required>
             <h2>Last Name</h2>
             <input class="editProfileInput" type="text" name="lname" v-model="user.lastname" placeholder="Last Name*" required>
             <h2>Nickname</h2>
@@ -43,10 +45,8 @@
 import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
-import axios from "axios";
-import router from "../../router";
+import {apiUser} from "../../api";
 
-const SERVER_URL = 'http://localhost:9499';
 
 export default {
     components: {
@@ -58,23 +58,14 @@ export default {
     methods: {
         ...mapActions(['updateUserProfile']),
         updateProfile() {
-            this.updateUserProfile(this.user)
-            axios.put(SERVER_URL + '/profiles/' + this.user.user_id, {
-                firstname: this.user.firstname,
-                lastname: this.user.lastname,
-                nickname: this.user.nickname,
-                gender: this.user.gender,
-                bio: this.user.bio,
-                primary_email: this.user.primary_email,
-                date_of_birth: this.user.date_of_birth,
-                fitnessLevel: this.user.fitnessLevel
-            })
-            .then((response) => {
-                console.log(response);
-                router.push('Profile');
+            this.updateUserProfile(this.user);
+            apiUser.editProfile(this.user.user_id, this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
+              alert("Profile Updated");
+              console.log(response);
             }, (error) => {
-                console.log(error)
-            })
+              alert("An error occured");
+              console.log(error);
+            });
         },
         addPassportCountries() {
             this.passportCountries.num_of_countries++;

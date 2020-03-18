@@ -35,7 +35,7 @@ export const apiUser = {
     bio: bio,
     date_of_birth: date_of_birth,
     gender: gender,
-    fitnessLevel: fitnessLevel
+    fitnessLevel: fitnessLevel/1
   }),
   // Submit user login request to the server
   login: (email, password) => instance.post('/login', {
@@ -45,5 +45,17 @@ export const apiUser = {
   // Removes session cookie and posts server request to remove the token from the database
   logout: () => instance.post('/logout').then(function () {
     document.cookie = "s_id = ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-  })
+  }),
+  // Submit user signup information to the server
+  editProfile: (user_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitnessLevel) => instance.put('/profiles/'+user_id, {
+    firstname: firstname,
+    lastname: lastname,
+    middlename: middlename,
+    nickname: nickname,
+    primary_email: primary_email,
+    bio: bio,
+    date_of_birth: date_of_birth,
+    gender: gender,
+    fitnessLevel: fitnessLevel/1
+  }),
 }

@@ -155,9 +155,9 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
-//        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
-//            messages.add("Please select the fitness level in the range 0 and 5");
-//        }
+        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
+            messages.add("Please select the fitness level in the range 0 and 5");
+        }
 
         if (messages.isEmpty()) {
             if (emailExists(user.getPrimaryEmail())) {
@@ -197,7 +197,7 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 & user.getFitnessLevel() > 5){
+        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
         }
 
