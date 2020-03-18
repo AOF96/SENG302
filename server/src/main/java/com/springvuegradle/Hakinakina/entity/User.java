@@ -74,11 +74,11 @@ public class User {
 
     @JsonProperty("additional_email")
     @JsonSerialize(using=EmailSerializer.class)
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
 
     @JsonProperty("session_tokens")
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Session> sessionToken = new HashSet<>();
 
     protected User() {}

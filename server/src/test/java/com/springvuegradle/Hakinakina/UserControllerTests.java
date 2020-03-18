@@ -40,8 +40,12 @@ public class UserControllerTests {
     @Autowired
     private EmailRepository emailRepository;
 
+    @Autowired
+    private SessionRepository sessionRepository;
+
     @BeforeEach
     public void resetRepositories() {
+        sessionRepository.deleteAll();
         userRepository.deleteAll();
         emailRepository.deleteAll();
     }
@@ -112,21 +116,6 @@ public class UserControllerTests {
 //        this.mockMvc.perform(get("/profiles"))
 //                .andExpect(jsonPath("$.Users").value(expected));
 //    }
-
-        this.mockMvc.perform(get("/users"))
-                .andExpect(jsonPath("$.Users").value(user.getUser_id() + " Maurice Benson"));
-
-        User user2 = new User("John", "Smith", "jacky2@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
-                2, "jacky'sSecuredPwd");
-        userRepository.save(user2);
-
-        ArrayList<String> expected = new ArrayList<String>();
-        expected.add(user.getUser_id() + " Maurice Benson");
-        expected.add(user2.getUser_id() + " John Smith");
-
-        this.mockMvc.perform(get("/users"))
-                .andExpect(jsonPath("$.Users").value(expected));
-    }
 
     @Test
     public void getOneUserTest() throws Exception {
@@ -452,7 +441,7 @@ public class UserControllerTests {
 
     @Test
     public void repeatPasswordIncorrect() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 
@@ -471,7 +460,7 @@ public class UserControllerTests {
 
     @Test
     public void oldPasswordIncorrect() throws Exception {
-        User user = new User("Maurice", "Benson", "jacky@google.com", Date.valueOf("1985-12-20"), Gender.MALE,
+        User user = new User("Maurice", "Benson", "jacky@google.com", "1985-12-20", Gender.MALE,
                 2, "jacky'sSecuredPwd");
         userRepository.save(user);
 

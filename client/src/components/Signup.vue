@@ -86,13 +86,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import router from "../router";
 import { mapState, mapActions } from 'vuex'
-// import {
-//   getEncryptPassword
-// } from "../common.js"
-const SERVER_URL = 'http://localhost:9499';
+import { apiUser } from '../api'
 
 import NavBar from '@/components/NavBar'
 
@@ -196,29 +192,39 @@ export default {
       if (!this.valid) {
         alert(this.all_err_msg);
         this.failed = true;
-        return
+        return;
       }
 
-      this.createUserProfile(this.user)
 
-      axios.post(SERVER_URL + '/profiles', {
-          firstname: this.user.firstname,
-          lastname: this.user.lastname,
-          middlename: this.user.middlename,
-          nickname: this.user.nickname,
-          primary_email: this.user.primary_email,
-          password: this.password1,
-          bio: this.user.bio,
-          date_of_birth: this.user.date_of_birth,
-          gender: this.user.gender,
-          fitnessLevel: this.user.fitnessLevel
-        })
-        .then((response) => {
-          console.log(response);
-          router.push('Profile');
-        }, (error) => {
-          console.log(error)
-        })
+
+      apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.user.password, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
+        console.log(response.data);
+        this.createUserProfile(response.data[0]);
+        router.push('Profile');
+      }, (error) => {
+        alert("An error occured");
+        console.log(error)
+      })
+
+      // axios.post(SERVER_URL + '/profiles', {
+      //     firstname: this.user.firstname,
+      //     lastname: this.user.lastname,
+      //     middlename: this.user.middlename,
+      //     nickname: this.user.nickname,
+      //     primary_email: this.user.primary_email,
+      //     password: this.password1,
+      //     bio: this.user.bio,
+      //     date_of_birth: this.user.date_of_birth,
+      //     gender: this.user.gender,
+      //     fitnessLevel: this.user.fitnessLevel
+      //   })
+      //   .then((response) => {
+      //     console.log(response);
+      //     router.push('Profile');
+      //   }, (error) => {
+      //     console.log(error)
+      //   });
+
     }
   }
 }

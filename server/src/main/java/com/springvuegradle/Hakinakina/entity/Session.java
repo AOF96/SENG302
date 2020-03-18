@@ -16,7 +16,7 @@ public class Session {
         this.token = token;
     }
 
-    @ManyToOne(cascade= CascadeType.PERSIST, fetch= FetchType.EAGER)
+    @ManyToOne
     private User user;
 
 

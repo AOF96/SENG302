@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -133,7 +134,7 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
-    public ResponseEntity validateCreateProfile(User user) {
+    public ResponseEntity validateCreateProfile(User user, SessionRepository sessionRepository) {
         //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -161,8 +162,15 @@ public class UserService {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                user.addSession(session_token);
+                sessionRepository.insertToken(sessionToken, user.getUser_id());
                 userRepository.save(user);
-                return responseHandler.formatSuccessResponse(201, "User created");
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
         } else {
             return responseHandler.formatErrorResponse(400, messages);

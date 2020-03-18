@@ -2,17 +2,18 @@ import axios from 'axios'
 
 const SERVER_URL = 'http://localhost:9499'
 
-function getCookie(name){
-  var value = "; "+document.cookie;
-  var parts = value.split("; "+name+"=");
-  if (parts.length == 2) return parts.pop().split(";").shift();
-}
+//Might need if cookies break again
+// function getCookie(name){
+//   var value = "; "+document.cookie;
+//   var parts = value.split("; "+name+"=");
+//   if (parts.length == 2) return parts.pop().split(";").shift();
+// }
 
 const instance = axios.create({
   baseURL: SERVER_URL,
   timeout: 5000,
   withCredentials: true,
-  headers: {'Authorization': getCookie("s_id")}
+  //headers: {'Authorization': getCookie("s_id")}
 });
 
 export const apiUser = {
@@ -21,5 +22,18 @@ export const apiUser = {
     old_password: old_password,
     new_password: new_password,
     repeat_password: repeat_password
+  }),
+  // Submit user signup information to the server
+  signUp: (firstname, lastname, middlename, nickname, primary_email, password, bio, date_of_birth, gender, fitnessLevel) => instance.post('/profiles', {
+    firstname: firstname,
+    lastname: lastname,
+    middlename: middlename,
+    nickname: nickname,
+    primary_email: primary_email,
+    password: password,
+    bio: bio,
+    date_of_birth: date_of_birth,
+    gender: gender,
+    fitnessLevel: fitnessLevel
   })
 }

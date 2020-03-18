@@ -57,6 +57,11 @@ const mutations = {
       state.user.primary_email = data.primary_email;
     }
   },
+  setUserID(state, data) {
+    if(data.user_id != ""){
+      state.user.profileId = data.user_id;
+    }
+  },
   setUserSecondaryEmails(state, data) {
     state.user.additional_email = data.additional_email;
   },
@@ -99,17 +104,17 @@ const mutations = {
 
 const actions = {
   createUserProfile({ commit }, data) {
-    commit('setUserFirstName', data)
-    commit('setUserLastName', data)
-    commit('setUserMiddleName', data)
-    commit('setUserNickName', data)
-    commit('setUserEmail', data)
-    commit('setUserGender', data)
-    commit('setUserBirthday', data)
-    commit('setUserBio', data)
-    commit('setUserPassword', data)
-    commit('userLogin')
-    alert("Profile info updated.")
+    commit('setUserFirstName', data);
+    commit('setUserLastName', data);
+    commit('setUserMiddleName', data);
+    commit('setUserNickName', data);
+    commit('setUserEmail', data);
+    commit('setUserGender', data);
+    commit('setUserBirthday', data);
+    commit('setUserBio', data);
+    commit('setUserPassword', data);
+    commit('setUserID', data);
+    commit('userLogin');
   },
   updateUserProfile({ commit }, data) {
     commit('setUserFirstName', data);
@@ -123,9 +128,8 @@ const actions = {
     commit('setUserFitnessLevel', data);
     commit('setUserEmail', data);
     commit('setUserSecondaryEmails', data);
+    commit('setUserID', data)
     commit('userLogin');
-
-    alert("Profile info updated.")
   },
   updateUserEmail({ commit }, data) {
     commit('setUserEmail', data)
