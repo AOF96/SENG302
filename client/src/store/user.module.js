@@ -11,7 +11,7 @@ const state = {
     bio: null,
     isLogin: false,
     fitnessLevel: null,
-    profile_id: null,
+    user_id: null,
     password: null,
     passports: [],
     tmp_passports: []
@@ -60,7 +60,7 @@ const mutations = {
   },
   setUserID(state, data) {
     if(data.user_id != ""){
-      state.user.profileId = data.user_id;
+      state.user.user_id = data.user_id;
     }
   },
   setUserSecondaryEmails(state, data) {
@@ -138,7 +138,6 @@ const actions = {
     alert("Email updated.")
   },
   logout({ commit }) {
-    console.log('logged out')
     commit('userLogout')
   },
   updatePassports({commit}, data){

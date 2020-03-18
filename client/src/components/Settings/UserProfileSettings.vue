@@ -33,14 +33,14 @@
             <input v-model="user.date_of_birth" class="editProfileInput" name="birthday" type="date" required>
             <h2>Bio</h2>
             <textarea class="editProfileTextarea" name="bio" v-model="user.bio" placeholder="Write about yourself"></textarea>
-            <button id="settingsProfileSubmit" v-on:click="updateUserProfile(user)" type="submit">Update Profile</button>
+            <button id="settingsProfileSubmit" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
 </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import axios from "axios";
@@ -53,32 +53,31 @@ export default {
         UserSettingsMenu
     },
     computed: {
-        ...mapState(['user'])
+        ...mapGetters(['user'])
     },
     methods: {
         ...mapActions(['updateUserProfile']),
-        methods: {
-            updateProfile() {
-                axios.put(SERVER_URL + '/profiles/' + this.user.profile_id, {
-                    firstname: this.user.firstname,
-                    lastname: this.user.lastname,
-                    nickname: this.user.nickname,
-                    gender: this.gender,
-                    bio: this.bio,
-                    primary_email: this.user.primary_email,
-                    date_of_birth: this.user.date_of_birth,
-                    fitnessLevel: this.user.fitnessLevel
-                })
-                .then((response) => {
-                    console.log(response);
-                    router.push('Profile');
-                }, (error) => {
-                    console.log(error)
-                })
-            },
-            addPassportCountries() {
-                this.passportCountries.num_of_countries++;
-            }
+        updateProfile() {
+            this.updateUserProfile(this.user)
+            axios.put(SERVER_URL + '/profiles/' + this.user.user_id, {
+                firstname: this.user.firstname,
+                lastname: this.user.lastname,
+                nickname: this.user.nickname,
+                gender: this.user.gender,
+                bio: this.user.bio,
+                primary_email: this.user.primary_email,
+                date_of_birth: this.user.date_of_birth,
+                fitnessLevel: this.user.fitnessLevel
+            })
+            .then((response) => {
+                console.log(response);
+                router.push('Profile');
+            }, (error) => {
+                console.log(error)
+            })
+        },
+        addPassportCountries() {
+            this.passportCountries.num_of_countries++;
         }
     }
 }
