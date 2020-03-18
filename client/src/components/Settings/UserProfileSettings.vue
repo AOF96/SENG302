@@ -20,7 +20,7 @@
             </select>
 
             <h2>Fitness Level</h2>
-            <select class="editProfileInput editProfileInputGender" v-model="user.fitnessLevel" name="fitnesslevel" placeholder="fitness" value="fitness" required>
+            <select class="editProfileInput editProfileInputGender" v-model="user.fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
                 <option selected disabled hidden>Fitness Level</option>
                 <option>0</option>
                 <option>1</option>
@@ -67,7 +67,7 @@ export default {
                 bio: this.user.bio,
                 primary_email: this.user.primary_email,
                 date_of_birth: this.user.date_of_birth,
-                fitnessLevel: this.user.fitnessLevel
+                fitness: this.user.fitness
             })
             .then((response) => {
                 console.log(response);

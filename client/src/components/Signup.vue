@@ -7,6 +7,9 @@
       <h2>Create an account</h2>
 
       <form @submit.prevent>
+          <div class="signup-row">
+              <h6 class="signup_error" id="missing_field" hidden="true"></h6>
+          </div>
         <div class="signup-row">
           <input class="fmName" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required>
           <input class="fmName" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name">
@@ -103,9 +106,6 @@ const ERR_MSG_PASS_LENGTH = 'Password must be longer than 8 characters'
 const ERR_MSG_PASS_LOWERCASE = 'Password must include lowercase characters'
 const ERR_MSG_PASS_UPPERCASE = 'Password must include uppercases characters'
 const ERR_MSG_FITNESS = 'Please select your Fitness level'
-const DEFAULT_ALL_ERR_MSG = 'Please fill all required inputs\n'
-
-
 
 export default {
   name: 'Signup',
@@ -140,14 +140,14 @@ export default {
 
     validation() {
       return {
-        firstname: this.user.firstname != '',
-        lastname: this.user.lastname != '',
-        gender: this.user.gender != 'Gender',
+        firstname: this.user.firstname !== '',
+        lastname: this.user.lastname !== '',
+        gender: this.user.gender !== 'Gender',
         email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
-        birthday: this.user.date_of_birth != '',
-        fitnesslevel: this.user.fitnessLevel != 'FitnessLevel',
+        birthday: this.user.date_of_birth !== '',
+        fitnesslevel: this.user.fitnessLevel !== 'FitnessLevel',
         password: {
-          match: this.password1 == this.password2,
+          match: this.password1 === this.password2,
           length: /.{8,}/.test(this.password1),
           number: /\d/.test(this.password1),
           lowercase: /[a-z]/.test(this.password1),
@@ -160,7 +160,7 @@ export default {
       const validation = this.validation;
       const fields = Object.keys(validation);
 
-      let err_msg = DEFAULT_ALL_ERR_MSG;
+      let err_msg = "";
       for (let i in fields) {
         const field = fields[i];
         if (!validation[field]) {
@@ -180,7 +180,7 @@ export default {
     },
 
     valid() {
-      const valid = (this.all_err_msg == DEFAULT_ALL_ERR_MSG);
+      const valid = (this.all_err_msg === "");
       return valid;
     }
   },
@@ -190,23 +190,24 @@ export default {
 
     submitSignUp() {
       if (!this.valid) {
-        alert(this.all_err_msg);
+          document.getElementById("missing_field").hidden = false;
+          document.getElementById("missing_field").innerText = this.all_err_msg;
         this.failed = true;
         return;
+      } else {
+          document.getElementById("missing_field").hidden = true;
+          document.getElementById("missing_field").innerText = "";
       }
 
+      console.log(this.user.fitnessLevel);
       apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
         console.log(response.data);
-
-        if (response.status === 201) {
-            this.createUserProfile(response.data[0]);
-            helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
-            router.push('Profile');
-        } else (
-            alert(response.data)
-        )
+        this.createUserProfile(response.data[0]);
+        helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);
+        router.push('Profile');
       }, (error) => {
-        alert("An error occured");
+        document.getElementById("missing_field").hidden = false;
+        document.getElementById("missing_field").innerText = error.response.data.Errors;
         console.log(error)
       })
     }

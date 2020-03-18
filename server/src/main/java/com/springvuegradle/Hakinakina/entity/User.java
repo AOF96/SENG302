@@ -56,6 +56,7 @@ public class User {
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @JsonProperty("fitness")
     @Column(name = "fitness_level")
     private int fitnessLevel;
 

@@ -25,7 +25,7 @@ export const apiUser = {
     repeat_password: repeat_password
   }),
   // Submit user signup information to the server
-  signUp: (firstname, lastname, middlename, nickname, primary_email, password, bio, date_of_birth, gender, fitnessLevel) => instance.post('/profiles', {
+  signUp: (firstname, lastname, middlename, nickname, primary_email, password, bio, date_of_birth, gender, fitness) => instance.post('/profiles', {
     firstname: firstname,
     lastname: lastname,
     middlename: middlename,
@@ -35,7 +35,7 @@ export const apiUser = {
     bio: bio,
     date_of_birth: date_of_birth,
     gender: gender,
-    fitnessLevel: fitnessLevel
+    fitness: fitness
   }),
   // Submit user login request to the server
   login: (email, password) => instance.post('/login', {

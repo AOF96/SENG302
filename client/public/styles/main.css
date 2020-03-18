@@ -491,3 +491,11 @@ body{
     padding-bottom: 3px;
     color: #f06a6a;
 }
+
+.signup_error {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 10px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}

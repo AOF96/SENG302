@@ -12,7 +12,7 @@ const state = {
     date_of_birth: null,
     bio: null,
     isLogin: false,
-    fitnessLevel: null,
+    fitness: null,
     user_id: null,
     password: null,
     passports: [],
@@ -85,7 +85,7 @@ const mutations = {
     state.user.tmp_passports = data.tmp_passports;
   },
   setUserFitnessLevel(state, data) {
-    state.user.fitnessLevel = data.fitnessLevel;
+    state.user.fitness = data.fitness;
   },
   setUserIsLogin(state, data) {
     if(data.isLogin != ""){
