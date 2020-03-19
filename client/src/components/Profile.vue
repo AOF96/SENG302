@@ -7,7 +7,7 @@
         <div id="profilePublicInfo">
           <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
           <div id="userQuickInfoWrap">
-            <h1 id="userName">{{ user.firstname }} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
+            <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
             <h2 id="userFitnessLevel">Fitness Level: {{ user.fitness }}</h2>
           </div>
           <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
@@ -44,13 +44,11 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import { mapGetters } from 'vuex'
+  import { mapGetters } from 'vuex';
 
-  import NavBar from '@/components/NavBar'
-  import PassportCountries from '@/components/modules/passportCountries'
-  import json from '../../public/json/data.json'
-  const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+  import NavBar from '@/components/NavBar';
+  import PassportCountries from '@/components/modules/passportCountries';
+  import json from '../../public/json/data.json';
 
   export default {
     name: "Profile",
@@ -67,39 +65,6 @@
         showNewButton: false,
         notFull: true ,
         textInput: ""
-      }
-
-    },
-    methods: {
-      addNewEmailPanel() {
-        this.showNewButton = this.showNewButton !== true;
-      },
-
-      addEmail(textInput) {
-        if (textInput === "") {
-          alert("Please enter a valid email");
-        } else {
-          axios.post(SERVER_URL + '/editemail', {
-            new_email: textInput
-          })
-            .then((response) => {
-              console.log(response.data.msg3);
-            }, (error) => {
-              console.log(error);
-            });
-        }
-        if (this.test === "") {
-            alert("Please enter a valid email");
-        } else {
-          if (json.secondary_emails.length === 4) {
-            alert("You already have 5 emails, delete one if you want to add more.");
-            this.showNewButton = false;
-            this.notFull = false;
-            return;
-          }
-          json.secondary_emails.push(this.textInput);
-          console.log(json.secondary_emails.length);
-        }
       }
     }
   }

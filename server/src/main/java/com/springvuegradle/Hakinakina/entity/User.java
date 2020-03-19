@@ -23,7 +23,7 @@ public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")
     @Column(name = "user_id")
-    private Long userID;
+    private Long userId;
 
     @JsonProperty("firstname")
     @Column(name = "first_name")
@@ -84,7 +84,9 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        if (birthDate.equals("")) {
+        if (birthDate == null) {
+            this.birthDate = null;
+        } else if (birthDate.equals("")) {
             this.birthDate = null;
         } else {
             this.birthDate = Date.valueOf(birthDate);
@@ -139,12 +141,12 @@ public class User {
         this.primaryEmail = primaryEmail;
     }
 
-    public Long getUser_id() {
-        return userID;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long userID) {
-        this.userID = userID;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getFirstName() {
