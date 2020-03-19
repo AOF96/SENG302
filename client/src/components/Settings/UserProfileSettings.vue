@@ -8,7 +8,7 @@
             <h2>First Name</h2>
             <input class="editProfileInput" type="text" name="fname" v-model="user.firstname" placeholder="First Name*" required>
             <h2>Middle Name</h2>
-            <input class="editProfileInput" type="text" name="lname" v-model="user.middlename" placeholder="Middle Name" required>
+            <input class="editProfileInput" type="text" name="lname" v-model="user.middlename" placeholder="Middle Name">
             <h2>Last Name</h2>
             <input class="editProfileInput" type="text" name="lname" v-model="user.lastname" placeholder="Last Name*" required>
             <h2>Nickname</h2>
@@ -59,12 +59,15 @@ export default {
         ...mapActions(['updateUserProfile']),
         updateProfile() {
             this.updateUserProfile(this.user);
-            apiUser.editProfile(this.user.user_id, this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitness).then((response) => {
-              alert("Profile Updated");
-              console.log(response);
+            apiUser.editProfile(this.user.user_id, this.user.firstname, this.user.lastname, this.user.middlename,
+                this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender,
+                this.user.fitness, this.user.additional_email, this.user.passports).then((response) => {
+
+                alert("Profile Updated");
+                console.log(response);
             }, (error) => {
-              alert("An error occured");
-              console.log(error);
+                alert("An error occured");
+                console.log(error);
             });
         },
         addPassportCountries() {

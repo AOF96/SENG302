@@ -118,6 +118,7 @@ const actions = {
     commit('setUserBio', data);
     commit('setUserPassword', data);
     commit('setUserFitnessLevel', data);
+    commit('setUserSecondaryEmails', data);
     commit('setUserID', data);
     commit('userLogin');
   },

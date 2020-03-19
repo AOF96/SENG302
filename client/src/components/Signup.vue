@@ -42,7 +42,7 @@
 
         <div class="signup-row">
         <h3 id="fitnessLevelText">Fitness Level</h3>
-        <select id="levels" v-model="user.fitnessLevel" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+        <select id="levels" v-model="user.fitness" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
        <option selected disabled hidden>Select your level</option>
           <option>0</option>
           <option>1</option>
@@ -199,8 +199,8 @@ export default {
           document.getElementById("missing_field").innerText = "";
       }
 
-      console.log(this.user.fitnessLevel);
-      apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
+      apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email,
+          this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitness).then((response) => {
         console.log(response.data);
         this.createUserProfile(response.data[0]);
         helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);

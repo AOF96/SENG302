@@ -104,6 +104,8 @@ public class UserDeserializer extends StdDeserializer<User> {
         JsonNode fieldValue = node.get(field);
         if (fieldValue == null) {
             return null;
+        } else if (fieldValue.asText() == "null") {
+            return null;
         } else {
             return fieldValue.asText();
         }

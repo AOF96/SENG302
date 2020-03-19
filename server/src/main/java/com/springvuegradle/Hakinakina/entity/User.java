@@ -84,7 +84,9 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        if (birthDate.equals("")) {
+        if (birthDate == null) {
+            this.birthDate = null;
+        } else if (birthDate.equals("")) {
             this.birthDate = null;
         } else {
             this.birthDate = Date.valueOf(birthDate);

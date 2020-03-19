@@ -47,7 +47,7 @@ export const apiUser = {
     document.cookie = "s_id = ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
   }),
   // Submit user signup information to the server
-  editProfile: (user_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness) => instance.put('/profiles/'+user_id, {
+  editProfile: (user_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports) => instance.put('/profiles/'+user_id, {
     firstname: firstname,
     lastname: lastname,
     middlename: middlename,
@@ -56,6 +56,8 @@ export const apiUser = {
     bio: bio,
     date_of_birth: date_of_birth,
     gender: gender,
-    fitness: fitness
+    fitness: fitness,
+    additional_email: additional_email,
+    passports: passports
   }),
 }
