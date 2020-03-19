@@ -12,6 +12,7 @@ import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -76,6 +77,10 @@ public class User {
     @JsonSerialize(using=EmailSerializer.class)
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
+
+    @JsonProperty("activities")
+    @Enumerated(EnumType.STRING)
+    private List<String> activities;
 
     protected User() {}
 
@@ -226,6 +231,10 @@ public class User {
     public void setSalt(String salt) {
         this.salt = salt;
     }
+
+    public List<String> getActivities() { return activities;}
+
+    public void setActivities(List<String> activities) { this.activities = activities; }
 
     @Override
     public String toString() {
