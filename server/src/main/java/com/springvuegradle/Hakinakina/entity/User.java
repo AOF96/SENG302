@@ -78,10 +78,6 @@ public class User {
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
 
-    @JsonProperty("activities")
-    @Enumerated(EnumType.STRING)
-    private List<String> activities;
-
     protected User() {}
 
     public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
@@ -231,10 +227,6 @@ public class User {
     public void setSalt(String salt) {
         this.salt = salt;
     }
-
-    public List<String> getActivities() { return activities;}
-
-    public void setActivities(List<String> activities) { this.activities = activities; }
 
     @Override
     public String toString() {

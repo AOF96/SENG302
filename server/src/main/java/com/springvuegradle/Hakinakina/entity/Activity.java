@@ -1,19 +1,20 @@
 package com.springvuegradle.Hakinakina.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-/**
- * An enum to represent a User's activities
- */
-public enum Activity {
-    @JsonProperty("Relaxing")
-    RELAXING,
-    @JsonProperty("Fun")
-    FUN,
-    @JsonProperty("Adventurous")
-    AVENTUROUS,
-    @JsonProperty("Extreme")
-    EXTREME,
-    @JsonProperty("TeamSport")
-    TEAMSPORT
+@Entity
+public class Activity {
+    @Id
+    @Column(name = "activity_name")
+    private String activity;
+
+    protected Activity() {
+    }
+
+    public Activity(String activity) {
+        this.activity = activity;
+    }
 }

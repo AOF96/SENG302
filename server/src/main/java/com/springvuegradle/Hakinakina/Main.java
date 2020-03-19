@@ -13,10 +13,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Main class for application
@@ -33,12 +30,17 @@ public class Main {
 	}
 
 	@Bean
-	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository) {
+	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, ActivityRepository activityRepository) {
 		return args -> {
 			String[] countryCodes = Locale.getISOCountries();
 			for (String countryCode : countryCodes) {
 				Locale obj = new Locale("", countryCode);
 				countryRepository.save(new PassportCountry(obj.getCountry(), obj.getDisplayCountry()));
+			}
+
+			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team Sport");
+			for (String activity : activityTypes) {
+				activityRepository.save(new Activity(activity));
 			}
 		};
 	}
