@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,8 +67,8 @@ public class UserController {
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if(session != null) {
-            if (session.getUser().getUser_id() == profileId) {
-                user.setUser_id(profileId);
+            if (session.getUser().getUserId() == profileId) {
+                user.setUserId(profileId);
                 user.setSalt(userRepository.findById(profileId).get().getSalt());
                 user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
                 return userService.validateEditUser(user);
@@ -151,7 +150,7 @@ public class UserController {
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
                 Session session_token = new Session(sessionToken);
-                sessionRepository.insertToken(sessionToken, user.getUser_id());
+                sessionRepository.insertToken(sessionToken, user.getUserId());
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             } else {
@@ -203,7 +202,7 @@ public class UserController {
             //TODO Add method to check token
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if(session != null){
-                if(session.getUser().getUser_id() == profileId){
+                if(session.getUser().getUserId() == profileId){
                     try {
                         String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
                         if (!user.getPassword().equals(encryptedPassword)) {
