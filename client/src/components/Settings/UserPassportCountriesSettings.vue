@@ -10,11 +10,11 @@
 
         <div>
           <form @submit.prevent>
-            <select 
-                v-model="adding_country" 
-                name="passportCountries" 
-                placeholder="Passport Countries" 
-                value="Passport Countries" 
+            <select
+                v-model="adding_country"
+                name="passportCountries"
+                placeholder="Passport Countries"
+                value="Passport Countries"
                 required
             >
                 <option selected disabled hidden>Passport Countries</option>
@@ -36,6 +36,7 @@ import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 
 import axios from "axios";
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
+import {apiUser} from "../../api";
 import { mapState, mapActions } from 'vuex'
 import {apiUser} from "../../api";
 
@@ -91,14 +92,6 @@ export default {
         },
         addPassportCountries() {
             if(!this.adding_country) return
-            // axios.post(SERVER_URL + '/editPassportCountries', {
-            //         passportCountries: this.adding_country //should be matched the column name
-            //     })
-            //     .then((response) => {
-            //         console.log(response.data)
-            //     }, (error) => {
-            //         console.log(error)
-            //     })
             this.user.user.tmp_passports.push(this.adding_country)
             const index = this.countries_option.indexOf(this.adding_country)
             if (index == -1) return
