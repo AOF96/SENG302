@@ -61,8 +61,8 @@ const mutations = {
     }
   },
   setUserID(state, data) {
-    if(data.user_id != ""){
-      state.user.user_id = data.user_id;
+    if(data.profile_id != ""){
+      state.user.user_id = data.profile_id;
     }
   },
   setUserSecondaryEmails(state, data) {
