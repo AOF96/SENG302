@@ -3,6 +3,7 @@ package com.springvuegradle.Hakinakina.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
@@ -205,4 +206,29 @@ public class UserService {
         }
     }
 
+    public ResponseEntity checkLogin(String email, String attempt) {
+        User user = userRepository.findUserByEmail(email);
+
+        if (user == null) {
+            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
+            if (user.getPassword().equals(encryptedPassword)) {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                sessionRepository.insertToken(sessionToken, user.getUserId());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+            } else {
+                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "can't check password");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
 }
