@@ -397,3 +397,25 @@ body{
     margin-left: 0;
     margin-top: 0;
 }
+
+.passwordChange_error {
+    margin: 0 auto;
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 13px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+
+}
+
+.passwordChange_success {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #4CAF50;
+
+}
+
+

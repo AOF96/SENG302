@@ -7,5 +7,5 @@ export const userInfo = {
     secondaryEmails: [], 
     birthday:null,
     bio: null,
-    isLogin: true
+    isLogin: false
 }
