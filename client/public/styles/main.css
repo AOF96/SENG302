@@ -431,7 +431,7 @@ body{
     margin-top: 0;
     display:inline;
 }
-#addEmailButton, #updateFitnessButton{
+#addEmailButton, #updateFitnessButton, .removeCountryButton{
     padding: 8px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -447,6 +447,60 @@ body{
     margin: 20px;
     margin-left: 0;
     margin-top: 0;
+}
+
+.removeCountryButton{
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    right: 20px;
+    font-weight: 500;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin: 20px;
+    margin-left: 0;
+    margin-top: 0;
+    color:white;
+    background:#1cca92;
+}
+#addPassportButton, #saveChangesButton{
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin: 20px;
+    margin-left: 0;
+    margin-top: 0;
+}
+#saveChangesButton{
+    width: calc(100% - 40px);
+}
+#passportCountriesInput{
+    margin: 20px;
+    padding: 8px 20px;
+    border-radius: 30px;
+    background: white;
+    border: 2px solid #a8a8a8;
+    font-size: 14px;
+    width: calc(100% - 120px);
+    margin-right: 0;
+    margin-top: 0;
+    display: inline;
+}
+.removeCountryButton:hover{
+    background: #ffffff;
+    color: #1cca92;
 }
 .profileModule{
     width:100%;
@@ -605,4 +659,15 @@ body{
     margin: 10px;
     padding-bottom: 3px;
     color: #4CAF50;
+}
+
+.passportBlock{
+    width: calc(100% - 40px);
+    display: block;
+    margin: 0 auto;
+    border-radius: 50px;
+    background: #1cca92;
+    position: relative;
+    overflow: hidden;
+    margin-bottom:15px;
 }
