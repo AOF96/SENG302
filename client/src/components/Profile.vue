@@ -44,13 +44,11 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import { mapGetters } from 'vuex'
+  import { mapGetters } from 'vuex';
 
-  import NavBar from '@/components/NavBar'
-  import PassportCountries from '@/components/modules/passportCountries'
-  import json from '../../public/json/data.json'
-  const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io';
+  import NavBar from '@/components/NavBar';
+  import PassportCountries from '@/components/modules/passportCountries';
+  import json from '../../public/json/data.json';
 
   export default {
     name: "Profile",
@@ -67,39 +65,6 @@
         showNewButton: false,
         notFull: true ,
         textInput: ""
-      }
-
-    },
-    methods: {
-      addNewEmailPanel() {
-        this.showNewButton = this.showNewButton !== true;
-      },
-
-      addEmail(textInput) {
-        if (textInput === "") {
-          alert("Please enter a valid email");
-        } else {
-          axios.post(SERVER_URL + '/editemail', {
-            new_email: textInput
-          })
-            .then((response) => {
-              console.log(response.data.msg3);
-            }, (error) => {
-              console.log(error);
-            });
-        }
-        if (this.test === "") {
-            alert("Please enter a valid email");
-        } else {
-          if (json.secondary_emails.length === 4) {
-            alert("You already have 5 emails, delete one if you want to add more.");
-            this.showNewButton = false;
-            this.notFull = false;
-            return;
-          }
-          json.secondary_emails.push(this.textInput);
-          console.log(json.secondary_emails.length);
-        }
       }
     }
   }
