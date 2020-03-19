@@ -17,19 +17,26 @@
 </template>
 
 <script>
-  import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
+  import UserSettingsMenu from '@/components/Settings/UserSettingsMenu';
+  import {userInfo} from "../../globals";
+  import {apiUser} from "../../api";
+  import { mapGetters } from 'vuex'
+
+
   export default {
     components: {
       UserSettingsMenu
     },
     data () {
       return {
-        password: '',
-        newPassword: '',
-        confirmPassword: '',
+          profileId: userInfo.profileId,
+          password: '',
+          newPassword: '',
+          confirmPassword: '',
       }
     },
     computed: {
+      ...mapGetters(['user']),
       validation() {
         return {
           oldPassword: this.password !== '',
@@ -47,6 +54,8 @@
             if(this.validation.length){
               if(this.validation.number){
                 if(this.validation.uppercase){
+                    apiUser.changePassword(this.user.user_id, this.password, this.newPassword, this.confirmPassword);
+                    console.log("Request sent");
                   alert("Password updated")
                 }else{alert("Must contain at least one uppercase character.");}
               }else{alert("Must contain at least one number.");}

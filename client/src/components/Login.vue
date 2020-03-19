@@ -1,102 +1,89 @@
 <template>
-    <div>
-        <NavBar/>
-        <div id="loginBox" class="credentials-box-wrap">
-            <div id="credentials-box">
-                <h1>Login</h1>
-                <h2>Sign in to your account</h2>
-                <form @submit.prevent>
-                    <div class="signup-row">
-                        <input type="email" v-model="email" class="loginInput-email" name="email" placeholder="Email"
-                               required>
-                    </div>
-                    <div class="signup-row">
-                        <input type="password" v-model="password" class="loginInput-password" name="password"
-                               placeholder="Password" required>
-                    </div>
-                    <hr>
-                    <input type="submit" v-on:click="submitLogin()" id="signupButton-submit" value="Login">
-                </form>
-            </div>
-            <h4>Don't have an account?
-                <router-link to="/Signup">Sign Up</router-link>
-            </h4>
-        </div>
+  <div>
+    <NavBar/>
+    <div id="loginBox" class="credentials-box-wrap">
+      <div id="credentials-box">
+        <h1>Login</h1>
+        <h2>Sign in to your account</h2>
+        <form @submit.prevent>
+          <div class="signup-row">
+            <h6 class="login_error" id="email_exist" hidden="true">Account does not exist</h6>
+          </div>
+          <div class="signup-row">
+            <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
+              required>
+          </div>
+          <div class="signup-row">
+            <h6 class="login_error" id="incorrect_password" hidden="true">Incorrect Password</h6>
+          </div>
+          <div class="signup-row">
+            <input type="password" v-model="user.password" class="loginInput-password" name="password"
+              placeholder="Password" required>
+          </div>
+          <div class="signup-row">
+            <h6 class="login_error" id="other_error" hidden="true"></h6>
+          </div>
+          <hr>
+          <input type="submit" v-on:click="submitLogin()" id="signupButton-submit" value="Login">
+        </form>
+      </div>
+      <h4>Don't have an account?
+          <router-link to="/Signup">Sign Up</router-link>
+      </h4>
     </div>
+  </div>
 </template>
 
 <script>
+  import router from "../router";
+  import { mapGetters, mapActions} from 'vuex';
+  import { apiUser, helperFunction } from '../api'
+  //import {getEncryptPassword} from "../common.js"
 
-    import axios from 'axios'
-    import router from "../router";
-    import {getEncryptPassword} from "../common.js"
+  import NavBar from '@/components/NavBar'
 
-    import NavBar from '@/components/NavBar'
-    import {userInfo} from '../globals';
+  export default {
+    name: 'Login',
+    components: {
+      NavBar
+    },
+    computed: {
+      ...mapGetters(['user']),
 
-    const SERVER_URL = 'https://4967d4f4-8301-42d1-a778-e3d150633644.mock.pstmn.io'
+    },
+    methods: {
+      ...mapActions(['updateUserProfile']),
 
-    export default {
-        name: 'Login',
-        components: {
-            NavBar
-        },
-        data() {
-            return {
-                email: "",
-                password: ""
+      submitLogin() {
+        if (this.user.primary_email.trim(), this.user.password.trim()) {
+          apiUser.login(this.user.primary_email, this.user.password).then((response) => {
+            const responseData = response.data;
+
+            helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
+            this.updateUserProfile(responseData[0]);
+            router.push('Profile');
+          }, (error) => {
+            const responseData = error.response.data;
+            const responseCode = error.response.status;
+            console.log(responseCode + ": " + responseData);
+
+            if (responseCode === 403 && responseData === "Email does not exist") {
+              document.getElementById("email_exist").hidden = false;
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            } else if (responseCode === 403 && responseData === "Incorrect password") {
+              document.getElementById("incorrect_password").hidden = false;
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            } else {
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("other_error").hidden = false;
+              document.getElementById("other_error").innerText = responseData;
             }
-        },
-
-        methods: {
-            submitLogin() {
-                if (this.email.trim(), this.password.trim()) {
-                    axios.post(SERVER_URL + '/login', {
-                        email: this.email,
-                        password: getEncryptPassword(this.password),
-                    })
-                        .then((response) => {
-                            var users = response.data;
-                            var registeredUser = false;
-
-                            if  (/[^\s]+@[^\s]+/.test(this.email)) {
-
-                                for (var i = 0; i < users.length; i++) {
-                                    var currentUser = users[i];
-
-                                    // Checking if the user exists
-                                    if (this.email == currentUser.email) {
-                                        registeredUser = true;
-                                        if (getEncryptPassword(this.password) == currentUser.password) {
-                                            userInfo.firstname = currentUser.firstname,
-                                                userInfo.lastname = currentUser.lastname,
-                                                userInfo.middlename = currentUser.middlename,
-                                                userInfo.nickname = currentUser.nickname,
-                                                userInfo.gender = currentUser.gender,
-                                                userInfo.email = currentUser.email,
-                                                userInfo.birthday = currentUser.birthday,
-                                                userInfo.isLogin = true
-
-                                            console.log(response.data.msg1);
-                                            router.push('Profile');
-                                        } else {
-                                            alert("Invalid password or email");
-                                        }
-                                    }
-                                }
-                                if (!registeredUser) {
-                                    alert('Email entered is not registered');
-                                }
-                            }
-                        }, (error) => {
-                            console.log(error);
-                        })
-                } else {
-                    alert("Please fill all required fields");
-                }
-            }
+          });
         }
+      }
     }
-
-
+  }
 </script>
