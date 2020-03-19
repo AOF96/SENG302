@@ -48,7 +48,6 @@ import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
-    import store from '@/store/index.js';
 
 
 
@@ -60,6 +59,7 @@ export default {
         ...mapGetters(['user'])
     },
     methods: {
+        ...mapActions(['logout']),
         ...mapActions(['updateUserProfile']),
         updateProfile() {
             this.updateUserProfile(this.user);
@@ -67,8 +67,7 @@ export default {
               alert("Profile Updated");
               console.log(response);
             }, (error) => {
-                apiUser.logout();
-                store.getters.user.isLogin = false;
+                this.logout();
                 router.push('/login');
                 alert("An error occured");
                 console.log(error);
