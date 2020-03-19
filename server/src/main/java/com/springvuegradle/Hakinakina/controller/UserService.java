@@ -3,6 +3,7 @@ package com.springvuegradle.Hakinakina.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
@@ -32,6 +33,11 @@ public class UserService {
         this.sessionRepository = sessionRepository;
     }
 
+    /**
+     * Checks whether an email exists by checking the repository and whether a user exists with that email as their primary
+     * @param email A string email to search for
+     * @return
+     */
     public boolean emailExists(String email) {
         return !(emailRepository.findEmailByString(email) == null && userRepository.findUserByEmail(email) == null);
     }
@@ -133,6 +139,12 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
+    /**
+     * Takes a User object and makes several checks before saving them to the repository after a request to create a
+     * new user
+     * @param user A User object to check
+     * @return A ResponseEntity detailing the results
+     */
     public ResponseEntity validateCreateProfile(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -174,6 +186,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Takes a User object and makes several checks before saving them to the repository after a request to edit a
+     * user
+     * @param user A User object to check
+     * @return A ResponseEntity detailing the results
+     */
     public ResponseEntity validateEditUser(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -205,4 +223,37 @@ public class UserService {
         }
     }
 
+    /**
+     * Checks whether a login attempt was successful. First checks if there exists a user with that primary email.
+     * Then checks that the password is correct. If it is, a token is created for that user and is stored for future
+     * actions.
+     * @param email A string of what could be an existing email
+     * @param attempt The password attempt
+     * @return A ResponseEntity detailing the results
+     */
+    public ResponseEntity checkLogin(String email, String attempt) {
+        User user = userRepository.findUserByEmail(email);
+
+        if (user == null) {
+            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
+            if (user.getPassword().equals(encryptedPassword)) {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                sessionRepository.insertToken(sessionToken, user.getUserId());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+            } else {
+                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "can't check password");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
 }
