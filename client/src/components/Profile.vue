@@ -38,6 +38,10 @@
             <td class="profileTableTd">Secondary Emails:</td>
             <td class="profileTableTd">{{ user.additional_email }}</td>
           </tr>
+          <tr>
+            <td class="profileTableTd">Activities:</td>
+            <td class="profileTableTd">{{ user.activities }}</td>
+          </tr>
         </table>
       </div>
     </div>
