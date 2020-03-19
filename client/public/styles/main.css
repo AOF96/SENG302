@@ -164,10 +164,18 @@ body{
 .floatClear{
     clear:both;
 }
+#userQuickInfoWrap{
+    float: left;
+    margin-top: 36px;
+}
 #userName{
     font-size: 18px;
-    float: left;
-    margin-top: 45px;
+}
+#userFitnessLevel{
+    color: #7f7f7f;
+    font-size: 13px;
+    font-weight: 500;
+    padding-top: 3px;
 }
 #userNickname{
     color: #7f7f7f;
@@ -423,7 +431,7 @@ body{
     margin-top: 0;
     display:inline;
 }
-#addEmailButton{
+#addEmailButton, #updateFitnessButton{
     padding: 8px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -433,12 +441,50 @@ body{
     background: #ffffff;
     border: 2px solid #1cca92;
     cursor: pointer;
-    transition: all .2s ease;
+    transition: all 0.2s ease;
     text-decoration: none;
     float: right;
     margin: 20px;
     margin-left: 0;
     margin-top: 0;
+}
+.profileModule{
+    width:100%;
+    background:white;
+    border-radius: 14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    margin-top:15px;
+    overflow: hidden;
+}
+.profileModule h1{
+    font-size: 17px;
+    padding: 20px;
+    color: rgba(0,0,0,0.85);
+}
+#passportCountries{
+    padding-bottom:2px;
+    overflow: hidden;
+}
+.passportCountry{
+    padding: 10px 20px;
+    border-top: 1px solid #f3f3f3;
+    transition:all .2s ease;
+    cursor:pointer;
+}
+.passportCountry:hover{
+    background: #f8f8f8;
+}
+.passportCountry img{
+    height: 30px;
+    width: 45px;
+    float: right;
+    border-radius: 15px;
+}
+.passportCountry h2{
+    font-size: 16px;
+    padding-top: 6px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
 }
 #cover{
     width:100%;
@@ -517,4 +563,46 @@ body{
 
 #example {
     padding-right: 17px;
+}
+
+.spacer {
+    width: 100%;
+    height: 1px;
+    margin: 0 auto;
+    background-color: blue;
+}
+
+.login_error {
+    margin: 0 auto;
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 13px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.signup_error {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 10px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.edit_error {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.edit_success {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #4CAF50;
 }

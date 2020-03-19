@@ -23,7 +23,7 @@ public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")
     @Column(name = "user_id")
-    private Long userID;
+    private Long userId;
 
     @JsonProperty("firstname")
     @Column(name = "first_name")
@@ -56,6 +56,7 @@ public class User {
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @JsonProperty("fitness")
     @Column(name = "fitness_level")
     private int fitnessLevel;
 
@@ -74,12 +75,8 @@ public class User {
 
     @JsonProperty("additional_email")
     @JsonSerialize(using=EmailSerializer.class)
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
-
-    @JsonProperty("session_tokens")
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
-    private Set<Session> sessionToken = new HashSet<>();
 
     protected User() {}
 
@@ -87,18 +84,23 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        if (birthDate.equals("")) {
+        if (birthDate == null) {
+            this.birthDate = null;
+        } else if (birthDate.equals("")) {
             this.birthDate = null;
         } else {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
-        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {
             this.salt = EncryptionUtil.getNewSalt();
-            this.password = EncryptionUtil.getEncryptedPassword(password, this.salt);
+            if (password == null) {
+                this.password = null;
+            } else {
+                this.password = EncryptionUtil.getEncryptedPassword(password, this.salt);
+            }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Error while creating password.");
         }
@@ -107,11 +109,6 @@ public class User {
     public void addEmail(Email email) {
         emails.add(email);
         email.setUser(this);
-    }
-
-    public void addSession(Session session) {
-        sessionToken.add(session);
-        session.setUser(this);
     }
 
     public void removeEmail(Email email) {
@@ -136,10 +133,6 @@ public class User {
         return emails;
     }
 
-    public Set<Session> getSessions() {
-        return sessionToken;
-    }
-
     public String getPrimaryEmail() {
         return primaryEmail;
     }
@@ -148,12 +141,12 @@ public class User {
         this.primaryEmail = primaryEmail;
     }
 
-    public Long getUser_id() {
-        return userID;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long userID) {
-        this.userID = userID;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getFirstName() {
@@ -192,7 +185,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setEncryptedPassword(String password) {
         this.password = password;
     }
 

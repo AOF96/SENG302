@@ -10,7 +10,7 @@ public class Email {
 
     private String email;
 
-    @ManyToOne(cascade= CascadeType.PERSIST, fetch=FetchType.EAGER)
+    @ManyToOne
     private User user;
 
     protected Email() {

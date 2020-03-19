@@ -6,10 +6,13 @@ export const userInfo = {
     nickname:null,
     gender:null,
     email:null,
+    primary_email:null,
     secondaryEmails: [],
+    profile_id: null,
+    passportCountries: ['Australia', 'Newzealand'],
     birthday:null,
+    date_of_birth: null,
     bio: null,
-    fitness: 3,
-    passports: [],
-    isLogin: false
-}
+    isLogin: true,
+    fitnesslevel:null,
+};

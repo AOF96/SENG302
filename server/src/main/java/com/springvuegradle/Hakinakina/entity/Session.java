@@ -16,13 +16,15 @@ public class Session {
         this.token = token;
     }
 
-    @ManyToOne(cascade= CascadeType.PERSIST, fetch= FetchType.EAGER)
+    @ManyToOne
     private User user;
-
 
     public void setUser(User user) {
         this.user = user;
-        user.getSessions().add(this);
+    }
+
+    public User getUser() {
+        return user;
     }
 
 }

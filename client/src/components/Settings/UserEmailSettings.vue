@@ -6,10 +6,10 @@
     <hr>
     <h3>Primary email</h3>
     <div class="emailBlock">
-      <h4>{{primary_email}}</h4>
+      <h4>{{ user.primary_email }}</h4>
     </div>
     <h3>Secondary emails:</h3>
-    <div class="emailBlock emailSecondary" v-for="email in secondary_emails" v-bind:key="email">
+    <div class="emailBlock emailSecondary" v-for="email in user.additional_email" v-bind:key="email">
       <h4 v-on:click="openEmailEditBox(email)">{{email}}</h4>
       <svg v-on:click="openEmailEditBox(email)" class="editIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
@@ -42,32 +42,35 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {userInfo} from "../../globals";
 import {apiUser} from "../../api";
+const LIMIT_NUM_EMAIL = 4
 
 export default {
-  components: {
-    UserSettingsMenu
-  },
-  data() {
-    return {
-      primary_email: userInfo.email,
-      secondary_emails: userInfo.secondaryEmails,
-      showButton: true,
-      textInput: '',
-      newEmail: '',
-      tempOldEmail: '',
-      editEmailInput: '',
-      showEditBox: false,
-      emails: apiUser.getAllEmails()
-    }
-  },
-  methods: {
-    updateGlobals() {
-      userInfo.email = this.primary_email;
-      userInfo.secondaryEmails = this.secondary_emails;
+    components: {
+        UserSettingsMenu
     },
+    data() {
+        return {
+            primary_email: userInfo.email,
+            secondary_emails: userInfo.secondaryEmails,
+            showButton: true,
+            textInput: '',
+            newEmail: '',
+            limit_num_email: LIMIT_NUM_EMAIL,
+            tempOldEmail: '',
+            editEmailInput: '',
+            showEditBox: false,
+            emails: apiUser.getAllEmails()
+        }
+    },
+    computed: {
+        ...mapState(['user'])
+    },
+    methods: {
+        ...mapActions(['updateUserEmail']),
 
     /*
        Adds a new email into the secondary emails lists. Prevents the user from entering empty text or from trying to
@@ -78,12 +81,12 @@ export default {
         alert("Please enter an email that has not been used before");
       } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
         this.secondary_emails.push(this.textInput);
-        this.updateGlobals();
+        this.updateUserEmail();
         var tempThis = this;
         setTimeout(function() {
             tempThis.textInput = "";
         }, 10);
-        apiUser.addEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
+        apiUser.addEmails(this.user.user_id, this.textInput);
       }
     },
 
@@ -98,8 +101,8 @@ export default {
       }
       this.secondary_emails.push(this.primary_email);
       this.primary_email = secondaryEmail;
-      this.updateGlobals();
-      apiUser.editEmail(userInfo.profileId, this.primary_email, this.secondary_emails);
+      this.updateUserEmail();
+      apiUser.editEmail(this.user.user_id, this.user.primary_email, this.user.secondary_emails);
     },
 
     openEmailEditBox(secondaryEmail) {
@@ -115,7 +118,8 @@ export default {
         const index = this.secondary_emails.indexOf(this.tempOldEmail);
         this.secondary_emails[index] = this.editEmailInput;
         this.showEditBox = false;
-        apiUser.editEmail(userInfo.profileId, this.editEmailInput);
+        this.updateUserEmail();
+        apiUser.editEmail(this.user.user_id, this.user.primary_email, this.user.secondary_emails);
       }
     },
 
@@ -132,8 +136,8 @@ export default {
       if (this.secondary_emails.length > 0) {
         this.showButton = true;
       }
-      this.updateGlobals();
-      apiUser.editEmail(userInfo.profileId, this.primary_email, this.secondary_emails);
+      this.updateUserEmail();
+      apiUser.editEmail(this.user.user_id, this.user.primary_email, this.user.secondary_emails);
     }
   }
 }
