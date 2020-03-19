@@ -14,7 +14,8 @@ const state = {
     user_id: null,
     password: null,
     passports: [],
-    tmp_passports: []
+    tmp_passports: [],
+    activities: ["Kayaking"]
   }
 };
 
