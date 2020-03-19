@@ -50,7 +50,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String primaryEmail = getValueString(node, "primary_email");
         String password = getValueString(node, "password");
         String dateOfBirth = getValueString(node, "date_of_birth");
-        Integer fitnessLevel = getValueInt(node, "fitness");
+        int fitnessLevel = getValueInt(node, "fitness");
         // Get gender
         String genderString = getValueString(node, "gender");
         Gender gender = null;
@@ -61,7 +61,7 @@ public class UserDeserializer extends StdDeserializer<User> {
             case ("female"):
                 gender = Gender.FEMALE;
                 break;
-            case ("non_binary"):
+            case ("non-binary"):
                 gender = Gender.NON_BINARY;
                 break;
         }
@@ -103,6 +103,8 @@ public class UserDeserializer extends StdDeserializer<User> {
     public String getValueString(JsonNode node, String field) {
         JsonNode fieldValue = node.get(field);
         if (fieldValue == null) {
+            return null;
+        } else if (fieldValue.asText() == "null") {
             return null;
         } else {
             return fieldValue.asText();

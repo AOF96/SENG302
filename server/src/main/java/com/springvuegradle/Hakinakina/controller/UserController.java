@@ -65,12 +65,20 @@ public class UserController {
     }
 
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId) {
-        user.setUser_id(profileId);
-        user.setSalt(userRepository.findById(profileId).get().getSalt());
-        user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
-        userRepository.save(user);
-        return userService.validateEditUser(user);
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if(session != null) {
+            if (session.getUser().getUser_id() == profileId) {
+                user.setUser_id(profileId);
+                user.setSalt(userRepository.findById(profileId).get().getSalt());
+                user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
+                return userService.validateEditUser(user);
+            } else {
+                return responseHandler.formatErrorResponse(400, "Session mismatch");
+            }
+        }else{
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
     }
 
     /**
@@ -125,7 +133,7 @@ public class UserController {
      * @return isLogin Whether the attempt was correct or not.
      */
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody String jsonString, HttpServletResponse response) {
+    public ResponseEntity checkLogin(@RequestBody String jsonString) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
@@ -143,7 +151,6 @@ public class UserController {
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
                 Session session_token = new Session(sessionToken);
-                user.addSession(session_token);
                 sessionRepository.insertToken(sessionToken, user.getUser_id());
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
@@ -156,6 +163,28 @@ public class UserController {
         }
     }
 
+    /**
+     * Logs out the current user and deletes the entry in the Session table
+     *
+     * @param sessionToken token stored in the cookie to identify the user
+     * @return message and status to notify if log out was successful
+     * */
+    @PostMapping("/logout")
+    public ResponseEntity checkLogout(@CookieValue("s_id") String sessionToken) {
+        try {
+            sessionRepository.removeToken(sessionToken);
+            return new ResponseEntity("User logged out", HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "couldn't log out");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     *  Processes to edit user password
+     *
+     * @param sessionToken token stored in the cookie to identify the user
+     * */
     @PutMapping("/profiles/{profileId}/password")
     public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
@@ -171,27 +200,33 @@ public class UserController {
         Optional<User> getUser = userRepository.findById(profileId);
         if (getUser.isPresent()) {
             User user = getUser.get();
-            if(user.getSessions().contains(sessionToken)){
-                try {
-                    String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
-                    if (!user.getPassword().equals(encryptedPassword)) {
-                        return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+            //TODO Add method to check token
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if(session != null){
+                if(session.getUser().getUser_id() == profileId){
+                    try {
+                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                        if (!user.getPassword().equals(encryptedPassword)) {
+                            return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                        }
+                    } catch (Exception e) {
+                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
                     }
-                } catch (Exception e) {
-                    return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
-                }
 
-                try {
-                    String salt = EncryptionUtil.getNewSalt();
-                    user.setSalt(salt);
-                    user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
-                    userRepository.save(user);
-                    response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
-                } catch (Exception e) {
+                    try {
+                        String salt = EncryptionUtil.getNewSalt();
+                        user.setSalt(salt);
+                        user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                        userRepository.save(user);
+                        response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
+                    } catch (Exception e) {
+                        response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                    }
+                }else{
                     response = responseHandler.formatErrorResponse(400, "Error while creating new password");
                 }
             }else{
-                response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                return responseHandler.formatErrorResponse(400, "Invalid Session");
             }
         } else {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");

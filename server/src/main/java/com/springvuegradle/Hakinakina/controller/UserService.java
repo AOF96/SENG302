@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,15 @@ public class UserService {
     private UserRepository userRepository;
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
-
+    private SessionRepository sessionRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
-                       PassportCountryRepository countryRepository) {
+                       PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
+        this.sessionRepository = sessionRepository;
     }
 
     public boolean emailExists(String email) {
@@ -134,7 +136,6 @@ public class UserService {
     }
 
     public ResponseEntity validateCreateProfile(User user) {
-        //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
         if (user.getLastName() == null || user.getFirstName() == null) {
@@ -153,16 +154,22 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
-//        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
-//            messages.add("Please select the fitness level in the range 0 and 5");
-//        }
+        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
+            messages.add("Please select the fitness level in the range 0 and 5");
+        }
 
         if (messages.isEmpty()) {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
                 userRepository.save(user);
-                return responseHandler.formatSuccessResponse(201, "User created");
+                sessionRepository.insertToken(sessionToken, user.getUser_id());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
         } else {
             return responseHandler.formatErrorResponse(400, messages);
@@ -170,7 +177,6 @@ public class UserService {
     }
 
     public ResponseEntity validateEditUser(User user) {
-        //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
         if (user.getLastName() == null || user.getFirstName() == null) {
@@ -189,7 +195,7 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 & user.getFitnessLevel() > 5){
+        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
         }
 

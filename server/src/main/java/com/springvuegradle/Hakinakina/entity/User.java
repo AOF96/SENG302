@@ -56,6 +56,7 @@ public class User {
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
+    @JsonProperty("fitness")
     @Column(name = "fitness_level")
     private int fitnessLevel;
 
@@ -77,23 +78,20 @@ public class User {
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
 
-    @JsonProperty("session_tokens")
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Session> sessionToken = new HashSet<>();
-
     protected User() {}
 
     public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        if (birthDate.equals("")) {
+        if (birthDate == null) {
+            this.birthDate = null;
+        } else if (birthDate.equals("")) {
             this.birthDate = null;
         } else {
             this.birthDate = Date.valueOf(birthDate);
         }
         this.fitnessLevel = fitnessLevel;
-        System.out.println(this.fitnessLevel);
         this.primaryEmail = primaryEmail;
 
         try {
@@ -111,11 +109,6 @@ public class User {
     public void addEmail(Email email) {
         emails.add(email);
         email.setUser(this);
-    }
-
-    public void addSession(Session session) {
-        sessionToken.add(session);
-        session.setUser(this);
     }
 
     public void removeEmail(Email email) {
@@ -138,10 +131,6 @@ public class User {
 
     public Set<Email> getEmails() {
         return emails;
-    }
-
-    public Set<Session> getSessions() {
-        return sessionToken;
     }
 
     public String getPrimaryEmail() {
