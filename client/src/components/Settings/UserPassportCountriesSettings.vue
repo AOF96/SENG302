@@ -23,7 +23,7 @@
                 </option>
             </select>
             <button v-on:click="addPassportCountries()">Add passport countries</button>
-            <button v-on:click="savePassportCountries()">Save Changes</button>
+              <button v-on:click="savePassportCountries()">Save Changes</button>
           </form>
         </div>
     </div>
@@ -38,7 +38,6 @@ import axios from "axios";
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
 import {apiUser} from "../../api";
 import { mapState, mapActions } from 'vuex'
-import {apiUser} from "../../api";
 
 export default {
     components: {
@@ -77,7 +76,7 @@ export default {
         this.startUp()
     },
     methods: {
-        ...mapActions(['updatePassports', 'updateTmpPassports', 'updateUserProfile']),
+        ...mapActions(['updatePassports', 'updateTmpPassports']),
          startUp() {
             console.log('init')
             this.user.user.tmp_passports = this.user.user.passports.slice()
@@ -106,7 +105,6 @@ export default {
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                 this.user.user.fitness, this.user.user.additional_email, this.user.user.passports);
         }
-
     }
 }
 </script>
