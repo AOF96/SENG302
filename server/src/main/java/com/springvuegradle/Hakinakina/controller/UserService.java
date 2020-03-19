@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Class for user profile request actions
@@ -167,7 +165,7 @@ public class UserService {
                 String sessionToken = randomToken.getToken(40);
                 Session session_token = new Session(sessionToken);
                 userRepository.save(user);
-                sessionRepository.insertToken(sessionToken, user.getUser_id());
+                sessionRepository.insertToken(sessionToken, user.getUserId());
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
