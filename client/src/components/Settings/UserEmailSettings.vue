@@ -73,9 +73,11 @@ export default {
        Adds a new email into the secondary emails lists. Prevents the user from entering empty text or from trying to
        enter an existing email.
     */
-    addEmail(textInput){
-      if (this.secondary_emails.includes(textInput) || textInput == this.primary_email) {
-        alert("Please enter an email that has not been used before");
+    async addEmail(textInput){
+      const emails = await apiUser.getAllEmails();
+
+      if (this.secondary_emails.includes(textInput) || textInput == this.primary_email || emails.data.includes(textInput)) {
+        alert("Email already in use.");
       } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
         this.secondary_emails.push(this.textInput);
         this.updateGlobals();
@@ -83,7 +85,7 @@ export default {
         setTimeout(function() {
             tempThis.textInput = "";
         }, 10);
-        apiUser.addEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
+        await apiUser.addEmails(userInfo.profileId, this.primary_email, this.secondary_emails);
       }
     },
 
@@ -108,9 +110,10 @@ export default {
       this.showEditBox = true;
     },
 
-    editEmail() {
-      if (this.secondary_emails.includes(this.editEmailInput) || this.editEmailInput == this.primary_email) {
-        alert("Please enter an email that has not been used before.");
+    async editEmail() {
+      const emails = await apiUser.getAllEmails();
+      if (this.secondary_emails.includes(this.editEmailInput) || this.editEmailInput == this.primary_email || emails.data.includes(this.editEmailInput)) {
+        alert("Email already in use.");
       } else if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
         const index = this.secondary_emails.indexOf(this.tempOldEmail);
         this.secondary_emails[index] = this.editEmailInput;

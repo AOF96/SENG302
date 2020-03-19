@@ -141,8 +141,12 @@ public class UserController {
     }
 
     @GetMapping("/emails")
-    public List<Email> getAllEmails() {
-        return emailRepository.findAll();
+    public List<String> getAllEmails() {
+        //ToDO use the commented out return statement rather than the current one once the email table has been fixed
+        /*
+        return emailRepository.getAllEmails();
+         */
+        return userRepository.getAllPrimaryEmails();
     }
 
     /**
