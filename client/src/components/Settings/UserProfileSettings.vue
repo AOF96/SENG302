@@ -59,7 +59,7 @@ export default {
         ...mapActions(['updateUserProfile']),
         updateProfile() {
             this.updateUserProfile(this.user);
-            apiUser.editProfile(this.user.user_id, this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitnessLevel).then((response) => {
+            apiUser.editProfile(this.user.user_id, this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitness).then((response) => {
               alert("Profile Updated");
               console.log(response);
             }, (error) => {
