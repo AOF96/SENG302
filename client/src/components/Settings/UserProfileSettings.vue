@@ -42,10 +42,14 @@
 </template>
 
 <script>
+    import router from "../../router";
+
 import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
+    import store from '@/store/index.js';
+
 
 
 export default {
@@ -63,8 +67,11 @@ export default {
               alert("Profile Updated");
               console.log(response);
             }, (error) => {
-              alert("An error occured");
-              console.log(error);
+                apiUser.logout();
+                store.getters.user.isLogin = false;
+                router.push('/login');
+                alert("An error occured");
+                console.log(error);
             });
         },
         addPassportCountries() {

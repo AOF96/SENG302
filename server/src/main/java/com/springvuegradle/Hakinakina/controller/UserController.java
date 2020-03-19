@@ -61,7 +61,7 @@ public class UserController {
 
     @PostMapping("/editemail")
     public ResponseEntity editEmails(@RequestBody String request) {
-        return userService.editEmail(request);
+            return userService.editEmail(request);
     }
 
     @PutMapping("/profiles/{profileId}")
@@ -77,7 +77,7 @@ public class UserController {
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
             }
-        }else{
+        } else {
             return responseHandler.formatErrorResponse(400, "Invalid Session");
         }
     }
