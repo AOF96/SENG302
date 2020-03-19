@@ -499,3 +499,21 @@ body{
     padding-bottom: 3px;
     color: #f06a6a;
 }
+
+.edit_error {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.edit_success {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #4CAF50;
+}

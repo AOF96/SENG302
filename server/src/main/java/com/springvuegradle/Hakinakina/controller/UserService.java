@@ -136,7 +136,6 @@ public class UserService {
     }
 
     public ResponseEntity validateCreateProfile(User user) {
-        //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
         if (user.getLastName() == null || user.getFirstName() == null) {
@@ -178,7 +177,6 @@ public class UserService {
     }
 
     public ResponseEntity validateEditUser(User user) {
-        //TODO Check for fields that are set to null
         ArrayList<String> messages = new ArrayList<String>();
 
         if (user.getLastName() == null || user.getFirstName() == null) {

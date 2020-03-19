@@ -72,7 +72,6 @@ public class UserController {
                 user.setUser_id(profileId);
                 user.setSalt(userRepository.findById(profileId).get().getSalt());
                 user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
-                userRepository.save(user);
                 return userService.validateEditUser(user);
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
