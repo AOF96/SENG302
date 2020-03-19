@@ -61,6 +61,7 @@ public class Main {
 		};
 	}
 
+
 	// Fix the CORS errors
 	@Bean
 	public FilterRegistrationBean simpleCorsFilter() {
