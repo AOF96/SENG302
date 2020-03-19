@@ -432,6 +432,10 @@ body{
     margin-left: 0;
     margin-top: 0;
 }
+.settingsActivity {
+    text-align: left;
+}
+
 .profileModule{
     width:100%;
     background:white;
