@@ -7,7 +7,7 @@ import UserProfileSettings from '@/components/Settings/UserProfileSettings'
 import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
 import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
-import store from '@/store/index.js';
+//import store from '@/store/index.js';
 
 
 Vue.use(VueRouter);
@@ -52,25 +52,25 @@ const router = new VueRouter({
     routes,
     mode: 'history'
 });
-
-router.beforeEach((to, from, next) => {
-    console.log('start routering to.path=' + to.path)
-    console.log('user.isLogin=' + store.getters.user.isLogin)
-    if (to.path == "/Signup" || to.path == "/login") {
-        if (store.getters.user.isLogin) {
-            next('/Profile')
-        } else {
-            next()
-        }
-    } else if (to.path == '/logout') {
-        next('/login')
-    } else {
-        if(store.getters.user.isLogin){
-            next()
-        } else {
-            next('/login')
-        }
-    }
-})
+//
+// router.beforeEach((to, from, next) => {
+//     console.log('start routering to.path=' + to.path)
+//     console.log('user.isLogin=' + store.getters.user.isLogin)
+//     if (to.path == "/Signup" || to.path == "/login") {
+//         if (store.getters.user.isLogin) {
+//             next('/Profile')
+//         } else {
+//             next()
+//         }
+//     } else if (to.path == '/logout') {
+//         next('/login')
+//     } else {
+//         if(store.getters.user.isLogin){
+//             next()
+//         } else {
+//             next('/login')
+//         }
+//     }
+// })
 
 export default router
