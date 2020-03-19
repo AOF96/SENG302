@@ -47,10 +47,13 @@
 </template>
 
 <script>
+    import router from "../../router";
+
 import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
+
 
 
 export default {
@@ -61,6 +64,7 @@ export default {
         ...mapGetters(['user'])
     },
     methods: {
+        ...mapActions(['logout']),
         ...mapActions(['updateUserProfile']),
         updateProfile() {
             apiUser.editProfile(this.user.user_id, this.user.firstname, this.user.lastname, this.user.middlename,
