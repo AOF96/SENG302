@@ -13,7 +13,7 @@ const state = {
     bio: null,
     isLogin: false,
     fitness: null,
-    user_id: null,
+    profile_id: null,
     password: null,
     passports: [],
     tmp_passports: []
@@ -62,7 +62,7 @@ const mutations = {
   },
   setUserID(state, data) {
     if(data.profile_id != ""){
-      state.user.user_id = data.profile_id;
+      state.user.profile_id = data.profile_id;
     }
   },
   setUserSecondaryEmails(state, data) {

@@ -100,8 +100,8 @@ export default {
         },
         savePassportCountries() {
             this.updatePassports(this.user.user);
-            console.log(this.user.user.user_id);
-            apiUser.editProfile(this.user.user.user_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
+            console.log(this.user.user.passports);
+            apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                 this.user.user.fitness, this.user.user.additional_email, this.user.user.passports);
         }
