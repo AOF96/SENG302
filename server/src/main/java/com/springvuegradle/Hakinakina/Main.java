@@ -30,7 +30,12 @@ public class Main {
 	}
 
 	@Bean
-	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, ActivityRepository activityRepository) {
+	CommandLineRunner init(UserRepository userRepository,
+						   PassportCountryRepository countryRepository,
+						   EmailRepository emailRepository,
+						   SessionRepository sessionRepository,
+						   ActivityTypeRepository activityTypeRepository
+	) {
 		return args -> {
 			String[] countryCodes = Locale.getISOCountries();
 			for (String countryCode : countryCodes) {
@@ -39,8 +44,8 @@ public class Main {
 			}
 
 			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team Sport");
-			for (String activity : activityTypes) {
-				activityRepository.save(new Activity(activity));
+			for (String activityType : activityTypes) {
+				activityTypeRepository.save(new ActivityType(activityType));
 			}
 		};
 	}

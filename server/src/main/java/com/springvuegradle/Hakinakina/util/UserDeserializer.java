@@ -21,6 +21,9 @@ public class UserDeserializer extends StdDeserializer<User> {
     @Autowired
     PassportCountryRepository countryRepository;
 
+    @Autowired
+    ActivityTypeRepository activityTypeRepository;
+
     public UserDeserializer() {
         this(null);
     }
@@ -72,6 +75,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String bio = getValueString(node, "bio");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
+        Set<ActivityType> activityTypes = getActivityTypes(node, "activity_types");
 
         // Create user with compulsory attributes
         User user = new User(firstName, lastName, primaryEmail, dateOfBirth, gender, fitnessLevel, password);
@@ -79,6 +83,9 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Add additional attributes
         for (PassportCountry country : userCountries) {
             user.addPassportCountry(country);
+        }
+        for (ActivityType activityType : activityTypes) {
+            user.addActivityTypes(activityType);
         }
         if (middleName != null) {
             user.setMiddleName(middleName);
@@ -142,6 +149,26 @@ public class UserDeserializer extends StdDeserializer<User> {
                 userCountries.add(countryRepository.findCountryByName(countryNode.asText()));
             }
             return userCountries;
+        }
+    }
+
+    /**
+     * Returns set of ActivityTypes in user creation request
+     *
+     * @param node
+     * @param field
+     * @return
+     */
+    public Set<ActivityType> getActivityTypes(JsonNode node, String field) {
+        JsonNode activityTypeNodes = node.get(field);
+        if (activityTypeNodes == null) {
+            return new HashSet<>();
+        } else {
+            Set<ActivityType> userActivityTypes = new HashSet<>();
+            for (JsonNode activityTypeNode : activityTypeNodes) {
+                userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
+            }
+            return userActivityTypes;
         }
     }
 }
