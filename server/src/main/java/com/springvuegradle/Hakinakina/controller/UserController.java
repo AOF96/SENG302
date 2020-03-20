@@ -75,6 +75,7 @@ public class UserController {
                 oldUser.resetPassportCountries();
                 user.setUserId(profileId);
                 user.setSalt(oldUser.getSalt());
+                user.setEncryptedPassword(oldUser.getPassword());
                 return userService.validateEditUser(user);
                 //return responseHandler.formatErrorResponse(400, "Session mismatch");
             } else {
