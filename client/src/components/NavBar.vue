@@ -6,8 +6,8 @@
             </button>
         </router-link>
 
-        <router-link to="/profile" v-if="user.isLogin">
-            <button id="headerNavButton" class="myaccount">
+        <router-link to="/Profile" v-if="user.isLogin">
+            <button id="headerNavButton" class="myaccount" v-on:click="goToProfile">
                 Profile
             </button>
         </router-link>
@@ -28,6 +28,7 @@
     
 <script>
     import { mapGetters, mapActions } from 'vuex';
+    import {apiUser} from "../api";
 
     export default {
         name: "NavBar",
@@ -35,7 +36,14 @@
             ...mapGetters(['user'])
         },
         methods: {
-            ...mapActions(['logout'])
+            ...mapActions(['logout']),
+            ...mapActions(['updateUserProfile']),
+            goToProfile() {
+                apiUser.refreshUserData(this.user.profile_id).then((response) => {
+                    console.log(response.data);
+                    this.updateUserProfile(response.data);
+                })
+            }
         }
     }
 </script>

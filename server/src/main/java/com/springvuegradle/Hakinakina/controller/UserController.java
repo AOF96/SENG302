@@ -107,9 +107,9 @@ public class UserController {
         Optional<User> optional = userRepository.findById(profileId);
         if (optional.isPresent()) {
             User user = optional.get();
-            return responseHandler.formatGetUser(user);
+            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return responseHandler.formatErrorResponse(400, "User does not exist");
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(403));
         }
     }
 
