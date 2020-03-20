@@ -2,19 +2,15 @@
 <div id="settingsWrap">
     <UserSettingsMenu />
     <div class="settingsContent">
-        <h2>Edit Passport Countries</h2>
+        <h1>Edit Passport Countries</h1>
         <hr>
-        <br>
-        <div class="passportBlock">
-            <h4>{{ user.primary_email }}</h4>
-        </div>
         <div class="countryBox" v-for="country in user.user.tmp_passports" v-bind:key="country">
             <h4 class="countryDisplay">{{country}}</h4>
             <button class="removeCountryButton" v-on:click="removePassportCountries(country)">remove</button>
             <div class="floatClear"></div>
         </div>
 
-        <div>
+        <div id="countryActions">
           <form @submit.prevent>
             <select
                 v-model="adding_country"
@@ -115,19 +111,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    .countryDisplay {
-        display: inline;
-
-    }
-
-    .countryBox {
-        margin-left: 20px;
-        margin-bottom: 7px;
-    }
-
-    .removeCountryButton {
-
-    }
-</style>
