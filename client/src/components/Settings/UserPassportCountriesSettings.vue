@@ -1,11 +1,17 @@
 <template>
 <div id="settingsWrap">
     <UserSettingsMenu />
-    <div>
-        <h2>Passport Countries</h2>
-        <div v-for="country in user.user.tmp_passports" v-bind:key="country">
-            <h4>{{country}}</h4>
-            <button v-on:click="removePassportCountries(country)">remove</button>
+    <div class="settingsContent">
+        <h2>Edit Passport Countries</h2>
+        <hr>
+        <br>
+        <div class="passportBlock">
+            <h4>{{ user.primary_email }}</h4>
+        </div>
+        <div class="countryBox" v-for="country in user.user.tmp_passports" v-bind:key="country">
+            <h4 class="countryDisplay">{{country}}</h4>
+            <button class="removeCountryButton" v-on:click="removePassportCountries(country)">remove</button>
+            <div class="floatClear"></div>
         </div>
 
         <div>
@@ -15,6 +21,7 @@
                 name="passportCountries"
                 placeholder="Passport Countries"
                 value="Passport Countries"
+                id="passportCountriesInput"
                 required
             >
                 <option selected disabled hidden>Passport Countries</option>
@@ -22,8 +29,8 @@
                     {{addingCountry}}
                 </option>
             </select>
-            <button v-on:click="addPassportCountries()">Add passport countries</button>
-              <button v-on:click="savePassportCountries()">Save Changes</button>
+            <button id = "addPassportButton" v-on:click="addPassportCountries()">Add</button>
+              <button id ="saveChangesButton" v-on:click="savePassportCountries()">Save</button>
           </form>
         </div>
     </div>
@@ -100,11 +107,27 @@ export default {
         },
         savePassportCountries() {
             this.updatePassports(this.user.user);
-            console.log(this.user.user.user_id);
-            apiUser.editProfile(this.user.user.user_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
+            console.log(this.user.user.passports);
+            apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                 this.user.user.fitness, this.user.user.additional_email, this.user.user.passports);
         }
     }
 }
 </script>
+
+<style>
+    .countryDisplay {
+        display: inline;
+
+    }
+
+    .countryBox {
+        margin-left: 20px;
+        margin-bottom: 7px;
+    }
+
+    .removeCountryButton {
+
+    }
+</style>

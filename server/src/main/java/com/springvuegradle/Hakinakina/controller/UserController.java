@@ -58,56 +58,31 @@ public class UserController {
         return userService.validateCreateProfile(user);
     }
 
-    /**edits email
-     *
-     * PUT /profiles/{profileId}/emails
-     * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
-     * }
-     *
-     * @return*/
-    @PutMapping("/profiles/{profileId}/emails")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long userId) {
-        return userService.editEmail(request, userId);
+    @PostMapping("/editemail")
+    public ResponseEntity editEmails(@RequestBody String request) {
+        return userService.editEmail(request);
     }
 
     @PutMapping("/profiles/{profileId}")
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session != null) {
+        if(session != null) {
             if (session.getUser().getUserId() == profileId) {
+                User oldUser = userRepository.findById(profileId).get();
+                for (PassportCountry country : oldUser.getPassportCountries()) {
+                    country.removeUser(oldUser);
+                }
+                oldUser.resetPassportCountries();
                 user.setUserId(profileId);
-                user.setSalt(userRepository.findById(profileId).get().getSalt());
-                user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
+                user.setSalt(oldUser.getSalt());
                 return userService.validateEditUser(user);
+                //return responseHandler.formatErrorResponse(400, "Session mismatch");
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
             }
-        } else {
+        }else{
             return responseHandler.formatErrorResponse(400, "Invalid Session");
         }
-    }
-
-    /** adds email
-     * POST /profiles/{profileId}/emails
-     * {
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *     ]
-     * }
-     *
-     *
-     * @return*/
-    @PostMapping("/profiles/{profileId}/emails")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("Authorization") String sessionToken) {
-        return userService.addEmails(request, profileId, sessionToken);
     }
 
     /**
@@ -149,12 +124,8 @@ public class UserController {
     }
 
     @GetMapping("/emails")
-    public List<String> getAllEmails() {
-        //ToDO use the commented out return statement rather than the current one once the email table has been fixed
-        /*
-        return emailRepository.getAllEmails();
-         */
-        return userRepository.getAllPrimaryEmails();
+    public List<Email> getAllEmails() {
+        return emailRepository.findAll();
     }
 
     /**
@@ -171,29 +142,7 @@ public class UserController {
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        User user = userRepository.findUserByEmail(email);
-
-        if (user == null) {
-            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
-        }
-
-        try {
-            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
-            if (user.getPassword().equals(encryptedPassword)) {
-                //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
-
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
-            } else {
-                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "can't check password");
-            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
-        }
+        return userService.checkLogin(email, attempt);
     }
 
     /**

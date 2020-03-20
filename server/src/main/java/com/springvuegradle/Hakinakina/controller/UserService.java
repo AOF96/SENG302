@@ -3,14 +3,13 @@ package com.springvuegradle.Hakinakina.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.*;
 
@@ -34,6 +33,11 @@ public class UserService {
         this.sessionRepository = sessionRepository;
     }
 
+    /**
+     * Checks whether an email exists by checking the repository and whether a user exists with that email as their primary
+     * @param email A string email to search for
+     * @return
+     */
     public boolean emailExists(String email) {
         return !(emailRepository.findEmailByString(email) == null && userRepository.findUserByEmail(email) == null);
     }
@@ -43,20 +47,9 @@ public class UserService {
      *
      * @param request
      * @return reply to client
-     *
-     *edits email
-     *
-     * PUT /profiles/{profileId}/emails
-     * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
-     * }
-     * */
-    public ResponseEntity<String> editEmail(String request, long userId) {
-        ResponseEntity<String> response = null;
+     */
+    public ResponseEntity editEmail(String request) {
+        ResponseEntity response = null;
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = null;
@@ -67,7 +60,7 @@ public class UserService {
             response = responseHandler.formatErrorResponse(400, "Incorrect request format");
         }
 
-        //long userId = node.get("profile_id").asLong();
+        long userId = node.get("profile_id").asLong();
         User user = userRepository.findById(userId).get();
 
         String primaryEmail = node.get("primary_email").asText();
@@ -88,8 +81,6 @@ public class UserService {
 
         return response;
     }
-
-
 
     /**
      * Switches primary email with secondary email
@@ -116,7 +107,6 @@ public class UserService {
         }
     }
 
-
     /**
      * Updates the users secondary emails to match the new set
      *
@@ -136,152 +126,25 @@ public class UserService {
             emailRepository.delete(emailToRemove);
         }
 
-        String emailsAdded = "";
         for (String newEmail : secondaryEmails) {
-            if (emailRepository.findEmailByString(newEmail) == null && !newEmail.equals("")) {
+            if (emailRepository.findEmailByString(newEmail) == null) {
                 Email emailToAdd = new Email(newEmail);
                 emailRepository.save(emailToAdd);
                 user.addEmail(emailToAdd);
-                emailsAdded += newEmail + ", ";
             }
         }
 
         userRepository.save(user);
 
-        if (emailsAdded.equals("")) {
-            return responseHandler.formatErrorResponse(400, "No emails successfully updated, emails either in use or empty");
-        } else {
-            return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
-        }
+        return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
-    /** adds email
-     * POST /profiles/{profileId}/emails
-     * {
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *     ]
-     * }
-     *
-     *
-     * @return*/
-    public ResponseEntity addEmails(String request, long userId, String sessionToken) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = null;
-
-        try {
-            node = objectMapper.readValue(request, JsonNode.class);
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Error parsing add email request");
-            return responseHandler.formatErrorResponse(400, "Incorrect request format");
-        }
-
-        User user = userRepository.findById(userId).get();
-        int currentNumEmails = user.getEmails().size();
-        List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
-
-        ArrayList<String> secondaryEmails = new ArrayList<>();
-        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
-            secondaryEmails.add(node1.asText());
-        }
-
-        if (currentNumEmails + secondaryEmails.size() > 4) {
-            return responseHandler.formatErrorResponse(400, "Cannot add more than 4 secondary emails");
-        } else {
-            for (String email : secondaryEmails) {
-                Email emailToAdd = new Email(email);
-                emailRepository.save(emailToAdd);
-                user.addEmail(emailToAdd);
-            }
-        }
-        userRepository.save(user);
-        return responseHandler.formatErrorResponse(201, "New emails successfully added");
-    }
-
-//    public String editProfile(String request) {
-//        String response = null;
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        JsonNode node = null;
-//        try {
-//            node = objectMapper.readValue(request, JsonNode.class);
-//        } catch (Exception e) {
-//            ErrorHandler.printProgramException(e, "Error parsing profile edit request");
-//        }
-//
-//        if (response == null) {
-//            long userId = node.get("profile_id").asLong();
-//            User user = userRepository.findById(userId).get();
-//
-//            String lastName = node.get("lastname").asText();
-//            if (lastName == null) {
-//                lastName = user.getLastName();
-//            }
-//            String firstName = node.get("firstname").asText();
-//            if (firstName == null) {
-//                firstName = user.getFirstName();
-//            }
-//            String middleName = node.get("middlename").asText();
-//            if (middleName == null) {
-//                middleName = user.getMiddleName();
-//            }
-//            /*String nickName = node.get("nickname").asText();
-//            if (nickName == null) {
-//                nickName = user.getNickName();
-//            }*/
-//            String bio = node.get("bio").asText();
-//            if (bio == null) {
-//                bio = user.getBio();
-//            }
-//            String dateOfBirth = node.get("date_of_birth").asText();
-//            java.sql.Date date;
-//            if (dateOfBirth == null) {
-//                date = user.getBirthDate();
-//            } else {
-//                date = Date.valueOf(dateOfBirth);
-//            }
-//            String gender = node.get("gender").asText();
-//            Gender newGender;
-//            if (gender == null) {
-//                newGender = user.getGender();
-//            } else {
-//                newGender = Gender.valueOf(gender);
-//            }
-//            String email = node.get("email").asText();
-//            if (email == null) {
-//                email = user.getLastName();
-//            }
-//            int fitness = node.get("fitness").asInt();
-//            String password = user.getPassword();
-//            String nickName = user.getNickName();
-//
-//            User newUser = new User(firstName, lastName, middleName, newGender, password, bio, nickName, date, fitness, email);
-//
-//            List<JsonNode> passportNodes = node.findValues("passport");
-//            ArrayList<String> passportCountries = new ArrayList<>();
-//            for (JsonNode currentNode : passportNodes.get(0)) {
-//                passportCountries.add(currentNode.asText());
-//            }
-//
-//            if (passportCountries != null) {
-//                for (int i = 0; i < passportCountries.size(); i++) {
-//                    String country = passportCountries.get(i);
-//                    PassportCountry newPassportCountry = countryRepository.findCountryByName("New Zealand");
-//                    newUser.addPassportCountry(newPassportCountry);
-//                }
-//            }
-//
-//            newUser.setUser_id(user.getUser_id());
-//
-//            userRepository.save(newUser);
-//            userRepository.delete(user);
-//            responseHandler.formatSuccessResponse(600, "User edited successfully");
-//        }
-//        return response;
-//    }
-
-
+    /**
+     * Takes a User object and makes several checks before saving them to the repository after a request to create a
+     * new user
+     * @param user A User object to check
+     * @return A ResponseEntity detailing the results
+     */
     public ResponseEntity validateCreateProfile(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -323,6 +186,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Takes a User object and makes several checks before saving them to the repository after a request to edit a
+     * user
+     * @param user A User object to check
+     * @return A ResponseEntity detailing the results
+     */
     public ResponseEntity validateEditUser(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -354,8 +223,37 @@ public class UserService {
         }
     }
 
-    public ResponseEntity getAllEmails() {
-        return responseHandler.formatSuccessResponse(200, "Emails found");
-    }
+    /**
+     * Checks whether a login attempt was successful. First checks if there exists a user with that primary email.
+     * Then checks that the password is correct. If it is, a token is created for that user and is stored for future
+     * actions.
+     * @param email A string of what could be an existing email
+     * @param attempt The password attempt
+     * @return A ResponseEntity detailing the results
+     */
+    public ResponseEntity checkLogin(String email, String attempt) {
+        User user = userRepository.findUserByEmail(email);
 
+        if (user == null) {
+            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
+            if (user.getPassword().equals(encryptedPassword)) {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                sessionRepository.insertToken(sessionToken, user.getUserId());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+            } else {
+                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "can't check password");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
 }
