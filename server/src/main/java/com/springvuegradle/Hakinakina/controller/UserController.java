@@ -72,8 +72,17 @@ public class UserController {
      * @return*/
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long userId) {
-        return userService.editEmail(request, userId);
+    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId,  @CookieValue("s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session != null) {
+            if (session.getUser().getUserId() == profileId) {
+                return userService.editEmail(request, profileId);
+            } else {
+                return responseHandler.formatErrorResponse(400, "Session mismatch");
+            }
+        } else {
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
     }
 
     @PutMapping("/profiles/{profileId}")
@@ -106,8 +115,17 @@ public class UserController {
      * @return*/
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("Authorization") String sessionToken) {
-        return userService.addEmails(request, profileId, sessionToken);
+    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue("s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session != null) {
+            if (session.getUser().getUserId() == profileId) {
+                return userService.addEmails(request, profileId, sessionToken);
+            } else {
+                return responseHandler.formatErrorResponse(400, "Session mismatch");
+            }
+        } else {
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
     }
 
     /**

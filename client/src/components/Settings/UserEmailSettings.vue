@@ -45,110 +45,144 @@
 import { mapState, mapActions } from 'vuex';
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu';
 import {apiUser} from "../../api";
+import router from "../../router";
 const LIMIT_NUM_EMAIL = 4;
 
 export default {
-    components: {
-        UserSettingsMenu
-    },
-    data() {
-        return {
-            primary_email: "",
-            secondary_emails: [],
-            showButton: true,
-            textInput: '',
-            newEmail: '',
-            limit_num_email: LIMIT_NUM_EMAIL,
-            tempOldEmail: '',
-            editEmailInput: '',
-            showEditBox: false,
-            emails: apiUser.getAllEmails()
-        }
-    },
-    computed: {
-        ...mapState(['user'])
-    },
-    methods: {
-        ...mapActions(['updateUserEmail']),
+  components: {
+    UserSettingsMenu
+  },
+  data() {
+    return {
+      primary_email: "",
+      secondary_emails: [],
+      showButton: true,
+      textInput: '',
+      newEmail: '',
+      limit_num_email: LIMIT_NUM_EMAIL,
+      tempOldEmail: '',
+      editEmailInput: '',
+      showEditBox: false,
+    }
+  },
+  computed: {
+    ...mapState(['user'])
+  },
+  methods: {
+    ...mapActions(['updateUserEmail']),
+    ...mapActions(['logout']),
 
-        // Loads the email values from the user object into the edit email page elements
-        loadEmailsIntoElements(){
-            this.primary_email = this.user.user.primary_email;
-            this.secondary_emails = this.user.user.additional_email;
-        },
 
-        /*
+    // Loads the email values from the user object into the edit email page elements
+    loadEmailsIntoElements() {
+      this.primary_email = this.user.user.primary_email;
+      this.secondary_emails = this.user.user.additional_email;
+    },
+
+    /*
            Adds a new email into the secondary emails lists. Prevents the user from entering empty text or from trying to
            enter an existing email.
         */
-        async addEmail(textInput){
-          const emails = await apiUser.getAllEmails();
-          if (this.secondary_emails.includes(textInput) || textInput == this.user.user.primary_email || emails.data.includes(textInput)) {
-            alert("Email already in use.");
-          } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
-            this.secondary_emails.push(this.textInput);
-            this.updateUserEmail(this);
-            var tempThis = this;
-            setTimeout(function() {
-                tempThis.textInput = "";
-            }, 10);
-            await apiUser.addEmails(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
-          }
-        },
+    async addEmail(textInput) {
+      const emails = await apiUser.getAllEmails();
+      if (this.secondary_emails.includes(textInput) || textInput == this.user.user.primary_email || emails.data.includes(textInput)) {
+        alert("Email already in use.");
+      } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
+        await apiUser.addEmails(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails).then((response) => {
+          this.secondary_emails.push(this.textInput);
+          this.updateUserEmail(this);
+          var tempThis = this;
+          setTimeout(function () {
+            tempThis.textInput = "";
+          }, 10);
+          this.updateUserProfile(this.user);
+          console.log(response);
+        }, (error) => {
+          this.logout();
+          router.push('login');
+          alert('An error occurred. Please log back in');
+          console.log(error);
+        });
+      }
+    },
 
-        /*
+    /*
          Function that updates the primary email of an user by picking one from the secondary emails list and adding the
          previous primary email to the secondary list.
          */
-        updatePrimaryEmail(secondaryEmail){
-          const index = this.secondary_emails.indexOf(secondaryEmail);
+    updatePrimaryEmail(secondaryEmail) {
+      const index = this.secondary_emails.indexOf(secondaryEmail);
+      apiUser.editEmail(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails).then((response) => {
+        if (index > -1) {
+          this.secondary_emails.splice(index, 1);
+        }
+        this.secondary_emails.push(this.primary_email);
+        this.primary_email = secondaryEmail;
+        this.updateUserEmail(this);
+        this.updateUserProfile(this.user);
+        console.log(response);
+      }, (error) => {
+        this.logout();
+        router.push('login');
+        alert('An error occurred. Please log back in');
+        console.log(error);
+      });
+    },
+
+    openEmailEditBox(secondaryEmail) {
+      this.tempOldEmail = secondaryEmail;
+      this.editEmailInput = secondaryEmail;
+      this.showEditBox = true;
+    },
+
+    async editEmail() {
+      const emails = await apiUser.getAllEmails();
+      if (this.secondary_emails.includes(this.editEmailInput) || this.editEmailInput == this.primary_email || emails.data.includes(this.editEmailInput)) {
+        alert("Email already in use.");
+      } else if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
+        apiUser.editEmail(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails).then((response) => {
+          this.updateUserProfile(this.user);
+          const index = this.secondary_emails.indexOf(this.tempOldEmail);
+          this.secondary_emails[index] = this.editEmailInput;
+          this.showEditBox = false;
+          this.updateUserEmail(this);
+          console.log(response);
+        }, (error) => {
+          this.logout();
+          router.push('login');
+          alert('An error occurred. Please log back in');
+          console.log(error);
+        });
+      }
+    },
+
+    /* Function that removes an email from the secondary emails list */
+    removeEmail(email) {
+      apiUser.editEmail(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails).then((response) => {
+        if (this.secondary_emails.length === 1) {
+          this.secondary_emails = []
+        } else {
+          const index = this.secondary_emails.indexOf(email);
           if (index > -1) {
             this.secondary_emails.splice(index, 1);
           }
-          this.secondary_emails.push(this.primary_email);
-          this.primary_email = secondaryEmail;
-          this.updateUserEmail(this);
-          apiUser.editEmail(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
-        },
-
-        openEmailEditBox(secondaryEmail) {
-          this.tempOldEmail = secondaryEmail;
-          this.editEmailInput = secondaryEmail;
-          this.showEditBox = true;
-        },
-
-        async editEmail() {
-          const emails = await apiUser.getAllEmails();
-          if (this.secondary_emails.includes(this.editEmailInput) || this.editEmailInput == this.primary_email || emails.data.includes(this.editEmailInput)) {
-            alert("Email already in use.");
-          } else if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
-            const index = this.secondary_emails.indexOf(this.tempOldEmail);
-            this.secondary_emails[index] = this.editEmailInput;
-            this.showEditBox = false;
-            this.updateUserEmail(this);
-            apiUser.editEmail(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
-          }
-        },
-
-        /* Function that removes an email from the secondary emails list */
-        removeEmail(email) {
-          if (this.secondary_emails.length === 1) {
-            this.secondary_emails = []
-          } else {
-            const index = this.secondary_emails.indexOf(email);
-            if (index > -1) {
-              this.secondary_emails.splice(index, 1);
-            }
-          }
-          if (this.secondary_emails.length > 0) {
-            this.showButton = true;
-          }
-          this.updateUserEmail(this);
-          apiUser.editEmail(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
         }
+        if (this.secondary_emails.length > 0) {
+          this.showButton = true;
+        }
+        this.updateUserEmail(this);
+        this.updateUserProfile(this.user);
+        console.log(response);
+      }, (error) => {
+        this.logout();
+        router.push('login');
+        alert('An error occurred. Please log back in');
+        console.log(error);
+      });
     },
     mounted() {
-        this.loadEmailsIntoElements();
+      this.loadEmailsIntoElements();
     }
+  }
 }
 </script>

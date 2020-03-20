@@ -79,6 +79,9 @@ export default {
                 document.getElementById("error").hidden = false;
                 document.getElementById("error").innerText = error.response.data.Errors;
                 document.getElementById("success").hidden = true;
+
+                this.logout();
+                router.push('login');
                 console.log(error);
             });
         },

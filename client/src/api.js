@@ -65,7 +65,7 @@ export const apiUser = {
     additional_email: additional_email
   }),
   // Edit the user's emails
-  editEmail: (user_id, primary_email, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
+  editEmail: (user_id, primary_email, additional_email) => instance.put('/profiles/'+user_id+'/emails', {
     primary_email: primary_email,
     additional_email: additional_email
   }),

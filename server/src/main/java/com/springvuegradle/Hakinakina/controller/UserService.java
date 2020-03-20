@@ -79,17 +79,19 @@ public class UserService {
         String primaryEmail = node.get("primary_email").asText();
         List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
 
-        ArrayList<String> secondaryEmails = new ArrayList<>();
-        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
-            secondaryEmails.add(node1.asText());
-        }
+        if (secondaryEmailNodes.size() != 0) {
+            ArrayList<String> secondaryEmails = new ArrayList<>();
+            for (JsonNode node1 : secondaryEmailNodes.get(0)) {
+                secondaryEmails.add(node1.asText());
+            }
 
-        String currentPrimary = user.getPrimaryEmail();
+            String currentPrimary = user.getPrimaryEmail();
 
-        if (!primaryEmail.equals(currentPrimary) && response == null) {
-            response = switchPrimaryEmail(user, primaryEmail, currentPrimary, secondaryEmails);
-        } else if (response == null) {
-            response = updateSecondaryEmails(user, secondaryEmails);
+            if (!primaryEmail.equals(currentPrimary) && response == null) {
+                response = switchPrimaryEmail(user, primaryEmail, currentPrimary, secondaryEmails);
+            } else if (response == null) {
+                response = updateSecondaryEmails(user, secondaryEmails);
+            }
         }
 
         return response;
