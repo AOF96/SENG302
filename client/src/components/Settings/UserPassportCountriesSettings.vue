@@ -2,7 +2,7 @@
 <div id="settingsWrap">
     <UserSettingsMenu />
     <div class="settingsContent">
-        <h2>Edit Passport Countries</h2>
+        <h1>Edit Passport Countries</h1>
         <hr>
         <br>
         <div class="signup-row">
@@ -15,7 +15,7 @@
             <div class="floatClear"></div>
         </div>
 
-        <div>
+        <div id="countryActions">
           <form @submit.prevent>
             <select
                 v-model="adding_country"
@@ -112,7 +112,6 @@ export default {
             apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                 this.user.user.fitness, this.user.user.additional_email, this.user.user.passports).then((response) => {
-                // this.updateUserProfile(this.user);
                 document.getElementById("passport_success").hidden = false;
                 document.getElementById("passport_error").hidden = true;
                 console.log(response);
@@ -126,19 +125,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    .countryDisplay {
-        display: inline;
-
-    }
-
-    .countryBox {
-        margin-left: 20px;
-        margin-bottom: 7px;
-    }
-
-    .removeCountryButton {
-
-    }
-</style>
