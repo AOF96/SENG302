@@ -13,7 +13,7 @@ public class PassportCountry {
 
     private String name;
 
-    @ManyToMany(mappedBy = "passportCountries", cascade= CascadeType.PERSIST, fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "passportCountries", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
     protected PassportCountry() {}
