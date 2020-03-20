@@ -671,3 +671,21 @@ body{
     overflow: hidden;
     margin-bottom:15px;
 }
+
+.email_error {
+    margin: 0 auto;
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 13px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.email_success {
+    margin: 0 auto;
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 13px;
+    padding-bottom: 3px;
+    color: #4CAF50;
+}
