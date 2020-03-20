@@ -140,6 +140,7 @@ const actions = {
   updateUserEmail({ commit }, data) {
     commit('setUserEmail', data)
     commit('setUserSecondaryEmails', data)
+    alert("Email updated.")
   },
   logout({ commit }) {
     commit('userLogout')

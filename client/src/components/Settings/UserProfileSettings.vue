@@ -26,6 +26,7 @@
                 <option>Female</option>
                 <option>Male</option>
             </select>
+
             <h2>Fitness Level</h2>
             <select class="editProfileInput editProfileInputGender" v-model="user.fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
                 <option selected disabled hidden>Fitness Level</option>
@@ -47,13 +48,10 @@
 </template>
 
 <script>
-    import router from "../../router";
-
 import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
-
 
 
 export default {
@@ -64,7 +62,6 @@ export default {
         ...mapGetters(['user'])
     },
     methods: {
-        ...mapActions(['logout']),
         ...mapActions(['updateUserProfile']),
         updateProfile() {
             apiUser.editProfile(this.user.profile_id, this.user.firstname, this.user.lastname, this.user.middlename,
