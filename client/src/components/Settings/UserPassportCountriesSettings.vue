@@ -5,8 +5,9 @@
         <h2>Edit Passport Countries</h2>
         <hr>
         <br>
-        <div class="passportBlock">
-            <h4>{{ user.primary_email }}</h4>
+        <div class="signup-row">
+            <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
+            <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
         </div>
         <div class="countryBox" v-for="country in user.user.tmp_passports" v-bind:key="country">
             <h4 class="countryDisplay">{{country}}</h4>
@@ -110,7 +111,17 @@ export default {
             console.log(this.user.user.passports);
             apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
-                this.user.user.fitness, this.user.user.additional_email, this.user.user.passports);
+                this.user.user.fitness, this.user.user.additional_email, this.user.user.passports).then((response) => {
+                // this.updateUserProfile(this.user);
+                document.getElementById("passport_success").hidden = false;
+                document.getElementById("passport_error").hidden = true;
+                console.log(response);
+            }, (error) => {
+                document.getElementById("passport_error").hidden = false;
+                document.getElementById("passport_error").innerText = error.response.data.Errors;
+                document.getElementById("passport_success").hidden = true;
+                console.log(error);
+            });
         }
     }
 }

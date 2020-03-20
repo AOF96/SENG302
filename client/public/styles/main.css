@@ -571,6 +571,23 @@ body{
     padding-bottom: 3px;
     color: #4CAF50;
 }
+.passport_error {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.passport_success {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #4CAF50;
+}
 
 .passportBlock{
     width: calc(100% - 40px);
