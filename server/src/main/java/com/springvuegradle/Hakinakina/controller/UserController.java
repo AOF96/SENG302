@@ -68,10 +68,15 @@ public class UserController {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if(session != null) {
             if (session.getUser().getUserId() == profileId) {
+                User oldUser = userRepository.findById(profileId).get();
+                for (PassportCountry country : oldUser.getPassportCountries()) {
+                    country.removeUser(oldUser);
+                }
+                oldUser.resetPassportCountries();
                 user.setUserId(profileId);
-                user.setSalt(userRepository.findById(profileId).get().getSalt());
-                user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
+                user.setSalt(oldUser.getSalt());
                 return userService.validateEditUser(user);
+                //return responseHandler.formatErrorResponse(400, "Session mismatch");
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
             }

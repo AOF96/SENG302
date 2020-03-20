@@ -56,4 +56,8 @@ public class PassportCountry {
     public String toString() {
         return name;
     }
+
+    public void removeUser(User user) {
+        users.remove(user);
+    }
 }

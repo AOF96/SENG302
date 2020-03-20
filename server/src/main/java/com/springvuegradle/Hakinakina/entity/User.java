@@ -255,4 +255,8 @@ public class User {
         }
         return userStr;
     }
+
+    public void resetPassportCountries() {
+        passportCountries = new HashSet<PassportCountry>();
+    }
 }
