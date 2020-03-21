@@ -3,6 +3,7 @@ package com.springvuegradle.Hakinakina.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
@@ -357,6 +358,17 @@ public class UserService {
     public ResponseEntity getAllEmails() {
         return responseHandler.formatSuccessResponse(200, "Emails found");
     }
+
+    /**
+     * Checks whether a login attempt was successful. First checks if there exists a user with that primary email.
+     * Then checks that the password is correct. If it is, a token is created for that user and is stored for future
+     * actions.
+     * @param email A string of what could be an existing email
+     * @param attempt The password attempt
+     * @return A ResponseEntity detailing the results
+     */
+    public ResponseEntity checkLogin(String email, String attempt) {
+        User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
             return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);

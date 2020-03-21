@@ -1,6 +1,6 @@
 <template>
     <header>
-        <router-link to="/logout" v-if="user.isLogin"> 
+        <router-link to="/logout" v-if="user.isLogin">
             <button id="headerNavButton" class="login" v-on:click="logoutUser">
                 Logout
             </button>
@@ -14,18 +14,18 @@
 
         <router-link to="/signup" v-if="!user.isLogin">
             <button id="headerNavButton" class="signup">
-                Sign Up 
+                Sign Up
             </button>
         </router-link>
 
         <router-link to="/login" v-if="!user.isLogin">
-            <button id="headerNavButton" class="login"> 
+            <button id="headerNavButton" class="login">
                 Login
-            </button> 
+            </button>
         </router-link>
     </header>
 </template>
-    
+
 <script>
     import { mapGetters, mapActions } from 'vuex';
     import {apiUser} from "../api";

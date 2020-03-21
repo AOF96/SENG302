@@ -92,7 +92,7 @@ export default {
             setTimeout(function() {
                 tempThis.textInput = "";
             }, 10);
-            await apiUser.addEmails(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
+            await apiUser.addEmails(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails);
           }
         },
 
@@ -108,7 +108,7 @@ export default {
           this.secondary_emails.push(this.primary_email);
           this.primary_email = secondaryEmail;
           this.updateUserEmail(this);
-          apiUser.editEmail(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
+          apiUser.editEmail(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails);
         },
 
         openEmailEditBox(secondaryEmail) {
@@ -126,7 +126,7 @@ export default {
             this.secondary_emails[index] = this.editEmailInput;
             this.showEditBox = false;
             this.updateUserEmail(this);
-            apiUser.editEmail(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
+            apiUser.editEmail(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails);
           }
         },
 
@@ -144,7 +144,7 @@ export default {
             this.showButton = true;
           }
           this.updateUserEmail(this);
-          apiUser.editEmail(this.user.user.user_id, this.user.user.primary_email, this.user.user.secondary_emails);
+          apiUser.editEmail(this.user.user.profile_id, this.user.user.primary_email, this.user.user.secondary_emails);
         }
     },
     mounted() {

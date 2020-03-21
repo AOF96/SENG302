@@ -81,6 +81,7 @@ public class UserController {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session != null) {
             if (session.getUser().getUserId() == profileId) {
+                User oldUser = userRepository.findById(profileId).get();
                 user.setUserId(profileId);
                 user.setSalt(oldUser.getSalt());
                 user.setEncryptedPassword(oldUser.getPassword());
@@ -171,29 +172,7 @@ public class UserController {
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        User user = userRepository.findUserByEmail(email);
-
-        if (user == null) {
-            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
-        }
-
-        try {
-            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
-            if (user.getPassword().equals(encryptedPassword)) {
-                //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
-
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
-            } else {
-                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "can't check password");
-            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
-        }
+        return userService.checkLogin(email, attempt);
     }
 
     /**
