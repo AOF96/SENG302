@@ -13,13 +13,12 @@
         </router-link>
 
         <router-link to="/Signup" v-if="!user.isLogin">
-            <button id="headerNavButton" class="signup">
+            <button id="headerNavButton" class="signup" name ="Sign Up">
                 Sign Up 
             </button>
         </router-link>
-
         <router-link to="/Login" v-if="!user.isLogin"> 
-            <button id="headerNavButton" class="login"> 
+            <button id="headerNavButton" class="login"  value ="Login In">
                 Login
             </button> 
         </router-link>
