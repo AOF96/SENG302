@@ -42,7 +42,7 @@ public class UserTests {
         }
         Collections.sort(countries);
 
-        assertEquals("[New Zealand, United States]", testUser.getPassportCountries().toString());
+        assertEquals("[New Zealand, United States]", countries.toString());
     }
 
     @Test
