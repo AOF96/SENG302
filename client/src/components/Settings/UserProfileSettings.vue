@@ -84,7 +84,7 @@ export default {
         },
         addPassportCountries() {
             this.passportCountries.num_of_countries++;
-        }
+        },
     }
 }
 </script>

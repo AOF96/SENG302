@@ -58,6 +58,7 @@
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {
             const responseData = response.data;
+            console.log(responseData);
 
             helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
             this.updateUserProfile(responseData[0]);

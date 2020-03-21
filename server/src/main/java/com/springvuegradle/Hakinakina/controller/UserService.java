@@ -358,4 +358,73 @@ public class UserService {
         return responseHandler.formatSuccessResponse(200, "Emails found");
     }
 
+        if (user == null) {
+            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
+            if (user.getPassword().equals(encryptedPassword)) {
+                //Generate session token
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
+                Session session_token = new Session(sessionToken);
+                sessionRepository.insertToken(sessionToken, user.getUserId());
+
+                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+            } else {
+                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "can't check password");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Firstly checks that the user is authenticated and the old password matches the Users current password. Then
+     * updates the users password and salt if successful
+     * @param profileId The id of the user to be changed
+     * @param sessionToken The authentication token
+     * @param oldPassword The attempt for Users original password
+     * @param newPassword The password to set to
+     * @return
+     */
+    public ResponseEntity changePassword(long profileId, String sessionToken, String oldPassword, String newPassword) {
+        ResponseEntity response;
+        Optional<User> getUser = userRepository.findById(profileId);
+        if (getUser.isPresent()) {
+            User user = getUser.get();
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if(session != null){
+                if(session.getUser().getUserId() == profileId){
+                    try {
+                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                        if (!user.getPassword().equals(encryptedPassword)) {
+                            return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                        }
+                    } catch (Exception e) {
+                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+                    }
+
+                    try {
+                        String salt = EncryptionUtil.getNewSalt();
+                        user.setSalt(salt);
+                        user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                        userRepository.save(user);
+                        response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
+                    } catch (Exception e) {
+                        response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                    }
+                }else{
+                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                }
+            }else{
+                return responseHandler.formatErrorResponse(400, "Invalid Session");
+            }
+        } else {
+            response = responseHandler.formatErrorResponse(400, "No user with that ID");
+        }
+        return response;
+    }
 }

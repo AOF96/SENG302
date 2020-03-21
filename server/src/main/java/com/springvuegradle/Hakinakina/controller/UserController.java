@@ -82,8 +82,8 @@ public class UserController {
         if (session != null) {
             if (session.getUser().getUserId() == profileId) {
                 user.setUserId(profileId);
-                user.setSalt(userRepository.findById(profileId).get().getSalt());
-                user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
+                user.setSalt(oldUser.getSalt());
+                user.setEncryptedPassword(oldUser.getPassword());
                 return userService.validateEditUser(user);
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
@@ -132,9 +132,9 @@ public class UserController {
         Optional<User> optional = userRepository.findById(profileId);
         if (optional.isPresent()) {
             User user = optional.get();
-            return responseHandler.formatGetUser(user);
+            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return responseHandler.formatErrorResponse(400, "User does not exist");
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(403));
         }
     }
 
@@ -219,52 +219,16 @@ public class UserController {
      * @param sessionToken token stored in the cookie to identify the user
      * */
     @PutMapping("/profiles/{profileId}/password")
-    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        ResponseEntity response;
 
         if (!newPassword.equals(repeatPassword)) {
             return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
         }
-
-        Optional<User> getUser = userRepository.findById(profileId);
-        if (getUser.isPresent()) {
-            User user = getUser.get();
-            //TODO Add method to check token
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if(session != null){
-                if(session.getUser().getUserId() == profileId){
-                    try {
-                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
-                        if (!user.getPassword().equals(encryptedPassword)) {
-                            return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
-                        }
-                    } catch (Exception e) {
-                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
-                    }
-
-                    try {
-                        String salt = EncryptionUtil.getNewSalt();
-                        user.setSalt(salt);
-                        user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
-                        userRepository.save(user);
-                        response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
-                    } catch (Exception e) {
-                        response = responseHandler.formatErrorResponse(400, "Error while creating new password");
-                    }
-                }else{
-                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
-                }
-            }else{
-                return responseHandler.formatErrorResponse(400, "Invalid Session");
-            }
-        } else {
-            response = responseHandler.formatErrorResponse(400, "No user with that ID");
-        }
-        return response;
+        return userService.changePassword(profileId, sessionToken, oldPassword, newPassword);
     }
 
     // Create Exception Handle

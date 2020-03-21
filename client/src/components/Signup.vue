@@ -95,17 +95,17 @@ import { apiUser, helperFunction } from '../api'
 
 import NavBar from '@/components/NavBar'
 
-const ERR_MSG_FNAME = 'Please enter your First name'
-const ERR_MSG_LNAME = 'Please enter your Last name'
-const ERR_MSG_GENDER = 'Please select your Gender'
-const ERR_MSG_EMAIL = 'Please enter a valid Email'
-const ERR_MSG_BIRTHDAY = 'Please select your Birthday'
-const ERR_MSG_PASS_MATCH = 'Password must match'
-const ERR_MSG_PASS_NUMBER = 'Password must include at least 1 number'
-const ERR_MSG_PASS_LENGTH = 'Password must be longer than 8 characters'
-const ERR_MSG_PASS_LOWERCASE = 'Password must include lowercase characters'
-const ERR_MSG_PASS_UPPERCASE = 'Password must include uppercases characters'
-const ERR_MSG_FITNESS = 'Please select your Fitness level'
+const ERR_MSG_FNAME = 'Please enter your First name';
+const ERR_MSG_LNAME = 'Please enter your Last name';
+const ERR_MSG_GENDER = 'Please select your Gender';
+const ERR_MSG_EMAIL = 'Please enter a valid Email';
+const ERR_MSG_BIRTHDAY = 'Please select a valid date of birth';
+const ERR_MSG_PASS_MATCH = 'Password must match';
+const ERR_MSG_PASS_NUMBER = 'Password must include at least 1 number';
+const ERR_MSG_PASS_LENGTH = 'Password must be longer than 8 characters';
+const ERR_MSG_PASS_LOWERCASE = 'Password must include lowercase characters';
+const ERR_MSG_PASS_UPPERCASE = 'Password must include uppercases characters';
+const ERR_MSG_FITNESS = 'Please select your Fitness level';
 
 export default {
   name: 'Signup',
@@ -144,7 +144,7 @@ export default {
         lastname: this.user.lastname !== '',
         gender: this.user.gender !== 'Gender',
         email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
-        birthday: this.user.date_of_birth !== '',
+        birthday: this.user.date_of_birth !== '' && Date.parse(this.user.date_of_birth) < new Date(),
         fitnesslevel: this.user.fitnessLevel !== 'FitnessLevel',
         password: {
           match: this.password1 === this.password2,
