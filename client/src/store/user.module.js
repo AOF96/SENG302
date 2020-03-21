@@ -78,8 +78,8 @@ const mutations = {
       state.user.bio = data.bio;
     }
   },
-  setUserPassports(state) {
-      state.user.passports = state.user.tmp_passports.slice();
+  setUserPassports(state, data) {
+      state.user.passports = data.passports;
   },
   setUserTmpPassports(state, data) {
     state.user.tmp_passports = data.tmp_passports;
@@ -150,6 +150,23 @@ const actions = {
   },
   updateTmpPassports({commit}, data){
     commit('setUserTmpPassports', data)
+  },
+  resetUser() {
+    state.user.firstname = null;
+    state.user.lastname = null;
+    state.user.middlename = null;
+    state.user.nickname = null;
+    state.user.gender = null;
+    state.user.primary_email = null;
+    state.user.additional_email = [];
+    state.user.date_of_birth = null;
+    state.user.bio = null;
+    state.user.isLogin = false;
+    state.user.fitness = null;
+    state.user.profile_id = null;
+    state.user.password = null;
+    state.user.passports = [];
+    state.user.tmp_passports = [];
   }
 };
 

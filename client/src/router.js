@@ -14,7 +14,7 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: '/Profile',
+        path: '/profile',
         component: Profile
     },
     {
@@ -56,9 +56,9 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     console.log('start routering to.path=' + to.path)
     console.log('user.isLogin=' + store.getters.user.isLogin)
-    if (to.path == "/Signup" || to.path == "/login") {
+    if (to.path == "/signup" || to.path == "/login") {
         if (store.getters.user.isLogin) {
-            next('/Profile')
+            next('/profile')
         } else {
             next()
         }
