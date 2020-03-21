@@ -13,7 +13,7 @@ public class PassportCountry {
 
     private String name;
 
-    @ManyToMany(mappedBy = "passportCountries", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "passportCountries", cascade= CascadeType.PERSIST, fetch=FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
     protected PassportCountry() {}
@@ -55,9 +55,5 @@ public class PassportCountry {
     @Override
     public String toString() {
         return name;
-    }
-
-    public void removeUser(User user) {
-        users.remove(user);
     }
 }

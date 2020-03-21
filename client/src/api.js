@@ -19,7 +19,7 @@ const instance = axios.create({
 
 export const apiUser = {
   // Update the user's password
-  changePassword: (profile_id, old_password, new_password, repeat_password) => instance.put('/profiles/'+profile_id+'/password', {
+  changePassword: (user_id, old_password, new_password, repeat_password) => instance.put('/profiles/'+user_id+'/password', {
     old_password: old_password,
     new_password: new_password,
     repeat_password: repeat_password
@@ -47,7 +47,7 @@ export const apiUser = {
     document.cookie = "s_id = ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
   }),
   // Submit user signup information to the server
-  editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports) => instance.put('/profiles/'+profile_id, {
+  editProfile: (user_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports) => instance.put('/profiles/'+user_id, {
     firstname: firstname,
     lastname: lastname,
     middlename: middlename,
@@ -60,4 +60,15 @@ export const apiUser = {
     additional_email: additional_email,
     passports: passports
   }),
+  // Add additional emails
+  addEmails: (user_id, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
+    additional_email: additional_email
+  }),
+  // Edit the user's emails
+  editEmail: (user_id, primary_email, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
+    primary_email: primary_email,
+    additional_email: additional_email
+  }),
+  //Get all emails
+  getAllEmails: () => instance.get('/emails')
 }

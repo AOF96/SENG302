@@ -17,7 +17,6 @@
                 name="passportCountries"
                 placeholder="Passport Countries"
                 value="Passport Countries"
-                id="passportCountriesInput"
                 required
             >
                 <option selected disabled hidden>Passport Countries</option>
@@ -25,8 +24,8 @@
                     {{addingCountry}}
                 </option>
             </select>
-            <button id = "addPassportButton" v-on:click="addPassportCountries()">Add</button>
-              <button id ="saveChangesButton" v-on:click="savePassportCountries()">Save</button>
+            <button v-on:click="addPassportCountries()">Add passport countries</button>
+              <button v-on:click="savePassportCountries()">Save Changes</button>
           </form>
         </div>
     </div>
@@ -103,8 +102,8 @@ export default {
         },
         savePassportCountries() {
             this.updatePassports(this.user.user);
-            console.log(this.user.user.passports);
-            apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
+            console.log(this.user.user.user_id);
+            apiUser.editProfile(this.user.user.user_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                 this.user.user.fitness, this.user.user.additional_email, this.user.user.passports);
         }
