@@ -75,8 +75,8 @@ public class UserService {
         List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
 
         ArrayList<String> secondaryEmails = new ArrayList<>();
-        for (JsonNode node1 : secondaryEmailNodes) {
-            secondaryEmails.add(node1.asText());
+        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
+            secondaryEmails.add(node1.textValue());
         }
 
         String currentPrimary = user.getPrimaryEmail();
@@ -101,7 +101,7 @@ public class UserService {
      * @param secondaryEmails
      */
     public ResponseEntity<String> switchPrimaryEmail(User user, String newPrimary, String currentPrimary, ArrayList<String> secondaryEmails) {
-        if (secondaryEmails.contains(user.getPrimaryEmail()) && emailRepository.findEmailByString(newPrimary).getUser() == user) {
+        if (secondaryEmails.contains(user.getPrimaryEmail()) && emailRepository.findEmailByString(newPrimary).getUser().getUserId() == user.getUserId()) {
             user.setPrimaryEmail(newPrimary);
             user.removeEmail(emailRepository.findEmailByString(newPrimary));
             emailRepository.delete(emailRepository.findEmailByString(newPrimary));
@@ -132,8 +132,10 @@ public class UserService {
             }
         }
 
+        String emailsRemoved = "";
         for (Email emailToRemove : emailsToRemove) {
             user.removeEmail(emailToRemove);
+            emailsRemoved += emailToRemove.getEmail() + ", ";
             emailRepository.delete(emailToRemove);
         }
 
@@ -150,9 +152,17 @@ public class UserService {
         userRepository.save(user);
 
         if (emailsAdded.equals("")) {
-            return responseHandler.formatErrorResponse(400, "No emails successfully updated, emails either in use or empty");
+            if(emailsRemoved.equals("")){
+                return responseHandler.formatErrorResponse(400, "No emails added.");
+            }else {
+                return responseHandler.formatSuccessResponse(200, "Secondary emails successfully removed: " + emailsRemoved);
+            }
         } else {
-            return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
+            if(emailsRemoved.equals("")){
+                return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
+            }else {
+                return responseHandler.formatSuccessResponse(200, "Secondary emails added: " + emailsAdded + " - Secondary emails removed: " + emailsRemoved);
+            }
         }
     }
 
