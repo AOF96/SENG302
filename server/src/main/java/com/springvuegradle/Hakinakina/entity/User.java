@@ -63,7 +63,12 @@ public class User {
     @JsonProperty("passports")
     @JsonSerialize(using=PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
-    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
+    @JoinTable(
+            name = "User_PassportCountry",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "country_id") }
+    )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
     @JsonIgnore
@@ -231,9 +236,12 @@ public class User {
 
     @Override
     public String toString() {
-        String result = String.format("Name: %s %s %s",firstName, middleName, lastName) +
-                "\nNickname: " + getNickName() + "\nEmails: " + emails + "\nBio: " + getBio() +
-                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString();
+        String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
+                "\nNickname: " + getNickName() + "\nEmails: " + getEmails().toString() + "\nBio: " + getBio() +
+                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString()
+                + "\nPassword: " + getPassword() + "\nFitness Level: " + getFitnessLevel() +
+                "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
+                "\nPrimary Email: " + getPrimaryEmail();
         return result;
     }
 
@@ -246,5 +254,9 @@ public class User {
             ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
         }
         return userStr;
+    }
+
+    public void resetPassportCountries() {
+        passportCountries = new HashSet<PassportCountry>();
     }
 }

@@ -82,9 +82,13 @@ public class UserController {
         if (session != null) {
             if (session.getUser().getUserId() == profileId) {
                 User oldUser = userRepository.findById(profileId).get();
+                for (PassportCountry country : oldUser.getPassportCountries()) {
+                    country.removeUser(oldUser);
+                }
+                oldUser.resetPassportCountries();
                 user.setUserId(profileId);
-                user.setSalt(oldUser.getSalt());
                 user.setEncryptedPassword(oldUser.getPassword());
+                user.setSalt(oldUser.getSalt());
                 return userService.validateEditUser(user);
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
