@@ -56,7 +56,7 @@ public class UserService {
      *   ]
      * }
      * */
-    public ResponseEntity<String> editEmail(String request, long userId) {
+    public ResponseEntity<String> editEmail(String request, long profileId, String sessionToken) {
         ResponseEntity<String> response = null;
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -69,13 +69,13 @@ public class UserService {
         }
 
         //long userId = node.get("profile_id").asLong();
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(profileId).get();
 
         String primaryEmail = node.get("primary_email").asText();
         List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
 
         ArrayList<String> secondaryEmails = new ArrayList<>();
-        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
+        for (JsonNode node1 : secondaryEmailNodes) {
             secondaryEmails.add(node1.asText());
         }
 

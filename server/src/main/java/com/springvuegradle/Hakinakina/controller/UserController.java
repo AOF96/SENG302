@@ -72,8 +72,8 @@ public class UserController {
      * @return*/
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long userId) {
-        return userService.editEmail(request, userId);
+    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+        return userService.editEmail(request, profileId, sessionToken);
     }
 
     @PutMapping("/profiles/{profileId}")
