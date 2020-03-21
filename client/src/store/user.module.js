@@ -1,3 +1,5 @@
+import {apiUser} from "../api";
+
 const state = {
   user: {
     firstname: null,
@@ -10,8 +12,8 @@ const state = {
     date_of_birth: null,
     bio: null,
     isLogin: false,
-    fitnessLevel: null,
-    user_id: null,
+    fitness: null,
+    profile_id: null,
     password: null,
     passports: [],
     tmp_passports: [],
@@ -61,8 +63,8 @@ const mutations = {
     }
   },
   setUserID(state, data) {
-    if(data.user_id != ""){
-      state.user.user_id = data.user_id;
+    if(data.profile_id != ""){
+      state.user.profile_id = data.profile_id;
     }
   },
   setUserSecondaryEmails(state, data) {
@@ -85,7 +87,7 @@ const mutations = {
     state.user.tmp_passports = data.tmp_passports;
   },
   setUserFitnessLevel(state, data) {
-    state.user.fitnessLevel = data.fitnessLevel;
+    state.user.fitness = data.fitness;
   },
   setUserActivity(state) {
     state.user.activities = state.user.tmp_activities.slice();
@@ -103,6 +105,7 @@ const mutations = {
   },
   userLogout() {
     state.user.isLogin = false;
+    apiUser.logout();
   },
   setUserPassword(state, data) {
     if(data.password != ""){
@@ -122,6 +125,8 @@ const actions = {
     commit('setUserBirthday', data);
     commit('setUserBio', data);
     commit('setUserPassword', data);
+    commit('setUserFitnessLevel', data);
+    commit('setUserSecondaryEmails', data);
     commit('setUserID', data);
     commit('userLogin');
   },

@@ -7,12 +7,21 @@
         <h2>Sign in to your account</h2>
         <form @submit.prevent>
           <div class="signup-row">
+            <h6 class="login_error" id="email_exist" hidden="true">Account does not exist</h6>
+          </div>
+          <div class="signup-row">
             <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
               required>
           </div>
           <div class="signup-row">
+            <h6 class="login_error" id="incorrect_password" hidden="true">Incorrect Password</h6>
+          </div>
+          <div class="signup-row">
             <input type="password" v-model="user.password" class="loginInput-password" name="password"
               placeholder="Password" required>
+          </div>
+          <div class="signup-row">
+            <h6 class="login_error" id="other_error" hidden="true"></h6>
           </div>
           <hr>
           <input type="submit" v-on:click="submitLogin()" id="signupButton-submit" value="Login">
@@ -26,14 +35,12 @@
 </template>
 
 <script>
-  import axios from 'axios'
   import router from "../router";
   import { mapGetters, mapActions} from 'vuex';
-  import { helperFunction } from '../api'
+  import { apiUser, helperFunction } from '../api'
   //import {getEncryptPassword} from "../common.js"
 
   import NavBar from '@/components/NavBar'
-  const SERVER_URL = 'http://localhost:9499';
 
   export default {
     name: 'Login',
@@ -49,26 +56,32 @@
 
       submitLogin() {
         if (this.user.primary_email.trim(), this.user.password.trim()) {
-          axios.post(SERVER_URL + '/login', {
-            email: this.user.primary_email,
-            password: this.user.password,
-          })
-            .then((response) => {
-              var responseData = response.data;
-              var responseCode = response.status;
+          apiUser.login(this.user.primary_email, this.user.password).then((response) => {
+            const responseData = response.data;
 
-              if (responseCode == 201) {
-                console.log(responseData);
-                console.log(responseCode);
-                helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
-                this.updateUserProfile(responseData[0]);
-                router.push('Profile');
-              } else {
-                  alert(responseData);
-              }
-            }, (error) => {
-                console.log(error);
-            })
+            helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
+            this.updateUserProfile(responseData[0]);
+            router.push('Profile');
+          }, (error) => {
+            const responseData = error.response.data;
+            const responseCode = error.response.status;
+            console.log(responseCode + ": " + responseData);
+
+            if (responseCode === 403 && responseData === "Email does not exist") {
+              document.getElementById("email_exist").hidden = false;
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            } else if (responseCode === 403 && responseData === "Incorrect password") {
+              document.getElementById("incorrect_password").hidden = false;
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            } else {
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("other_error").hidden = false;
+              document.getElementById("other_error").innerText = responseData;
+            }
+          });
         }
       }
     }

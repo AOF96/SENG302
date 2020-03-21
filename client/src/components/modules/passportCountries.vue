@@ -4,9 +4,10 @@
     <div id="passportCountries">
         <div class="passportCountry">
             <img src="https://restcountries.eu/data/nzl.svg">
-            <div v-for="country in user.passports" v-bind:key="country">
-                <h2>{{country}}</h2>
-            </div>
+            <h2 v-for="country in user.passports" v-bind:key="country">
+                    {{country}}
+            </h2>
+            <div class="floatClear"></div>
         </div>
     </div>
   </div>
