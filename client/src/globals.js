@@ -15,4 +15,4 @@ export const userInfo = {
     bio: null,
     isLogin: true,
     fitnesslevel:null,
-}
+};

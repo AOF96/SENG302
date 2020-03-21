@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,12 +67,17 @@ public class UserController {
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if(session != null) {
-            if (session.getUser().getUser_id() == profileId) {
-                user.setUser_id(profileId);
-                user.setSalt(userRepository.findById(profileId).get().getSalt());
-                user.setEncryptedPassword(userRepository.findById(profileId).get().getPassword());
-                userRepository.save(user);
+            if (session.getUser().getUserId() == profileId) {
+                User oldUser = userRepository.findById(profileId).get();
+                for (PassportCountry country : oldUser.getPassportCountries()) {
+                    country.removeUser(oldUser);
+                }
+                oldUser.resetPassportCountries();
+                user.setUserId(profileId);
+                user.setSalt(oldUser.getSalt());
+                user.setEncryptedPassword(oldUser.getPassword());
                 return userService.validateEditUser(user);
+                //return responseHandler.formatErrorResponse(400, "Session mismatch");
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
             }
@@ -104,9 +108,9 @@ public class UserController {
         Optional<User> optional = userRepository.findById(profileId);
         if (optional.isPresent()) {
             User user = optional.get();
-            return responseHandler.formatGetUser(user);
+            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return responseHandler.formatErrorResponse(400, "User does not exist");
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(403));
         }
     }
 
@@ -139,29 +143,7 @@ public class UserController {
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        User user = userRepository.findUserByEmail(email);
-
-        if (user == null) {
-            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
-        }
-
-        try {
-            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
-            if (user.getPassword().equals(encryptedPassword)) {
-                //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                sessionRepository.insertToken(sessionToken, user.getUser_id());
-
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
-            } else {
-                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "can't check password");
-            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
-        }
+        return userService.checkLogin(email, attempt);
     }
 
     /**
@@ -187,52 +169,16 @@ public class UserController {
      * @param sessionToken token stored in the cookie to identify the user
      * */
     @PutMapping("/profiles/{profileId}/password")
-    public Object editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
         String repeatPassword = (String) json.get("repeat_password");
-        ResponseEntity response;
 
         if (!newPassword.equals(repeatPassword)) {
             return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
         }
-
-        Optional<User> getUser = userRepository.findById(profileId);
-        if (getUser.isPresent()) {
-            User user = getUser.get();
-            //TODO Add method to check token
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if(session != null){
-                if(session.getUser().getUser_id() == profileId){
-                    try {
-                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
-                        if (!user.getPassword().equals(encryptedPassword)) {
-                            return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
-                        }
-                    } catch (Exception e) {
-                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
-                    }
-
-                    try {
-                        String salt = EncryptionUtil.getNewSalt();
-                        user.setSalt(salt);
-                        user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
-                        userRepository.save(user);
-                        response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
-                    } catch (Exception e) {
-                        response = responseHandler.formatErrorResponse(400, "Error while creating new password");
-                    }
-                }else{
-                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
-                }
-            }else{
-                return responseHandler.formatErrorResponse(400, "Invalid Session");
-            }
-        } else {
-            response = responseHandler.formatErrorResponse(400, "No user with that ID");
-        }
-        return response;
+        return userService.changePassword(profileId, sessionToken, oldPassword, newPassword);
     }
 
     // Create Exception Handle

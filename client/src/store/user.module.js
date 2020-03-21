@@ -12,8 +12,8 @@ const state = {
     date_of_birth: null,
     bio: null,
     isLogin: false,
-    fitnessLevel: null,
-    user_id: null,
+    fitness: null,
+    profile_id: null,
     password: null,
     passports: [],
     tmp_passports: []
@@ -61,8 +61,8 @@ const mutations = {
     }
   },
   setUserID(state, data) {
-    if(data.user_id != ""){
-      state.user.user_id = data.user_id;
+    if(data.profile_id != ""){
+      state.user.profile_id = data.profile_id;
     }
   },
   setUserSecondaryEmails(state, data) {
@@ -78,14 +78,14 @@ const mutations = {
       state.user.bio = data.bio;
     }
   },
-  setUserPassports(state) {
-      state.user.passports = state.user.tmp_passports.slice();
+  setUserPassports(state, data) {
+      state.user.passports = data.passports;
   },
   setUserTmpPassports(state, data) {
     state.user.tmp_passports = data.tmp_passports;
   },
   setUserFitnessLevel(state, data) {
-    state.user.fitnessLevel = data.fitnessLevel;
+    state.user.fitness = data.fitness;
   },
   setUserIsLogin(state, data) {
     if(data.isLogin != ""){
@@ -117,6 +117,8 @@ const actions = {
     commit('setUserBirthday', data);
     commit('setUserBio', data);
     commit('setUserPassword', data);
+    commit('setUserFitnessLevel', data);
+    commit('setUserSecondaryEmails', data);
     commit('setUserID', data);
     commit('userLogin');
   },
@@ -148,6 +150,23 @@ const actions = {
   },
   updateTmpPassports({commit}, data){
     commit('setUserTmpPassports', data)
+  },
+  resetUser() {
+    state.user.firstname = null;
+    state.user.lastname = null;
+    state.user.middlename = null;
+    state.user.nickname = null;
+    state.user.gender = null;
+    state.user.primary_email = null;
+    state.user.additional_email = [];
+    state.user.date_of_birth = null;
+    state.user.bio = null;
+    state.user.isLogin = false;
+    state.user.fitness = null;
+    state.user.profile_id = null;
+    state.user.password = null;
+    state.user.passports = [];
+    state.user.tmp_passports = [];
   }
 };
 

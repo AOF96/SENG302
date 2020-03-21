@@ -2,11 +2,10 @@
   <div class="profileModule">
     <h1>Passport Countries</h1>
     <div id="passportCountries">
-        <div class="passportCountry">
+        <div class="passportCountry" v-for="country in user.passports" v-bind:key="country">
             <img src="https://restcountries.eu/data/nzl.svg">
-            <div v-for="country in user.passports" v-bind:key="country">
-                <h2>{{country}}</h2>
-            </div>
+            <h2>{{country}}</h2>
+            <div class="floatClear"></div>
         </div>
     </div>
   </div>

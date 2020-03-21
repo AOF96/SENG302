@@ -7,12 +7,21 @@
         <h2>Sign in to your account</h2>
         <form @submit.prevent>
           <div class="signup-row">
+            <h6 class="login_error" id="email_exist" hidden="true">Account does not exist</h6>
+          </div>
+          <div class="signup-row">
             <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
               required>
           </div>
           <div class="signup-row">
+            <h6 class="login_error" id="incorrect_password" hidden="true">Incorrect Password</h6>
+          </div>
+          <div class="signup-row">
             <input type="password" v-model="user.password" class="loginInput-password" name="password"
               placeholder="Password" required>
+          </div>
+          <div class="signup-row">
+            <h6 class="login_error" id="other_error" hidden="true"></h6>
           </div>
           <hr>
           <input type="submit" v-on:click="submitLogin()" id="signupButton-submit" value="Login">
@@ -48,20 +57,31 @@
       submitLogin() {
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {
-            var responseData = response.data;
-            var responseCode = response.status;
+            const responseData = response.data;
+            console.log(responseData);
 
-            if (responseCode == 201) {
-              console.log(responseData);
-              console.log(responseCode);
-              helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
-              this.updateUserProfile(responseData[0]);
-              router.push('Profile');
-            } else {
-                alert(responseData);
-            }
+            helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
+            this.updateUserProfile(responseData[0]);
+            router.push('Profile');
           }, (error) => {
-            console.log(error);
+            const responseData = error.response.data;
+            const responseCode = error.response.status;
+            console.log(responseCode + ": " + responseData);
+
+            if (responseCode === 403 && responseData === "Email does not exist") {
+              document.getElementById("email_exist").hidden = false;
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            } else if (responseCode === 403 && responseData === "Incorrect password") {
+              document.getElementById("incorrect_password").hidden = false;
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            } else {
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("other_error").hidden = false;
+              document.getElementById("other_error").innerText = responseData;
+            }
           });
         }
       }

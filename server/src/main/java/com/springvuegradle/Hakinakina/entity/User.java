@@ -23,7 +23,7 @@ public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")
     @Column(name = "user_id")
-    private Long userID;
+    private Long userId;
 
     @JsonProperty("firstname")
     @Column(name = "first_name")
@@ -56,14 +56,19 @@ public class User {
     @JsonSerialize(using= DateSerializer.class)
     private java.sql.Date birthDate;
 
-    @JsonProperty("fitnessLevel")
+    @JsonProperty("fitness")
     @Column(name = "fitness_level")
     private int fitnessLevel;
 
     @JsonProperty("passports")
     @JsonSerialize(using=PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
-    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
+    @JoinTable(
+        name = "User_PassportCountry",
+        joinColumns = { @JoinColumn(name = "user_id") },
+        inverseJoinColumns = { @JoinColumn(name = "country_id") }
+    )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
     @JsonIgnore
@@ -84,7 +89,9 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
-        if (birthDate.equals("")) {
+        if (birthDate == null) {
+            this.birthDate = null;
+        } else if (birthDate.equals("")) {
             this.birthDate = null;
         } else {
             this.birthDate = Date.valueOf(birthDate);
@@ -139,12 +146,12 @@ public class User {
         this.primaryEmail = primaryEmail;
     }
 
-    public Long getUser_id() {
-        return userID;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long userID) {
-        this.userID = userID;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getFirstName() {
@@ -229,9 +236,12 @@ public class User {
 
     @Override
     public String toString() {
-        String result = String.format("Name: %s %s %s",firstName, middleName, lastName) +
-                "\nNickname: " + getNickName() + "\nEmails: " + emails + "\nBio: " + getBio() +
-                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString();
+        String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
+                "\nNickname: " + getNickName() + "\nEmails: " + getEmails().toString() + "\nBio: " + getBio() +
+                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString()
+                + "\nPassword: " + getPassword() + "\nFitness Level: " + getFitnessLevel() +
+                "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
+                "\nPrimary Email: " + getPrimaryEmail();
         return result;
     }
 
@@ -244,5 +254,9 @@ public class User {
             ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
         }
         return userStr;
+    }
+
+    public void resetPassportCountries() {
+        passportCountries = new HashSet<PassportCountry>();
     }
 }

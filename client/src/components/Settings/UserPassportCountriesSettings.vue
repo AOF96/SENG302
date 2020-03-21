@@ -1,20 +1,28 @@
 <template>
 <div id="settingsWrap">
     <UserSettingsMenu />
-    <div>
-        <h2>Passport Countries</h2>
-        <div v-for="country in user.user.tmp_passports" v-bind:key="country">
-            <h4>{{country}}</h4>
-            <button v-on:click="removePassportCountries(country)">remove</button>
+    <div class="settingsContent">
+        <h1>Edit Passport Countries</h1>
+        <hr>
+        <br>
+        <div class="signup-row">
+            <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
+            <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
+        </div>
+        <div class="countryBox" v-for="country in user.user.passports" v-bind:key="country">
+            <h4 class="countryDisplay">{{country}}</h4>
+            <button class="removeCountryButton" v-on:click="removePassportCountries(country)">remove</button>
+            <div class="floatClear"></div>
         </div>
 
-        <div>
+        <div id="countryActions">
           <form @submit.prevent>
-            <select 
-                v-model="adding_country" 
-                name="passportCountries" 
-                placeholder="Passport Countries" 
-                value="Passport Countries" 
+            <select
+                v-model="adding_country"
+                name="passportCountries"
+                placeholder="Passport Countries"
+                value="Passport Countries"
+                id="passportCountriesInput"
                 required
             >
                 <option selected disabled hidden>Passport Countries</option>
@@ -22,8 +30,8 @@
                     {{addingCountry}}
                 </option>
             </select>
-            <button v-on:click="addPassportCountries()">Add passport countries</button>
-            <button v-on:click="updatePassports(user.user)">Save Changes</button>
+            <button id = "addPassportButton" v-on:click="addPassportCountries()">Add</button>
+              <button id ="saveChangesButton" v-on:click="savePassportCountries()">Save</button>
           </form>
         </div>
     </div>
@@ -36,6 +44,7 @@ import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 
 import axios from "axios";
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
+import {apiUser} from "../../api";
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -75,35 +84,43 @@ export default {
         this.startUp()
     },
     methods: {
-        ...mapActions(['updatePassports', 'updateTmpPassports']),
+        ...mapActions(['updatePassports']),
          startUp() {
             console.log('init')
-            this.user.user.tmp_passports = this.user.user.passports.slice()
+            this.user.user.passports = this.user.user.passports.slice()
         },
         removePassportCountries(country) {
-            const index = this.user.user.tmp_passports.indexOf(country)
+            const index = this.user.user.passports.indexOf(country)
             if (index === -1) return
-            this.user.user.tmp_passports.splice(index, 1)
+            this.user.user.passports.splice(index, 1)
             this.countries_option.push(country)
             this.countries_option.sort()
-            this.updateTmpPassports(this.user.user)
+            this.updatePassports(this.user.user)
         },
         addPassportCountries() {
             if(!this.adding_country) return
-            // axios.post(SERVER_URL + '/editPassportCountries', {
-            //         passportCountries: this.adding_country //should be matched the column name
-            //     })
-            //     .then((response) => {
-            //         console.log(response.data)
-            //     }, (error) => {
-            //         console.log(error)
-            //     })
-            this.user.user.tmp_passports.push(this.adding_country)
+            this.user.user.passports.push(this.adding_country)
             const index = this.countries_option.indexOf(this.adding_country)
             if (index == -1) return
             this.countries_option.splice(index, 1)
             this.adding_country = ""
-            this.updateTmpPassports(this.user.user)
+            this.updatePassports(this.user.user)
+        },
+        savePassportCountries() {
+            this.updatePassports(this.user.user);
+            console.log(this.user.user.passports);
+            apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
+                this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
+                this.user.user.fitness, this.user.user.additional_email, this.user.user.passports).then((response) => {
+                document.getElementById("passport_success").hidden = false;
+                document.getElementById("passport_error").hidden = true;
+                console.log(response);
+            }, (error) => {
+                document.getElementById("passport_error").hidden = false;
+                document.getElementById("passport_error").innerText = error.response.data.Errors;
+                document.getElementById("passport_success").hidden = true;
+                console.log(error);
+            });
         }
     }
 }

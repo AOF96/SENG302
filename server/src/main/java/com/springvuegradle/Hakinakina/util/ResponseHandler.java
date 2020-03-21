@@ -70,10 +70,10 @@ public class ResponseHandler {
         int firstCheck = 0;
         for (User user: users) {
             if (firstCheck == 0) {
-                userList += String.format("\"%d %s %s\"", user.getUser_id(), user.getFirstName(), user.getLastName());
+                userList += String.format("\"%d %s %s\"", user.getUserId(), user.getFirstName(), user.getLastName());
                 firstCheck = 1;
             } else {
-                userList += String.format(",\n\"%d %s %s\"", user.getUser_id(), user.getFirstName(), user.getLastName());
+                userList += String.format(",\n\"%d %s %s\"", user.getUserId(), user.getFirstName(), user.getLastName());
             }
         }
         userList += "\n]\n}";
