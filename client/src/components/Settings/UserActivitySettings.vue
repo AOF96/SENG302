@@ -5,31 +5,24 @@
       <h1>Activities</h1>
       <hr>
       <h3>Select your activities:</h3>
-
       <div class="settingsActivity">
-
         <div class="dropdownContent">
-          <select class="dropDownBox"  v-model="selectedActivity" id="Activities">
-            <option value="relaxing">Relaxing</option>
-            <option value="fun">Fun</option>
-            <option value="adventurous">Adventurous</option>
-            <option value="extreme">Extreme</option>
-            <option value="teamsport">Team Sport</option>
+          <select class="dropDownBox"  v-model="selected_activities" id="Activities">
+            <option v-for="addingactivity in activities_option" v-bind:key="addingactivity">
+              {{addingactivity}}
+            </option>
           </select>
+<!--          <h3 class="activityType">{{ addingactivity }} </h3><button class="settingsActivitiesAdd">Remove</button>-->
+          <button class="settingsActivitiesAdd" v-on:click="addActivity()">Add activity</button>
+          <button v-on:click="updateActivities(user.user)">Save</button>
 
-
-
-          <button class="settingsActivitiesAdd" @click="addActivity" type="button">Add activity</button>
-
-          <div style="margin-top: 10px" v-for="activity in activities" v-bind:key="activity">
-            <h3 class="activityType">{{ activity }} </h3><button class="settingsActivitiesAdd">Remove</button>
-            <hr>
+          <div v-for="activity in user.user.tmp_activities" v-bind:key="activity">
+            <h4>{{activity}}</h4>
+            <button v-on:click="removeActivityType(activity)">remove</button>
           </div>
+
         </div>
       </div>
-
-
-
     </div>
   </div>
 </template>
@@ -80,22 +73,50 @@
 
 <script>
   import UserSettingsMenu from "./UserSettingsMenu";
+  import {mapActions, mapState} from 'vuex'
 
   export default {
-    data: function() {
-      return {
-        selectedActivity: "",
-        activities: []
-      }
-    },
     components: {
       UserSettingsMenu
     },
-    methods: {
-      addActivity: function() {
-        this.activities.push(this.selectedActivity);
-        // Do some sanity check
+    data() {
+      return {
+        selected_activities: "",
+        activities_option: ["relaxing","fun","swimming"],
+        num_of_activities: 1,
       }
+    },
+    computed: {
+      ...mapState(['user'])
+    },
+    mounted() {
+      this.startUp()
+    },
+    methods: {
+      ...mapActions(['updateActivities', 'updateTmpActivities']),
+      startUp() {
+        console.log('init')
+        this.user.user.tmp_activities = this.user.user.activities.slice()
+      },
+      addActivity(){
+        console.log("in activity");
+
+        this.user.user.tmp_activities.push(this.selected_activities)
+        console.log(this.user.user.tmp_activities)
+        const index = this.activities_option.indexOf(this.selected_activities)
+        if(index == -1) return
+        this.activities_option.splice(index, 1)
+        this.selected_activities = ""
+        this.updateTmpActivities(this.user.user)
+      },
+      removeActivityType(activity) {
+        const index = this.user.user.tmp_activities.indexOf(activity)
+        if (index === -1) return
+        this.user.user.tmp_activities.splice(index, 1)
+        this.activities_option.push(activity)
+        this.activities_option.sort()
+        this.updateTmpPassports(this.user.user)
+      },
     }
   }
 </script>
