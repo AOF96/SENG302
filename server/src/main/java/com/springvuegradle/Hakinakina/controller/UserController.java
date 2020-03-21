@@ -111,7 +111,7 @@ public class UserController {
      * @return*/
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("Authorization") String sessionToken) {
+    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue("s_id") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
     }
 
