@@ -49,7 +49,7 @@ export default {
     data() {
         return {
             countries_option: [],
-            adding_country: "",
+            adding_country: "Passport Countries",
             num_of_countries: 1,
         }
     },
@@ -81,24 +81,23 @@ export default {
     methods: {
         ...mapActions(['updatePassports', 'updateTmpPassports']),
          startUp() {
-            console.log('init')
+            console.log('init');
             this.user.user.tmp_passports = this.user.user.passports.slice()
         },
         removePassportCountries(country) {
-            const index = this.user.user.tmp_passports.indexOf(country)
-            if (index === -1) return
-            this.user.user.tmp_passports.splice(index, 1)
-            this.countries_option.push(country)
-            this.countries_option.sort()
+            const index = this.user.user.tmp_passports.indexOf(country);
+            if (index === -1) return;
+            this.user.user.tmp_passports.splice(index, 1);
+            this.countries_option.push(country);
+            this.countries_option.sort();
             this.updateTmpPassports(this.user.user)
         },
         addPassportCountries() {
-            if(!this.adding_country) return
-            this.user.user.tmp_passports.push(this.adding_country)
-            const index = this.countries_option.indexOf(this.adding_country)
-            if (index == -1) return
-            this.countries_option.splice(index, 1)
-            this.adding_country = ""
+            this.user.user.tmp_passports.push(this.adding_country);
+            const index = this.countries_option.indexOf(this.adding_country);
+            if (index == -1) return;
+            this.countries_option.splice(index, 1);
+            this.adding_country = "Passport Countries";
             this.updateTmpPassports(this.user.user)
         },
         savePassportCountries() {
@@ -106,7 +105,7 @@ export default {
             console.log(this.user.user.passports);
             apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                 this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
-                this.user.user.fitness, this.user.user.additional_email, this.user.user.passports);
+                this.user.user.fitness, this.user.user.additional_email, this.user.user.passports, this.user.user.activities);
         }
     }
 }

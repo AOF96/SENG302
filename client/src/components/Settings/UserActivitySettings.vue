@@ -1,79 +1,42 @@
 <template>
   <div id="settingsWrap">
-    <UserSettingsMenu/>
+    <UserSettingsMenu />
     <div class="settingsContent">
-      <h1>Activities</h1>
+      <h1>Edit Activities</h1>
       <hr>
-      <h3>Select your activities:</h3>
-      <div class="settingsActivity">
-        <div class="dropdownContent">
-          <select class="dropDownBox"  v-model="selected_activities" id="Activities">
-            <option v-for="addingactivity in activities_option" v-bind:key="addingactivity">
-              {{addingactivity}}
+      <div class="activityBox"  v-for="activity in user.user.tmp_activities" v-bind:key="activity">
+        <h4 class="activityDisplay">{{activity}}</h4>
+        <button class="removeActivityButton" v-on:click="removeActivityType(activity)">remove</button>
+        <div class="floatClear"></div>
+      </div>
+
+      <div id="activityActions">
+        <form @submit.prevent>
+          <select
+                  v-model="selected_activities"
+                  name="activityType"
+                  placeholder="Activity Type"
+                  value="Activity Type"
+                  id="activityInput"
+                  required
+          >
+            <option selected disabled hidden>Activity Type</option>
+            <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
+              {{addingActivity}}
             </option>
           </select>
-<!--          <h3 class="activityType">{{ addingactivity }} </h3><button class="settingsActivitiesAdd">Remove</button>-->
-          <button class="settingsActivitiesAdd" v-on:click="addActivity()">Add activity</button>
-          <button v-on:click="updateActivities(user.user)">Save</button>
-
-          <div v-for="activity in user.user.tmp_activities" v-bind:key="activity">
-            <h4>{{activity}}</h4>
-            <button v-on:click="removeActivityType(activity)">remove</button>
-          </div>
-
-        </div>
+          <button id = "addActivityButton" v-on:click="addActivityType()">Add</button>
+          <button id = "saveChangesButton"  v-on:click="saveActivityTypes()">Save</button>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
-
-<style>
-  .dropdownContent {
-      margin-left: 20px;
-      margin-bottom: 10px;
-
-
-  }
-
-  .settingsActivitiesAdd {
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 12px;
-    color: #1cca92;
-    font-weight: 500;
-    background: #ffffff;
-    border: 2px solid #1cca92;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    margin-left:10px;
-  }
-
-  .dropDownBox {
-    /*box-shadow: 4px 4px #ccc;*/
-    /*font-weight: 500;*/
-    /*font-size: 20px;*/
-    width: 140px;
-    height: 35px;
-    padding: 4px;
-    border-radius:4px;
-    box-shadow: 2px 2px 8px #999;
-    background: #eee;
-    border: none;
-    outline: none;
-    display: inline-block;
-  }
-
-  .activityType {
-    display: inline;
-    margin-top: 20px;
-  }
-</style>
-
 <script>
   import UserSettingsMenu from "./UserSettingsMenu";
   import {mapActions, mapState} from 'vuex'
+  import {apiUser} from "../../api";
 
   export default {
     components: {
@@ -81,7 +44,7 @@
     },
     data() {
       return {
-        selected_activities: "",
+        selected_activities: "Activity Type",
         activities_option: ["relaxing","fun","swimming"],
         num_of_activities: 1,
       }
@@ -95,28 +58,35 @@
     methods: {
       ...mapActions(['updateActivities', 'updateTmpActivities']),
       startUp() {
-        console.log('init')
+        console.log('init');
         this.user.user.tmp_activities = this.user.user.activities.slice()
       },
-      addActivity(){
+      addActivityType(){
         console.log("in activity");
 
-        this.user.user.tmp_activities.push(this.selected_activities)
-        console.log(this.user.user.tmp_activities)
-        const index = this.activities_option.indexOf(this.selected_activities)
-        if(index == -1) return
-        this.activities_option.splice(index, 1)
-        this.selected_activities = ""
+        this.user.user.tmp_activities.push(this.selected_activities);
+        console.log(this.user.user.tmp_activities);
+        const index = this.activities_option.indexOf(this.selected_activities);
+        if(index == -1) return;
+        this.activities_option.splice(index, 1);
+        this.selected_activities = "Activity Type";
         this.updateTmpActivities(this.user.user)
       },
       removeActivityType(activity) {
-        const index = this.user.user.tmp_activities.indexOf(activity)
+        const index = this.user.user.tmp_activities.indexOf(activity);
         if (index === -1) return
-        this.user.user.tmp_activities.splice(index, 1)
-        this.activities_option.push(activity)
-        this.activities_option.sort()
+        this.user.user.tmp_activities.splice(index, 1);
+        this.activities_option.push(activity);
+        this.activities_option.sort();
         this.updateTmpPassports(this.user.user)
       },
+      saveActivityTypes() {
+        this.updateActivities(this.user.user);
+        console.log(this.user.user.activities);
+        apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
+                this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
+                this.user.user.fitness, this.user.user.additional_email, this.user.user.passports, this.user.user.activities);
+      }
     }
   }
 </script>
