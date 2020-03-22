@@ -54,7 +54,7 @@
         data() {
             return {
                 countries_option: [],
-                adding_country: "",
+                adding_country: "Passport Countries",
                 num_of_countries: 1
             }
         },
@@ -98,12 +98,12 @@
                 this.updatePassports(this.user.user)
             },
             addPassportCountries() {
-                if(!this.adding_country) return
+                if(!this.adding_country || this.adding_country == "Passport Countries") return
                 this.user.user.passports.push(this.adding_country)
                 const index = this.countries_option.indexOf(this.adding_country)
                 if (index == -1) return
                 this.countries_option.splice(index, 1)
-                this.adding_country = ""
+                this.adding_country = "Passport Countries"
                 this.updatePassports(this.user.user)
             },
             savePassportCountries() {
