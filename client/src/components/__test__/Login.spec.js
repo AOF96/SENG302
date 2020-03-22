@@ -34,8 +34,8 @@ describe('Login.vue', () => {
 
   it('When login fails, the error message should show up', () => {
     const wrapper = mount(Login, { store, localVue, router })
-    expect(wrapper.text()).toContain('Login')
-    wrapper.find({ name: "Login" }).trigger('click')
+    const submitButton = wrapper.find('input[type="submit"]')
+    submitButton.trigger('click')
   })
 
 })
