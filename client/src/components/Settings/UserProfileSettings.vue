@@ -30,7 +30,6 @@
                 <option>2</option>
                 <option>3</option>
                 <option>4</option>
-                <option>5</option>
             </select>
             <h2>Birthday</h2>
             <input v-model="user.date_of_birth" class="editProfileInput" name="birthday" type="date" required>
