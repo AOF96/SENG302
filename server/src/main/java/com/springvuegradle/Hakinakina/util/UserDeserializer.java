@@ -20,6 +20,8 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     @Autowired
     PassportCountryRepository countryRepository;
+    @Autowired
+    EmailRepository emailRepository;
 
     public UserDeserializer() {
         this(null);
@@ -31,6 +33,7 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     /**
      * Method to deserialize user creation JSON to user object
+     *
      * @param jp
      * @param ctxt
      * @return
@@ -46,32 +49,32 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Get compulsory attributes
         String lastName = getValueString(node, "lastname");
         String firstName = getValueString(node, "firstname");
-        String primaryEmail = getValueString(node, "email");
+        String primaryEmail = getValueString(node, "primary_email");
         String password = getValueString(node, "password");
-        Date dateOfBirth = Date.valueOf(node.get("date_of_birth").asText());
-        Integer fitnessLevel = getValueInt(node, "fitness");
+        String dateOfBirth = getValueString(node, "date_of_birth");
+        int fitnessLevel = getValueInt(node, "fitness");
         // Get gender
         String genderString = getValueString(node, "gender");
         Gender gender = null;
-        switch (genderString) {
-            case("male"):
+        switch (genderString.toLowerCase()) {
+            case ("male"):
                 gender = Gender.MALE;
                 break;
             case ("female"):
                 gender = Gender.FEMALE;
                 break;
-            case ("non_binary"):
+            case ("non-binary"):
                 gender = Gender.NON_BINARY;
                 break;
         }
 
         // Get other attributes if they exist
-        Integer userId = getValueInt(node, "profile_id");
         String middleName = getValueString(node, "middlename");
         String nickName = getValueString(node, "nickname");
         String bio = getValueString(node, "bio");
         // Get passport countries
-        Set<PassportCountry> userCountries = getPassportCountries(node, "passport");
+        Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
+        Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
 
         // Create user with compulsory attributes
         User user = new User(firstName, lastName, primaryEmail, dateOfBirth, gender, fitnessLevel, password);
@@ -79,6 +82,9 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Add additional attributes
         for (PassportCountry country : userCountries) {
             user.addPassportCountry(country);
+        }
+        for (Email email : additionalEmail) {
+            user.addEmail(email);
         }
         if (middleName != null) {
             user.setMiddleName(middleName);
@@ -88,9 +94,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
         if (bio != null) {
             user.setBio(bio);
-        }
-        if (userId != null) {
-            user.setUser_id((long) userId);
         }
 
         return user;
@@ -107,6 +110,8 @@ public class UserDeserializer extends StdDeserializer<User> {
         JsonNode fieldValue = node.get(field);
         if (fieldValue == null) {
             return null;
+        } else if (fieldValue.asText() == "null") {
+            return null;
         } else {
             return fieldValue.asText();
         }
@@ -122,7 +127,7 @@ public class UserDeserializer extends StdDeserializer<User> {
     public Integer getValueInt(JsonNode node, String field) {
         JsonNode fieldValue = node.get(field);
         if (fieldValue == null) {
-            return null;
+            return -1;
         } else {
             return fieldValue.asInt();
         }
@@ -130,6 +135,7 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     /**
      * Returns set of PassportCountry in user creation request
+     *
      * @param node
      * @param field
      * @return
@@ -144,6 +150,26 @@ public class UserDeserializer extends StdDeserializer<User> {
                 userCountries.add(countryRepository.findCountryByName(countryNode.asText()));
             }
             return userCountries;
+        }
+    }
+
+    /**
+     * Returns set of Additional email in user creation request
+     *
+     * @param node
+     * @param field
+     * @return
+     */
+    public Set<Email> getAdditionalEmail(JsonNode node, String field) {
+        JsonNode emailNodes = node.get(field);
+        if (emailNodes == null) {
+            return new HashSet<>();
+        } else {
+            Set<Email> emails = new HashSet<>();
+            for (JsonNode emailNode : emailNodes) {
+                emails.add(emailRepository.findEmailByString(emailNode.asText()));
+            }
+            return emails;
         }
     }
 }
