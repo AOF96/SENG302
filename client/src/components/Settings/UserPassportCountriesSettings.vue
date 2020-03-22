@@ -43,7 +43,7 @@
 
 
     import axios from "axios";
-    const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
+    const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
     import {apiUser} from "../../api";
     import { mapState, mapActions } from 'vuex'
 
@@ -55,7 +55,7 @@
             return {
                 countries_option: [],
                 adding_country: "",
-                num_of_countries: 1,
+                num_of_countries: 1
             }
         },
         computed: {
@@ -108,7 +108,7 @@
             },
             savePassportCountries() {
                 this.updatePassports(this.user.user);
-                console.log(this.user.user.passports);
+                console.log(this.countries_code_name_option);
                 apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                     this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                     this.user.user.fitness, this.user.user.additional_email, this.user.user.passports).then((response) => {
