@@ -10,8 +10,6 @@ import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.*;
 
@@ -49,20 +47,9 @@ public class UserService {
      *
      * @param request
      * @return reply to client
-     *
-     *edits email
-     *
-     * PUT /profiles/{profileId}/emails
-     * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
-     * }
-     * */
-    public ResponseEntity<String> editEmail(String request, long userId) {
-        ResponseEntity<String> response = null;
+     */
+    public ResponseEntity editEmail(String request) {
+        ResponseEntity response = null;
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = null;
@@ -73,7 +60,7 @@ public class UserService {
             response = responseHandler.formatErrorResponse(400, "Incorrect request format");
         }
 
-        //long userId = node.get("profile_id").asLong();
+        long userId = node.get("profile_id").asLong();
         User user = userRepository.findById(userId).get();
 
         String primaryEmail = node.get("primary_email").asText();
@@ -96,8 +83,6 @@ public class UserService {
 
         return response;
     }
-
-
 
     /**
      * Switches primary email with secondary email
@@ -124,7 +109,6 @@ public class UserService {
         }
     }
 
-
     /**
      * Updates the users secondary emails to match the new set
      *
@@ -144,67 +128,17 @@ public class UserService {
             emailRepository.delete(emailToRemove);
         }
 
-        String emailsAdded = "";
         for (String newEmail : secondaryEmails) {
-            if (emailRepository.findEmailByString(newEmail) == null && !newEmail.equals("")) {
+            if (emailRepository.findEmailByString(newEmail) == null) {
                 Email emailToAdd = new Email(newEmail);
                 emailRepository.save(emailToAdd);
                 user.addEmail(emailToAdd);
-                emailsAdded += newEmail + ", ";
             }
         }
 
         userRepository.save(user);
 
-        if (emailsAdded.equals("")) {
-            return responseHandler.formatErrorResponse(400, "No emails successfully updated, emails either in use or empty");
-        } else {
-            return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
-        }
-    }
-
-    /** adds email
-     * POST /profiles/{profileId}/emails
-     * {
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *     ]
-     * }
-     *
-     *
-     * @return*/
-    public ResponseEntity addEmails(String request, long userId, String sessionToken) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = null;
-
-        try {
-            node = objectMapper.readValue(request, JsonNode.class);
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Error parsing add email request");
-            return responseHandler.formatErrorResponse(400, "Incorrect request format");
-        }
-
-        User user = userRepository.findById(userId).get();
-        int currentNumEmails = user.getEmails().size();
-        List<JsonNode> secondaryEmailNodes = node.findValues("additional_email");
-
-        ArrayList<String> secondaryEmails = new ArrayList<>();
-        for (JsonNode node1 : secondaryEmailNodes.get(0)) {
-            secondaryEmails.add(node1.asText());
-        }
-
-        if (currentNumEmails + secondaryEmails.size() > 4) {
-            return responseHandler.formatErrorResponse(400, "Cannot add more than 4 secondary emails");
-        } else {
-            for (String email : secondaryEmails) {
-                Email emailToAdd = new Email(email);
-                emailRepository.save(emailToAdd);
-                user.addEmail(emailToAdd);
-            }
-        }
-        userRepository.save(user);
-        return responseHandler.formatErrorResponse(201, "New emails successfully added");
+        return responseHandler.formatSuccessResponse(200, "Secondary emails successfully updated");
     }
 
     /**
@@ -323,5 +257,52 @@ public class UserService {
             ErrorHandler.printProgramException(e, "can't check password");
             return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
         }
+    }
+
+    /**
+     * Firstly checks that the user is authenticated and the old password matches the Users current password. Then
+     * updates the users password and salt if successful
+     * @param profileId The id of the user to be changed
+     * @param sessionToken The authentication token
+     * @param oldPassword The attempt for Users original password
+     * @param newPassword The password to set to
+     * @return
+     */
+    public ResponseEntity changePassword(long profileId, String sessionToken, String oldPassword, String newPassword) {
+        ResponseEntity response;
+        Optional<User> getUser = userRepository.findById(profileId);
+        if (getUser.isPresent()) {
+            User user = getUser.get();
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if(session != null){
+                if(session.getUser().getUserId() == profileId){
+                    try {
+                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                        if (!user.getPassword().equals(encryptedPassword)) {
+                            return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                        }
+                    } catch (Exception e) {
+                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+                    }
+
+                    try {
+                        String salt = EncryptionUtil.getNewSalt();
+                        user.setSalt(salt);
+                        user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
+                        userRepository.save(user);
+                        response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
+                    } catch (Exception e) {
+                        response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                    }
+                }else{
+                    response = responseHandler.formatErrorResponse(400, "Error while creating new password");
+                }
+            }else{
+                return responseHandler.formatErrorResponse(400, "Invalid Session");
+            }
+        } else {
+            response = responseHandler.formatErrorResponse(400, "No user with that ID");
+        }
+        return response;
     }
 }

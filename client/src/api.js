@@ -60,6 +60,7 @@ export const apiUser = {
     additional_email: additional_email,
     passports: passports
   }),
+  refreshUserData: (profile_id) => instance.get('/profiles/' + profile_id),
   // Add additional emails
   addEmails: (user_id, additional_email) => instance.post('/profiles/'+user_id+'/emails', {
     additional_email: additional_email
