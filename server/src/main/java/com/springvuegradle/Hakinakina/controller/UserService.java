@@ -10,10 +10,10 @@ import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class for user profile request actions
@@ -35,6 +35,22 @@ public class UserService {
         this.sessionRepository = sessionRepository;
     }
 
+    /**
+     * Checks whether an email has the correct format
+     * @param email Email String in question
+     * @return True if correct, False otherwise
+     */
+    public boolean isEmailProperlyFormatted(String email) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
+    }
+
+    /**
+     * Checks whether an email exists by checking the repository and whether a user exists with that email as their primary
+     *
+     * @param email A string email to search for
+     * @return
+     */
     public boolean emailExists(String email) {
         return !(emailRepository.findEmailByString(email) == null && userRepository.findUserByEmail(email) == null);
     }
@@ -307,6 +323,8 @@ public class UserService {
         if (user.getPrimaryEmail() == null) {
             messages.add("Please provide a valid email.");
         } else if (user.getPrimaryEmail().isBlank()) {
+            messages.add("Please provide a valid email.");
+        } else if (isEmailProperlyFormatted(user.getPrimaryEmail()) != true){
             messages.add("Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {

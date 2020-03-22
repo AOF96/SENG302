@@ -1,13 +1,24 @@
 package com.springvuegradle.Hakinakina;
 
+import com.springvuegradle.Hakinakina.controller.UserService;
 import com.springvuegradle.Hakinakina.entity.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class UserTests {
+
+    @Autowired
+    UserService userService;
 
     @Test
     public void testCreatingNewUser() {
@@ -61,4 +72,16 @@ public class UserTests {
 
         assertEquals("[jacky@anothermail.com, jacky@hotmail.com]", emails.toString());
     }
+
+    @Test
+    public void testEmailFormatCheck() {
+
+        String correctEmail = "mwi67@uclive.ac.nz";
+        assertTrue(userService.isEmailProperlyFormatted(correctEmail));
+
+        String wrongEmail = "me@you";
+        assertFalse(userService.isEmailProperlyFormatted(wrongEmail));
+
+    }
+
 }

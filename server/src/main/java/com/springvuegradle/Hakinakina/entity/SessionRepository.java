@@ -13,4 +13,7 @@ public interface SessionRepository extends JpaRepository<Session, String>{
 
         @Query(value = "DELETE FROM Session WHERE token = ?", nativeQuery = true)
         Session removeToken(String token);
+
+        @Query(value = "DELETE FROM Session WHERE user_user_id = ?", nativeQuery = true)
+        Session removeTokenByUserId(String token);
 }
