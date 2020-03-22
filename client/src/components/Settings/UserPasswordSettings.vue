@@ -17,7 +17,7 @@
                     <input class="changePasswordFeild" type="password" name="confirmPassword" placeholder="Re-enter Password" v-model="confirmPassword">
                     <div class="signup-row">
                         <h6 class="passwordChange_error" id="other_error" hidden="true"/>
-                        <h6 class="passwordChange_success" id="success" hidden="true"/>
+                        <h6 class="passwordChange_success" id="success" hidden="true">Password successfully updated</h6>
                     </div>
                     <button id="settingsPasswordSubmit" v-on:click="submitPasswordChange()" type="submit">Change Password</button>
                 </form>
@@ -72,7 +72,6 @@
                                     apiUser.changePassword(this.user.profile_id, this.oldPassword, this.newPassword, this.confirmPassword).then((response) => {
                                         this.hideErrorMessages();
                                         document.getElementById("success").hidden = false;
-                                        document.getElementById("other_error").innerText = "Password successfully updated";
                                         console.log(response);
                                     }, (error) => {
                                         const responseData = error.response.data;
@@ -107,6 +106,10 @@
                             document.getElementById("other_error").hidden = false;
                             document.getElementById("other_error").innerText = "Password length must at least be 8";
                         }
+                    } else {
+                        console.log("Yay!");
+                        document.getElementById("other_error").hidden = false;
+                        document.getElementById("other_error").innerText = "The repeated passwords do not match";
                     }
                 } else {
                     this.hideErrorMessages();
