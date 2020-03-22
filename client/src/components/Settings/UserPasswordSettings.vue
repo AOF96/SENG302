@@ -6,7 +6,7 @@
             <hr>
             <div>
                 <form @submit.prevent>
-                    <input class="changePasswordFeild" type="password" name="password" placeholder="Current Password" v-model="password">
+                    <input class="changePasswordFeild" type="password" name="password" placeholder="Current Password" v-model="oldPassword">
                     <div class="signup-row">
                         <h6 class="passwordChange_error" id="password_incorrect" hidden="true">Incorrect password</h6>
                     </div>
@@ -28,7 +28,6 @@
 
 <script>
     import UserSettingsMenu from '@/components/Settings/UserSettingsMenu';
-    import {userInfo} from "../../globals";
     import {apiUser} from "../../api";
     import { mapGetters } from 'vuex'
 
@@ -40,8 +39,7 @@
         },
         data() {
             return {
-                profileId: userInfo.profileId,
-                password: '',
+                oldPassword: '',
                 newPassword: '',
                 confirmPassword: '',
             }
@@ -50,7 +48,7 @@
             ...mapGetters(['user']),
             validation() {
                 return {
-                    oldPassword: this.password !== '',
+                    oldPassword: this.oldPassword !== '',
                     match: this.newPassword == this.confirmPassword,
                     length: /.{8,}/.test(this.newPassword),
                     number: /\d/.test(this.newPassword),
@@ -71,7 +69,7 @@
                         if (this.validation.length) {
                             if (this.validation.number) {
                                 if (this.validation.uppercase) {
-                                    apiUser.changePassword(this.profileId, this.oldPassword, this.newPassword, this.confirmPassword).then((response) => {
+                                    apiUser.changePassword(this.user.profile_id, this.oldPassword, this.newPassword, this.confirmPassword).then((response) => {
                                         this.hideErrorMessages();
                                         document.getElementById("success").hidden = false;
                                         document.getElementById("other_error").innerText = "Password successfully updated";
@@ -91,7 +89,7 @@
                                             document.getElementById("password_incorrect").hidden = true;
                                             document.getElementById("passwords_dont_match").hidden = true;
                                             document.getElementById("other_error").hidden = false;
-                                            document.getElementById("other_error").innerText = responseData;
+                                            document.getElementById("other_error").innerText = responseData.Errors;
                                         }
                                     });
                                 } else {

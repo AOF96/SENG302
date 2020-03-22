@@ -426,7 +426,7 @@ public class UserService {
                     try {
                         String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
                         if (!user.getPassword().equals(encryptedPassword)) {
-                            return responseHandler.formatErrorResponse(400, "oldPassword is incorrect");
+                            return responseHandler.formatErrorResponse(400, "Current password is incorrect");
                         }
                     } catch (Exception e) {
                         return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
