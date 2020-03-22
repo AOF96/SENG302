@@ -340,6 +340,10 @@ public class UserService {
             messages.add("Birth date must be in the past");
         }
 
+        if (user.getPassword() == null) {
+            messages.add("Password cannot be empty");
+        }
+
         if (messages.isEmpty()) {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
