@@ -44,12 +44,11 @@
                         <h3 id="fitnessLevelText">Fitness Level</h3>
                         <select id="levels" v-model="user.fitness" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
                             <option selected disabled hidden>Select your level</option>
-                            <option>0</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                            <option>{{option1}}</option>
+                            <option>{{option2}}</option>
+                            <option>{{option3}}</option>
+                            <option>{{option4}}</option>
+                            <option>{{option5}}</option>
                         </select>
                     </div>
 
@@ -131,7 +130,12 @@
                         uppercase: ERR_MSG_PASS_UPPERCASE,
                     },
                 },
-                failed: false
+                failed: false,
+                option1: "0 - I can walk short distances",
+                option2: "1 - I can run a short distance",
+                option3: "2 - I could attempt a small marathon",
+                option4: "3 - I could complete a marathon",
+                option5: "4 - I am world class in endurance"
             }
         },
 
@@ -199,8 +203,21 @@
                     document.getElementById("missing_field").innerText = "";
                 }
 
+                let fitnessLevel = 0;
+                if (this.user.fitness === this.option1) {
+                    fitnessLevel = 0;
+                } else if (this.user.fitness === this.option2) {
+                    fitnessLevel = 1;
+                } else if (this.user.fitness === this.option3) {
+                    fitnessLevel = 2;
+                } else if (this.user.fitness === this.option4) {
+                    fitnessLevel = 3;
+                } else {
+                    fitnessLevel = 4;
+                }
+
                 apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email,
-                    this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitness).then((response) => {
+                    this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, fitnessLevel).then((response) => {
                     console.log(response.data);
                     this.createUserProfile(response.data[0]);
                     helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);

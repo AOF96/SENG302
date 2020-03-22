@@ -8,7 +8,7 @@
           <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
           <div id="userQuickInfoWrap">
             <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
-            <h2 id="userFitnessLevel">Fitness Level: {{ user.fitness }}</h2>
+            <h2 id="userFitnessLevel">Fitness Level: {{ fitnessLevel }}</h2>
           </div>
           <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
           <div class="floatClear"></div>
@@ -58,14 +58,33 @@
         PassportCountries
     },
     computed: {
-      ...mapGetters(['user'])
+      ...mapGetters(['user']),
+      fitnessLevel: function() {
+        const option1 = "0 - I can walk short distances";
+        const option2 = "1 - I can run a short distance";
+        const option3 = "2 - I could attempt a small marathon";
+        const option4 = "3 - I could complete a marathon";
+        const option5 = "4 - I am world class in endurance";
+
+        if (this.user.fitness === 0) {
+          return option1;
+        } else if (this.user.fitness === 1) {
+          return option2;
+        } else if (this.user.fitness === 2) {
+          return option3;
+        } else if (this.user.fitness === 3) {
+          return option4;
+        } else {
+          return option5;
+        }
+      }
     },
     data: function() {
       return {
         myJson: json,
         showNewButton: false,
         notFull: true ,
-        textInput: ""
+        textInput: "",
       }
     }
   }
