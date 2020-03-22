@@ -20,7 +20,7 @@
                     <path d="M0 0h24v24H0z" fill="none" /></svg>
             </div>
             <!-- <div v-if="additional_email.length < 4"> -->
-            <form @submit.prevent>
+            <form @submit.prevent v-if="user.additional_email.length < 4">
                 <input id="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
                 <button id="addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
             </form>
@@ -61,13 +61,12 @@
                 limit_num_email: LIMIT_NUM_EMAIL,
                 tempOldEmail: '',
                 editEmailInput: '',
-                showEditBox: false,
-                emails: apiUser.getAllEmails()
+                showEditBox: false
             }
         },
         computed: {
             ...mapState(['user']),
-            ...mapGetters(['user'])
+            ...mapGetters(['user']),
         },
         methods: {
             ...mapActions(['updateUserEmail']),

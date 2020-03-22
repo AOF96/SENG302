@@ -52,8 +52,6 @@ import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
-import router from "../../router";
-
 
 export default {
     components: {
@@ -78,9 +76,6 @@ export default {
                 document.getElementById("error").hidden = false;
                 document.getElementById("error").innerText = error.response.data.Errors;
                 document.getElementById("success").hidden = true;
-
-                this.logout();
-                router.push('login');
                 console.log(error);
             });
         },
