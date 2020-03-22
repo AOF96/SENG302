@@ -1,6 +1,6 @@
 *{
-  margin:0;
-  padding:0;
+    margin:0;
+    padding:0;
 }
 #appContainer{
     position:absolute;
@@ -15,9 +15,9 @@
     position: relative;
 }
 p, h1, h2, h3, h4, h5, h6 span, input, button, li, a, label{
-  font-family: 'Roboto';
-  font-weight: 400;
-  text-decoration: none;
+    font-family: 'Roboto';
+    font-weight: 400;
+    text-decoration: none;
 }
 body{
     width: 100%;
@@ -70,25 +70,25 @@ body{
     border: 1px solid #d8d8d8;
 }
 #credentials-box select{
-  width:120px;
-  padding: 6px 12px;
+    width:120px;
+    padding: 6px 12px;
 }
 #credentials-box .signupInput-birthday{
-  padding: 8px 12px;
+    padding: 8px 12px;
 }
 .signupInput-email, .signupInput-password, .signupInput-lastname{
-  margin-right:0 !important;
+    margin-right:0 !important;
 }
 .loginInput-email, .loginInput-password{
-  margin-right:0 !important;
+    margin-right:0 !important;
 }
 .signup-row{
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
 .signup-row > input:first-child{
-  margin-right:15px;
+    margin-right:15px;
 }
 #signupText-birthday ,#fitnessLevelText{
     color: #777777;
@@ -368,6 +368,22 @@ body{
 .emailBlock.emailSecondary h4{
     color:rgba(0,0,0,0.75);
     text-align: left;
+    display: inline-block;
+    padding-right: 5px;
+    cursor:pointer;
+}
+.editIcon{
+    display: inline-table;
+    fill: #717171;
+    width: 20px;
+    height: 20px;
+    transform: translate(2px,5px);
+    cursor: pointer;
+    opacity: 0;
+    transition: all .15s ease;
+}
+.emailSecondary:hover .editIcon{
+    opacity: 1;
 }
 .setPrimaryButton{
     position: absolute;
@@ -521,6 +537,79 @@ body{
     font-weight: 500;
     color: rgba(0,0,0,0.85);
 }
+#cover{
+    width:100%;
+    height:100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 101;
+}
+.floatingBox{
+    position: fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+    background:white;
+    border-radius:14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    z-index: 102;
+}
+#editEmailBox{
+    max-width:400px;
+    width:calc(100% - 30px);
+}
+#editEmailBox h1{
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
+    padding: 15px;
+}
+#editEmailInput{
+    padding: 10px 15px;
+    margin: 0 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    width: calc(100% - 62px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+}
+#editEmailButton{
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin: 15px;
+    margin-top: 0px;
+}
+#addEmailButton:hover, #editEmailButton:hover{
+    background: #1cca92;
+    color: #ffffff;
+}
+.fade-enter-active, .fade-leave-active{
+    transition:all .25s ease;
+}
+.fadeup-enter-active, .fadeup-leave-active {
+    transition:all .2s ease .02s;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+.fadeup-enter, .fadeup-leave-to {
+    opacity: 0;
+    transform:translate(-50%, calc(-50% + 50px));
+}
 
 
 #example {
@@ -611,23 +700,4 @@ body{
     margin: 0 auto;
     padding: 10px;
     margin-top: 10px;
-}
-
-
-.email_error {
-    margin: 0 auto;
-    font-family: 'Roboto';
-    font-weight: 700;
-    font-size: 13px;
-    padding-bottom: 3px;
-    color: #f06a6a;
-}
-
-.email_success {
-    margin: 0 auto;
-    font-family: 'Roboto';
-    font-weight: 700;
-    font-size: 13px;
-    padding-bottom: 3px;
-    color: #4CAF50;
 }
