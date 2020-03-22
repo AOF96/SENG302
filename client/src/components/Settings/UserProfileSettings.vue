@@ -52,7 +52,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
-
+import router from "../../router";
 
 export default {
     components: {
