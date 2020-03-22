@@ -5,13 +5,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "Passport_Country")
 public class PassportCountry {
     @Id
+    @Column(name = "country_id")
     private String countryId;
 
     private String name;
 
-    @ManyToMany(mappedBy = "passportCountries", cascade= CascadeType.PERSIST, fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "passportCountries", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
     protected PassportCountry() {}
@@ -53,5 +55,9 @@ public class PassportCountry {
     @Override
     public String toString() {
         return name;
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
     }
 }

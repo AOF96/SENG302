@@ -1,11 +1,17 @@
 export const userInfo = {
-    firstname:null,
+    profileId: null,
+    firstname: null,
     lastname:null,
-    nickname:null,  
-    gender:null, 
-    email:null, 
-    secondaryEmails: [], 
+    middlename:null,
+    nickname:null,
+    gender:null,
+    email:null,
+    primary_email:null,
+    secondaryEmails: [],
+    profile_id: null,
+    passportCountries: ['Australia', 'Newzealand'],
     birthday:null,
+    date_of_birth: null,
     bio: null,
-    isLogin: false
+    isLogin: true
 }

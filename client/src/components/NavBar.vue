@@ -1,45 +1,54 @@
 <template>
     <header>
-        <router-link to="/Signup" v-if="!isLogin">
+        <router-link to="/logout" v-if="user.isLogin">
+            <button id="headerNavButton" class="login" v-on:click="logoutUser">
+                Logout
+            </button>
+        </router-link>
+
+        <router-link to="/profile" v-if="user.isLogin">
+            <button id="headerNavButton" class="myaccount" v-on:click="goToProfile">
+                Profile
+            </button>
+        </router-link>
+
+        <router-link to="/signup" v-if="!user.isLogin">
             <button id="headerNavButton" class="signup">
                 Sign Up
             </button>
         </router-link>
 
-        <router-link to="/Login" v-if="!isLogin">
+        <router-link to="/login" v-if="!user.isLogin">
             <button id="headerNavButton" class="login">
                 Login
-            </button>
-        </router-link>
-
-        <router-link to="/Login" v-if="isLogin">
-            <button id="headerNavButton" class="login" v-on:click="logout">
-                Logout
-            </button>
-        </router-link>
-
-        <router-link to="/profile" v-if="isLogin">
-            <button id="headerNavButton" class="myaccount">
-                Profile
             </button>
         </router-link>
     </header>
 </template>
 
 <script>
-    import {userInfo} from '@/globals';
+    import { mapGetters, mapActions } from 'vuex';
+    import {apiUser} from "../api";
 
     export default {
         name: "NavBar",
         computed: {
-            isLogin() {
-                return userInfo.isLogin
-            }
+            ...mapGetters(['user'])
         },
         methods: {
-            logout() {
-                userInfo.isLogin = false
+            ...mapActions(['logout']),
+            ...mapActions(['updateUserProfile']),
+            ...mapActions(['resetUser']),
+            goToProfile() {
+                apiUser.refreshUserData(this.user.profile_id).then((response) => {
+                    console.log(response.data);
+                    this.updateUserProfile(response.data);
+                })
             },
+            logoutUser() {
+                apiUser.logout();
+                this.resetUser();
+            }
         }
     }
 </script>

@@ -1,12 +1,12 @@
 package com.springvuegradle.Hakinakina;
 
+import com.springvuegradle.Hakinakina.entity.PassportCountry;
 import com.springvuegradle.Hakinakina.entity.User;
 import com.springvuegradle.Hakinakina.entity.Gender;
 import com.springvuegradle.Hakinakina.util.JSONParser;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
-import java.sql.Date;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JSONParserTests {
 
@@ -25,15 +25,31 @@ public class JSONParserTests {
                 "  \"fitness\": \"3\"\n"  +
                 "}";
         User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                Date.valueOf("1985-12-20"), Gender.MALE, 3,
+                "1985-12-20", Gender.MALE, 3,
                 "jacky'sSecuredPwd");
 
         JSONParser parser = new JSONParser();
         User newUser = parser.createProfile(request);
 
-        Assertions.assertEquals(testUser.getFirstName(), newUser.getFirstName());
-        Assertions.assertEquals(testUser.getLastName(), newUser.getLastName());
-        Assertions.assertEquals(testUser.getGender(), newUser.getGender());
-        Assertions.assertEquals(testUser.getBirthDate().toString(), newUser.getBirthDate().toString());
+        assertEquals(testUser.getFirstName(), newUser.getFirstName());
+        assertEquals(testUser.getLastName(), newUser.getLastName());
+        assertEquals(testUser.getGender(), newUser.getGender());
+        assertEquals(testUser.getBirthDate().toString(), newUser.getBirthDate().toString());
+    }
+
+    @Test
+    public void testParsingUserToJson() {
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+        testUser.setUserId((long)1);
+        testUser.setBio("Hi there");
+        testUser.addPassportCountry(new PassportCountry("NZ", "New Zealand"));
+
+        String expectedJSON = "{\"bio\":\"Hi there\",\"profile_id\":1,\"firstname\":\"Maurice\",\"lastname\"" +
+                ":\"Benson\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":\"1985-12-20\"" +
+                ",\"fitness\":3,\"passports\":[\"New Zealand\"],\"primary_email\":\"jacky@google.com\",\"additional_email\":[]}";
+
+        assertEquals(expectedJSON, testUser.toJson());
     }
 }
