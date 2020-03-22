@@ -14,33 +14,32 @@
           <div class="floatClear"></div>
         </div>
         <PassportCountries/>
-      </div>
-
-      <div class="profileInfo">
-        <table id ="profileTable">
-          <tr>
-            <td class="profileTableTd" col width = "150">Gender:</td>
-            <td class="profileTableTd">{{ user.gender }}</td>
-          </tr>
-          <tr>
-            <td class="profileTableTd">DOB:</td>
-            <td class="profileTableTd">{{ user.date_of_birth }}</td>
-          </tr>
-          <tr>
-            <td class="profileTableTd">Primary Email:</td>
-            <td class="profileTableTd">{{ user.primary_email }}</td>
-          </tr>
-          <tr>
-            <td class="profileTableTd">Bio:</td>
-            <td class="profileTableTd">{{ user.bio }}</td>
-          </tr>
-          <tr>
-            <td class="profileTableTd">Secondary Emails:</td>
-            <div style="margin-top: 4px" v-for="email in user.additional_email" v-bind:key="email">
-              <p >{{email}}</p>
-            </div>
-          </tr>
-        </table>
+        <div class="profileInfo">
+          <table id ="profileTable">
+            <tr>
+              <td class="profileTableTd" col width = "150">Gender:</td>
+              <td class="profileTableTd">{{ user.gender }}</td>
+            </tr>
+            <tr>
+              <td class="profileTableTd">DOB:</td>
+              <td class="profileTableTd">{{ user.date_of_birth }}</td>
+            </tr>
+            <tr>
+              <td class="profileTableTd">Primary Email:</td>
+              <td class="profileTableTd">{{ user.primary_email }}</td>
+            </tr>
+            <tr>
+              <td class="profileTableTd">Bio:</td>
+              <td class="profileTableTd">{{ user.bio }}</td>
+            </tr>
+            <tr>
+              <td class="profileTableTd">Secondary Emails:</td>
+              <div style="margin-top: 4px" v-for="email in user.additional_email" v-bind:key="email">
+                <p >{{email}}</p>
+              </div>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
 </template>
@@ -110,15 +109,13 @@
     }
 
   .profileInfo {
-      width: 760px;
+      width: 100%;
       margin: auto;
-
-
       background: white;
       box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
       border-radius: 14px;
-
       font-family: Roboto;
+      margin-top: 15px;
   }
 
     .profileInfoP {

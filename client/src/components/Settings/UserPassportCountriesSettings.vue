@@ -4,17 +4,11 @@
         <div class="settingsContent">
             <h1>Edit Passport Countries</h1>
             <hr>
-            <br>
-            <div class="signup-row">
-                <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
-                <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
-            </div>
             <div class="countryBox" v-for="country in user.user.passports" v-bind:key="country">
                 <h4 class="countryDisplay">{{country}}</h4>
                 <button class="removeCountryButton" v-on:click="removePassportCountries(country)">remove</button>
                 <div class="floatClear"></div>
             </div>
-
             <div id="countryActions">
                 <form @submit.prevent>
                     <select
@@ -32,8 +26,11 @@
                     </select>
                     <button id = "addPassportButton" v-on:click="addPassportCountries()">Add</button>
                     <button id ="saveChangesButton" v-on:click="savePassportCountries()">Save</button>
+                    <div class="floatClear"></div>
                 </form>
             </div>
+            <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
+            <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
         </div>
     </div>
 </template>
@@ -43,7 +40,7 @@
 
 
     import axios from "axios";
-    const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name'
+    const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
     import {apiUser} from "../../api";
     import { mapState, mapActions } from 'vuex'
 
@@ -54,8 +51,8 @@
         data() {
             return {
                 countries_option: [],
-                adding_country: "",
-                num_of_countries: 1,
+                adding_country: "Passport Countries",
+                num_of_countries: 1
             }
         },
         computed: {
@@ -98,17 +95,17 @@
                 this.updatePassports(this.user.user)
             },
             addPassportCountries() {
-                if(!this.adding_country) return
+                if(!this.adding_country || this.adding_country == "Passport Countries") return
                 this.user.user.passports.push(this.adding_country)
                 const index = this.countries_option.indexOf(this.adding_country)
                 if (index == -1) return
                 this.countries_option.splice(index, 1)
-                this.adding_country = ""
+                this.adding_country = "Passport Countries"
                 this.updatePassports(this.user.user)
             },
             savePassportCountries() {
                 this.updatePassports(this.user.user);
-                console.log(this.user.user.passports);
+                console.log(this.countries_code_name_option);
                 apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                     this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
                     this.user.user.fitness, this.user.user.additional_email, this.user.user.passports).then((response) => {

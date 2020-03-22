@@ -20,6 +20,8 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     @Autowired
     PassportCountryRepository countryRepository;
+    @Autowired
+    EmailRepository emailRepository;
 
     public UserDeserializer() {
         this(null);
@@ -72,6 +74,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String bio = getValueString(node, "bio");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
+        Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
 
         // Create user with compulsory attributes
         User user = new User(firstName, lastName, primaryEmail, dateOfBirth, gender, fitnessLevel, password);
@@ -79,6 +82,9 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Add additional attributes
         for (PassportCountry country : userCountries) {
             user.addPassportCountry(country);
+        }
+        for (Email email : additionalEmail) {
+            user.addEmail(email);
         }
         if (middleName != null) {
             user.setMiddleName(middleName);
@@ -144,6 +150,26 @@ public class UserDeserializer extends StdDeserializer<User> {
                 userCountries.add(countryRepository.findCountryByName(countryNode.asText()));
             }
             return userCountries;
+        }
+    }
+
+    /**
+     * Returns set of Additional email in user creation request
+     *
+     * @param node
+     * @param field
+     * @return
+     */
+    public Set<Email> getAdditionalEmail(JsonNode node, String field) {
+        JsonNode emailNodes = node.get(field);
+        if (emailNodes == null) {
+            return new HashSet<>();
+        } else {
+            Set<Email> emails = new HashSet<>();
+            for (JsonNode emailNode : emailNodes) {
+                emails.add(emailRepository.findEmailByString(emailNode.asText()));
+            }
+            return emails;
         }
     }
 }
