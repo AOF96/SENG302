@@ -318,6 +318,9 @@ public class UserService {
         if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
             messages.add("Please select the fitness level in the range 0 and 5");
         }
+        if (user.getBirthDate().after(new Date())) {
+            messages.add("Birth date must be in the past");
+        }
 
         if (messages.isEmpty()) {
             if (emailExists(user.getPrimaryEmail())) {
@@ -358,6 +361,9 @@ public class UserService {
         }
         if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 5){
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
+        }
+        if (user.getBirthDate().after(new Date())) {
+            messages.add("Birth date must be in the past");
         }
 
         if (!messages.isEmpty()) {
