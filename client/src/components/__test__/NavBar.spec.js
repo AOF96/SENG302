@@ -11,6 +11,7 @@ localVue.use(Vuex)
 describe('NavBar.vue', () => {
     let getters
     let store
+    let actions
 
     beforeEach(() => {
         getters = {
@@ -18,22 +19,22 @@ describe('NavBar.vue', () => {
               isLogin: false
             })
         },
+            actions = {
+                user: () => ({
+                    isLogin: true
+                })
+            },
         store = new Vuex.Store({
-            getters
+            getters, actions
         })
     })
 
 
     it('NavBar should have ', () => {
         const wrapper = mount(NavBar, { store, localVue, router })
-        //expect(wrapper.find( "Login In").exists()).toBe(true)
+        expect(wrapper.find( ".login").exists()).toBe(true)
+        expect(wrapper.find( ".signup").exists()).toBe(true)
 
-        //expect(wrapper.isVisible()).toBe(true)
-       // expect(wrapper.find('.is-not-visible').isVisible()).toBe(false)
-      //  let button = wrapper.find('Login');
-       // expect(wrapper.find({neme: "Login In"}).exists()).toBe(true)
-       // expect(button.text()).toBe('Login');
     })
-
 
 })
