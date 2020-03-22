@@ -36,7 +36,9 @@
           </tr>
           <tr>
             <td class="profileTableTd">Secondary Emails:</td>
-            <td class="profileTableTd">{{ user.additional_email }}</td>
+            <div style="margin-top: 4px" v-for="email in user.additional_email" v-bind:key="email">
+              <p >{{email}}</p>
+            </div>
           </tr>
         </table>
       </div>
