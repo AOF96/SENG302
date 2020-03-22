@@ -86,13 +86,18 @@ export default {
             if (this.user.additional_email.includes(textInput) || textInput == this.user.primary_email || emails.data.includes(textInput)) {
                 alert("Email already in use.");
             } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
-                this.user.additional_email.push(this.textInput);
-                this.updateUserEmail(this.user);
-                var tempThis = this;
-                setTimeout(function() {
-                    tempThis.textInput = "";
-                }, 10);
-                await apiUser.addEmails(this.user.profile_id, [this.textInput]);
+                try {
+                    await apiUser.addEmails(this.user.profile_id, [this.textInput]);
+                    this.user.additional_email.push(this.textInput);
+                    this.updateUserEmail(this.user);
+                    var tempThis = this;
+                    setTimeout(function() {
+                        tempThis.textInput = "";
+                    }, 10);
+                } catch (err) {
+                    alert("Email already in use.");
+                    this.textInput = "";
+                }
             }
         },
 

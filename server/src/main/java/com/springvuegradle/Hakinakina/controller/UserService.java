@@ -194,6 +194,9 @@ public class UserService {
 
         ArrayList<String> secondaryEmails = new ArrayList<>();
         for (JsonNode node1 : secondaryEmailNodes.get(0)) {
+            if (emailRepository.findEmailByString(node1.asText()) != null) {
+                return responseHandler.formatErrorResponse(403, "A user already has that email");
+            }
             secondaryEmails.add(node1.asText());
         }
 
