@@ -58,15 +58,28 @@ public class UserController {
         return userService.validateCreateProfile(user);
     }
 
-    @PostMapping("/editemail")
-    public ResponseEntity editEmails(@RequestBody String request) {
-        return userService.editEmail(request);
+    /**edits email
+     *
+     * PUT /profiles/{profileId}/emails
+     * {
+     *   "primary_email": "triplej@google.com",
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *   ]
+     * }
+     *
+     * @return*/
+    @PutMapping("/profiles/{profileId}/emails")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+        return userService.editEmail(request, profileId, sessionToken);
     }
 
     @PutMapping("/profiles/{profileId}")
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if(session != null) {
+        if (session != null) {
             if (session.getUser().getUserId() == profileId) {
                 User oldUser = userRepository.findById(profileId).get();
                 for (PassportCountry country : oldUser.getPassportCountries()) {
@@ -74,16 +87,32 @@ public class UserController {
                 }
                 oldUser.resetPassportCountries();
                 user.setUserId(profileId);
-                user.setSalt(oldUser.getSalt());
                 user.setEncryptedPassword(oldUser.getPassword());
+                user.setSalt(oldUser.getSalt());
                 return userService.validateEditUser(user);
-                //return responseHandler.formatErrorResponse(400, "Session mismatch");
             } else {
                 return responseHandler.formatErrorResponse(400, "Session mismatch");
             }
-        }else{
+        } else {
             return responseHandler.formatErrorResponse(400, "Invalid Session");
         }
+    }
+
+    /** adds email
+     * POST /profiles/{profileId}/emails
+     * {
+     *   "additional_email": [
+     *     "triplej@xtra.co.nz",
+     *     "triplej@msn.com"
+     *     ]
+     * }
+     *
+     *
+     * @return*/
+    @PostMapping("/profiles/{profileId}/emails")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue("s_id") String sessionToken) {
+        return userService.addEmails(request, profileId, sessionToken);
     }
 
     /**
@@ -125,8 +154,12 @@ public class UserController {
     }
 
     @GetMapping("/emails")
-    public List<Email> getAllEmails() {
-        return emailRepository.findAll();
+    public List<String> getAllEmails() {
+        //ToDO use the commented out return statement rather than the current one once the email table has been fixed
+        /*
+        return emailRepository.getAllEmails();
+         */
+        return userRepository.getAllPrimaryEmails();
     }
 
     /**

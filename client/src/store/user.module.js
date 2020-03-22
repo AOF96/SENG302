@@ -79,7 +79,7 @@ const mutations = {
     }
   },
   setUserPassports(state, data) {
-      state.user.passports = data.passports;
+    state.user.passports = data.passports;
   },
   setUserTmpPassports(state, data) {
     state.user.tmp_passports = data.tmp_passports;
@@ -140,7 +140,6 @@ const actions = {
   updateUserEmail({ commit }, data) {
     commit('setUserEmail', data)
     commit('setUserSecondaryEmails', data)
-    alert("Email updated.")
   },
   logout({ commit }) {
     commit('userLogout')

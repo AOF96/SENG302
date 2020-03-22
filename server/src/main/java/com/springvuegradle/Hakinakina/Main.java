@@ -1,9 +1,6 @@
 package com.springvuegradle.Hakinakina;
 
 import com.springvuegradle.Hakinakina.entity.*;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -15,11 +12,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,23 +35,14 @@ public class Main {
 	@Bean
 	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository) {
 		return args -> {
-			URL url = new URL("https://restcountries.eu/rest/v2/all");
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-
-			JSONParser parser = new JSONParser();
-			JSONArray data = (JSONArray) parser.parse(rd.readLine());
-
-			for (Object country : data) {
-				JSONObject countryJson = (JSONObject) country;
-				String name = countryJson.get("name").toString();
-				String code = countryJson.get("alpha2Code").toString();
-				countryRepository.save(new PassportCountry(code, name));
+			String[] countryCodes = Locale.getISOCountries();
+			for (String countryCode : countryCodes) {
+				Locale obj = new Locale("", countryCode);
+				countryRepository.save(new PassportCountry(obj.getCountry(), obj.getDisplayCountry()));
 			}
 		};
 	}
+
 
 	// Fix the CORS errors
 	@Bean

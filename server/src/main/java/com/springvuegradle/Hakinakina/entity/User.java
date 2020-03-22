@@ -65,9 +65,9 @@ public class User {
     @JsonDeserialize(using = CountryDeserializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
-        name = "User_PassportCountry",
-        joinColumns = { @JoinColumn(name = "user_id") },
-        inverseJoinColumns = { @JoinColumn(name = "country_id") }
+            name = "User_PassportCountry",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "country_id") }
     )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 

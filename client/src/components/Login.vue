@@ -28,7 +28,7 @@
         </form>
       </div>
       <h4>Don't have an account?
-          <router-link to="/Signup">Sign Up</router-link>
+          <router-link to="/signup">Sign Up</router-link>
       </h4>
     </div>
   </div>

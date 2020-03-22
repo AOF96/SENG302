@@ -61,4 +61,15 @@ export const apiUser = {
     passports: passports
   }),
   refreshUserData: (profile_id) => instance.get('/profiles/' + profile_id),
+  // Add additional emails
+  addEmails: (profile_id, additional_email) => instance.post('/profiles/'+profile_id+'/emails', {
+    additional_email: additional_email
+  }),
+  // Edit the user's emails
+  editEmail: (profile_id, primary_email, additional_email) => instance.put('/profiles/'+profile_id+'/emails', {
+    primary_email: primary_email,
+    additional_email: additional_email
+  }),
+  //Get all emails
+  getAllEmails: () => instance.get('/emails')
 };
