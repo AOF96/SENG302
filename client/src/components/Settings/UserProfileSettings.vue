@@ -4,13 +4,9 @@
     <div class="settingsContent">
         <h1>Edit Profile Info</h1>
         <hr>
+        <h6 class="edit_error" id="error" hidden="true"></h6>
+        <h6 class="edit_success" id="success" hidden="true"></h6>
         <form @submit.prevent>
-            <div class="signup-row">
-                <h6 class="edit_error" id="error" hidden="true"></h6>
-            </div>
-            <div class="signup-row">
-                <h6 class="edit_success" id="success" hidden="true"></h6>
-            </div>
             <h2>First Name</h2>
             <input class="editProfileInput" type="text" name="fname" v-model="user.firstname" placeholder="First Name*" required>
             <h2>Middle Name</h2>

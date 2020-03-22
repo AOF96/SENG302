@@ -4,17 +4,11 @@
         <div class="settingsContent">
             <h1>Edit Passport Countries</h1>
             <hr>
-            <br>
-            <div class="signup-row">
-                <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
-                <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
-            </div>
             <div class="countryBox" v-for="country in user.user.passports" v-bind:key="country">
                 <h4 class="countryDisplay">{{country}}</h4>
                 <button class="removeCountryButton" v-on:click="removePassportCountries(country)">remove</button>
                 <div class="floatClear"></div>
             </div>
-
             <div id="countryActions">
                 <form @submit.prevent>
                     <select
@@ -32,8 +26,11 @@
                     </select>
                     <button id = "addPassportButton" v-on:click="addPassportCountries()">Add</button>
                     <button id ="saveChangesButton" v-on:click="savePassportCountries()">Save</button>
+                    <div class="floatClear"></div>
                 </form>
             </div>
+            <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
+            <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
         </div>
     </div>
 </template>
