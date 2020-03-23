@@ -15,6 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Date;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -123,4 +125,16 @@ public class RegisterTest {
                 .content(u.toJson()))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void testRegistrationWithInvalidDateOfBirth() throws Exception {
+        Date now = new Date();
+        java.sql.Date dateOfBirth = new java.sql.Date(now.getTime());
+        u.setBirthDate((java.sql.Date) dateOfBirth);
+        mockMvc.perform(post("/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(u.toJson()))
+                .andExpect(status().isBadRequest());
+    }
+
 }
