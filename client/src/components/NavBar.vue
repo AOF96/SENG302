@@ -12,14 +12,13 @@
             </button>
         </router-link>
 
-        <router-link to="/signup" v-if="!user.isLogin">
-            <button id="headerNavButton" class="signup">
-                Sign Up
+        <router-link to="/Signup" v-if="!user.isLogin">
+            <button id="headerNavButton" class="signup" name ="Sign Up">
+                Sign Up 
             </button>
         </router-link>
-
-        <router-link to="/login" v-if="!user.isLogin">
-            <button id="headerNavButton" class="login">
+        <router-link to="/Login" v-if="!user.isLogin"> 
+            <button id="headerNavButton" class="login"  value ="Login In">
                 Login
             </button>
         </router-link>
@@ -39,12 +38,18 @@
             ...mapActions(['logout']),
             ...mapActions(['updateUserProfile']),
             ...mapActions(['resetUser']),
+            /*
+                Redirects the user into the profile page. Refreshes the data by making a request to the server side.
+            */
             goToProfile() {
                 apiUser.refreshUserData(this.user.profile_id).then((response) => {
                     console.log(response.data);
                     this.updateUserProfile(response.data);
                 })
             },
+            /*
+               Sends a request to the server side when to log a user out when the log out button is pressed.
+             */
             logoutUser() {
                 apiUser.logout();
                 this.resetUser();

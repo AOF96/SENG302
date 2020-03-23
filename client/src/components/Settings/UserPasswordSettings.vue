@@ -46,6 +46,9 @@
         },
         computed: {
             ...mapGetters(['user']),
+            /*
+                Checks if the new password provided is a valid one.
+             */
             validation() {
                 return {
                     oldPassword: this.oldPassword !== '',
@@ -57,12 +60,20 @@
             }
         },
         methods: {
+            /*
+                Hides error messages once valid data is provided.
+             */
             hideErrorMessages() {
                 document.getElementById("password_incorrect").hidden = true;
                 document.getElementById("passwords_dont_match").hidden = true;
                 document.getElementById("other_error").hidden = true;
             },
 
+            /*
+                Uses the validation function to check that the provided data is valid. If everything is valid, sends a
+                request to the server side to update the password. Provides the user with appropriate error messages if
+                the password change was unsuccessful.
+             */
             submitPasswordChange() {
                 if (this.validation.oldPassword) {
                     if (this.validation.match) {

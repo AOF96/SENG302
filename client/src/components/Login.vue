@@ -54,6 +54,10 @@
     methods: {
       ...mapActions(['updateUserProfile']),
 
+      /*
+        Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
+        messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
+      */
       submitLogin() {
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {

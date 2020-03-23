@@ -137,6 +137,9 @@
         computed: {
             ...mapState(['user']),
 
+            /*
+              Function that checks if the provided data is valid when signing up.
+            */
             validation() {
                 return {
                     firstname: this.user.firstname !== '',
@@ -155,6 +158,9 @@
                 }
             },
 
+            /*
+               Returns an appropriate error message if something goes wrong when signing up.
+            */
             all_err_msg() {
                 const validation = this.validation;
                 const fields = Object.keys(validation);
@@ -178,6 +184,9 @@
                 return err_msg;
             },
 
+            /*
+               Returns true if all the provided data is valid.
+            */
             valid() {
                 const valid = (this.all_err_msg === "");
                 return valid;
@@ -187,6 +196,9 @@
         methods: {
             ...mapActions(['createUserProfile']),
 
+            /*
+                Submits a request to register a new user. Checks if there are missing fields when signing up.
+             */
             submitSignUp() {
                 if (!this.valid) {
                     document.getElementById("missing_field").hidden = false;

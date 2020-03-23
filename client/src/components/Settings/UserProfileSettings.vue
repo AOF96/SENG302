@@ -58,6 +58,11 @@ export default {
     methods: {
         ...mapActions(['logout']),
         ...mapActions(['updateUserProfile']),
+
+        /*
+            Sends a request to the server side to update the user's profile info. Displays error messages if the update
+            was unsuccessful.
+         */
         updateProfile() {
             apiUser.editProfile(this.user.profile_id, this.user.firstname, this.user.lastname, this.user.middlename,
                 this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender,
@@ -74,6 +79,10 @@ export default {
                 console.log(error);
             });
         },
+
+        /*
+           Increases the number of passports a user owns.
+         */
         addPassportCountries() {
             this.passportCountries.num_of_countries++;
         },
