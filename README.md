@@ -1,37 +1,16 @@
-# Seng302 Example Project
------
-Basic project template using Gradle, NPM, Spring Boot, Vue and Gitlab CI. Remember to set up y
-our Gitlab Ci server (refer to the student guide for instructions).
+Welcome to Passage, the number one companion for any traveller. 
 
-### Basic Project Structure
-- client/src Frontend source code (JS - Vue)
-- client/public publicly accesable web assets
-- client/dist Frontend production build
+To run the server, open IntelliJ. Then select Import Project. The server folder can be found in team-300. Select this folder and click OK. In the Import Project window that opens, select "Import project from external model", and select Gradle. Click Finish, and the project will open where the dependencies should install automatically. Right-click Main in src/main/java/com.springvuegradle.Hakinakina, and select Run 'Main'.
 
-- server/src Backend source code (Java - Spring)
-- server/out Backend production build
+Alternatively, run the command "./gradlew bootRun" in the server directory.
 
-### How to run
-##### Client (Frotnend/GUI)
-`cd client`
-`npm install`
-`npm run serve`
+To run the client, open WebStorm and select Open. Select the team-300 folder and click OK. In the terminal, enter the following commands:
+cd client
+npm install
+npm run serve
 
-Running on: http://localhost:9500/
+Open http://localhost:9500/ in a browser, where you will be taken to the login page.
 
-##### Server (Backend/API)
-`cd server`
-`./gradlew bootRun`
+Please have the server and client running at the same time while using the application. Our manual test document can be found on our GitLab Wiki in the Manual Testing page.
 
-Running on: http://localhost:9499/
-
-
-### Todo
-- Add team name into `build.gradle` and `package.json`
-- Set up Gitlab CI server (refer to the student guide on learn)
-
-### Reference
-- [Spring Boot Docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
-- [Spring JPA docs](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#preface)
-- [Vue docs](https://vuejs.org/v2/guide/)
-
+- Jackie Qiu
