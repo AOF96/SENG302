@@ -29,6 +29,11 @@
           this.startUp()
       },
       methods: {
+          /*
+            Function uses the country api and checks it against the ist of passport countries selected by the user and then
+            creates a dictionary of name mapped to the country code which is further used to retrieve the flags and display
+            them on the profile page.
+           */
           startUp() {
               axios.get(COUNTRIES_URL)
                   .then((response) => {

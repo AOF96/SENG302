@@ -3,6 +3,7 @@ import axios from 'axios'
 const SERVER_URL = 'http://localhost:9499'
 
 export const helperFunction = {
+  // Assigns a new cookie to a given user.
   addCookie: (cname, cvalue, exdays) => {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));

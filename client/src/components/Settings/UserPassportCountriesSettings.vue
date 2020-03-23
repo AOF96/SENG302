@@ -58,6 +58,11 @@
         computed: {
             ...mapState(['user']),
         },
+
+        /*
+            Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
+            from selecting the same country twice.
+         */
         created: function() {
             axios.get(COUNTRIES_URL)
                 .then((response) => {
@@ -86,6 +91,10 @@
                 console.log('init')
                 this.user.user.passports = this.user.user.passports.slice()
             },
+
+            /*
+                Removes a passport country from an user account.
+             */
             removePassportCountries(country) {
                 const index = this.user.user.passports.indexOf(country)
                 if (index === -1) return
@@ -94,6 +103,10 @@
                 this.countries_option.sort()
                 this.updatePassports(this.user.user)
             },
+
+            /*
+                Adds a new passport country to an user account.
+             */
             addPassportCountries() {
                 if(!this.adding_country || this.adding_country == "Passport Countries") return
                 this.user.user.passports.push(this.adding_country)
@@ -103,6 +116,11 @@
                 this.adding_country = "Passport Countries"
                 this.updatePassports(this.user.user)
             },
+
+            /*
+                Makes a request to the server side in order to add a passport country into the database. Provides
+                appropriate error messages if the update was unsuccessful.
+             */
             savePassportCountries() {
                 this.updatePassports(this.user.user);
                 console.log(this.countries_code_name_option);
