@@ -42,13 +42,13 @@
 
                     <div class="signup-row">
                         <h3 id="fitnessLevelText">Fitness Level</h3>
-                        <select id="levels" v-model="user.fitness" name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
+                        <select id="levels" v-model="user.fitness"  name="fitnesslevel" placeholder= "Fitness Level"  value="Fitness" required>
                             <option selected disabled hidden>Select your level</option>
-                            <option>0</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
+                            <option>I never exercise</option>
+                            <option>I can walk a short distance</option>
+                            <option>I can jog a short distance</option>
+                            <option>I can run a medium distance</option>
+                            <option>I can run a marathon</option>
                         </select>
                     </div>
 
@@ -130,7 +130,10 @@
                         uppercase: ERR_MSG_PASS_UPPERCASE,
                     },
                 },
-                failed: false
+                failed: false,
+
+                fitnessDict: {"I never exercise": 0, "I can walk a short distance": 1, "I can jog a short distance": 2,
+                    "I can run a medium distance": 3, "I can run a marathon": 4}
             }
         },
 
@@ -211,7 +214,7 @@
                 }
 
                 apiUser.signUp(this.user.firstname, this.user.lastname, this.user.middlename, this.user.nickname, this.user.primary_email,
-                    this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.user.fitness).then((response) => {
+                    this.password1, this.user.bio, this.user.date_of_birth, this.user.gender, this.fitnessDict[this.user.fitness]).then((response) => {
                     console.log(response.data);
                     this.createUserProfile(response.data[0]);
                     helperFunction.addCookie("s_id", response.data[1]["sessionToken"], 365);

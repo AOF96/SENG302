@@ -8,7 +8,7 @@
           <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
           <div id="userQuickInfoWrap">
             <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
-            <h2 id="userFitnessLevel">Fitness Level: {{ user.fitness }}</h2>
+            <h2 id="userFitnessLevel">Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
           </div>
           <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
           <div class="floatClear"></div>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import {mapGetters} from 'vuex';
 
   import NavBar from '@/components/NavBar';
   import PassportCountries from '@/components/modules/passportCountries';
@@ -65,7 +65,9 @@
         myJson: json,
         showNewButton: false,
         notFull: true ,
-        textInput: ""
+        textInput: "",
+        fitnessDict: {0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance",
+          3: "I can run a medium distance", 4: "I can run a marathon"}
       }
     }
   }
