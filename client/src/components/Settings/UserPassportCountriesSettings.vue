@@ -126,7 +126,7 @@
                 console.log(this.countries_code_name_option);
                 apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
                     this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
-                    this.user.user.fitness, this.user.user.additional_email, this.user.user.passports).then((response) => {
+                    Number(this.user.user.fitness), this.user.user.additional_email, this.user.user.passports).then((response) => {
                     document.getElementById("passport_success").hidden = false;
                     document.getElementById("passport_error").hidden = true;
                     console.log(response);

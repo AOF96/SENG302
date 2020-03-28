@@ -24,12 +24,11 @@
             </select>
             <h2>Fitness Level</h2>
             <select class="editProfileInput editProfileInputGender" v-model="user.fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
-                <option selected disabled hidden>Fitness Level</option>
-                <option>I never exercise</option>
-                <option>I can walk a short distance</option>
-                <option>I can jog a short distance</option>
-                <option>I can run a medium distance</option>
-                <option>I can run a marathon</option>
+                <option value = 0>I never exercise</option>
+                <option value = 1>I can walk a short distance</option>
+                <option value = 2>I can jog a short distance</option>
+                <option value = 3>I can run a medium distance</option>
+                <option value = 4>I can run a marathon</option>
             </select>
             <h2>Birthday</h2>
             <input v-model="user.date_of_birth" class="editProfileInput" name="birthday" type="date" required>
@@ -49,18 +48,6 @@ import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
 import {apiUser} from "../../api";
 
 export default {
-    data() {
-        return {
-            fitnessDict2: {
-                "I never exercise": 0, "I can walk a short distance": 1, "I can jog a short distance": 2,
-                "I can run a medium distance": 3, "I can run a marathon": 4
-            },
-            fitnessDict: {
-                0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance",
-                3: "I can run a medium distance", 4: "I can run a marathon"
-            }
-        }
-    },
     components: {
         UserSettingsMenu
     },
@@ -79,7 +66,7 @@ export default {
             console.log(this.user.fitness);
             apiUser.editProfile(this.user.profile_id, this.user.firstname, this.user.lastname, this.user.middlename,
                 this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender,
-                this.fitnessDict2[this.user.fitness], this.user.additional_email, this.user.passports).then((response) => {
+                Number(this.user.fitness), this.user.additional_email, this.user.passports).then((response) => {
                 this.updateUserProfile(this.user);
                 document.getElementById("success").hidden = false;
                 document.getElementById("success").innerText = "Updated Successfully";
