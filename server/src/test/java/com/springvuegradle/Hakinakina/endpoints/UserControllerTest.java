@@ -24,6 +24,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -102,5 +105,38 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("User logged out")));
     }
 
+    @Test
+    public void getAllUsersTest() throws Exception {
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        ArrayList<User> testList = new ArrayList<User>();
+        testList.add(testUser);
+        when(userRepository.findAll()).thenReturn(testList);
+        this.mockMvc.perform(get("/profiles"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\n\"Users\": [\n\"1 John Smith\"\n]\n}")));
+    }
 
+    @Test
+    public void getOneUserSuccessTest() throws Exception {
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        this.mockMvc.perform(get("/profiles/1"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
+                        "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
+                        "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
+                        "\"additional_email\":[]}")));
+    }
+
+    @Test
+    public void getOneUserFailTest() throws Exception {
+        when(userRepository.findById((long) 1)).thenReturn(Optional.empty());
+        this.mockMvc.perform(get("/profiles/1"))
+                .andExpect(status().is(404))
+                .andExpect(content().string(containsString("User does not exist")));
+    }
 }

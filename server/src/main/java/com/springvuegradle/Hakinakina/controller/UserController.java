@@ -139,7 +139,7 @@ public class UserController {
             User user = optional.get();
             return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return new ResponseEntity("User does not exist", HttpStatus.valueOf(403));
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
         }
     }
 
