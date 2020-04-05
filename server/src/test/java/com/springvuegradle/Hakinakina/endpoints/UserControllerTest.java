@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -151,5 +152,50 @@ public class UserControllerTest {
         this.mockMvc.perform(get("/countries"))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("[New Zealand, Australia]")));
+    }
+
+    @Test
+    public void editEmailTest() throws Exception {
+        String input = "{\n" +
+                "     *   \"primary_email\": \"triplej@google.com\",\n" +
+                "     *   \"additional_email\": [\n" +
+                "     *     \"triplej@xtra.co.nz\",\n" +
+                "     *     \"triplej@msn.com\"\n" +
+                "     *   ]\n" +
+                "     * }";
+        when(service.editEmail(any(String.class), any(Long.class), any(String.class))).thenReturn(
+                responseHandler.formatSuccessResponse(200, "Primary email switched successfully"));
+        this.mockMvc.perform(put("/profiles/1/emails").cookie(new Cookie("s_id", "1"))
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Primary email switched successfully")));
+    }
+
+    @Test
+    public void addEmailsTest() throws Exception {
+        String input = "{\n" +
+                "     *   \"primary_email\": \"triplej@google.com\",\n" +
+                "     *   \"additional_email\": [\n" +
+                "     *     \"triplej@xtra.co.nz\",\n" +
+                "     *     \"triplej@msn.com\"\n" +
+                "     *   ]\n" +
+                "     * }";
+        when(service.addEmails(any(String.class), any(Long.class), any(String.class))).thenReturn(
+                responseHandler.formatSuccessResponse(201, "New emails successfully added"));
+        this.mockMvc.perform(post("/profiles/1/emails").cookie(new Cookie("s_id", "1"))
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(201))
+                .andExpect(content().string(containsString("New emails successfully added")));
+    }
+
+    @Test
+    public void getAllEmailsTest() throws Exception {
+        ArrayList<String> emails = new ArrayList<>();
+        emails.add("john@mail.com");
+        emails.add("jane@mail.com");
+        when(userRepository.getAllPrimaryEmails()).thenReturn(emails);
+        this.mockMvc.perform(get("/emails"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("[john@mail.com, jane@mail.com]")));
     }
 }
