@@ -51,6 +51,18 @@ public class UserControllerTest {
 
     private ResponseHandler responseHandler = new ResponseHandler();
 
+    private final String EDIT_PROFILE_JSON = "{\n" +
+            "  \"lastname\": \"Benson\",\n" +
+            "  \"firstname\": \"Maurice\",\n" +
+            "  \"middlename\": \"Jack\",\n" +
+            "  \"nickname\": \"Jacky\",\n" +
+            "  \"primary_email\": \"jacky@google.com\",\n" +
+            "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+            "  \"date_of_birth\": \"1985-12-20\",\n" +
+            "  \"gender\": \"male\",\n" +
+            "  \"fitness\": 4\n" +
+            "}";
+
     @Test
     public void userCreationSuccess() throws Exception {
         String input = "{\n" +
@@ -198,4 +210,50 @@ public class UserControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("[john@mail.com, jane@mail.com]")));
     }
+
+    @Test
+    public void editUserSuccessTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(service.validateEditUser(any(User.class)))
+                .thenReturn(responseHandler.formatSuccessResponse(200, "User updated"));
+        this.mockMvc.perform(put("/profiles/1").cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("User updated")));
+    }
+
+    @Test
+    public void editUserTokenDoesNotMatchAnySessionTest() throws Exception {
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(null);
+        this.mockMvc.perform(put("/profiles/1").cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Invalid Session")));
+    }
+
+    @Test
+    public void editUserTokenMismatchTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        this.mockMvc.perform(put("/profiles/2").cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Session mismatch")));
+    }
+
+
 }
