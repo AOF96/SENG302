@@ -139,4 +139,17 @@ public class UserControllerTest {
                 .andExpect(status().is(404))
                 .andExpect(content().string(containsString("User does not exist")));
     }
+
+    @Test
+    public void getAllCountriesTest() throws Exception {
+        PassportCountry country1 = new PassportCountry("NZ", "New Zealand");
+        PassportCountry country2 = new PassportCountry("AU", "Australia");
+        ArrayList<PassportCountry> countries = new ArrayList<>();
+        countries.add(country1);
+        countries.add(country2);
+        when(countryRepository.findAll()).thenReturn(countries);
+        this.mockMvc.perform(get("/countries"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("[New Zealand, Australia]")));
+    }
 }

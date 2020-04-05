@@ -144,9 +144,9 @@ public class UserController {
     }
 
     /**
-     * Processes get users request
+     * Returns a list of all countries in the database
      *
-     * @return List of users
+     * @return List of countries
      */
     @GetMapping("/countries")
     public String getAllCountries() {
