@@ -139,14 +139,14 @@ public class UserController {
             User user = optional.get();
             return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return new ResponseEntity("User does not exist", HttpStatus.valueOf(403));
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
         }
     }
 
     /**
-     * Processes get users request
+     * Returns a list of all countries in the database
      *
-     * @return List of users
+     * @return List of countries
      */
     @GetMapping("/countries")
     public String getAllCountries() {
@@ -154,12 +154,12 @@ public class UserController {
     }
 
     @GetMapping("/emails")
-    public List<String> getAllEmails() {
+    public String getAllEmails() {
         //ToDO use the commented out return statement rather than the current one once the email table has been fixed
         /*
         return emailRepository.getAllEmails();
          */
-        return userRepository.getAllPrimaryEmails();
+        return userRepository.getAllPrimaryEmails().toString();
     }
 
     /**
