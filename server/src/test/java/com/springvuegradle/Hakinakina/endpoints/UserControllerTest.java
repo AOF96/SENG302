@@ -255,5 +255,32 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("Session mismatch")));
     }
 
+    @Test
+    public void editPasswordSuccessTest() throws Exception {
+        String input = "{\n" +
+                "  \"old_password\": \"myoldpwd\",\n" +
+                "  \"new_password\": \"mynewpwd\",\n" +
+                "  \"repeat_password\": \"mynewpwd\"\n" +
+                "}";
+        when(service.changePassword(1, "t0k3n", "myoldpwd", "mynewpwd"))
+                .thenReturn(responseHandler.formatSuccessResponse(
+                        200, "Successfully changed the password"));
+        this.mockMvc.perform(put("/profiles/1/password").cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Successfully changed the password")));
+    }
 
+    @Test
+    public void editPasswordRepeatMismatchTest() throws Exception {
+        String input = "{\n" +
+                "  \"old_password\": \"myoldpwd\",\n" +
+                "  \"new_password\": \"mynewpwd\",\n" +
+                "  \"repeat_password\": \"mynewerpwd\"\n" +
+                "}";
+        this.mockMvc.perform(put("/profiles/1/password").cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("newPassword and repeatPassword do no match")));
+    }
 }
