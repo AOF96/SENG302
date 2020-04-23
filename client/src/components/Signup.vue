@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="signup-row">
-                        <textarea v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
+                        <textarea maxlength="255" v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
                     </div>
 
                     <div class="signup-row">
