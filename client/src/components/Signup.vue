@@ -145,7 +145,7 @@
                     lastname: this.user.lastname !== '',
                     gender: this.user.gender !== 'Gender',
                     email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
-                    birthday: this.user.date_of_birth !== '' && Date.parse(this.user.date_of_birth) < new Date(),
+                    birthday: this.user.date_of_birth !== '' && this.birthday_validation,
                     fitnesslevel: this.user.fitnessLevel !== 'FitnessLevel',
                     password: {
                         match: this.password1 === this.password2,
@@ -155,6 +155,20 @@
                         uppercase: /[A-Z]/.test(this.password1),
                     },
                 }
+            },
+            /*
+                The function validates the date if birth entered by the user and only allow when the user's age is 13
+                or over but also less than 140.
+            */
+            birthday_validation(){
+                var user_input_date = new Date(this.user.date_of_birth);
+                if(user_input_date > Date.now()){
+                    return false;
+                }
+                var diff_ms = Date.now() - user_input_date.getTime();
+                var age_dt = new Date(diff_ms);
+                var user_age = Math.abs(age_dt.getUTCFullYear() - 1970);
+                return user_age >= 13 && user_age <= 140;
             },
 
             /*
