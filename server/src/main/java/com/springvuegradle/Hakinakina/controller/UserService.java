@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -384,15 +387,44 @@ public class UserService {
         if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4){
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
         }
-        if (user.getBirthDate().after(new Date())) {
-            messages.add("Birth date must be in the past");
+        if (!checkAge(user.getBirthDate(), LocalDate.now())) {
+            messages.add("Birth date must be in the past and age must be between 13 and 140");
         }
-
         if (!messages.isEmpty()) {
             return responseHandler.formatErrorResponse(403, messages);
         } else {
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(200, "User updated");
+        }
+    }
+
+    /**
+     * Checks that someone is between 13 and 140 years of age inclusive
+     * @param birthDate The user's date of birth
+     * @param currentDate Today's date
+     * @return A boolean of whether the user is of a valid age
+     */
+    public static boolean checkAge(Date birthDate, LocalDate currentDate) {
+         boolean result = true;
+        int age = calculateAge(birthDate, currentDate);
+        if (birthDate.after(new Date()) || age < 13 || age > 140) {
+            result = false;
+        }
+        return result;
+    }
+
+    /**
+     * Calculates someone's age. Most of the code taken from
+     * https://stackoverflow.com/questions/1116123/how-do-i-calculate-someones-age-in-java
+     * @param date The person's birthdate
+     * @return Their age as an int
+     */
+    public static int calculateAge(Date date, LocalDate currentDate) {
+        LocalDate birthDate = LocalDate.of(date.getYear() + 1900, date.getMonth(), date.getDate());
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
         }
     }
 

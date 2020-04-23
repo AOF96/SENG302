@@ -142,7 +142,7 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
                         "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
                         "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
-                        "\"additional_email\":[]}")));
+                        "\"additional_email\":[],\"permission_level\":0}")));
     }
 
     @Test
