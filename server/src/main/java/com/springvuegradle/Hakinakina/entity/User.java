@@ -87,7 +87,7 @@ public class User {
     @Column(name = "permission_level")
     private Integer permissionLevel = 0;
 
-    protected User() {}
+    public User() {}
 
     public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
         this.firstName = firstName;

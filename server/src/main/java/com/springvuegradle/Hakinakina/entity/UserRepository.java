@@ -17,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //ToDO Remove this once the email table has been fixed.
     @Query(value = "select primary_email from User", nativeQuery = true)
     List<String> getAllPrimaryEmails();
+
+    // Automagically generates query that finds user based on their permission level :D
+    User findByPermissionLevelEquals(int permissionLevel);
 }
