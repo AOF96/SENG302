@@ -33,7 +33,7 @@
             <h2>Birthday</h2>
             <input v-model="user.date_of_birth" class="editProfileInput" name="birthday" type="date" required>
             <h2>Bio</h2>
-            <textarea class="editProfileTextarea" name="bio" v-model="user.bio" placeholder="Write about yourself"></textarea>
+            <textarea maxlength="255" class="editProfileTextarea" name="bio" v-model="user.bio" placeholder="Write about yourself"></textarea>
             <button id="settingsProfileSubmit" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
