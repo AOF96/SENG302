@@ -8,6 +8,7 @@
         <form @submit.prevent>
           <div class="signup-row">
             <h6 class="login_error" id="email_exist" hidden="true">Account does not exist</h6>
+            <h6 class="login_error" id="empty_fields" hidden="true">Please enter email/password</h6>
           </div>
           <div class="signup-row">
             <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
@@ -59,6 +60,11 @@
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
+        console.log(typeof(this.user.primary_email))
+        if (this.user.primary_email == null || this.user.password == null){
+          document.getElementById("empty_fields").hidden = false;
+          return;
+        }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {
             const responseData = response.data;
@@ -75,14 +81,23 @@
             if (responseCode === 403 && responseData === "Email does not exist") {
               document.getElementById("email_exist").hidden = false;
               document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("empty_fields").hidden = true;
               document.getElementById("other_error").hidden = true;
             } else if (responseCode === 403 && responseData === "Incorrect password") {
               document.getElementById("incorrect_password").hidden = false;
+              document.getElementById("empty_fields").hidden = true;
               document.getElementById("email_exist").hidden = true;
               document.getElementById("other_error").hidden = true;
-            } else {
+            }else if (responseCode === 403 && responseData === "Please enter email/password") {
+              document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("empty_fields").hidden = false;
+              document.getElementById("email_exist").hidden = true;
+              document.getElementById("other_error").hidden = true;
+            }
+            else {
               document.getElementById("email_exist").hidden = true;
               document.getElementById("incorrect_password").hidden = true;
+              document.getElementById("empty_fields").hidden = true;
               document.getElementById("other_error").hidden = false;
               document.getElementById("other_error").innerText = responseData;
             }
