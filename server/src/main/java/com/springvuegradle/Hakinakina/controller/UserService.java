@@ -486,15 +486,16 @@ public class UserService {
 
                 //If the user associated with the session matches the user to be edited, or if the user is an admin
                 if(session.getUser().getUserId() == profileId || session.getUser().getPermissionLevel() > 0) {
-                    try {
-                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
-                        if (!user.getPassword().equals(encryptedPassword)) {
-                            return responseHandler.formatErrorResponse(400, "Current password is incorrect");
+                    if (session.getUser().getPermissionLevel() == 0) {
+                        try {
+                            String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                            if (!user.getPassword().equals(encryptedPassword)) {
+                                return responseHandler.formatErrorResponse(400, "Current password is incorrect");
+                            }
+                        } catch (Exception e) {
+                            return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
                         }
-                    } catch (Exception e) {
-                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
                     }
-
                     try {
                         String salt = EncryptionUtil.getNewSalt();
                         user.setSalt(salt);
