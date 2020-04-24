@@ -49,6 +49,9 @@ public class UserControllerTest {
     @MockBean
     private SessionRepository sessionRepository;
 
+    @MockBean
+    private ActivityTypeRepository activityTypeRepository;
+
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private final String EDIT_PROFILE_JSON = "{\n" +
@@ -141,7 +144,7 @@ public class UserControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
                         "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
-                        "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
+                        "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"activity_types\":[],\"primary_email\":\"john@gmail.com\"," +
                         "\"additional_email\":[]}")));
     }
 
