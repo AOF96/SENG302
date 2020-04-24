@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SERVER_URL = 'http://localhost:9499'
+const SERVER_URL = 'http://localhost:9499';
 
 export const helperFunction = {
   // Assigns a new cookie to a given user.
@@ -10,7 +10,7 @@ export const helperFunction = {
     var expires = "expires=" + d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }
-}
+};
 
 const instance = axios.create({
   baseURL: SERVER_URL,
