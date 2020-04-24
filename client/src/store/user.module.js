@@ -181,8 +181,8 @@ const actions = {
     state.user.password = null;
     state.user.passports = [];
     state.user.tmp_passports = [];
-    state.user.activities: [];
-    state.user.tmp_activities: []
+    state.user.activities =  [];
+    state.user.tmp_activities = []
   }
 };
 
