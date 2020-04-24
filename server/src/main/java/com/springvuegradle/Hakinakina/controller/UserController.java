@@ -79,22 +79,25 @@ public class UserController {
     @PutMapping("/profiles/{profileId}")
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session != null) {
-            if (session.getUser().getUserId() == profileId) {
-                User oldUser = userRepository.findById(profileId).get();
-                for (PassportCountry country : oldUser.getPassportCountries()) {
-                    country.removeUser(oldUser);
-                }
-                oldUser.resetPassportCountries();
-                user.setUserId(profileId);
-                user.setEncryptedPassword(oldUser.getPassword());
-                user.setSalt(oldUser.getSalt());
-                return userService.validateEditUser(user);
-            } else {
-                return responseHandler.formatErrorResponse(400, "Session mismatch");
+        if (session == null) {
+          return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
+
+        // only a user and an admin can edit the user profile
+        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
+        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
+        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
+            User oldUser = userRepository.findById(profileId).get();
+            for (PassportCountry country : oldUser.getPassportCountries()) {
+                country.removeUser(oldUser);
             }
+            oldUser.resetPassportCountries();
+            user.setUserId(profileId);
+            user.setEncryptedPassword(oldUser.getPassword());
+            user.setSalt(oldUser.getSalt());
+            return userService.validateEditUser(user);
         } else {
-            return responseHandler.formatErrorResponse(400, "Invalid Session");
+            return responseHandler.formatErrorResponse(400, "Session mismatch");
         }
     }
 
