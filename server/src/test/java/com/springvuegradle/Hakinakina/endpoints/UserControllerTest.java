@@ -230,6 +230,33 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("User updated")));
     }
 
+    /**
+     * An admin can edit any user profile registered in the system.
+     */
+    @Test
+    public void editUserSuccessByAdminUserTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 1, "Password1");
+
+        // create another default admin
+        User defaultAdmin = new User();
+        defaultAdmin.setPermissionLevel(2);
+
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(defaultAdmin);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(service.validateEditUser(any(User.class)))
+                .thenReturn(responseHandler.formatSuccessResponse(200, "User updated"));
+        this.mockMvc.perform(put("/profiles/1").cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("User updated")));
+    }
+
     @Test
     public void editUserTokenDoesNotMatchAnySessionTest() throws Exception {
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(null);
