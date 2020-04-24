@@ -18,6 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "select primary_email from User", nativeQuery = true)
     List<String> getAllPrimaryEmails();
 
-    // Automagically generates query that finds user based on their permission level :D
+    // Automatically generates query that finds user based on their permission level :D
     User findByPermissionLevelEquals(int permissionLevel);
 }

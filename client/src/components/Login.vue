@@ -60,7 +60,7 @@
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
-        console.log(typeof(this.user.primary_email))
+        console.log(typeof(this.user.primary_email));
         if (this.user.primary_email == null || this.user.password == null){
           document.getElementById("empty_fields").hidden = false;
           return;
