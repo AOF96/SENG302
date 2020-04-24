@@ -16,7 +16,8 @@ const state = {
     profile_id: null,
     password: null,
     passports: [],
-    tmp_passports: []
+    tmp_passports: [],
+    permission_level: null
   }
 };
 
@@ -166,6 +167,7 @@ const actions = {
     state.user.password = null;
     state.user.passports = [];
     state.user.tmp_passports = [];
+    state.user.permission_level = null;
   }
 };
 
