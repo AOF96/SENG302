@@ -10,6 +10,9 @@
         <router-link to="/settings/password"><div class="settingsNavItem">Password</div></router-link>
         <hr>
         <router-link to="/settings/passport_countries"><div class="settingsNavItem">Passport Countries</div></router-link>
+        <hr>
+        <router-link to="/settings/activities"><div class="settingsNavItem">Activities</div></router-link>
+
       </div>
     </div>
 </template>

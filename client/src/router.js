@@ -7,6 +7,7 @@ import UserProfileSettings from '@/components/Settings/UserProfileSettings'
 import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
 import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
+import UserActivitySettings from "./components/Settings/UserActivitySettings";
 import store from '@/store/index.js';
 
 
@@ -43,6 +44,10 @@ const routes = [
     {
         path: '/settings/passport_countries',
         component: UserPassportCountriesSettings
+    },
+    {
+        path: '/settings/activities',
+        component: UserActivitySettings
     },
 ];
 

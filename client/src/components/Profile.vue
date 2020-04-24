@@ -38,6 +38,10 @@
                 <p >{{email}}</p>
               </div>
             </tr>
+            <tr>
+              <td class="profileTableTd">Activities:</td>
+              <td class="profileTableTd">{{ user.activities }}</td>
+            </tr>
           </table>
         </div>
       </div>

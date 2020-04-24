@@ -21,10 +21,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Main class for application
@@ -41,7 +38,12 @@ public class Main {
 	}
 
 	@Bean
-	CommandLineRunner init(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository) {
+	CommandLineRunner init(UserRepository userRepository,
+						   PassportCountryRepository countryRepository,
+						   EmailRepository emailRepository,
+						   SessionRepository sessionRepository,
+						   ActivityTypeRepository activityTypeRepository
+	) {
 		return args -> {
 			URL url = new URL("https://restcountries.eu/rest/v2/all");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -57,6 +59,11 @@ public class Main {
 				String name = countryJson.get("name").toString();
 				String code = countryJson.get("alpha2Code").toString();
 				countryRepository.save(new PassportCountry(code, name));
+			}
+
+			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team Sport");
+			for (String activityType : activityTypes) {
+				activityTypeRepository.save(new ActivityType(activityType));
 			}
 		};
 	}
