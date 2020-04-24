@@ -35,6 +35,7 @@ public class StartUpListener {
             return;
         }
         try {
+            updatePermissionsInDatabase();
             createDefaultAdmin();
         } catch (Exception e) {
             System.out.println(e.toString());
