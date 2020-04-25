@@ -72,12 +72,12 @@ public class UserController {
      * @return*/
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
           return responseHandler.formatErrorResponse(400, "Invalid Session");
@@ -114,7 +114,7 @@ public class UserController {
      * @return*/
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("token") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
     }
 
@@ -189,7 +189,7 @@ public class UserController {
      * @return message and status to notify if log out was successful
      * */
     @PostMapping("/logout")
-    public ResponseEntity checkLogout(@CookieValue("s_id") String sessionToken) {
+    public ResponseEntity checkLogout(@RequestHeader("token") String sessionToken) {
         try {
             sessionRepository.removeToken(sessionToken);
             return new ResponseEntity("User logged out", HttpStatus.OK);
@@ -205,7 +205,7 @@ public class UserController {
      * @param sessionToken token stored in the cookie to identify the user
      * */
     @PutMapping("/profiles/{profileId}/password")
-    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @RequestHeader("token") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");

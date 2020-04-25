@@ -150,7 +150,7 @@
 <script>
 import router from "../router";
 import { mapGetters, mapActions } from "vuex";
-import { apiUser, helperFunction } from "../api";
+import { apiUser } from "../api";
 
 import NavBar from "@/components/NavBar";
 
@@ -307,13 +307,10 @@ export default {
         )
         .then(
           response => {
-            console.log(response.data);
             this.createUserProfile(response.data[0]);
-            helperFunction.addCookie(
-              "s_id",
-              response.data[1]["sessionToken"],
-              365
-            );
+            //Save token to local storage
+            localStorage.setItem("s_id", response.data[1]["sessionToken"]);
+            apiUser.refreshInstance();
             router.push("Profile");
           },
           error => {
