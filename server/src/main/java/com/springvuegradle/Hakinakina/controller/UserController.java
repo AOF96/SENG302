@@ -1,16 +1,24 @@
 package com.springvuegradle.Hakinakina.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -215,6 +223,37 @@ public class UserController {
             return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
         }
         return userService.changePassword(profileId, sessionToken, oldPassword, newPassword);
+    }
+
+    /**
+     * Handles the editing of a user's activity types. Parses the list of activities and calls the service method,
+     * returning the result as a ResponseEntity
+     * @param jsonString The json as a string
+     * @param profileId The ID of the user to update
+     * @return A ResponseEntity stating the result
+     * @throws JsonProcessingException If there is an issue while parsing the JSON
+     */
+    @PutMapping("/profiles/{profileId}/activity-types")
+    public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
+        ArrayList<String> activities = new ArrayList<>();
+
+        if (activitiesNode.isArray()) {
+            for (JsonNode activity : activitiesNode) {
+                activities.add(activity.textValue());
+            }
+        } else {
+            return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
+        }
+
+        boolean userExists = userService.editActivityTypes(activities, profileId);
+
+        if (userExists) {
+            return new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
+        }
     }
 
     // Create Exception Handle

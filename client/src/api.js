@@ -47,7 +47,7 @@ export const apiUser = {
     this.refreshInstance();
   }),
   // Submit user signup information to the server
-  editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports) => instance.put('/profiles/'+profile_id, {
+  editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports, activities) => instance.put('/profiles/'+profile_id, {
     firstname: firstname,
     lastname: lastname,
     middlename: middlename,
@@ -58,7 +58,8 @@ export const apiUser = {
     gender: gender,
     fitness: fitness,
     additional_email: additional_email,
-    passports: passports
+    passports: passports,
+    activities: activities
   }),
   refreshUserData: (profile_id) => instance.get('/profiles/' + profile_id),
   // Add additional emails
