@@ -27,20 +27,30 @@ public class ActivityController {
      * @param countryRepository The repository containing PassportCountries
      * @param sessionRepository The repository containing Sessions
      */
-    public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
+    public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository, SessionRepository sessionRepository, ActivityService activityService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.activityService = activityService;
     }
 
+    /**
+     * Handles requests for adding an activity
+     * */
     @PostMapping("/profiles/{profileId}/activities")
     public ResponseEntity addActivity(@RequestBody Activity activity, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
-        return null;
+        return activityService.addActivity(activity, profileId, sessionToken);
     }
 
+    /**
+     * Handles requests for editing an activity
+     * */
     @PutMapping("/profiles/{profileId}/activities/{activityId}")
     public ResponseEntity editActivity() { return null; }
 
+    /**
+     * Handles requests for deleting an activity
+     * */
     @DeleteMapping("/profiles/{profileId}/activities/{activityId}")
     public ResponseEntity deleteActivity() {
         return null;
