@@ -19,12 +19,18 @@ const userInterface = {
   permission_level: null,
 };
 
+//only for normal user with permission level 0
 const initialUserState = {
   user: userInterface,
 };
 
+//only for default admin with permission level 2
 const initialSearchedState = {
-  searchedUser: userInterface,
+  adminUser: {
+    email: null,
+    password: null,
+    permission_level: 0,
+  },
 };
 
 const state = {
@@ -44,128 +50,68 @@ const getters = {
   },
 };
 
-function isAdmin(state) {
-  return state.user.permission_level > 0;
-}
-
 const mutations = {
   resetUser(state) {
     state.user = initialUserState.user;
     state.searchedUser = initialSearchedState.searchedUser;
   },
   setUser(state, data) {
-    if (!isAdmin(state)) {
-      state.user = data;
-    } else {
-      state.searchedUser = data;
-    }
+    state.user = data;
   },
   setUserFirstName(state, data) {
     if (data.firstname != "") {
-      if (!isAdmin(state)) {
-        state.user.firstname = data.firstname;
-      } else {
-        state.searchedUser.firstname = data.firstname;
-      }
+      state.user.firstname = data.firstname;
     }
   },
   setUserLastName(state, data) {
     if (data.lastname != "") {
-      if (!isAdmin(state)) {
-        state.user.lastname = data.lastname;
-      } else {
-        state.searchedUser.lastname = data.lastname;
-      }
+      state.user.lastname = data.lastname;
     }
   },
   setUserMiddleName(state, data) {
-    if (!isAdmin(state)) {
-      state.user.middlename = data.middlename;
-    } else {
-      state.searchedUser.middlename = data.middlename;
-    }
+    state.user.middlename = data.middlename;
   },
   setUserNickName(state, data) {
-    if (!isAdmin(state)) {
-      state.user.nickname = data.nickname;
-    } else {
-      state.searchedUser.nickname = data.nickname;
-    }
+    state.user.nickname = data.nickname;
   },
   setUserGender(state, data) {
     if (data.gender != "") {
-      if (!isAdmin(state)) {
-        state.user.gender = data.gender;
-      } else {
-        state.searchedUser.gender = data.gender;
-      }
+      state.user.gender = data.gender;
     }
   },
   setUserEmail(state, data) {
     if (data.primary_email != "") {
-      if (!isAdmin(state)) {
-        state.user.primary_email = data.primary_email;
-      } else {
-        state.searchedUser.primary_email = data.primary_email;
-      }
+      state.user.primary_email = data.primary_email;
     }
   },
   setUserID(state, data) {
     if (data.profile_id != "") {
-      if (!isAdmin(state)) {
-        state.user.profile_id = data.profile_id;
-      } else {
-        state.searchedUser.profile_id = data.profile_id;
-      }
+      state.user.profile_id = data.profile_id;
     }
   },
   setUserSecondaryEmails(state, data) {
-    if (!isAdmin(state)) {
-      state.user.additional_email = data.additional_email;
-    } else {
-      state.searchedUser.additional_email = data.additional_email;
-    }
+    state.user.additional_email = data.additional_email;
   },
   setUserBirthday(state, data) {
     if (data.birthday != "") {
-      if (!isAdmin(state)) {
-        state.user.date_of_birth = data.date_of_birth;
-      } else {
-        state.searchedUser.date_of_birth = data.date_of_birth;
-      }
+      state.user.date_of_birth = data.date_of_birth;
     }
   },
   setUserBio(state, data) {
     if (data.bio != "") {
-      if (!isAdmin(state)) {
-        state.user.bio = data.bio;
-      } else {
-        state.searchedUser.bio = data.bio;
-      }
+      state.user.bio = data.bio;
     }
   },
   setUserPassports(state, data) {
-    if (!isAdmin(state)) {
-      state.user.passports = data.passports;
-    } else {
-      state.searchedUser.passports = data.passports;
-    }
+    state.user.passports = data.passports;
   },
 
   setUserTmpPassports(state, data) {
-    if (!isAdmin(state)) {
-      state.user.tmp_passports = data.tmp_passports;
-    } else {
-      state.searchedUser.tmp_passports = data.tmp_passports;
-    }
+    state.user.tmp_passports = data.tmp_passports;
   },
 
   setUserFitnessLevel(state, data) {
-    if (!isAdmin(state)) {
-      state.user.fitness = data.fitness;
-    } else {
-      state.searchedUser.fitness = data.fitness;
-    }
+    state.user.fitness = data.fitness;
   },
 
   setUserPermissionLevel(state, data) {
@@ -191,6 +137,16 @@ const mutations = {
     if (data.password != "") {
       state.user.password = data.password;
     }
+  },
+  setAdminUser(state, data) {
+    state.admin.user.email = data.email;
+    state.admin.user.password = data.email;
+    state.admin.user.permission_level = data.permission_level;
+  },
+  resetAdminUser(state) {
+    state.admin.user.email = null;
+    state.admin.user.password = null;
+    state.admin.user.permission_level = null;
   },
 };
 
@@ -241,6 +197,12 @@ const actions = {
   },
   resetUser({ commit }) {
     commit("resetUser");
+  },
+  setAdminUser({ commit }) {
+    commit("setAdminUser");
+  },
+  resetAdminUser({ commit }) {
+    commit("resetAdminUser");
   },
 };
 
