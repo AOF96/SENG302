@@ -48,7 +48,7 @@ public class JSONParserTests {
 
         String expectedJSON = "{\"bio\":\"Hi there\",\"profile_id\":1,\"firstname\":\"Maurice\",\"lastname\"" +
                 ":\"Benson\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":\"1985-12-20\"" +
-                ",\"fitness\":3,\"passports\":[\"New Zealand\"],\"activity_types\":[],\"primary_email\":\"jacky@google.com\",\"additional_email\":[]}";
+                ",\"fitness\":3,\"passports\":[\"New Zealand\"],\"activities\":[],\"primary_email\":\"jacky@google.com\",\"additional_email\":[]}";
 
         assertEquals(expectedJSON, testUser.toJson());
     }
