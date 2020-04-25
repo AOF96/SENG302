@@ -42,7 +42,8 @@ public class Main {
 						   PassportCountryRepository countryRepository,
 						   EmailRepository emailRepository,
 						   SessionRepository sessionRepository,
-						   ActivityTypeRepository activityTypeRepository
+						   ActivityTypeRepository activityTypeRepository,
+						   ActivityRepository activityRepository
 	) {
 		return args -> {
 			URL url = new URL("https://restcountries.eu/rest/v2/all");
