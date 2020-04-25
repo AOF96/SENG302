@@ -63,11 +63,8 @@ public class Main {
 			}
 
 			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team Sport");
-			List<ActivityType> databaseActivityTypes = activityTypeRepository.findAll();
-			if(databaseActivityTypes.size() < 1){
-				for (String activityType : activityTypes) {
-					activityTypeRepository.save(new ActivityType(activityType));
-				}
+			for (String activityType : activityTypes) {
+				activityTypeRepository.save(new ActivityType(activityType));
 			}
 		};
 	}
