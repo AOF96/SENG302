@@ -84,4 +84,14 @@ public class UserTests {
 
     }
 
+    @Test
+    public void testPermissionLevelOfNewUser() {
+
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        assertEquals(0, testUser.getPermissionLevel());
+    }
+
 }

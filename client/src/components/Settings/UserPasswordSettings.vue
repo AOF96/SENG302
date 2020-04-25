@@ -6,7 +6,7 @@
             <hr>
             <div>
                 <form @submit.prevent>
-                    <input class="changePasswordFeild" type="password" name="password" placeholder="Current Password" v-model="oldPassword">
+                    <input v-if="user.permission_level === 0" class="changePasswordFeild" type="password" name="password" placeholder="Current Password" v-model="oldPassword">
                     <div class="signup-row">
                         <h6 class="passwordChange_error" id="password_incorrect" hidden="true">Incorrect password</h6>
                     </div>
@@ -51,7 +51,7 @@
              */
             validation() {
                 return {
-                    oldPassword: this.oldPassword !== '',
+                    oldPassword: this.oldPassword !== '' || this.user.permission_level > 0,
                     match: this.newPassword == this.confirmPassword,
                     length: /.{8,}/.test(this.newPassword),
                     number: /\d/.test(this.newPassword),

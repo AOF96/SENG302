@@ -16,7 +16,8 @@ const state = {
     profile_id: null,
     password: null,
     passports: [],
-    tmp_passports: []
+    tmp_passports: [],
+    permission_level: null
   }
 };
 
@@ -87,6 +88,9 @@ const mutations = {
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
   },
+  setUserPermissionLevel(state, data) {
+    state.user.permission_level = data.permission_level;
+  },
   setUserIsLogin(state, data) {
     if(data.isLogin != ""){
       state.user.isLogin = data.isLogin
@@ -134,12 +138,13 @@ const actions = {
     commit('setUserFitnessLevel', data);
     commit('setUserEmail', data);
     commit('setUserSecondaryEmails', data);
-    commit('setUserID', data)
+    commit('setUserID', data);
+    commit('setUserPermissionLevel', data);
     commit('userLogin');
   },
   updateUserEmail({ commit }, data) {
-    commit('setUserEmail', data)
-    commit('setUserSecondaryEmails', data)
+    commit('setUserEmail', data);
+    commit('setUserSecondaryEmails', data);
   },
   logout({ commit }) {
     commit('userLogout')
@@ -166,6 +171,7 @@ const actions = {
     state.user.password = null;
     state.user.passports = [];
     state.user.tmp_passports = [];
+    state.user.permission_level = null;
   }
 };
 

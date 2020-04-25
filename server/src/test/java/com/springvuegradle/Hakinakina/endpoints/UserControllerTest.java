@@ -113,7 +113,7 @@ public class UserControllerTest {
     @Test
     public void logoutSuccess() throws Exception {
         doNothing().when(sessionRepository).removeToken(any(String.class));
-        this.mockMvc.perform(post("/logout").cookie(new Cookie("s_id", "1")))
+        this.mockMvc.perform(post("/logout").header("token", "t0k3n"))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("User logged out")));
     }
@@ -142,7 +142,7 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
                         "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
                         "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
-                        "\"additional_email\":[]}")));
+                        "\"additional_email\":[],\"permission_level\":0}")));
     }
 
     @Test
@@ -177,7 +177,7 @@ public class UserControllerTest {
                 "     * }";
         when(service.editEmail(any(String.class), any(Long.class), any(String.class))).thenReturn(
                 responseHandler.formatSuccessResponse(200, "Primary email switched successfully"));
-        this.mockMvc.perform(put("/profiles/1/emails").cookie(new Cookie("s_id", "1"))
+        this.mockMvc.perform(put("/profiles/1/emails").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Primary email switched successfully")));
@@ -194,7 +194,7 @@ public class UserControllerTest {
                 "     * }";
         when(service.addEmails(any(String.class), any(Long.class), any(String.class))).thenReturn(
                 responseHandler.formatSuccessResponse(201, "New emails successfully added"));
-        this.mockMvc.perform(post("/profiles/1/emails").cookie(new Cookie("s_id", "1"))
+        this.mockMvc.perform(post("/profiles/1/emails").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(201))
                 .andExpect(content().string(containsString("New emails successfully added")));
@@ -224,7 +224,34 @@ public class UserControllerTest {
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(service.validateEditUser(any(User.class)))
                 .thenReturn(responseHandler.formatSuccessResponse(200, "User updated"));
-        this.mockMvc.perform(put("/profiles/1").cookie(new Cookie("s_id", "t0k3n"))
+        this.mockMvc.perform(put("/profiles/1").header("token", "t0k3n")
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("User updated")));
+    }
+
+    /**
+     * An admin can edit any user profile registered in the system.
+     */
+    @Test
+    public void editUserSuccessByAdminUserTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 1, "Password1");
+
+        // create another default admin
+        User defaultAdmin = new User();
+        defaultAdmin.setPermissionLevel(2);
+
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(defaultAdmin);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(service.validateEditUser(any(User.class)))
+                .thenReturn(responseHandler.formatSuccessResponse(200, "User updated"));
+        this.mockMvc.perform(put("/profiles/1").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("User updated")));
@@ -233,7 +260,7 @@ public class UserControllerTest {
     @Test
     public void editUserTokenDoesNotMatchAnySessionTest() throws Exception {
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(null);
-        this.mockMvc.perform(put("/profiles/1").cookie(new Cookie("s_id", "t0k3n"))
+        this.mockMvc.perform(put("/profiles/1").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Invalid Session")));
@@ -249,7 +276,7 @@ public class UserControllerTest {
         testSession.setUser(testUser);
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        this.mockMvc.perform(put("/profiles/2").cookie(new Cookie("s_id", "t0k3n"))
+        this.mockMvc.perform(put("/profiles/2").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(EDIT_PROFILE_JSON))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Session mismatch")));
@@ -265,7 +292,7 @@ public class UserControllerTest {
         when(service.changePassword(1, "t0k3n", "myoldpwd", "mynewpwd"))
                 .thenReturn(responseHandler.formatSuccessResponse(
                         200, "Successfully changed the password"));
-        this.mockMvc.perform(put("/profiles/1/password").cookie(new Cookie("s_id", "t0k3n"))
+        this.mockMvc.perform(put("/profiles/1/password").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Successfully changed the password")));
@@ -278,7 +305,7 @@ public class UserControllerTest {
                 "  \"new_password\": \"mynewpwd\",\n" +
                 "  \"repeat_password\": \"mynewerpwd\"\n" +
                 "}";
-        this.mockMvc.perform(put("/profiles/1/password").cookie(new Cookie("s_id", "t0k3n"))
+        this.mockMvc.perform(put("/profiles/1/password").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("newPassword and repeatPassword do no match")));
