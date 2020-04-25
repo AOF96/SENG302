@@ -206,8 +206,8 @@ export default {
     },
 
     /*
-              Function that checks if the provided data is valid when signing up.
-            */
+      Function that checks if the provided data is valid when signing up.
+    */
     validation() {
       return {
         firstname: this.user.firstname !== "",
@@ -226,9 +226,9 @@ export default {
       };
     },
     /*
-                The function validates the date if birth entered by the user and only allow when the user's age is 13
-                or over but also less than 140.
-            */
+        The function validates the date if birth entered by the user and only allow when the user's age is 13
+        or over but also less than 140.
+    */
     birthday_validation() {
       var user_input_date = new Date(this.user.date_of_birth);
       if (user_input_date > Date.now()) {
@@ -241,8 +241,8 @@ export default {
     },
 
     /*
-               Returns an appropriate error message if something goes wrong when signing up.
-            */
+       Returns an appropriate error message if something goes wrong when signing up.
+    */
     all_err_msg() {
       const validation = this.validation;
       const fields = Object.keys(validation);
@@ -267,8 +267,8 @@ export default {
     },
 
     /*
-               Returns true if all the provided data is valid.
-            */
+       Returns true if all the provided data is valid.
+    */
     valid() {
       const valid = this.all_err_msg === "";
       return valid;
@@ -277,10 +277,9 @@ export default {
 
   methods: {
     ...mapActions(["createUserProfile"]),
-
     /*
-                Submits a request to register a new user. Checks if there are missing fields when signing up.
-             */
+      Submits a request to register a new user. Checks if there are missing fields when signing up.
+    */
     submitSignUp() {
       if (!this.valid) {
         document.getElementById("missing_field").hidden = false;
@@ -292,34 +291,31 @@ export default {
         document.getElementById("missing_field").innerText = "";
       }
 
-      apiUser
-        .signUp(
-          this.user.firstname,
-          this.user.lastname,
-          this.user.middlename,
-          this.user.nickname,
-          this.user.primary_email,
-          this.password1,
-          this.user.bio,
-          this.user.date_of_birth,
-          this.user.gender,
-          Number(this.user.fitness)
-        )
-        .then(
-          response => {
-            this.createUserProfile(response.data[0]);
-            //Save token to local storage
-            localStorage.setItem("s_id", response.data[1]["sessionToken"]);
-            apiUser.refreshInstance();
-            router.push("Profile");
-          },
-          error => {
-            document.getElementById("missing_field").hidden = false;
-            document.getElementById("missing_field").innerText =
-              error.response.data.Errors;
-            console.log(error);
-          }
-        );
+      apiUser.signUp(
+        this.user.firstname,
+        this.user.lastname,
+        this.user.middlename,
+        this.user.nickname,
+        this.user.primary_email,
+        this.password1,
+        this.user.bio,
+        this.user.date_of_birth,
+        this.user.gender,
+        Number(this.user.fitness)
+      ).then(
+        response => {
+          this.createUserProfile(response.data[0]);
+          //Save token to local storage
+          localStorage.setItem("s_id", response.data[1]["sessionToken"]);
+          apiUser.refreshInstance();
+          router.push("Profile");
+        },
+        error => {
+          document.getElementById("missing_field").hidden = false;
+          document.getElementById("missing_field").innerText = error.response.data.Errors;
+          console.log(error);
+        }
+      );
     }
   }
 };

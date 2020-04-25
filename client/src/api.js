@@ -9,6 +9,7 @@ var instance = axios.create({
 });
 
 export const apiUser = {
+  // Reload token from local storage
   refreshInstance: () => {
     instance = axios.create({
       baseURL: SERVER_URL,

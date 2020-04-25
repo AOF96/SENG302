@@ -11,14 +11,12 @@
             </div>
             <div id="countryActions">
                 <form @submit.prevent>
-                    <select
-                            v-model="adding_country"
+                    <select v-model="adding_country"
                             name="passportCountries"
                             placeholder="Passport Countries"
                             value="Passport Countries"
                             id="passportCountriesInput"
-                            required
-                    >
+                            required>
                         <option selected disabled hidden>Passport Countries</option>
                         <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
                             {{addingCountry}}
@@ -60,9 +58,9 @@
         },
 
         /*
-            Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
-            from selecting the same country twice.
-         */
+          Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
+          from selecting the same country twice.
+        */
         created: function() {
             axios.get(COUNTRIES_URL)
                 .then((response) => {
@@ -93,8 +91,8 @@
             },
 
             /*
-                Removes a passport country from an user account.
-             */
+              Removes a passport country from an user account.
+            */
             removePassportCountries(country) {
                 const index = this.user.user.passports.indexOf(country)
                 if (index === -1) return
