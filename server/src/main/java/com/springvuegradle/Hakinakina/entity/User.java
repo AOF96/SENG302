@@ -72,7 +72,7 @@ public class User {
     )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
-    @JsonProperty("activity_types")
+    @JsonProperty("activities")
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
             name = "User_ActivityTypes",
@@ -146,6 +146,10 @@ public class User {
 
     public Set<ActivityType> getActivityTypes() {
         return activityTypes;
+    }
+
+    public void setActivityTypes(Set<ActivityType> activityTypes) {
+        this.activityTypes = activityTypes;
     }
 
     /**

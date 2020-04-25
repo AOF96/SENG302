@@ -6,6 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
 public interface ActivityTypeRepository extends JpaRepository<ActivityType, Long> {
-    @Query(value = "Select * from ActivityType c where c.name = ?1", nativeQuery = true)
+    @Query(value = "Select * from Activity_Type a where a.type_id = ?1", nativeQuery = true)
     ActivityType findActivityTypeByName(String name);
 }

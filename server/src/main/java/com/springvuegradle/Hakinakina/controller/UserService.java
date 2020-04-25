@@ -28,14 +28,17 @@ public class UserService {
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
     private SessionRepository sessionRepository;
+    private ActivityTypeRepository activityTypeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
-                       PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
+                       PassportCountryRepository countryRepository, SessionRepository sessionRepository,
+                       ActivityTypeRepository activityTypeRepository) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.activityTypeRepository = activityTypeRepository;
     }
 
     /**
@@ -511,5 +514,33 @@ public class UserService {
             response = responseHandler.formatErrorResponse(400, "No user with that ID");
         }
         return response;
+    }
+
+    /**
+     * Updates a user's activity types. If a supplied activity type doesn't actually exist, it is skipped.
+     * @param activityTypes An ArrayList of activity type Strings
+     * @param id The Long ID of the User to modify
+     * @return True if the user exists, false otherwise.
+     */
+    public boolean editActivityTypes(ArrayList<String> activityTypes, long id) {
+        boolean result = false;
+        HashSet<ActivityType> newActivityTypes = new HashSet<>();
+
+        for (String name : activityTypes) {
+            ActivityType type = activityTypeRepository.findActivityTypeByName(name);
+            if (type != null) {
+                newActivityTypes.add(type);
+            }
+        }
+
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setActivityTypes(newActivityTypes);
+            userRepository.save(user);
+            result = true;
+        }
+
+        return result;
     }
 }
