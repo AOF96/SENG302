@@ -10,20 +10,18 @@ import java.util.Set;
  * An enum to represent a User's activities
  */
 @Entity
+@Table(name = "Activity_Type")
 public class ActivityType {
-    @Id @GeneratedValue
-    @Column(name = "types_id")
-    private Long id;
-
+    @Id
+    @Column(name = "type_id")
     private String name;
 
-    @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.PERSIST, fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
     protected ActivityType() {}
 
     public ActivityType(String name){
-        this.id = id;
         this.name = name;
     }
 
