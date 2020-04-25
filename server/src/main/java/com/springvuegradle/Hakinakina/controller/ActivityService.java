@@ -26,6 +26,11 @@ public class ActivityService {
      * Adds an activity for the user*
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(400));
+        }
+
         activityRepository.save(activity);
         return new ResponseEntity("Activity Successfully Added", HttpStatus.valueOf(200));
     }
