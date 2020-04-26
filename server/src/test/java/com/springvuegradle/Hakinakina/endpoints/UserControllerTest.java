@@ -132,11 +132,11 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getOneUserSuccessTest() throws Exception {
+    public void getUserByIdTest() throws Exception {
         User testUser = new User("John", "Smith", "john@gmail.com", null,
                 Gender.MALE, 2, "Password1");
         testUser.setUserId((long) 1);
-        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
         this.mockMvc.perform(get("/profiles/1"))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
@@ -147,7 +147,7 @@ public class UserControllerTest {
 
     @Test
     public void getOneUserFailTest() throws Exception {
-        when(userRepository.findById((long) 1)).thenReturn(Optional.empty());
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.empty());
         this.mockMvc.perform(get("/profiles/1"))
                 .andExpect(status().is(404))
                 .andExpect(content().string(containsString("User does not exist")));

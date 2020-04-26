@@ -1,10 +1,8 @@
 package com.springvuegradle.Hakinakina.controller;
 
 import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
-import com.springvuegradle.Hakinakina.util.RandomToken;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -129,6 +127,7 @@ public class UserController {
         return responseHandler.formatGetUsers(users);
     }
 
+
     /**
      * Processes request to retrieve certain user and returns
      *
@@ -137,7 +136,7 @@ public class UserController {
      */
     @GetMapping("/profiles/{profile_id}")
     public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
-        Optional<User> optional = userRepository.findById(profileId);
+        Optional<User> optional = userRepository.getUserById(profileId);
         if (optional.isPresent()) {
             User user = optional.get();
             return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
