@@ -19,6 +19,9 @@ public class ActivityType {
     @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
+    @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    private Set<Activity> activities = new HashSet<>();
+
     protected ActivityType() {}
 
     public ActivityType(String name){

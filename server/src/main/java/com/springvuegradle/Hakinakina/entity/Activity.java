@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Activities entity class.
@@ -24,8 +26,19 @@ public class Activity {
     @Column(name = "description")
     private String description;
 
-    @JsonProperty("continous")
-    @Column(name = "continous")
+    @JsonProperty("activity_type")
+    @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @JoinTable(
+            name = "Activity_ActivityType",
+            joinColumns = { @JoinColumn(name = "activity_id") },
+            inverseJoinColumns = { @JoinColumn(name = "type_id") }
+    )
+    private Set<ActivityType> activityTypes = new HashSet<>();
+
+
+
+    @JsonProperty("continuous")
+    @Column(name = "continuous")
     private boolean continuous;
 
     @JsonProperty("start_time")
