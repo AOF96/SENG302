@@ -42,7 +42,7 @@ const state = {
     isLogin: false
   },
   ...initialUserState,
-  ...initialSearchedState,
+  //...initialSearchedState,
 };
 
 const getters = {
@@ -61,9 +61,9 @@ const getters = {
   },
 };
 
-function isAdmin(state) {
-  return state.user.permission_level > 0;
-}
+//function isAdmin(state) {
+//  return state.user.permission_level > 0;
+//}
 
 const mutations = {
   resetUser(state) {
