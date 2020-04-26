@@ -19,15 +19,28 @@ const userInterface = {
   permission_level: null,
 };
 
+//only for normal user with permission level 0
 const initialUserState = {
   user: userInterface,
 };
 
-const initialSearchedState = {
-  searchedUser: userInterface,
+//only for default admin with permission level 2
+const initialAdminUserState = {
+  adminUser: {
+    email: null,
+    password: null,
+    permission_level: 0,
+    isLogin: false
+  },
 };
 
 const state = {
+  adminUser: {
+    email: null,
+    password: null,
+    permission_level: 0,
+    isLogin: false
+  },
   ...initialUserState,
   ...initialSearchedState,
 };
@@ -36,6 +49,10 @@ const getters = {
   user(state) {
     return state.user;
   },
+    adminUser(state) {
+      return state.adminUser;
+    },
+
   searchedUser(state) {
     return state.user;
   },
@@ -51,125 +68,78 @@ function isAdmin(state) {
 const mutations = {
   resetUser(state) {
     state.user = initialUserState.user;
-    state.searchedUser = initialSearchedState.searchedUser;
+    state.adminUser = initialAdminUserState.adminUser;
   },
   setUser(state, data) {
-    if (!isAdmin(state)) {
-      state.user = data;
-    } else {
-      state.searchedUser = data;
-    }
+    state.user = data;
   },
   setUserFirstName(state, data) {
     if (data.firstname != "") {
-      if (!isAdmin(state)) {
-        state.user.firstname = data.firstname;
-      } else {
-        state.searchedUser.firstname = data.firstname;
-      }
+      state.user.firstname = data.firstname;
     }
   },
   setUserLastName(state, data) {
     if (data.lastname != "") {
-      if (!isAdmin(state)) {
-        state.user.lastname = data.lastname;
-      } else {
-        state.searchedUser.lastname = data.lastname;
-      }
+      state.user.lastname = data.lastname;
     }
   },
   setUserMiddleName(state, data) {
-    if (!isAdmin(state)) {
-      state.user.middlename = data.middlename;
-    } else {
-      state.searchedUser.middlename = data.middlename;
-    }
+    state.user.middlename = data.middlename;
   },
   setUserNickName(state, data) {
-    if (!isAdmin(state)) {
-      state.user.nickname = data.nickname;
-    } else {
-      state.searchedUser.nickname = data.nickname;
-    }
+    state.user.nickname = data.nickname;
   },
   setUserGender(state, data) {
     if (data.gender != "") {
-      if (!isAdmin(state)) {
-        state.user.gender = data.gender;
-      } else {
-        state.searchedUser.gender = data.gender;
-      }
+      state.user.gender = data.gender;
     }
   },
   setUserEmail(state, data) {
     if (data.primary_email != "") {
-      if (!isAdmin(state)) {
-        state.user.primary_email = data.primary_email;
-      } else {
-        state.searchedUser.primary_email = data.primary_email;
-      }
+      state.user.primary_email = data.primary_email;
     }
   },
   setUserID(state, data) {
     if (data.profile_id != "") {
-      if (!isAdmin(state)) {
-        state.user.profile_id = data.profile_id;
-      } else {
-        state.searchedUser.profile_id = data.profile_id;
-      }
+      state.user.profile_id = data.profile_id;
     }
   },
   setUserSecondaryEmails(state, data) {
-    if (!isAdmin(state)) {
-      state.user.additional_email = data.additional_email;
-    } else {
-      state.searchedUser.additional_email = data.additional_email;
-    }
+    state.user.additional_email = data.additional_email;
   },
   setUserBirthday(state, data) {
     if (data.birthday != "") {
-      if (!isAdmin(state)) {
-        state.user.date_of_birth = data.date_of_birth;
-      } else {
-        state.searchedUser.date_of_birth = data.date_of_birth;
-      }
+      state.user.date_of_birth = data.date_of_birth;
     }
   },
   setUserBio(state, data) {
     if (data.bio != "") {
-      if (!isAdmin(state)) {
-        state.user.bio = data.bio;
-      } else {
-        state.searchedUser.bio = data.bio;
-      }
+      state.user.bio = data.bio;
     }
   },
   setUserPassports(state, data) {
-    if (!isAdmin(state)) {
-      state.user.passports = data.passports;
-    } else {
-      state.searchedUser.passports = data.passports;
-    }
+    state.user.passports = data.passports;
   },
 
   setUserTmpPassports(state, data) {
-    if (!isAdmin(state)) {
-      state.user.tmp_passports = data.tmp_passports;
-    } else {
-      state.searchedUser.tmp_passports = data.tmp_passports;
-    }
+    state.user.tmp_passports = data.tmp_passports;
   },
 
   setUserFitnessLevel(state, data) {
-    if (!isAdmin(state)) {
-      state.user.fitness = data.fitness;
-    } else {
-      state.searchedUser.fitness = data.fitness;
-    }
+    state.user.fitness = data.fitness;
   },
 
   setUserPermissionLevel(state, data) {
     state.user.permission_level = data.permission_level;
+  },
+
+  adminUserLogin() {
+    state.user.isLogin = true;
+  },
+
+  adminUserLogout() {
+    state.user.isLogin = false;
+    apiUser.logout();
   },
 
   setUserLoggedOut() {
@@ -192,6 +162,16 @@ const mutations = {
     if (data.password != "") {
       state.user.password = data.password;
     }
+  },
+  setAdminUser(state, data) {
+    state.adminUser.email = data.email;
+    state.adminUser.password = data.password;
+    state.adminUser.permission_level = data.permission_level;
+  },
+  resetAdminUser(state) {
+    state.adminUser.email = null;
+    state.adminUser.password = null;
+    state.adminUser.permission_level = null;
   },
 };
 
@@ -241,7 +221,6 @@ const actions = {
     commit("setUserTmpPassports", data);
   },
   resetUser({ commit }) {
-    commit('setUserLoggedOut')
     commit("resetUser");
   },
 };

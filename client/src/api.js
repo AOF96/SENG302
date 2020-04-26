@@ -68,8 +68,5 @@ export const apiUser = {
     additional_email: additional_email
   }),
   //Get all emails
-  getAllEmails: () => instance.get('/emails'),
-
-  getUserSessionToken: (profile_id) => instance.get("/token/" + profile_id)
+  getAllEmails: () => instance.get('/emails')
 };
-

@@ -9,6 +9,8 @@ import UserEmailSettings from '@/components/Settings/UserEmailSettings'
 import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
 import store from '@/store/index.js';
 import { apiUser } from "./api";
+import AdminDashboard from "./components/Settings/AdminDashboard";
+
 
 Vue.use(VueRouter);
 
@@ -44,6 +46,10 @@ const routes = [
         path: '/settings/passport_countries',
         component: UserPassportCountriesSettings
     },
+    {
+        path: '/settings/admin_dashboard',
+        component: AdminDashboard
+    },
 ];
 
 
@@ -54,12 +60,15 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    //localStorage.removeItem('userLoggedIn')
-    //localStorage.removeItem('thisUser')
     console.log('start routering to.path=' + to.path)
     console.log('user.isLogin=' + store.getters.user.isLogin)
-    console.log('user.isLogin=' + localStorage.getItem('userLoggedIn'))
-    console.log('user' + localStorage.getItem('thisUser'))
+    console.log('getters=' + store.getters)
+    console.log('admin user.isLogin=' + store.getters.adminUser.isLogin)
+
+    if(to.path == "/settings/admin_dashboard" && store.getters.adminUser.isLogin) {
+        next();
+    }
+
     if (localStorage.getItem('userLoggedIn') === null) {
         if (to.path == "/signup" || to.path == "/login") {
             if (localStorage.getItem('userLoggedIn') === 'true') {
@@ -93,4 +102,3 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
-
