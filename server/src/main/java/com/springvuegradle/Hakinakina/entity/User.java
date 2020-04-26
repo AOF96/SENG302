@@ -81,6 +81,14 @@ public class User {
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
+    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    @JoinTable(
+            name = "User_Activities",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "activity_id") }
+    )
+    private Set<Activity> activities = new HashSet<>();
+
     @JsonIgnore
     private String salt;
 

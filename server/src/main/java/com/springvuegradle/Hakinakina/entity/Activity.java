@@ -35,8 +35,6 @@ public class Activity {
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
-
-
     @JsonProperty("continuous")
     @Column(name = "continuous")
     private boolean continuous;
@@ -52,6 +50,9 @@ public class Activity {
     @JsonProperty("location")
     @Column(name = "location")
     private String location;
+
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    private Set<User> users = new HashSet<>();
 
     protected Activity() {}
 
