@@ -234,12 +234,10 @@ public class UserController {
     public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
-        ArrayList<String> activities = new ArrayList<>();
+        List<String> activities;
 
         if (activitiesNode.isArray()) {
-            for (JsonNode activity : activitiesNode) {
-                activities.add(activity.textValue());
-            }
+            activities = parseActivityList(activitiesNode);
         } else {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
@@ -251,6 +249,20 @@ public class UserController {
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
+    }
+
+    /**
+     * Parses a list of activity types
+     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
+     * @return A List of Strings of the activity types
+     */
+    public static List<String> parseActivityList(JsonNode activitiesNode) {
+        List<String> activities = new ArrayList<>();
+        for (JsonNode activity : activitiesNode) {
+            activities.add(activity.textValue());
+        }
+
+        return activities;
     }
 
     // Create Exception Handle

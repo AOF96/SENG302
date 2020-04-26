@@ -10,11 +10,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.controller.UserController;
 import com.springvuegradle.Hakinakina.controller.UserService;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -288,5 +292,63 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("newPassword and repeatPassword do no match")));
+    }
+
+    @Test
+    public void editActivityTypesTest() throws Exception {
+        String input = "{\n" +
+                "  \"activities\": [\n" +
+                "    \"Relaxing\",\n" +
+                "    \"Fun\"\n" +
+                "  ]\n" +
+                "}";
+        when(service.editActivityTypes(anyList(), anyLong())).thenReturn(true);
+        this.mockMvc.perform(put("/profiles/1/activity-types")
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Successfully updated activity types")));
+    }
+
+    @Test
+    public void editActivityTypesNonExistentUserTest() throws Exception {
+        String input = "{\n" +
+                "  \"activities\": [\n" +
+                "    \"Relaxing\",\n" +
+                "    \"Fun\"\n" +
+                "  ]\n" +
+                "}";
+        when(service.editActivityTypes(anyList(), anyLong())).thenReturn(false);
+        this.mockMvc.perform(put("/profiles/1/activity-types")
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(401))
+                .andExpect(content().string(containsString("No user with that ID")));
+    }
+
+    @Test
+    public void editActivityTypesNotListTest() throws Exception {
+        String input = "{\n" +
+                "  \"activities\": \"Relaxing\"\n" +
+                "}";
+        this.mockMvc.perform(put("/profiles/1/activity-types")
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Must send a list of activities")));
+    }
+
+    @Test
+    public void parseActivityListTest() throws JsonProcessingException {
+        String input = "{\n" +
+                "  \"activities\": [\n" +
+                "    \"Relaxing\",\n" +
+                "    \"Fun\"\n" +
+                "  ]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode activitiesNode = mapper.readTree(input).get("activities");
+        List<String> result = UserController.parseActivityList(activitiesNode);
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains("Relaxing"));
+        assertTrue(result.contains("Fun"));
     }
 }
