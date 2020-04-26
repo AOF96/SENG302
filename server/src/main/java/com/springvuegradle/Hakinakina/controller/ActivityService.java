@@ -26,6 +26,11 @@ public class ActivityService {
 
     /**
      * Adds an activity for the user*
+     *
+     * @param activity the activity the user wants to add
+     * @param profileId the user's id
+     * @param sessionToken the user's token from their current session
+     * @return response entity to inform user if adding an activity was successful or not
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);

@@ -38,7 +38,12 @@ public class ActivityController {
 
     /**
      * Handles requests for adding an activity
-     * */
+     *
+     * @param activity the activity the user wants to add
+     * @param profileId the user's id
+     * @param sessionToken the user's token from their current session
+     * @return response entity to inform user if adding an activity was successful or not
+     */
     @PostMapping("/profiles/{profileId}/activities")
     public ResponseEntity addActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         return activityService.addActivity(activity, profileId, sessionToken);
@@ -46,13 +51,13 @@ public class ActivityController {
 
     /**
      * Handles requests for editing an activity
-     * */
+     */
     @PutMapping("/profiles/{profileId}/activities/{activityId}")
     public ResponseEntity editActivity() { return null; }
 
     /**
      * Handles requests for deleting an activity
-     * */
+     */
     @DeleteMapping("/profiles/{profileId}/activities/{activityId}")
     public ResponseEntity deleteActivity() {
         return null;
