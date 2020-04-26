@@ -351,4 +351,18 @@ public class UserControllerTest {
         assertTrue(result.contains("Relaxing"));
         assertTrue(result.contains("Fun"));
     }
+
+    @Test
+    public void getActivityTypesTest() throws Exception {
+        List<ActivityType> activityTypes = new ArrayList<>();
+        activityTypes.add(new ActivityType("Fun"));
+        activityTypes.add(new ActivityType("Relaxing"));
+        activityTypes.add(new ActivityType("Extreme"));
+        when(activityTypeRepository.findAll()).thenReturn(activityTypes);
+
+        this.mockMvc.perform(get("/activity-types")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().json("[Fun, Relaxing, Extreme]"));
+    }
 }

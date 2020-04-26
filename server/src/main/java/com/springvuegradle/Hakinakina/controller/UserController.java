@@ -34,6 +34,7 @@ public class UserController {
     public PassportCountryRepository countryRepository;
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
+    public ActivityTypeRepository activityTypeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private UserService userService;
@@ -46,11 +47,14 @@ public class UserController {
      * @param emailRepository   The repository containing Emails
      * @param sessionRepository The repository containing Sessions
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, UserService userService) {
+    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository,
+                          EmailRepository emailRepository, SessionRepository sessionRepository,
+                          ActivityTypeRepository activityTypeRepository, UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
         this.sessionRepository = sessionRepository;
+        this.activityTypeRepository = activityTypeRepository;
         this.userService = userService;
     }
 
@@ -249,6 +253,21 @@ public class UserController {
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
+    }
+
+    /**
+     * Retrieve the names of all the Activity Types in the database
+     * @return A JSON list of names of activity types
+     */
+    @GetMapping("/activity-types")
+    public List<String> getActivityTypes() {
+        List<ActivityType> activityTypes = activityTypeRepository.findAll();
+        List<String> activityTypeStrings = new ArrayList<>();
+
+        for (ActivityType type : activityTypes) {
+            activityTypeStrings.add(type.getName());
+        }
+        return activityTypeStrings;
     }
 
     /**
