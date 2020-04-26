@@ -5,6 +5,8 @@ import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * Rest controller class for controlling requests about Activities
  */
@@ -38,7 +40,7 @@ public class ActivityController {
      * Handles requests for adding an activity
      * */
     @PostMapping("/profiles/{profileId}/activities")
-    public ResponseEntity addActivity(@RequestBody Activity activity, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity addActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         return activityService.addActivity(activity, profileId, sessionToken);
     }
 

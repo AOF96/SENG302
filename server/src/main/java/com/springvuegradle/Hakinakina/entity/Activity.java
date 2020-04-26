@@ -3,6 +3,7 @@ package com.springvuegradle.Hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 
 /**
@@ -16,6 +17,7 @@ public class Activity {
 
     @JsonProperty("activity_name")
     @Column(name = "activity_name")
+    @NotBlank(message = "Activity name is mandatory")
     private String name;
 
     @JsonProperty("description")
