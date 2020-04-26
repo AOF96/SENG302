@@ -49,11 +49,11 @@
       NavBar
     },
     computed: {
-      ...mapGetters(['user']),
+      ...mapGetters(['user','adminUser']),
 
     },
     methods: {
-      ...mapActions(['updateUserProfile']),
+      ...mapActions(['updateUserProfile','loginAdminUser']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
@@ -71,8 +71,14 @@
             //Save token to local storage
             localStorage.setItem("s_id", responseData[1]["sessionToken"]);
             apiUser.refreshInstance();
-            this.updateUserProfile(responseData[0]);
-            router.push('Profile');
+            if(responseData[0].permission_level == 2){
+              console.log(responseData[0].permission_level);
+              this.loginAdminUser(responseData[0]);
+              router.push('/settings/admin_dashboard');
+            } else {
+              this.updateUserProfile(responseData[0]);
+              router.push('Profile');
+            }
           }, (error) => {
             const responseData = error.response.data;
             const responseCode = error.response.status;

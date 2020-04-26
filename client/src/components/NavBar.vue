@@ -14,11 +14,6 @@
     <router-link to="/Login" v-if="!user.isLogin">
       <button id="headerNavButton" class="login" value="Login In">Login</button>
     </router-link>
-
-    <router-link to="/profile" v-if="isAdmin">
-      <input class="loginInput-email" v-model="searchUserId" type="text" placeholder="User Id" />
-      <button id="headerNavButton" class="search">search</button>
-    </router-link>
   </header>
 </template>
 
