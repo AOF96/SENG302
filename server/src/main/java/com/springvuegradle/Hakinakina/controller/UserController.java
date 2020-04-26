@@ -165,6 +165,11 @@ public class UserController {
         return userRepository.getAllPrimaryEmails().toString();
     }
 
+    @GetMapping("/token/{profile_id}")
+    public List<String> getUserSessionToken(@PathVariable("profile_id") long profileId) {
+        return sessionRepository.getUserSessionToken(profileId);
+    }
+
     /**
      * Check if the user's login credentials are correct. First finds a user with the same email. Then checks if the
      * entered password matches the actual password. This is done by encrypting the attempt using the same salt as the
