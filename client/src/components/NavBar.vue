@@ -4,7 +4,7 @@
       <button id="headerNavButton" class="login" v-on:click="logoutUser">Logout</button>
     </router-link>
 
-    <router-link to="/profile" v-if="!isAdmin && user.isLogin">
+    <router-link to="/profile" v-if="!isAdmin && user.isLogin === 'true'">
       <button id="headerNavButton" class="myaccount" v-on:click="goToProfile">Profile</button>
     </router-link>
 
@@ -37,7 +37,10 @@ export default {
   data() {
     return {
       searchUserId: ""
-    };
+  };
+  },
+  watch: {
+    ...mapGetters(["isLoggedIn"])
   },
   methods: {
     ...mapActions(["logout"]),
@@ -57,7 +60,6 @@ export default {
              */
     logoutUser() {
       apiUser.logout();
-      this.resetUser();
     }
   }
 };
@@ -111,3 +113,4 @@ body {
   color: #1dca92;
 }
 </style>
+

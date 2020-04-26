@@ -8,7 +8,7 @@ import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
 import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
 import store from '@/store/index.js';
-
+import { apiUser } from "./api";
 
 Vue.use(VueRouter);
 
@@ -54,23 +54,43 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+    //localStorage.removeItem('userLoggedIn')
+    //localStorage.removeItem('thisUser')
     console.log('start routering to.path=' + to.path)
     console.log('user.isLogin=' + store.getters.user.isLogin)
-    if (to.path == "/signup" || to.path == "/login") {
-        if (store.getters.user.isLogin) {
-            next('/profile')
-        } else {
-            next()
+    console.log('user.isLogin=' + localStorage.getItem('userLoggedIn'))
+    console.log('user' + localStorage.getItem('thisUser'))
+    if (localStorage.getItem('userLoggedIn') === null) {
+        if (to.path == "/signup" || to.path == "/login") {
+            if (localStorage.getItem('userLoggedIn') === 'true') {
+                next('/profile')
+            } else {
+                next()
+            }
         }
-    } else if (to.path == '/logout') {
-        next('/login')
+    } else if (localStorage.getItem('userLoggedIn') === 'true') {
+        apiUser.getUserSessionToken(localStorage.getItem('thisUser')).then((response) => {
+            const responseData = response.data;
+            if (localStorage.getItem('userLoggedIn') === 'true' && responseData.indexOf(localStorage.getItem('s_id')) > 0) {
+                if (to.path == '/logout') {
+                    this.resetUser();
+                    next('/login')
+                } else {
+                    next()
+                }
+            } else {
+                localStorage.removeItem('userLoggedIn')
+                localStorage.removeItem('thisUser')
+                next('/login')
+            }
+        }, (error) => {
+            console.log(error.response.data)
+            console.log(error.response.status)
+        });
     } else {
-        if(store.getters.user.isLogin){
-            next()
-        } else {
-            next('/login')
-        }
+        next('/login')
     }
 })
 
 export default router
+

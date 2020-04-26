@@ -10,7 +10,7 @@ const userInterface = {
   additional_email: [],
   date_of_birth: null,
   bio: null,
-  isLogin: false,
+  isLogin: localStorage.getItem('userLoggedIn'),
   fitness: null,
   profile_id: null,
   password: null,
@@ -172,14 +172,15 @@ const mutations = {
     state.user.permission_level = data.permission_level;
   },
 
-  setUserIsLogin(state, data) {
-    if (data.isLogin != "") {
-      state.user.isLogin = data.isLogin;
-    }
+  setUserLoggedOut() {
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('thisUser');
+    localStorage.removeItem('s_id');
+    state.user.isLogin = localStorage.getItem('userLoggedIn');
   },
 
   userLogin() {
-    state.user.isLogin = true;
+    state.user.isLogin = localStorage.getItem('userLoggedIn');
   },
 
   userLogout() {
@@ -240,6 +241,7 @@ const actions = {
     commit("setUserTmpPassports", data);
   },
   resetUser({ commit }) {
+    commit('setUserLoggedOut')
     commit("resetUser");
   },
 };

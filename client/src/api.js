@@ -42,10 +42,7 @@ export const apiUser = {
     password: password
   }),
   // Removes session token from local storage and posts server request to remove the token from the database
-  logout: () => instance.post('/logout').then(function () {
-    localStorage.removeItem("s_id");
-    this.refreshInstance();
-  }),
+  logout: () => instance.post('/logout'),
   // Submit user signup information to the server
   editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports) => instance.put('/profiles/'+profile_id, {
     firstname: firstname,
@@ -71,5 +68,8 @@ export const apiUser = {
     additional_email: additional_email
   }),
   //Get all emails
-  getAllEmails: () => instance.get('/emails')
+  getAllEmails: () => instance.get('/emails'),
+
+  getUserSessionToken: (profile_id) => instance.get("/token/" + profile_id)
 };
+

@@ -40,6 +40,7 @@
   import { mapGetters, mapActions} from 'vuex';
   import { apiUser } from '../api'
   //import {getEncryptPassword} from "../common.js"
+  //import store from '../store/index.js';
 
   import NavBar from '@/components/NavBar'
 
@@ -68,7 +69,10 @@
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {
             const responseData = response.data;
+            console.log(responseData)
             //Save token to local storage
+            localStorage.setItem('thisUser', responseData[0].profile_id);
+            localStorage.setItem('userLoggedIn', 'true');
             localStorage.setItem("s_id", responseData[1]["sessionToken"]);
             apiUser.refreshInstance();
             this.updateUserProfile(responseData[0]);
