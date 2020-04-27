@@ -17,8 +17,7 @@ const state = {
     password: null,
     passports: [],
     tmp_passports: [],
-    activities: [],
-    tmp_activities: []
+    activities: []
   }
 };
 
@@ -37,12 +36,12 @@ const mutations = {
     state.user = data
   },
   setUserFirstName(state, data) {
-    if(data.firstname != ""){
+    if(data.firstname !== ""){
       state.user.firstname = data.firstname;
     }
   },
   setUserLastName(state, data) {
-    if(data.lastname != ""){
+    if(data.lastname !== ""){
       state.user.lastname = data.lastname;
     }
   },
@@ -53,17 +52,17 @@ const mutations = {
     state.user.nickname = data.nickname;
   },
   setUserGender(state, data) {
-    if(data.gender != ""){
+    if(data.gender !== ""){
       state.user.gender = data.gender;
     }
   },
   setUserEmail(state, data) {
-    if(data.primary_email != ""){
+    if(data.primary_email !== ""){
       state.user.primary_email = data.primary_email;
     }
   },
   setUserID(state, data) {
-    if(data.profile_id != ""){
+    if(data.profile_id !== ""){
       state.user.profile_id = data.profile_id;
     }
   },
@@ -71,12 +70,12 @@ const mutations = {
     state.user.additional_email = data.additional_email;
   },
   setUserBirthday(state, data) {
-    if(data.birthday != ""){
+    if(data.birthday !== ""){
       state.user.date_of_birth = data.date_of_birth;
     }
   },
   setUserBio(state, data) {
-    if(data.bio != ""){
+    if(data.bio !== ""){
       state.user.bio = data.bio;
     }
   },
@@ -89,14 +88,11 @@ const mutations = {
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
   },
-  setUserActivity(state) {
-    state.user.activities = state.user.tmp_activities.slice();
-  },
-  setUserTmpActivity(state, data) {
-    state.user.tmp_activities = data.tmp_activities;
+  setUserActivity(state, data) {
+    state.user.activities = data.activities;
   },
   setUserIsLogin(state, data) {
-    if(data.isLogin != ""){
+    if(data.isLogin !== ""){
       state.user.isLogin = data.isLogin
     }
   },
@@ -108,11 +104,11 @@ const mutations = {
     apiUser.logout();
   },
   setUserPassword(state, data) {
-    if(data.password != ""){
+    if(data.password !== ""){
       state.user.password = data.password
     }
   }
-}
+};
 
 const actions = {
   createUserProfile({ commit }, data) {
@@ -143,11 +139,11 @@ const actions = {
     commit('setUserFitnessLevel', data);
     commit('setUserEmail', data);
     commit('setUserSecondaryEmails', data);
-    commit('setUserID', data)
+    commit('setUserID', data);
     commit('userLogin');
   },
   updateUserEmail({ commit }, data) {
-    commit('setUserEmail', data)
+    commit('setUserEmail', data);
     commit('setUserSecondaryEmails', data)
   },
   logout({ commit }) {
@@ -161,9 +157,6 @@ const actions = {
   },
   updateActivities({commit}, data){
     commit('setUserActivity', data)
-  },
-  updateTmpActivities({commit}, data){
-    commit('setUserTmpActivity', data)
   },
   resetUser() {
     state.user.firstname = null;
@@ -182,7 +175,6 @@ const actions = {
     state.user.passports = [];
     state.user.tmp_passports = [];
     state.user.activities =  [];
-    state.user.tmp_activities = []
   }
 };
 

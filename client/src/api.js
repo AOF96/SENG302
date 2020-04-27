@@ -73,5 +73,17 @@ export const apiUser = {
     additional_email: additional_email
   }),
   //Get all emails
-  getAllEmails: () => instance.get('/emails')
+  getAllEmails: () => instance.get('/emails'),
+
+  /**
+   * Request to update activity types
+   */
+  editUserActivityTypes: (profile_id, activities) => instance.put('/profiles/'+ profile_id + '/activity-types', {
+    activities: activities
+  }),
+
+  /**
+   * Request to get all activity types from the server
+   */
+  getActivityTypes: () => instance.get('/activity-types')
 };
