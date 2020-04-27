@@ -526,7 +526,7 @@ public class UserService {
      * @param id The Long ID of the User to modify
      * @return True if the user exists, false otherwise.
      */
-    public boolean editActivityTypes(ArrayList<String> activityTypes, long id) {
+    public boolean editActivityTypes(List<String> activityTypes, long id) {
         boolean result = false;
         HashSet<ActivityType> newActivityTypes = new HashSet<>();
 
