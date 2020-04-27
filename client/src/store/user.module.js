@@ -221,6 +221,7 @@ const actions = {
     commit("setUserTmpPassports", data);
   },
   resetUser({ commit }) {
+    commit("setUserLoggedOut");
     commit("resetUser");
   },
 };

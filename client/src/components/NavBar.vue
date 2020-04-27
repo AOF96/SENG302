@@ -1,6 +1,6 @@
 <template>
   <header>
-    <router-link to="/logout" v-if="user.isLogin">
+    <router-link to="/logout" v-if="user.isLogin === 'true'">
       <button id="headerNavButton" class="login" v-on:click="logoutUser">Logout</button>
     </router-link>
 
@@ -11,7 +11,7 @@
     <router-link to="/signup" v-if="!user.isLogin">
       <button id="headerNavButton" class="signup" name="Sign Up">Sign Up</button>
     </router-link>
-    <router-link to="/Login" v-if="!user.isLogin">
+    <router-link to="/login" v-if="!user.isLogin">
       <button id="headerNavButton" class="login" value="Login In">Login</button>
     </router-link>
   </header>
@@ -55,6 +55,7 @@ export default {
              */
     logoutUser() {
       apiUser.logout();
+      this.resetUser();
     }
   }
 };
