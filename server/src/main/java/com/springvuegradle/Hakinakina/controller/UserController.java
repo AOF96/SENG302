@@ -34,6 +34,7 @@ public class UserController {
     public PassportCountryRepository countryRepository;
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
+    public ActivityTypeRepository activityTypeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private UserService userService;
@@ -46,11 +47,14 @@ public class UserController {
      * @param emailRepository   The repository containing Emails
      * @param sessionRepository The repository containing Sessions
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, UserService userService) {
+    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository,
+                          EmailRepository emailRepository, SessionRepository sessionRepository,
+                          ActivityTypeRepository activityTypeRepository, UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
         this.sessionRepository = sessionRepository;
+        this.activityTypeRepository = activityTypeRepository;
         this.userService = userService;
     }
 
@@ -237,12 +241,10 @@ public class UserController {
     public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
-        ArrayList<String> activities = new ArrayList<>();
+        List<String> activities;
 
         if (activitiesNode.isArray()) {
-            for (JsonNode activity : activitiesNode) {
-                activities.add(activity.textValue());
-            }
+            activities = parseActivityList(activitiesNode);
         } else {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
@@ -254,6 +256,35 @@ public class UserController {
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
+    }
+
+    /**
+     * Retrieve the names of all the Activity Types in the database
+     * @return A JSON list of names of activity types
+     */
+    @GetMapping("/activity-types")
+    public List<String> getActivityTypes() {
+        List<ActivityType> activityTypes = activityTypeRepository.findAll();
+        List<String> activityTypeStrings = new ArrayList<>();
+
+        for (ActivityType type : activityTypes) {
+            activityTypeStrings.add(type.getName());
+        }
+        return activityTypeStrings;
+    }
+
+    /**
+     * Parses a list of activity types
+     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
+     * @return A List of Strings of the activity types
+     */
+    public static List<String> parseActivityList(JsonNode activitiesNode) {
+        List<String> activities = new ArrayList<>();
+        for (JsonNode activity : activitiesNode) {
+            activities.add(activity.textValue());
+        }
+
+        return activities;
     }
 
     // Create Exception Handle
