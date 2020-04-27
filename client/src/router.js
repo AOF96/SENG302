@@ -8,8 +8,9 @@ import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
 import UserEmailSettings from '@/components/Settings/UserEmailSettings'
 import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
 import UserActivitySettings from "./components/Settings/UserActivitySettings";
-import store from '@/store/index.js';
+import Activity from '@/components/Activity.vue'
 
+import store from '@/store/index.js';
 
 Vue.use(VueRouter);
 
@@ -49,6 +50,10 @@ const routes = [
         path: '/settings/activities',
         component: UserActivitySettings
     },
+    {
+        path: '/activity/:activityId',
+        component: Activity
+    }
 ];
 
 
