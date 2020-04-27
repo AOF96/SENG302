@@ -43,7 +43,45 @@
               <td class="profileTableTd">{{ user.activities }}</td>
             </tr>
           </table>
+          <button type="button" onclick="document.getElementById('myForm').style.display = 'block'">Add Activity</button>
         </div>
+
+        <div class="form-popup" id="myForm">
+          <form action="/action_page.php" class="form-container">
+            <h1>New Activity</h1>
+
+            <label for="name"><b>Activity Name</b></label>
+            <input type="text" id="name" required>
+
+            <label for="time">Continuous?</label>
+            <select id="time">
+              <option value="continuous">Continuous</option>
+              <option value="duration">Duration</option>
+            </select>
+
+            <label for="start_date">Start Date</label>
+            <input type = "date" id="start_date">
+
+            <label for="end_date">End Date</label>
+            <input type = "date" id="end_date">
+
+            <label for="start_time">Start Time</label>
+            <input type = "time" id="start_time">
+
+            <label for="end_time">End Time</label>
+            <input type = "time" id="end_time">
+
+            <label for="desc"><b>Description</b></label>
+            <input type="text" id="desc">
+
+            <label for="location"><b>Location</b></label>
+            <input type="text" id="location">
+
+            <button type="submit" class="btn">Create</button>
+            <button type="submit" class="btn cancel" onclick="document.getElementById('myForm').style.display = 'none'">Close</button>
+          </form>
+        </div>
+
       </div>
     </div>
 </template>
@@ -78,6 +116,15 @@
 </script>
 
 <style scoped>
+  .form-popup {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 15px;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+  }
+
   .btn {
     border: black;
     background-color: inherit;
