@@ -12,11 +12,14 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
 
+    @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)
+    void insertActivityForUser(Long userId, Long activityId);
+
     @Query(value = "SELECT * FROM User_Activities u WHERE u.user_id = ? AND u.activity_id = ?", nativeQuery = true)
     Activity validateAuthor(Long userId, Long activity_id);
 
     @Query(value = "DELETE FROM User_Activities WHERE user_id = ? AND activity_id = ?", nativeQuery = true)
-    void deleteUser_ActivitiesValue(Long userId, Long activityId);
+    void deleteActivityForUser(Long userId, Long activityId);
 
     @Query(value = "DELETE FROM Activity_ActivityType WHERE activity_id = ?", nativeQuery = true)
     void deleteActivity_ActivityTypeValue(Long activityId);

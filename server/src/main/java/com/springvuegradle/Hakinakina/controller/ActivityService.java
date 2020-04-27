@@ -1,6 +1,7 @@
 package com.springvuegradle.Hakinakina.controller;
 
 import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,22 +28,48 @@ public class ActivityService {
     /**
      * Adds an activity for the user*
      *
-     * @param activity the activity the user wants to add
-     * @param profileId the user's id
+     * @param activity     the activity the user wants to add
+     * @param profileId    the user's id
      * @param sessionToken the user's token from their current session
      * @return response entity to inform user if adding an activity was successful or not
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(400));
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(400));
+            }
+            if (profileId != session.getUser().getUserId()) {
+                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+            }
+
+            //If there are no activity types listed
+            if (activity.getActivityTypes().size() == 0) {
+                return new ResponseEntity("Activity must have atleast one activity type", HttpStatus.valueOf(400));
+            }
+
+            for (ActivityType activityType : activity.getActivityTypes()) {
+                if (activityTypeRepository.findActivityTypeByName(activityType.getName()) == null) {
+                    return new ResponseEntity("Selected activity type " + activityType.getName() + " does not exist", HttpStatus.valueOf(400));
+                }
+            }
+
+            //If activity has a duration, start time and end time must be specified
+            if (!activity.isContinuous()) {
+                if (activity.getStartTime() == null || activity.getEndTime() == null) {
+                    return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
+                }
+            }
+
+            //TODO Validate activity location
+
+            Activity newActivity = activityRepository.save(activity);
+            activityRepository.insertActivityForUser(profileId, newActivity.getId());
+            return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "cannot add activity");
+            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
         }
-
-        //TODO Loop through the activity types provided
-//        for (ActivityType activityType : activity.getActivityTypes)
-
-        activityRepository.save(activity);
-        return new ResponseEntity("Activity Successfully Added", HttpStatus.valueOf(200));
     }
 
     /***
@@ -66,7 +93,7 @@ public class ActivityService {
             result = responseHandler.formatErrorResponse(403, "Invalid user");
 
         } else {
-            activityRepository.deleteUser_ActivitiesValue(profileId ,activityId);
+            activityRepository.deleteActivityForUser(profileId, activityId);
             activityRepository.deleteActivity_ActivityTypeValue(activityId);
             activityRepository.deleteActivityById(activityId);
             result = responseHandler.formatSuccessResponse(200, "Activity successfully deleted");

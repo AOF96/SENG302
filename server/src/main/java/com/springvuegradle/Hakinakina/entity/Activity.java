@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +38,7 @@ public class Activity {
 
     @JsonProperty("continuous")
     @Column(name = "continuous")
+    @NotNull(message = "Activity must be Continuous or Duration")
     private boolean continuous;
 
     @JsonProperty("start_time")
@@ -63,6 +65,22 @@ public class Activity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
+    }
+
+    public Set<ActivityType> getActivityTypes() {
+        return activityTypes;
+    }
+
+    public void setActivityTypes(Set<ActivityType> activityTypes) {
+        this.activityTypes = activityTypes;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public Long getId() {
