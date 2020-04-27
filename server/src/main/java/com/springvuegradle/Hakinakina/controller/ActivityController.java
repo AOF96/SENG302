@@ -55,11 +55,17 @@ public class ActivityController {
     @PutMapping("/profiles/{profileId}/activities/{activityId}")
     public ResponseEntity editActivity() { return null; }
 
-    /**
-     * Handles requests for deleting an activity
+    /***
+     * Handles requests for deleting an activity.
+     * @param profileId the user's id.
+     * @param activityId the activity id.
+     * @param sessionToken the user's token from their current session.
+     * @return a response entity that informs the user if deleting the given activity was successful or not.
      */
     @DeleteMapping("/profiles/{profileId}/activities/{activityId}")
-    public ResponseEntity deleteActivity() {
-        return null;
+    public ResponseEntity deleteActivity(@PathVariable("profileId") long profileId, @PathVariable("activityId") long activityId,
+                                         @RequestHeader("token") String sessionToken) {
+
+        return activityService.removeActivity(profileId, activityId, sessionToken);
     }
 }
