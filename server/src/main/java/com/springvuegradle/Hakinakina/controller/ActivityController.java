@@ -76,6 +76,11 @@ public class ActivityController {
         return activityService.removeActivity(profileId, activityId, sessionToken);
     }
 
+    /**
+     * Retrieves all of the continuous activities that a user is subscribed to
+     * @param profileId The ID of the user
+     * @return A response entity with the result and a status code
+     */
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
@@ -83,6 +88,11 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Retrieves all of the duration activities that a user is subscribed to
+     * @param profileId The ID of the user
+     * @return A response entity with the result and a status code
+     */
     @GetMapping("/profiles/{profileId}/activities/duration")
     public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);

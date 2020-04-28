@@ -137,20 +137,35 @@ public class ActivityControllerTest {
         return summaries;
     }
 
+    @Test
+    public void getContinuousActivitiesTest() throws Exception {
+        List<Activity> dummyList = new ArrayList<>();
+        List<Map<String, String>> summaries = createActivitySummariesMap();
+        when(activityRepository.getActivitiesForUserOfType(true, (long) 1)).thenReturn(dummyList);
+        when(service.getActivitySummaries(dummyList)).thenReturn(summaries);
 
+        this.mockMvc.perform(get("/profiles/1/activities/continuous")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("[{\"name\":\"Activity 1\"," +
+                        "\"description\":\"An activity called Activity 1\",\"id\":\"1\"}," +
+                        "{\"name\":\"Activity 2\",\"description\":\"An activity called Activity 2\",\"id\":\"2\"}]")));
+    }
 
-//    @Test
-//    public void getContinuousActivitiesTest() throws Exception {
-//        List<Activity> dummyList = new ArrayList<>();
-//        List<Map<String, String>> summaries = createActivitySummariesMap();
-//        when(activityRepository.getActivitiesForUserOfType(true, (long) 1)).thenReturn(dummyList);
-//        when(service.getActivitySummaries(dummyList)).thenReturn(summaries);
-//
-//        this.mockMvc.perform(get("profiles/1/activities/continuous")
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString("Invalid Session")));
-//    }
+    @Test
+    public void getDurationsActivitiesTest() throws Exception {
+        List<Activity> dummyList = new ArrayList<>();
+        List<Map<String, String>> summaries = createActivitySummariesMap();
+        when(activityRepository.getActivitiesForUserOfType(false, (long) 1)).thenReturn(dummyList);
+        when(service.getActivitySummaries(dummyList)).thenReturn(summaries);
+
+        this.mockMvc.perform(get("/profiles/1/activities/duration")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("[{\"name\":\"Activity 1\"," +
+                        "\"description\":\"An activity called Activity 1\",\"id\":\"1\"}," +
+                        "{\"name\":\"Activity 2\",\"description\":\"An activity called Activity 2\",\"id\":\"2\"}]")));
+    }
 
 //    @Test
 //    public void deleteActivityErrorHandlingTest() throws Exception {
