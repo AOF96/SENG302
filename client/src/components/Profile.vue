@@ -76,7 +76,12 @@
     },
     methods: {
       async loadSearchedUser() {
-        this.searchedUser = await apiUser.getUserById(this.$route.query.u);
+        var tempUserData = await apiUser.getUserById(this.$route.query.u);
+        if(tempUserData == "Invalid permissions"){
+          this.$router.push('login');
+        }else{
+          this.searchedUser = tempUserData;
+        }
       }
     },
     mounted() {

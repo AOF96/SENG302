@@ -78,9 +78,8 @@ export const apiUser = {
         return response.data;
       },
       error => {
-        document.getElementById("missing_field").hidden = false;
-        document.getElementById("missing_field").innerText = error.response.data.Errors;
         console.log(error);
+        return "Invalid permissions";
       }
     );
     return await searchedUser;

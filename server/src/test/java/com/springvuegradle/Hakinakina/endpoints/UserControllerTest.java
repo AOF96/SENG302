@@ -133,11 +133,22 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdTest() throws Exception {
+        Session testSession = new Session("t0k3n");
         User testUser = new User("John", "Smith", "john@gmail.com", null,
                 Gender.MALE, 2, "Password1");
+
+        // create another default admin
+        User defaultAdmin = new User();
+        defaultAdmin.setPermissionLevel(2);
+
         testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(defaultAdmin);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
-        this.mockMvc.perform(get("/profiles/1"))
+        this.mockMvc.perform(get("/profiles/1").header("token", "t0k3n"))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
                         "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
@@ -147,8 +158,22 @@ public class UserControllerTest {
 
     @Test
     public void getOneUserFailTest() throws Exception {
-        when(userRepository.getUserById((long) 1)).thenReturn(Optional.empty());
-        this.mockMvc.perform(get("/profiles/1"))
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+
+        // create another default admin
+        User defaultAdmin = new User();
+        defaultAdmin.setPermissionLevel(2);
+
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(defaultAdmin);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+        this.mockMvc.perform(get("/profiles/999").header("token", "t0k3n"))
                 .andExpect(status().is(404))
                 .andExpect(content().string(containsString("User does not exist")));
     }
