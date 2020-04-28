@@ -39,16 +39,10 @@ public class ActivityControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private SessionRepository sessionRepository;
-
-    @Autowired
-    private ActivityService activityService;
 
     private User user;
 
@@ -60,18 +54,19 @@ public class ActivityControllerTest {
 
     @Test
     public void addActivityTest() throws Exception {
-
         Session testSession = new Session("t0k3n");
-        user = new User("Mayuko", "Williams",
-                "mwi@williams.com", "1970-01-01", Gender.FEMALE,
-                3, "P@ssw0rd!123");
-        user.setUserId((long) 1);
-        testSession.setUser(user);
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.resetPassportCountries();
 
-//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
-//        when(activityService.addActivity(any(Activity.class)), user.getUserId(), testSession)
-//                .thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));
+        // Save the user to DB
+        userRepository.save(testUser);
+
+        // Generate a token for the user
+        final String userToken = "t0k3n";
+
+        // Save the token for that user to the DB
+        sessionRepository.insertToken(userToken, testUser.getUserId());
 
         String input = "{\n" +
                 "  \"activity_name\": \"Akaroa Pier\",\n" +
@@ -85,19 +80,12 @@ public class ActivityControllerTest {
                 "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
                 "  \"location\": \"Kaikoura, NZ\"\n" +
                 "}";
-        mockMvc.perform(post("/profiles/1/activities")
+
+        // and lets have some FUN
+        mockMvc.perform(post("/profiles/" + testUser.getUserId() + "/activities").header("token", userToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(input))
                 .andExpect(status().isCreated());
-
-
-        //        user = new User("Mayuko", "Williams",
-//                "mwi@williams.com", "1970-01-01", Gender.FEMALE,
-//                3, "P@ssw0rd!123");
-//        userRepository.save(user);
-//        User savedUser = userRepository.findUserByEmail("mwi@williams.com");
-//        savedUser.setUserId(1L);
-//        sessionRepository.insertToken(token, savedUser.getUserId());
     }
 
 }
