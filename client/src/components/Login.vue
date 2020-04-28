@@ -81,7 +81,7 @@
               router.push('/settings/admin_dashboard');
             } else {
               this.updateUserProfile(responseData[0]);
-              router.push('Profile');
+              router.push('profile?u='+responseData[0].profile_id);
             }
           }, (error) => {
             const responseData = error.response.data;

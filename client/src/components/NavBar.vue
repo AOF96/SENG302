@@ -4,7 +4,7 @@
       <button id="headerNavButton" class="login" v-on:click="logoutUser">Logout</button>
     </router-link>
 
-    <router-link to="/profile" v-if="!isAdmin && user.isLogin === 'true'">
+    <router-link to="/profile?u=2002" v-if="!isAdmin && user.isLogin === 'true'">
       <button id="headerNavButton" class="myaccount" v-on:click="goToProfile">Profile</button>
     </router-link>
 
@@ -109,4 +109,3 @@ body {
   color: #1dca92;
 }
 </style>
-

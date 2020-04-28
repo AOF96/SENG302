@@ -70,5 +70,19 @@ export const apiUser = {
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
 
-  getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id)
+  getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
+
+  async getUserById(profile_id) {
+    let searchedUser = await apiUser.refreshUserData(profile_id).then(
+      response => {
+        return response.data;
+      },
+      error => {
+        document.getElementById("missing_field").hidden = false;
+        document.getElementById("missing_field").innerText = error.response.data.Errors;
+        console.log(error);
+      }
+    );
+    return await searchedUser;
+  }
 };
