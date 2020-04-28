@@ -10,7 +10,7 @@ const userInterface = {
   additional_email: [],
   date_of_birth: null,
   bio: null,
-  isLogin: localStorage.getItem('userLoggedIn'),
+  isLogin: localStorage.getItem("userLoggedIn"),
   fitness: null,
   profile_id: null,
   password: null,
@@ -30,7 +30,7 @@ const initialAdminUserState = {
     email: null,
     password: null,
     permission_level: 0,
-    isLogin: false
+    isLogin: false,
   },
 };
 
@@ -39,20 +39,18 @@ const state = {
     email: null,
     password: null,
     permission_level: 0,
-    isLogin: false
+    isLogin: false,
   },
   ...initialUserState,
-  //...initialSearchedState,
 };
 
 const getters = {
   user(state) {
     return state.user;
   },
-    adminUser(state) {
-      return state.adminUser;
-    },
-
+  adminUser(state) {
+    return state.adminUser;
+  },
   searchedUser(state) {
     return state.user;
   },
@@ -60,10 +58,6 @@ const getters = {
     return state.user.isLogin;
   },
 };
-
-//function isAdmin(state) {
-//  return state.user.permission_level > 0;
-//}
 
 const mutations = {
   resetUser(state) {
@@ -143,14 +137,14 @@ const mutations = {
   },
 
   setUserLoggedOut() {
-    localStorage.removeItem('userLoggedIn');
-    localStorage.removeItem('thisUser');
-    localStorage.removeItem('s_id');
-    state.user.isLogin = localStorage.getItem('userLoggedIn');
+    localStorage.removeItem("userLoggedIn");
+    localStorage.removeItem("thisUser");
+    localStorage.removeItem("s_id");
+    state.user.isLogin = localStorage.getItem("userLoggedIn");
   },
 
   userLogin() {
-    state.user.isLogin = localStorage.getItem('userLoggedIn');
+    state.user.isLogin = localStorage.getItem("userLoggedIn");
   },
 
   userLogout() {
