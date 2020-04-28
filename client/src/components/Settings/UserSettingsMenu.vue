@@ -3,13 +3,13 @@
       <NavBar/>
       <h1>Settings</h1>
       <div id="settingsNav">
-        <router-link to="/settings/profile"><div class="settingsNavItem">Profile</div></router-link>
+        <router-link  v-bind:to="'/settings/profile?u=' + this.$route.query.u"><div class="settingsNavItem">Profile</div></router-link>
         <hr>
-        <router-link to="/settings/email"><div class="settingsNavItem">Emails</div></router-link>
+        <router-link v-bind:to="'/settings/email?u=' + this.$route.query.u"><div class="settingsNavItem">Emails</div></router-link>
         <hr>
-        <router-link to="/settings/password"><div class="settingsNavItem">Password</div></router-link>
+        <router-link v-bind:to="'/settings/password?u=' + this.$route.query.u"><div class="settingsNavItem">Password</div></router-link>
         <hr>
-        <router-link to="/settings/passport_countries"><div class="settingsNavItem">Passport Countries</div></router-link>
+        <router-link v-bind:to="'/settings/passport_countries?u=' + this.$route.query.u"><div class="settingsNavItem">Passport Countries</div></router-link>
       </div>
     </div>
 </template>

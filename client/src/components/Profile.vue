@@ -10,7 +10,7 @@
             <h1 id="userName">{{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }} <span id="userNickname">({{ searchedUser.nickname }})</span></h1>
             <h2 id="userFitnessLevel">Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
           </div>
-          <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
+          <router-link v-bind:to="'/settings/profile?u=' + searchedUser.profile_id" id="profileEditButton">Edit profile</router-link>
           <div class="floatClear"></div>
         </div>
         <template v-if="searchedUser.passports">
