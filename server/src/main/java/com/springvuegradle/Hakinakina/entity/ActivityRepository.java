@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 /**
  * Repository for storing activities that the user can perform.
  */
@@ -26,5 +28,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "DELETE FROM Activity WHERE activity_id = ?", nativeQuery = true)
     void deleteActivityById(Long id);
+
+    @Query(value = "SELECT * FROM Activity a WHERE a.continuous = ? AND a.activity_id IN (SELECT u.activity_id FROM User_Activities u WHERE u.user_id = ?)", nativeQuery = true)
+    List<Activity> getActivitiesForUserOfType(boolean isContinuous, Long id);
 
 }

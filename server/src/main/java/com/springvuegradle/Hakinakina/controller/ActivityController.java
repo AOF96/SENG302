@@ -2,10 +2,13 @@ package com.springvuegradle.Hakinakina.controller;
 
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Rest controller class for controlling requests about Activities
@@ -17,6 +20,7 @@ public class ActivityController {
     public ActivityTypeRepository activityTypeRepository;
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
+    public ActivityRepository activityRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private ActivityService activityService;
@@ -29,10 +33,13 @@ public class ActivityController {
      * @param countryRepository The repository containing PassportCountries
      * @param sessionRepository The repository containing Sessions
      */
-    public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository, SessionRepository sessionRepository, ActivityService activityService) {
+    public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
+                              SessionRepository sessionRepository, ActivityService activityService,
+                              ActivityRepository activityRepository) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.activityRepository = activityRepository;
         this.activityService = activityService;
     }
 
@@ -68,4 +75,19 @@ public class ActivityController {
 
         return activityService.removeActivity(profileId, activityId, sessionToken);
     }
+
+    @GetMapping("/profiles/{profileId}/activities/continuous")
+    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
+        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
+        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+        return new ResponseEntity(result, HttpStatus.valueOf(200));
+    }
+
+    @GetMapping("/profiles/{profileId}/activities/duration")
+    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
+        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
+        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+        return new ResponseEntity(result, HttpStatus.valueOf(200));
+    }
+
 }

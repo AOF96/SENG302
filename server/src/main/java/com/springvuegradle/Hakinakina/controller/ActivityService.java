@@ -7,6 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class ActivityService {
 
@@ -97,6 +102,19 @@ public class ActivityService {
             activityRepository.deleteActivity_ActivityTypeValue(activityId);
             activityRepository.deleteActivityById(activityId);
             result = responseHandler.formatSuccessResponse(200, "Activity successfully deleted");
+        }
+
+        return result;
+    }
+
+    public List<Map<String, String>> getActivitySummaries(List<Activity> activities) {
+        List<Map<String, String>> result = new ArrayList<>();
+        for (Activity activity : activities) {
+            Map<String, String> activityMap = new HashMap<>();
+            activityMap.put("id", activity.getId().toString());
+            activityMap.put("name", activity.getName());
+            activityMap.put("description", activity.getDescription());
+            result.add(activityMap);
         }
 
         return result;
