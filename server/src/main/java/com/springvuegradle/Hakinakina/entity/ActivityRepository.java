@@ -23,12 +23,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "DELETE FROM User_Activities WHERE user_id = ? AND activity_id = ?", nativeQuery = true)
     void deleteActivityForUser(Long userId, Long activityId);
 
-    @Query(value = "DELETE FROM Activity_ActivityType WHERE activity_id = ?", nativeQuery = true)
-    void deleteActivity_ActivityTypeValue(Long activityId);
-
-    @Query(value = "DELETE FROM Activity WHERE activity_id = ?", nativeQuery = true)
-    void deleteActivityById(Long id);
-
     @Query(value = "SELECT * FROM Activity a WHERE a.continuous = ? AND a.activity_id IN (SELECT u.activity_id FROM User_Activities u WHERE u.user_id = ?)", nativeQuery = true)
     List<Activity> getActivitiesForUserOfType(boolean isContinuous, Long id);
 

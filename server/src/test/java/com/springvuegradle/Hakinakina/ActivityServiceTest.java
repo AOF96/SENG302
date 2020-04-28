@@ -55,4 +55,3 @@ public class ActivityServiceTest {
         assertEquals("2", summaries.get(1).get("id"));
     }
 }
-

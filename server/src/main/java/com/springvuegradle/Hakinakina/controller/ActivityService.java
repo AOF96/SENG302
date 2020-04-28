@@ -40,6 +40,7 @@ public class ActivityService {
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
         try {
+            System.out.println(activity);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
                 return new ResponseEntity("Invalid Session", HttpStatus.valueOf(400));
@@ -85,25 +86,30 @@ public class ActivityService {
      * @return response entity with the result of the operation.
      */
     public ResponseEntity removeActivity(long profileId, long activityId, String sessionToken) {
+
         ResponseEntity result;
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activityToDelete = activityRepository.findActivityById(activityId);
 
-        if (sessionToken == null) {
-            result = responseHandler.formatErrorResponse(400, "Invalid data");
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(400, "Invalid data");
 
-        } else if (activityRepository.findActivityById(activityId) == null) {
-            result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else if (activityToDelete == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
 
-        } else if (profileId != session.getUser().getUserId()) {
-            result = responseHandler.formatErrorResponse(403, "Invalid user");
+            } else if (profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
 
-        } else {
-            activityRepository.deleteActivityForUser(profileId, activityId);
-            activityRepository.deleteActivity_ActivityTypeValue(activityId);
-            activityRepository.deleteActivityById(activityId);
-            result = responseHandler.formatSuccessResponse(200, "Activity successfully deleted");
+            } else {
+                activityRepository.deleteActivityForUser(profileId, activityId);
+                activityRepository.delete(activityToDelete);
+                result = responseHandler.formatSuccessResponse(200, "Activity successfully deleted");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete activity");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
-
         return result;
     }
 
