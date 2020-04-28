@@ -12,18 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -117,7 +118,43 @@ public class ActivityControllerTest {
 //        service.addActivity(activity2, user2.getUserId(), session2.toString());
 //    }
 
+    @BeforeEach
+    public void deleteUser() throws Exception {
+        sessionRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
+    @Test
+    public void addActivityTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+
+        String input = "{\n" +
+                "  \"activity_name\": \"Akaroa Pier\",\n" +
+                "  \"description\": \"Awesome scenery and lots of places to eat\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"Fun\",\n" +
+                "    \"Relaxing\"\n" +
+                "  ],\n" +
+                "  \"continous\": false,\n" +
+                "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
+                "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
+                "  \"location\": \"Kaikoura, NZ\"\n" +
+                "}";
+
+        // and lets have some FUN
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));
+        this.mockMvc.perform(post("/profiles/1/activities").header("token", "t0k3n")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(input))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(containsString("Activity has been created")));
+    }
 
     public List<Map<String, String>> createActivitySummariesMap() {
         List<Map<String, String>> summaries = new ArrayList<>();
