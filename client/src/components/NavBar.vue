@@ -38,6 +38,8 @@
             ...mapActions(['logout']),
             ...mapActions(['updateUserProfile']),
             ...mapActions(['resetUser']),
+            ...mapActions(['updateUserContinuousActivities']),
+            ...mapActions(['updateUserDurationActivities']),
             /*
                 Redirects the user into the profile page. Refreshes the data by making a request to the server side.
             */
@@ -45,7 +47,13 @@
                 apiUser.refreshUserData(this.user.profile_id).then((response) => {
                     console.log(response.data);
                     this.updateUserProfile(response.data);
-                })
+                });
+                apiUser.getUserContinuousActivities(this.user.profile_id).then((response) => {
+                    this.updateUserContinuousActivities(response.data);
+                });
+                apiUser.getUserDurationActivities(this.user.profile_id).then((response) => {
+                    this.updateUserDurationActivities(response.data);
+                });
             },
             /*
                Sends a request to the server side when to log a user out when the log out button is pressed.

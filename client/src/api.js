@@ -72,5 +72,7 @@ export const apiUser = {
     additional_email: additional_email
   }),
   //Get all emails
-  getAllEmails: () => instance.get('/emails')
+  getAllEmails: () => instance.get('/emails'),
+  getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
+  getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration')
 };

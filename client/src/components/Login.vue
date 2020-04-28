@@ -54,6 +54,8 @@
     },
     methods: {
       ...mapActions(['updateUserProfile']),
+      ...mapActions(['updateUserContinuousActivities']),
+      ...mapActions(['updateUserDurationActivities']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
@@ -73,6 +75,13 @@
             apiUser.refreshInstance();
             this.updateUserProfile(responseData[0]);
             router.push('Profile');
+
+            apiUser.getUserContinuousActivities(responseData[0].profile_id).then((response) => {
+              this.updateUserContinuousActivities(response.data);
+            });
+            apiUser.getUserDurationActivities(responseData[0].profile_id).then((response) => {
+              this.updateUserDurationActivities(response.data);
+            });
           }, (error) => {
             const responseData = error.response.data;
             const responseCode = error.response.status;

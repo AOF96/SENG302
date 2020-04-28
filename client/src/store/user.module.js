@@ -19,7 +19,9 @@ const state = {
     tmp_passports: [],
     permission_level: null,
     activities: [],
-    tmp_activities: []
+    tmp_activities: [],
+    cont_activities: [],
+    dur_activities: []
   }
 };
 
@@ -87,6 +89,22 @@ const mutations = {
   setUserTmpPassports(state, data) {
     state.user.tmp_passports = data.tmp_passports;
   },
+  setUserContinuousActivities(state, data) {
+    let result = [];
+    for (let i = 0; i < data.length; i++) {
+      console.log(data[i]);
+      result.push(data[i].name + " - " + data[i].description)
+    }
+    state.user.cont_activities = result;
+  },
+  setUserDurationActivities(state, data) {
+    let result = [];
+    for (let i = 0; i < data.length; i++) {
+      console.log(data[i]);
+      result.push(data[i].name + " - " + data[i].description)
+    }
+    state.user.dur_activities = result;
+  },
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
   },
@@ -151,6 +169,12 @@ const actions = {
     commit('setUserPermissionLevel', data);
     commit('userLogin');
   },
+  updateUserContinuousActivities({ commit }, data) {
+    commit('setUserContinuousActivities', data);
+  },
+  updateUserDurationActivities({ commit }, data) {
+    commit('setUserDurationActivities', data);
+  },
   updateUserEmail({ commit }, data) {
     commit('setUserEmail', data);
     commit('setUserSecondaryEmails', data);
@@ -188,7 +212,9 @@ const actions = {
     state.user.tmp_passports = [];
     state.user.permission_level = null;
     state.user.activities =  [];
-    state.user.tmp_activities = []
+    state.user.tmp_activities = [];
+    state.user.cont_activities = [];
+    state.user.dur_activities = [];
   }
 };
 

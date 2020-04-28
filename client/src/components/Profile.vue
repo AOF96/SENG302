@@ -42,6 +42,14 @@
               <td class="profileTableTd">Activities:</td>
               <td class="profileTableTd">{{ user.activities }}</td>
             </tr>
+            <tr>
+              <td class="profileTableTd">Continuous Activities:</td>
+              <td class="profileTableTd">{{ user.cont_activities }}</td>
+            </tr>
+            <tr>
+              <td class="profileTableTd">Duration Activities:</td>
+              <td class="profileTableTd">{{ user.dur_activities }}</td>
+            </tr>
           </table>
           <button type="button" onclick="document.getElementById('myForm').style.display = 'block'">Add Activity</button>
         </div>
