@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Rest controller class for controlling requests about Activities
@@ -76,6 +77,22 @@ public class ActivityController {
                                          @RequestHeader("token") String sessionToken) {
 
         return activityService.removeActivity(profileId, activityId, sessionToken);
+    }
+
+    /**
+     * Retrieves the details of activity
+     *
+     * @param activityId the activity id.
+     */
+    @GetMapping("/activities/{activityId}")
+    public ResponseEntity getOneActivity(@PathVariable("activityId") long activityId) {
+        Optional<Activity> optional = activityRepository.findById(activityId);
+        if (optional.isPresent()) {
+            Activity activity = optional.get();
+            return new ResponseEntity(activity.toJson(), HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
+        }
     }
 
     /**

@@ -82,8 +82,20 @@
             <label for="desc"><b>Description</b></label>
             <input type="text" id="desc">
 
-            <label for="location"><b>Location</b></label>
-            <input type="text" id="location">
+            <label><b>Location</b></label>
+            <div>
+            <select v-model="adding_country"
+                    name="passportCountries"
+                    placeholder="Passport Countries"
+                    value="Passport Countries"
+                    required>
+              <option selected disabled hidden>Passport Countries</option>
+              <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
+                {{addingCountry}}
+              </option>
+            </select>
+            </div>
+
 
             <button type="submit" class="btn">Create</button>
             <button type="submit" class="btn cancel" onclick="document.getElementById('myForm').style.display = 'none'">Close</button>
@@ -95,30 +107,65 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapActions, mapGetters} from 'vuex';
 
   import NavBar from '@/components/NavBar';
   import PassportCountries from '@/components/modules/passportCountries';
   import json from '../../public/json/data.json';
+  import axios from "axios";
+  const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
   export default {
     name: "Profile",
     components: {
-        NavBar,
-        PassportCountries
+      NavBar,
+      PassportCountries
     },
     computed: {
       ...mapGetters(['user'])
     },
-    data: function() {
+    data: function () {
       return {
         myJson: json,
         showNewButton: false,
-        notFull: true ,
+        notFull: true,
         textInput: "",
-        fitnessDict: {0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance",
-          3: "I can run a medium distance", 4: "I can run a marathon"}
+        adding_country: "Passport Countries",
+        countries_option: [],
+        country:'',
+        fitnessDict: {
+          0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance",
+          3: "I can run a medium distance", 4: "I can run a marathon"
+        }
       }
+    },
+
+    mounted() {
+      this.startUp();
+        axios.get(COUNTRIES_URL)
+                .then((response) => {
+                  const countries = []
+                  const data = response.data
+                  for (let country in data) {
+                    let country_name = data[country].name
+                    countries.push(country_name)
+                  }
+
+                  for(let country of this.user.passports) {
+                    const index = countries.indexOf(country)
+                    if (index === -1) continue
+                    countries.splice(index, 1)
+                  }
+                  this.countries_option = countries
+                })
+                .catch(error => console.log(error))
+      },
+    methods: {
+      ...mapActions(['updatePassports']),
+      startUp() {
+        console.log('init')
+        this.user.passports = this.user.passports.slice()
+      },
     }
   }
 </script>

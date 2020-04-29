@@ -1,6 +1,8 @@
 package com.springvuegradle.Hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.Hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -151,4 +153,16 @@ public class Activity {
                 ", location='" + location + '\'' +
                 '}';
     }
+
+    public String toJson() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String activityStr = null;
+        try {
+            activityStr = objectMapper.writeValueAsString(this);
+        } catch (Exception exception) {
+            ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
+        }
+        return activityStr;
+    }
+
 }
