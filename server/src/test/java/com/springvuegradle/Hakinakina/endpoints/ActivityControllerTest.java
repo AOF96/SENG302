@@ -153,6 +153,42 @@ public class ActivityControllerTest {
             "  \"location\": \"Kaikoura, NZ\"\n" +
             "}";
 
+    private Activity createTestActivity() {
+        // add test activity and connect it to the test user
+        // it should prints using toJson method as following
+        //{"id":1,"users":[],"activity_name":"name","description":"description","activity_type":[{"name":"Fun","users":[]}],"continuous":false,"start_time":1000000000,"end_time":1000001000,"location":"location"}
+        java.util.Date date = new java.util.Date();
+        long time = 1000000000;
+        java.sql.Date startTime = new java.sql.Date(time);
+        java.sql.Date endTime = new java.sql.Date(time+1000);
+        Activity testActivity = new Activity("name", "description", false, startTime, endTime, "location");
+
+        testActivity.setId((long) 1);
+        Set<ActivityType> activityTypes = new HashSet<>();
+        activityTypes.add(new ActivityType("Fun"));
+        testActivity.setActivityTypes(activityTypes);
+        return testActivity;
+    }
+
+    @Test
+    public void getOneActivitySuccessTest() throws Exception {
+        Activity testActivity = createTestActivity();
+
+        String activityStr = "{\"id\":1,\"users\":[],\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
+        this.mockMvc.perform(get("/activities/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(activityStr)));
+    }
+
+    @Test
+    public void getOneActivityFailTest() throws Exception {
+        when(activityRepository.findById((long) 1)).thenReturn(Optional.empty());
+        this.mockMvc.perform(get("/activities/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Activity does not exist")));
+    }
+
     @Test
     public void addActivityTest() throws Exception {
         Session testSession = new Session("t0k3n");
@@ -180,18 +216,7 @@ public class ActivityControllerTest {
         User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
         testUser.setUserId((long) 1);
 
-        // add test activity and connect it to the test user
-        java.util.Date date = new java.util.Date();
-        java.sql.Date startTime = new java.sql.Date(date.getTime());
-        java.sql.Date endTime = new java.sql.Date(date.getTime()+1000);
-        Activity testActivity = new Activity("name", "description", false, startTime, endTime, "location");
-
-        testActivity.setId((long) 1);
-        Set<ActivityType> activityTypes = new HashSet<ActivityType>();
-        activityTypes.add(new ActivityType("Fun"));
-        testActivity.setActivityTypes(activityTypes);
-
-        Activity newActivity = activityRepository.save(testActivity);
+        Activity newActivity = activityRepository.save(createTestActivity());
         activityRepository.insertActivityForUser((long) 1, (long) 1);
 
         testSession.setUser(testUser);
