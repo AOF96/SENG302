@@ -43,7 +43,7 @@ public class ActivityService {
             System.out.println(activity);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
-                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(400));
+                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
             }
             if (profileId != session.getUser().getUserId()) {
                 return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
@@ -67,11 +67,72 @@ public class ActivityService {
                 }
             }
 
-            //TODO Validate activity location
+            //TODO Validate activity location in U9
 
             Activity newActivity = activityRepository.save(activity);
             activityRepository.insertActivityForUser(profileId, newActivity.getId());
             return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "cannot add activity");
+            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Edits an activity for the user
+     *
+     * @param newActivity     the activity the user wants to add
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from their current session
+     * @return response entity to inform user if adding an activity was successful or not
+     */
+    public ResponseEntity editActivity(Activity newActivity, long profileId, long activityId, String sessionToken) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+            }
+            if (profileId != session.getUser().getUserId()) {
+                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+            }
+
+            // If activity has a duration, start time and end time must be specified
+            if (!newActivity.isContinuous()) {
+                if (newActivity.getStartTime() == null || newActivity.getEndTime() == null) {
+                    return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
+                }
+            }
+
+            for (ActivityType activityType : newActivity.getActivityTypes()) {
+                if (activityTypeRepository.findActivityTypeByName(activityType.getName()) == null) {
+                    return new ResponseEntity("Selected activity type " + activityType.getName() + " does not exist", HttpStatus.valueOf(400));
+                }
+            }
+
+            //If there are no activity types listed
+            if (newActivity.getActivityTypes().size() == 0) {
+                return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
+            }
+
+
+            // check the user has given activity
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (activity == null) {
+                return new ResponseEntity("Invalid Activity", HttpStatus.valueOf(404));
+            }
+
+            //TODO Validate activity location in U9
+
+            activity.setName(newActivity.getName());
+            activity.setDescription(newActivity.getDescription());
+            activity.setActivityTypes(newActivity.getActivityTypes());
+            activity.setContinuous(newActivity.isContinuous());
+            activity.setStartTime(newActivity.getStartTime());
+            activity.setEndTime(newActivity.getEndTime());
+            activity.setLocation(newActivity.getLocation());
+
+            activityRepository.save(activity);
+            return new ResponseEntity("Activity has been updated", HttpStatus.valueOf(200));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
             return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
@@ -93,7 +154,7 @@ public class ActivityService {
             Activity activityToDelete = activityRepository.findActivityById(activityId);
 
             if (sessionToken == null) {
-                result = responseHandler.formatErrorResponse(400, "Invalid data");
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
 
             } else if (activityToDelete == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");

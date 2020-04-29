@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,6 +125,34 @@ public class ActivityControllerTest {
         userRepository.deleteAll();
     }
 
+    private final String INPUT = "{\n" +
+            "  \"activity_name\": \"Akaroa Pier\",\n" +
+            "  \"description\": \"Awesome scenery and lots of places to eat\",\n" +
+            "  \"activity_type\":[ \n" +
+            "    \"Fun\",\n" +
+            "    \"Relaxing\"\n" +
+            "  ],\n" +
+            "  \"continous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
+            "  \"location\": \"Kaikoura, NZ\"\n" +
+            "}";
+
+
+
+    private final String EDIT_ACTIVITY_JSON = "{\n" +
+            "  \"activity_name\": \"Changed name\",\n" +
+            "  \"description\": \"Awesome scenery and lots of places to eat\",\n" +
+            "  \"activity_type\":[ \n" +
+            "    \"Fun\",\n" +
+            "    \"Relaxing\"\n" +
+            "  ],\n" +
+            "  \"continous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
+            "  \"location\": \"Kaikoura, NZ\"\n" +
+            "}";
+
     @Test
     public void addActivityTest() throws Exception {
         Session testSession = new Session("t0k3n");
@@ -132,28 +161,50 @@ public class ActivityControllerTest {
         testUser.setUserId((long) 1);
         testSession.setUser(testUser);
 
-        String input = "{\n" +
-                "  \"activity_name\": \"Akaroa Pier\",\n" +
-                "  \"description\": \"Awesome scenery and lots of places to eat\",\n" +
-                "  \"activity_type\":[ \n" +
-                "    \"Fun\",\n" +
-                "    \"Relaxing\"\n" +
-                "  ],\n" +
-                "  \"continous\": false,\n" +
-                "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-                "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
-                "  \"location\": \"Kaikoura, NZ\"\n" +
-                "}";
-
         // and lets have some FUN
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));
         this.mockMvc.perform(post("/profiles/1/activities").header("token", "t0k3n")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(input))
+                .content(INPUT))
                 .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("Activity has been created")));
+    }
+
+    @Test
+    public void editActivityTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        // add test user
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        // add test activity and connect it to the test user
+        java.util.Date date = new java.util.Date();
+        java.sql.Date startTime = new java.sql.Date(date.getTime());
+        java.sql.Date endTime = new java.sql.Date(date.getTime()+1000);
+        Activity testActivity = new Activity("name", "description", false, startTime, endTime, "location");
+
+        testActivity.setId((long) 1);
+        Set<ActivityType> activityTypes = new HashSet<ActivityType>();
+        activityTypes.add(new ActivityType("Fun"));
+        testActivity.setActivityTypes(activityTypes);
+
+        Activity newActivity = activityRepository.save(testActivity);
+        activityRepository.insertActivityForUser((long) 1, (long) 1);
+
+        testSession.setUser(testUser);
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been updated", HttpStatus.OK));
+
+        this.mockMvc.perform(put("/profiles/1/activities/1").header("token", "t0k3n")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(EDIT_ACTIVITY_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Activity has been updated")));
     }
 
     public List<Map<String, String>> createActivitySummariesMap() {
