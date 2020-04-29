@@ -1,5 +1,4 @@
-import axios from 'axios'
-import router from "./router";
+import axios from 'axios';
 
 const SERVER_URL = 'http://localhost:9499';
 
