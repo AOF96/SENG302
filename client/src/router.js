@@ -65,9 +65,9 @@ router.beforeEach((to, from, next) => {
   // It can appear more than once, but only if the logical paths have no overlap,
   // otherwise the hook will never be resolved or produce errors.
   // https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
-  console.log("start routering to.path=" + to.path);
-  console.log("admin user.isLogin=" + store.getters.adminUser.isLogin);
-  console.log("Is user logged in=" + store.getters.user.isLogin);
+  // console.log("start routering to.path=" + to.path);
+  // console.log("admin user.isLogin=" + store.getters.adminUser.isLogin);
+  // console.log("Is user logged in=" + store.getters.user.isLogin);
 
   if (firstLoad === true) {
     firstLoad = false;

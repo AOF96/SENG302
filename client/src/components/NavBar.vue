@@ -43,7 +43,6 @@
               */
       goToProfile() {
         apiUser.refreshUserData(this.user.profile_id).then(response => {
-          console.log(response.data);
           this.updateUserProfile(response.data);
         });
       },

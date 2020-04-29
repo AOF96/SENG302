@@ -53,8 +53,6 @@
                         }
                     }
                     this.country_dicts = country_dicts
-                    console.log(country_dicts)
-                    console.log(this.country_dicts)
                 })
                 .catch(error => console.log(error))
         }

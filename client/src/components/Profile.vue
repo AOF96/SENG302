@@ -47,7 +47,7 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
 
   import NavBar from '@/components/NavBar';
   import PassportCountries from '@/components/modules/passportCountries';
@@ -61,7 +61,8 @@
         PassportCountries
     },
     computed: {
-      ...mapGetters(['user'])
+      ...mapState(['user']),
+      ...mapGetters(['user']),
     },
     data: function() {
       return {
@@ -76,11 +77,17 @@
     },
     methods: {
       async loadSearchedUser() {
-        var tempUserData = await apiUser.getUserById(this.$route.query.u);
-        if(tempUserData == "Invalid permissions"){
-          this.$router.push('login');
+        if(this.$route.query.u == null){
+          this.$router.push('profile?u='+this.user.profile_id);
+          this.searchedUser = this.user;
         }else{
-          this.searchedUser = tempUserData;
+          var tempUserData = await apiUser.getUserById(this.$route.query.u);
+          if(tempUserData == "Invalid permissions"){
+            this.$router.push('profile?u='+this.user.profile_id);
+            this.searchedUser = this.user;
+          }else{
+            this.searchedUser = tempUserData;
+          }
         }
       }
     },

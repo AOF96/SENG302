@@ -80,8 +80,9 @@ export const apiUser = {
         return response.data;
       },
       error => {
-        console.log(error);
-        return "Invalid permissions";
+        if(error){
+          return "Invalid permissions";
+        }
       }
     );
     return await searchedUser;
