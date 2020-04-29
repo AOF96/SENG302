@@ -129,6 +129,21 @@ public class UserController {
 
 
     /**
+     * Validates user login by checking their sessionToken and returns user info
+     *
+     * @return User json object for user with matching sessionToken
+     */
+    @GetMapping("/validateLogin")
+    public ResponseEntity validateLogin(@RequestHeader("token") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponse(401, "User not currently logged in");
+        }
+        User user = session.getUser();
+        return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+    }
+
+    /**
      * Processes request to retrieve certain user and returns
      *
      * @param profileId
