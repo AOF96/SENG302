@@ -5,46 +5,8 @@
         </div>
         <div id="profileWrap">
             <div id="profilePublicInfo">
-                <h2 class="bigTitle">{{ activity.name }}</h2>
-
-                <div id="userQuickInfoWrapp">
-                    <div class="profileInfo">
-                        <table id="profileTable">
-                            <tr>
-                                <td class="profileTableTd">StartTime:</td>
-                                <td class="profileTableTd">{{activity.start}}</td>
-                            </tr>
-                            <tr>
-                                <td class="profileTableTd">EndTime:</td>
-                                <td class="profileTableTd">{{activity.end}}</td>
-                            </tr>
-                            <tr>
-                                <td class="profileTableTd">Location:</td>
-                                <td class="profileTableTd">{{activity.location}}</td>
-                            </tr>
-                            <tr>
-                                <td class="profileTableTd">Duration:</td>
-                                <td class="profileTableTd">{{activity.duration}}</td>
-                            </tr>
-                            <tr>
-                                <td class="profileTableTd">Description:</td>
-                                <td class="profileTableTd">{{activity.description}}</td>
-                            </tr>
-                            <tr>
-                                <td class="profileTableTd">Activity Types:</td>
-                                <td class="profileTableTd">
-                                <span v-for="a in activity.activityTypes" :key="a.type_id">
-                                    <span v-if="activity.activityTypes.indexOf(a) != activity.activityTypes.length - 1">
-                                    {{a.name}},
-                                    </span>
-                                    <span v-else>
-                                        {{a.name}}.
-                                    </span>
-                                </span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div id="ActivityWrap">
+                    <ActivityPageInfo :activityInfo="activityData"/>
                 </div>
                 <div class="floatClear"></div>
             </div>
@@ -55,19 +17,20 @@
 <script>
 
   import NavBar from '@/components/NavBar';
+  import ActivityPageInfo from "@/components/modules/ActivityPageInfo";
   import {mapGetters} from "vuex";
 
   export default {
     name: "Activity",
     data: function () {
       return {
-        activity: {
-          name: "Kaikoura Walk",
+        activityData: {
+          name: "NZ AUS Trail Running Walking",
           start: "25th April 2020",
           end: "26th April 2020",
           location: "Kaikoura, New Zealand",
           duration: "5 minutes",
-          description: "It's too long, I'm tired, I'm eating fish and chips.",
+          description: "Trail running is a popular sport which involves running trails through challenging terrain. Always be sure to follow the Outdoor Safety Code, especially if you plan to head out alone, and seriously consider hiring or purchasing a personal locator beacon. Essential guides and helpful informaiton can be found in the links (left).",
           activityTypes: [
             {
               "type_id": 6,
@@ -75,7 +38,7 @@
             },
             {
               "type_id": 7,
-              "name": "Eating"
+              "name": "Running"
             },
           ]
 
@@ -83,7 +46,8 @@
       }
     },
     components: {
-      NavBar
+      NavBar,
+      ActivityPageInfo
     },
     computed: {
       ...mapGetters(['user'])
@@ -92,23 +56,71 @@
 </script>
 
 <style scoped>
-    .bigTitle {
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 20px;
-
-    }
 
     .profileInfo {
         font-family: Roboto;
     }
 
-    #userQuickInfoWrapp {
-        float: left;
-        margin-top: 1px;
+    .activityTitle {
+        text-align: center;
+        margin-left: 20px;
+        margin-right: auto;
+        padding-top: 2rem;
+        font-size: 22px;
+        color: #1cca92;
+        background-color: gold;
+        grid-area: Title;
+
     }
+
+    .activityDescription {
+        text-align: center;
+        margin-left: 20px;
+        margin-right: auto;
+        padding-top: 2rem;
+        font-size: 18px;
+        grid-area: Description;
+        background-color: pink;
+    }
+
+    .activityLocation {
+        text-align: left;
+        margin-left: 20px;
+        margin-right: auto;
+        padding-top: 2rem;
+        font-size: 18px;
+        grid-area: Location;
+    }
+
+    .activityType {
+        text-align: left;
+        margin-left: 20px;
+        margin-right: auto;
+        padding-top: 2rem;
+        font-size: 18px;
+        grid-area: ActivityType;
+    }
+
+    .activityStart {
+        text-align: left;
+        margin-left: 20px;
+        margin-right: auto;
+        padding-top: 2rem;
+        font-size: 18px;
+        grid-area: Start;
+
+    }
+
+    .activityEnd {
+        text-align: left;
+        margin-left: 20px;
+        margin-right: auto;
+        padding-top: 2rem;
+        font-size: 18px;
+        grid-area: End;
+
+    }
+
 
     .profileTableTd {
         padding: 10px 20px 10px 0;
