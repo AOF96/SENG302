@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from "./router";
 
 const SERVER_URL = 'http://localhost:9499';
 
@@ -71,6 +72,8 @@ export const apiUser = {
   getAllEmails: () => instance.get('/emails'),
 
   getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
+
+  getUserByToken: () => instance.get('validateLogin'),
 
   async getUserById(profile_id) {
     let searchedUser = await apiUser.refreshUserData(profile_id).then(

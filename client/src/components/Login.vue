@@ -71,13 +71,11 @@
             const responseData = response.data;
             console.log(responseData)
             //Save token to local storage
-            localStorage.setItem('thisUser', responseData[0].profile_id);
-            localStorage.setItem('userLoggedIn', 'true');
             localStorage.setItem("s_id", responseData[1]["sessionToken"]);
             apiUser.refreshInstance();
             if(responseData[0].permission_level == 2){
               console.log(responseData[0].permission_level);
-              this.loginAdminUser(responseData[0]);
+              this.adminUserLogin(responseData[0]);
               router.push('/settings/admin_dashboard');
             } else {
               this.updateUserProfile(responseData[0]);

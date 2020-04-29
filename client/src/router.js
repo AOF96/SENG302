@@ -10,8 +10,11 @@ import UserPassportCountriesSettings from "@/components/Settings/UserPassportCou
 import store from "@/store/index.js";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/Settings/AdminDashboard";
+//import { mapGetters, mapActions} from 'vuex';
 
 Vue.use(VueRouter);
+
+var firstLoad = true;
 
 const routes = [
   {
@@ -56,6 +59,7 @@ const router = new VueRouter({
   mode: "history",
 });
 
+
 router.beforeEach((to, from, next) => {
   // Make sure that the next function is called exactly once in any given pass through the navigation guard.
   // It can appear more than once, but only if the logical paths have no overlap,
@@ -63,44 +67,56 @@ router.beforeEach((to, from, next) => {
   // https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
   console.log("start routering to.path=" + to.path);
   console.log("admin user.isLogin=" + store.getters.adminUser.isLogin);
+  console.log("Is user logged in=" + store.getters.user.isLogin);
 
-  if (
-    to.path === "/settings/admin_dashboard" &&
-    store.getters.adminUser.isLogin
-  ) {
-    console.log("login as an admin user");
-    next();
-  } else if (to.path === "/signup" || to.path === "/login") {
-    if (localStorage.getItem("userLoggedIn") === "true") {
-      next("/profile");
-    } else {
-      next();
-    }
-  } else if (to.path === "/logout") {
-    next("/login");
-  } else if (localStorage.getItem("userLoggedIn") === "true") {
-    apiUser.getUserSessionToken(localStorage.getItem("thisUser")).then(
-      (response) => {
-        const responseData = response.data;
-        if (
-          localStorage.getItem("userLoggedIn") === "true" &&
-          responseData.indexOf(localStorage.getItem("s_id")) > 0
-        ) {
-          next();
-        } else {
-          localStorage.removeItem("userLoggedIn");
-          localStorage.removeItem("thisUser");
-          localStorage.removeItem("s_id");
-          next("/login");
+  if (firstLoad === true) {
+    firstLoad = false;
+    apiUser.getUserByToken().then(
+        response => {
+          const responseData = response.data;
+          if (responseData.permission_level === 2) {
+            store.adminUser.adminUserLogin(responseData);
+          } else {
+            store._actions.updateUserProfile[0](responseData);
+          }
+          if (to.path === "/signup" || to.path === "/login") {
+            next('/profile');
+          } else {
+            next();
+          }
+        },
+        error => {
+          if (!(to.path === "/signup" || to.path === "/login")) {
+            next('/login');
+          } else {
+            next();
+          }
+          if (error) {
+            console.log("Not logged in!");
+          }
         }
-      },
-      (error) => {
-        console.log(error.response.data);
-        console.log(error.response.status);
-      }
     );
   } else {
-    next("/login");
+    if (
+        to.path === "/settings/admin_dashboard" &&
+        store.getters.adminUser.isLogin
+    ) {
+      console.log("login as an admin user");
+      next();
+    } else if (to.path === "/signup" || to.path === "/login") {
+      if (store.getters.user.isLogin) {
+        next("/profile");
+      } else {
+        next();
+      }
+    } else if (to.path === "/logout") {
+      next("/login");
+    } else if (store.getters.user.isLogin) {
+      next();
+    } else {
+      localStorage.removeItem("s_id");
+      next("/login");
+    }
   }
 });
 

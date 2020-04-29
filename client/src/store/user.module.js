@@ -10,7 +10,7 @@ const userInterface = {
   additional_email: [],
   date_of_birth: null,
   bio: null,
-  isLogin: localStorage.getItem("userLoggedIn"),
+  isLogin: false,
   fitness: null,
   profile_id: null,
   password: null,
@@ -30,7 +30,7 @@ const initialAdminUserState = {
     email: null,
     password: null,
     permission_level: 0,
-    isLogin: false,
+    isLogin: false
   },
 };
 
@@ -39,7 +39,7 @@ const state = {
     email: null,
     password: null,
     permission_level: 0,
-    isLogin: false,
+    isLogin: false
   },
   ...initialUserState,
 };
@@ -51,6 +51,7 @@ const getters = {
   adminUser(state) {
     return state.adminUser;
   },
+
   searchedUser(state) {
     return state.user;
   },
@@ -136,15 +137,8 @@ const mutations = {
     apiUser.logout();
   },
 
-  setUserLoggedOut() {
-    localStorage.removeItem("userLoggedIn");
-    localStorage.removeItem("thisUser");
-    localStorage.removeItem("s_id");
-    state.user.isLogin = localStorage.getItem("userLoggedIn");
-  },
-
   userLogin() {
-    state.user.isLogin = localStorage.getItem("userLoggedIn");
+    state.user.isLogin = true;
   },
 
   userLogout() {
@@ -207,6 +201,7 @@ const actions = {
   },
   logout({ commit }) {
     commit("userLogout");
+    commit("resetUser");
   },
   updatePassports({ commit }, data) {
     commit("setUserPassports", data);
@@ -215,8 +210,15 @@ const actions = {
     commit("setUserTmpPassports", data);
   },
   resetUser({ commit }) {
-    commit("setUserLoggedOut");
     commit("resetUser");
+  },
+  loginAdminUser({ commit }, data) {
+    commit("setAdminUser", data);
+    commit("adminUserLogin");
+  },
+  logoutAdminUser({ commit }) {
+    commit("resetAdminUser");
+    commit("adminUserLogout");
   },
 };
 
@@ -226,3 +228,4 @@ export default {
   mutations,
   getters,
 };
+
