@@ -61,63 +61,6 @@ public class ActivityControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
-    private Activity activity;
-
-    private User user1;
-    private User user2;
-    private Session session1;
-    private Session session2;
-    private Activity activity1;
-    private Activity activity2;
-
-//    @BeforeEach
-//    void createUsers() {
-//        user1 = new User("Mayuko", "Williams",
-//                "mwi@williams.com", "1970-01-01", Gender.FEMALE,
-//                3, "P@ssw0rd!123");
-//        User temp = userRepository.findUserByEmail("mwi@williams.com");
-//        if (temp != null) {
-//            sessionRepository.removeTokenByUserId(String.valueOf(temp.getUserId()));
-//            userRepository.deleteById(temp.getUserId());
-//        }
-//        user1.setUserId((long) 1);
-//
-//
-//        user2 = new User("Kyle", "Lang",
-//                "kyle@google.com", "1990-03-04", Gender.MALE,
-//                3, "P@ssw0rd!123");
-//        User temp2 = userRepository.findUserByEmail("kyle@google.com");
-//        if (temp != null) {
-//            sessionRepository.removeTokenByUserId(String.valueOf(temp2.getUserId()));
-//            userRepository.deleteById(temp2.getUserId());
-//        }
-//        user2.setUserId((long) 2);
-//
-//    }
-//
-//    @BeforeEach
-//    void assignTokens() {
-//        session1 = new Session("t0k3n1");
-//        session2 = new Session("t0k3n2");
-//
-//        session1.setUser(user1);
-//        session2.setUser(user2);
-//    }
-//
-//    @BeforeEach
-//    void assignActivities() {
-//        activity1 = new Activity("Storm area 51", "Let's unfold the truth together",
-//                true, new Date(2021, 10, 10), new Date(2021, 10, 11),
-//                "Area 51");
-//
-//        activity2 = new Activity("Surf at Taylor's mistake", "Let's go for a swim together",
-//                true, new Date(2021, 10, 10), new Date(2021, 10, 11),
-//                "Sumner");
-//
-//        service.addActivity(activity1, user1.getUserId(), session1.toString());
-//        service.addActivity(activity2, user2.getUserId(), session2.toString());
-//    }
 
     @BeforeEach
     public void deleteUser() throws Exception {
@@ -255,9 +198,33 @@ public class ActivityControllerTest {
                         "{\"name\":\"Activity 2\",\"description\":\"An activity called Activity 2\",\"id\":\"2\"}]")));
     }
 
-//    @Test
-//    public void deleteActivityErrorHandlingTest() throws Exception {
-//        mockMvc.perform(MockMvcRequestBuilders.delete("/profiles/{userId}/activities/{activityId}", user1.getUserId(), 10)  )
-//                .andExpect(status().isNotFound());
-//    }
+    @Test
+    public void deleteActivityErrorHandlingTest() throws Exception {
+        Session session1 = new Session("t0k3n");
+
+        User user1 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        user1.setUserId((long) 1);
+        Activity activity1 = new Activity("Storm area 51", "Let's unfold the truth together",
+               true, new Date(2021, 10, 10), new Date(2021, 10, 11),
+                "Area 51");
+
+        activity1.setId((long) 1);
+        Set<ActivityType> activityTypes = new HashSet<ActivityType>();
+        activityTypes.add(new ActivityType("Fun"));
+        activity1.setActivityTypes(activityTypes);
+
+        Activity newActivity = activityRepository.save(activity1);
+        activityRepository.insertActivityForUser((long) 1, (long) 1);
+
+        session1.setUser(user1);
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity successfully deleted", HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/profiles/1/activities/1").header("token", "t0k3n1"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Activity successfully deleted")));
+
+    }
 }
