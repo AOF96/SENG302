@@ -75,7 +75,7 @@
             apiUser.refreshInstance();
             if(responseData[0].permission_level == 2){
               console.log(responseData[0].permission_level);
-              this.adminUserLogin(responseData[0]);
+              this.loginAdminUser(responseData[0]);
               router.push('/settings/admin_dashboard');
             } else {
               this.updateUserProfile(responseData[0]);

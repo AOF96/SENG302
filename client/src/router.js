@@ -59,7 +59,6 @@ const router = new VueRouter({
   mode: "history",
 });
 
-
 router.beforeEach((to, from, next) => {
   // Make sure that the next function is called exactly once in any given pass through the navigation guard.
   // It can appear more than once, but only if the logical paths have no overlap,
@@ -72,34 +71,36 @@ router.beforeEach((to, from, next) => {
   if (firstLoad === true) {
     firstLoad = false;
     apiUser.getUserByToken().then(
-        response => {
-          const responseData = response.data;
-          if (responseData.permission_level === 2) {
+      (response) => {
+        const responseData = response.data;
+        if (responseData.permission_level === 2) {
+          if (store.adminUser) {
             store.adminUser.adminUserLogin(responseData);
-          } else {
-            store._actions.updateUserProfile[0](responseData);
           }
-          if (to.path === "/signup" || to.path === "/login") {
-            next('/profile');
-          } else {
-            next();
-          }
-        },
-        error => {
-          if (!(to.path === "/signup" || to.path === "/login")) {
-            next('/login');
-          } else {
-            next();
-          }
-          if (error) {
-            console.log("Not logged in!");
-          }
+        } else {
+          store._actions.updateUserProfile[0](responseData);
         }
+        if (to.path === "/signup" || to.path === "/login") {
+          next("/profile");
+        } else {
+          next();
+        }
+      },
+      (error) => {
+        if (!(to.path === "/signup" || to.path === "/login")) {
+          next("/login");
+        } else {
+          next();
+        }
+        if (error) {
+          console.log("Not logged in!");
+        }
+      }
     );
   } else {
     if (
-        to.path === "/settings/admin_dashboard" &&
-        store.getters.adminUser.isLogin
+      to.path === "/settings/admin_dashboard" &&
+      store.getters.adminUser.isLogin
     ) {
       console.log("login as an admin user");
       next();
