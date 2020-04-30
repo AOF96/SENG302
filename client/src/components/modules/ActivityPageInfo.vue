@@ -1,13 +1,13 @@
 <template>
     <div class="activityInfo">
-        <div class="activityTitle">{{ activityInfo.name }}</div>
-        <div class="activityDescription">{{ activityInfo.description }}</div>
-        <div class="activityLocation">{{ activityInfo.location }}</div>
-        <div class="activityStart"><h3> Start date: {{ activityInfo.start }}</h3></div>
-        <div class="activityEnd"><h3> End date: {{ activityInfo.end }}</h3></div>
-        <div class="activityDuration">{{ activityInfo.duration }}</div>
+        <div id="activityTitle" class="activityTitle">{{ activityInfo.name }}</div>
+        <div id="activityDescription" class="activityDescription">{{ activityInfo.description }}</div>
+        <div id="activityLocation" class="activityLocation">{{ activityInfo.location }}</div>
+        <div id="activityStartDate" class="activityStart"><h3> Start date: {{ activityInfo.start }}</h3></div>
+        <div id="activityEndDate" class="activityEnd"><h3> End date: {{ activityInfo.end }}</h3></div>
+        <div id="activityDuration" class="activityDuration">{{ activityInfo.duration }}</div>
         <div class="activityTypeTitle"><p>Activity Type: </p></div>
-        <div class="activityTypes">
+        <div id="activityTypeListing" class="activityTypes">
             <span v-for="a in activityInfo.activityTypes" :key="a.type_id">
                 <span v-if="activityInfo.activityTypes.indexOf(a) != activityInfo.activityTypes.length - 1">
                     {{a.name}} ,
