@@ -11,6 +11,7 @@ import UserActivitySettings from "./components/Settings/UserActivitySettings";
 import Activity from '@/components/Activity.vue'
 
 import store from '@/store/index.js';
+import ActivitySettings from "./components/ActivitySettings";
 
 Vue.use(VueRouter);
 
@@ -53,6 +54,10 @@ const routes = [
     {
         path: '/activity/:activityId',
         component: Activity
+    },
+    {
+        path: '/activity_settings',
+        component: ActivitySettings
     }
 ];
 

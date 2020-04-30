@@ -74,5 +74,21 @@ export const apiUser = {
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
-  getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration')
+  getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
+  /**
+   * Request to get all activity types from the server
+   */
+  getActivityTypes: () => instance.get('/activity-types')
+};
+
+export const apiActivity = {
+  addActivity: (author_id, name, continuous, start_time, end_time, description, location, activity_types) => instance.post('/profiles/' + author_id + '/activities', {
+    activity_name: name,
+    continuous: continuous,
+    start_time: start_time,
+    end_time: end_time,
+    description: description,
+    location: location,
+    activity_type: activity_types
+  })
 };

@@ -200,9 +200,9 @@ export default {
     ...mapGetters(["user"]),
 
     warning() {
-      return {
-        bio: this.user.bio && this.user.bio.length == 255
-      };
+        return {
+          bio: this.user.bio && this.user.bio.length == 255
+        };
     },
 
     /*

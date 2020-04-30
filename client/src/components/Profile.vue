@@ -42,7 +42,10 @@
                 <td class="profileTableTd">{{ user.dur_activities }}</td>
               </tr>
             </table>
-            <button type="button" onclick="document.getElementById('myForm').style.display = 'block'">Add Activity</button>
+
+            <router-link to="/activity_settings">
+              <button type="button" onclick="">Add Activity</button>
+            </router-link>
           </div>
         </div>
         <div id="centreColumn">
@@ -55,55 +58,6 @@
             <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
             <div class="floatClear"></div>
           </div>
-
-          <div class="form-popup" id="myForm">
-            <form action="/action_page.php" class="form-container">
-              <h1>New Activity</h1>
-
-              <label for="name"><b>Activity Name</b></label>
-              <input type="text" id="name" required>
-
-              <label for="time">Continuous?</label>
-              <select id="time">
-                <option value="continuous">Continuous</option>
-                <option value="duration">Duration</option>
-              </select>
-
-              <label for="start_date">Start Date</label>
-              <input type = "date" id="start_date">
-
-              <label for="end_date">End Date</label>
-              <input type = "date" id="end_date">
-
-              <label for="start_time">Start Time</label>
-              <input type = "time" id="start_time">
-
-              <label for="end_time">End Time</label>
-              <input type = "time" id="end_time">
-
-              <label for="desc"><b>Description</b></label>
-              <input type="text" id="desc">
-
-              <label><b>Location</b></label>
-              <div>
-              <select v-model="adding_country"
-                      name="passportCountries"
-                      placeholder="Passport Countries"
-                      value="Passport Countries"
-                      required>
-                <option selected disabled hidden>Passport Countries</option>
-                <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
-                  {{addingCountry}}
-                </option>
-              </select>
-              </div>
-
-
-              <button type="submit" class="btn">Create</button>
-              <button type="submit" class="btn cancel" onclick="document.getElementById('myForm').style.display = 'none'">Close</button>
-            </form>
-          </div>
-
         </div>
         <div id="sidebarRight">
           <PassportCountries/>
