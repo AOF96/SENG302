@@ -302,7 +302,8 @@ public class UserControllerTest {
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong())).thenReturn(true);
+        when(service.editActivityTypes(anyList(), anyLong()))
+                .thenReturn(new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200)));
         this.mockMvc.perform(put("/profiles/1/activity-types")
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(200))
@@ -317,11 +318,28 @@ public class UserControllerTest {
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong())).thenReturn(false);
+        when(service.editActivityTypes(anyList(), anyLong()))
+                .thenReturn(new ResponseEntity("No user with that ID", HttpStatus.valueOf(401)));
         this.mockMvc.perform(put("/profiles/1/activity-types")
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(401))
                 .andExpect(content().string(containsString("No user with that ID")));
+    }
+
+    @Test
+    public void editActivityTypesNonExistentActivityTypeTest() throws Exception {
+        String input = "{\n" +
+                "  \"activities\": [\n" +
+                "    \"Relaxing\",\n" +
+                "    \"Fun\"\n" +
+                "  ]\n" +
+                "}";
+        when(service.editActivityTypes(anyList(), anyLong()))
+                .thenReturn(new ResponseEntity("Activity type doesn't exist", HttpStatus.valueOf(400)));
+        this.mockMvc.perform(put("/profiles/1/activity-types")
+                .contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Activity type doesn't exist")));
     }
 
     @Test

@@ -62,7 +62,7 @@ public class UserServiceTest {
         testUser.setUserId((long) 1);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
 
-        assertTrue(service.editActivityTypes(new ArrayList<String>(), 1));
+        assertEquals(200, service.editActivityTypes(new ArrayList<String>(), 1).getStatusCode().value());
     }
 
     @Test
@@ -72,6 +72,6 @@ public class UserServiceTest {
         testUser.setUserId((long) 1);
         when(userRepository.findById((long) 1)).thenReturn(Optional.empty());
 
-        assertFalse(service.editActivityTypes(new ArrayList<String>(), 1));
+        assertEquals(401, service.editActivityTypes(new ArrayList<String>(), 1).getStatusCode().value());
     }
 }

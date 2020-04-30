@@ -235,89 +235,6 @@ public class UserService {
         return responseHandler.formatErrorResponse(201, "New emails successfully added");
     }
 
-//    public String editProfile(String request) {
-//        String response = null;
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        JsonNode node = null;
-//        try {
-//            node = objectMapper.readValue(request, JsonNode.class);
-//        } catch (Exception e) {
-//            ErrorHandler.printProgramException(e, "Error parsing profile edit request");
-//        }
-//
-//        if (response == null) {
-//            long userId = node.get("profile_id").asLong();
-//            User user = userRepository.findById(userId).get();
-//
-//            String lastName = node.get("lastname").asText();
-//            if (lastName == null) {
-//                lastName = user.getLastName();
-//            }
-//            String firstName = node.get("firstname").asText();
-//            if (firstName == null) {
-//                firstName = user.getFirstName();
-//            }
-//            String middleName = node.get("middlename").asText();
-//            if (middleName == null) {
-//                middleName = user.getMiddleName();
-//            }
-//            /*String nickName = node.get("nickname").asText();
-//            if (nickName == null) {
-//                nickName = user.getNickName();
-//            }*/
-//            String bio = node.get("bio").asText();
-//            if (bio == null) {
-//                bio = user.getBio();
-//            }
-//            String dateOfBirth = node.get("date_of_birth").asText();
-//            java.sql.Date date;
-//            if (dateOfBirth == null) {
-//                date = user.getBirthDate();
-//            } else {
-//                date = Date.valueOf(dateOfBirth);
-//            }
-//            String gender = node.get("gender").asText();
-//            Gender newGender;
-//            if (gender == null) {
-//                newGender = user.getGender();
-//            } else {
-//                newGender = Gender.valueOf(gender);
-//            }
-//            String email = node.get("email").asText();
-//            if (email == null) {
-//                email = user.getLastName();
-//            }
-//            int fitness = node.get("fitness").asInt();
-//            String password = user.getPassword();
-//            String nickName = user.getNickName();
-//
-//            User newUser = new User(firstName, lastName, middleName, newGender, password, bio, nickName, date, fitness, email);
-//
-//            List<JsonNode> passportNodes = node.findValues("passport");
-//            ArrayList<String> passportCountries = new ArrayList<>();
-//            for (JsonNode currentNode : passportNodes.get(0)) {
-//                passportCountries.add(currentNode.asText());
-//            }
-//
-//            if (passportCountries != null) {
-//                for (int i = 0; i < passportCountries.size(); i++) {
-//                    String country = passportCountries.get(i);
-//                    PassportCountry newPassportCountry = countryRepository.findCountryByName("New Zealand");
-//                    newUser.addPassportCountry(newPassportCountry);
-//                }
-//            }
-//
-//            newUser.setUser_id(user.getUser_id());
-//
-//            userRepository.save(newUser);
-//            userRepository.delete(user);
-//            responseHandler.formatSuccessResponse(600, "User edited successfully");
-//        }
-//        return response;
-//    }
-
-
     public ResponseEntity validateCreateProfile(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -520,9 +437,9 @@ public class UserService {
      * Updates a user's activity types. If a supplied activity type doesn't actually exist, it is skipped.
      * @param activityTypes An ArrayList of activity type Strings
      * @param id The Long ID of the User to modify
-     * @return True if the user exists, false otherwise.
+     * @return ResponseEntity of result
      */
-    public boolean editActivityTypes(List<String> activityTypes, long id) {
+    public ResponseEntity editActivityTypes(List<String> activityTypes, long id) {
         boolean result = false;
         HashSet<ActivityType> newActivityTypes = new HashSet<>();
 
@@ -530,6 +447,8 @@ public class UserService {
             ActivityType type = activityTypeRepository.findActivityTypeByName(name);
             if (type != null) {
                 newActivityTypes.add(type);
+            } else {
+                return new ResponseEntity("Activity type doesn't exist", HttpStatus.valueOf(400));
             }
         }
 
@@ -541,6 +460,10 @@ public class UserService {
             result = true;
         }
 
-        return result;
+        if (result) {
+            return new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
+        }
     }
 }

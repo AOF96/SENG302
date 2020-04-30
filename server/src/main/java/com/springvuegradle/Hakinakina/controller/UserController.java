@@ -246,20 +246,7 @@ public class UserController {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
 
-        for (int i = 0; i < activities.size(); i++) {
-            if (!activities.get(i).equals("Adventurous") && !activities.get(i).equals("Extreme") && !activities.get(i).equals("Fun") && !activities.get(i).equals("Relaxing") && !activities.get(i).equals("Team Sport")) {
-                activities.remove(i);
-                i--;
-            }
-        }
-
-        boolean userExists = userService.editActivityTypes(activities, profileId);
-
-        if (userExists) {
-            return new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
-        }
+        return userService.editActivityTypes(activities, profileId);
     }
 
     /**
