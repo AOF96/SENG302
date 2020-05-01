@@ -29,18 +29,7 @@
                   <p >{{email}}</p>
                 </div>
               </tr>
-              <tr>
-                <td class="profileTableTd">Activities:</td>
-                <td class="profileTableTd">{{ user.activities }}</td>
-              </tr>
-              <tr>
-                <td class="profileTableTd">Continuous Activities:</td>
-                <td class="profileTableTd">{{ user.cont_activities }}</td>
-              </tr>
-              <tr>
-                <td class="profileTableTd">Duration Activities:</td>
-                <td class="profileTableTd">{{ user.dur_activities }}</td>
-              </tr>
+
             </table>
 
             <router-link to="/activity_settings">
@@ -55,9 +44,38 @@
               <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
               <h2 id="userFitnessLevel">Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
             </div>
+
+
+
             <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
             <div class="floatClear"></div>
           </div>
+
+          <div id="userActivities">
+<!--              <table>-->
+
+
+                <h3>Activity types:</h3>
+<!--              <tr>-->
+<!--                <td class="profileTableTd">Activity types:</td>-->
+<!--                <td class="profileTableTd">{{ user.activities }}</td>-->
+<!--              </tr>-->
+<!--              <tr>-->
+<!--                <td class="profileTableTd">Continuous Activities:</td>-->
+<!--                <td class="profileTableTd">{{ user.cont_activities }}</td>-->
+<!--              </tr>-->
+<!--              <tr>-->
+                <h3 style="display: inline-block">Duration Activities:</h3>
+              <hr>
+                <div  v-for="activity in user.dur_activities" v-bind:key="activity">
+                    <label >Name:</label> {{activity.name}}<br> <label>Description:</label> {{activity.description}} <hr>
+
+                </div>
+<!--              </tr>-->
+<!--              </table>-->
+
+          </div>
+
         </div>
         <div id="sidebarRight">
           <PassportCountries/>

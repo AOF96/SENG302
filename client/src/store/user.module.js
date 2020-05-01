@@ -103,7 +103,7 @@ const mutations = {
       console.log(data[i]);
       result.push(data[i].name + " - " + data[i].description)
     }
-    state.user.dur_activities = result;
+    state.user.dur_activities = data;
   },
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
