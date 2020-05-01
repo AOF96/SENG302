@@ -38,8 +38,9 @@
 <script>
   import router from "../router";
   import { mapGetters, mapActions} from 'vuex';
-  import { apiUser, helperFunction } from '../api'
+  import { apiUser } from '../api'
   //import {getEncryptPassword} from "../common.js"
+  //import store from '../store/index.js';
 
   import NavBar from '@/components/NavBar'
 
@@ -49,18 +50,18 @@
       NavBar
     },
     computed: {
-      ...mapGetters(['user']),
+      ...mapGetters(['user','adminUser']),
 
     },
     methods: {
-      ...mapActions(['updateUserProfile']),
+      ...mapActions(['updateUserProfile','loginAdminUser']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
-        console.log(typeof(this.user.primary_email))
+        console.log(typeof(this.user.primary_email));
         if (this.user.primary_email == null || this.user.password == null){
           document.getElementById("empty_fields").hidden = false;
           return;
@@ -68,11 +69,18 @@
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password).then((response) => {
             const responseData = response.data;
-            console.log(responseData);
-
-            helperFunction.addCookie("s_id", responseData[1]["sessionToken"], 365);
-            this.updateUserProfile(responseData[0]);
-            router.push('Profile');
+            console.log(responseData)
+            //Save token to local storage
+            localStorage.setItem("s_id", responseData[1]["sessionToken"]);
+            apiUser.refreshInstance();
+            if(responseData[0].permission_level == 2){
+              console.log(responseData[0].permission_level);
+              this.adminUserLogin(responseData[0]);
+              router.push('/settings/admin_dashboard');
+            } else {
+              this.updateUserProfile(responseData[0]);
+              router.push('profile?u='+responseData[0].profile_id);
+            }
           }, (error) => {
             const responseData = error.response.data;
             const responseCode = error.response.status;

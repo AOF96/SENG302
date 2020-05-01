@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
@@ -84,29 +83,32 @@ public class UserController {
      * @return*/
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session != null) {
-            if (session.getUser().getUserId() == profileId) {
-                User oldUser = userRepository.findById(profileId).get();
-                for (PassportCountry country : oldUser.getPassportCountries()) {
-                    country.removeUser(oldUser);
-                }
-                oldUser.resetPassportCountries();
-                user.setUserId(profileId);
-                user.setEncryptedPassword(oldUser.getPassword());
-                user.setSalt(oldUser.getSalt());
-                return userService.validateEditUser(user);
-            } else {
-                return responseHandler.formatErrorResponse(400, "Session mismatch");
+        if (session == null) {
+          return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
+
+        // only a user and an admin can edit the user profile
+        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
+        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
+        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
+            User oldUser = userRepository.findById(profileId).get();
+            for (PassportCountry country : oldUser.getPassportCountries()) {
+                country.removeUser(oldUser);
             }
+            oldUser.resetPassportCountries();
+            user.setUserId(profileId);
+            user.setEncryptedPassword(oldUser.getPassword());
+            user.setSalt(oldUser.getSalt());
+            return userService.validateEditUser(user);
         } else {
-            return responseHandler.formatErrorResponse(400, "Invalid Session");
+            return responseHandler.formatErrorResponse(400, "Session mismatch");
         }
     }
 
@@ -123,7 +125,7 @@ public class UserController {
      * @return*/
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("token") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
     }
 
@@ -138,6 +140,22 @@ public class UserController {
         return responseHandler.formatGetUsers(users);
     }
 
+
+    /**
+     * Validates user login by checking their sessionToken and returns user info
+     *
+     * @return User json object for user with matching sessionToken
+     */
+    @GetMapping("/validateLogin")
+    public ResponseEntity validateLogin(@RequestHeader("token") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponse(401, "User not currently logged in");
+        }
+        User user = session.getUser();
+        return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+    }
+
     /**
      * Processes request to retrieve certain user and returns
      *
@@ -145,13 +163,24 @@ public class UserController {
      * @return Specific user
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
-        Optional<User> optional = userRepository.findById(profileId);
-        if (optional.isPresent()) {
-            User user = optional.get();
-            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @RequestHeader("token") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
+        // only a user and an admin can edit the user profile
+        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
+        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
+        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
+            Optional<User> optional = userRepository.getUserById(profileId);
+            if (optional.isPresent()) {
+                User user = optional.get();
+                return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+            } else {
+                return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
+            }
         } else {
-            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
+            return responseHandler.formatErrorResponse(400, "Session mismatch");
         }
     }
 
@@ -172,6 +201,11 @@ public class UserController {
         return emailRepository.getAllEmails();
          */
         return userRepository.getAllPrimaryEmails().toString();
+    }
+
+    @GetMapping("/token/{profile_id}")
+    public List<String> getUserSessionToken(@PathVariable("profile_id") long profileId) {
+        return sessionRepository.getUserSessionToken(profileId);
     }
 
     /**
@@ -198,7 +232,7 @@ public class UserController {
      * @return message and status to notify if log out was successful
      * */
     @PostMapping("/logout")
-    public ResponseEntity checkLogout(@CookieValue("s_id") String sessionToken) {
+    public ResponseEntity checkLogout(@RequestHeader("token") String sessionToken) {
         try {
             sessionRepository.removeToken(sessionToken);
             return new ResponseEntity("User logged out", HttpStatus.OK);
@@ -214,7 +248,7 @@ public class UserController {
      * @param sessionToken token stored in the cookie to identify the user
      * */
     @PutMapping("/profiles/{profileId}/password")
-    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue("s_id") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @RequestHeader("token") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");

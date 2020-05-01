@@ -386,6 +386,7 @@ public class UserService {
         }
     }
 
+
     /**
      * Firstly checks that the user is authenticated and the old password matches the Users current password. Then
      * updates the users password and salt if successful
@@ -401,17 +402,20 @@ public class UserService {
         if (getUser.isPresent()) {
             User user = getUser.get();
             Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if(session != null){
-                if(session.getUser().getUserId() == profileId){
-                    try {
-                        String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
-                        if (!user.getPassword().equals(encryptedPassword)) {
-                            return responseHandler.formatErrorResponse(400, "Current password is incorrect");
-                        }
-                    } catch (Exception e) {
-                        return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
-                    }
+            if (session != null) {
 
+                //If the user associated with the session matches the user to be edited, or if the user is an admin
+                if(session.getUser().getUserId() == profileId || session.getUser().getPermissionLevel() > 0) {
+                    if (session.getUser().getPermissionLevel() == 0) {
+                        try {
+                            String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
+                            if (!user.getPassword().equals(encryptedPassword)) {
+                                return responseHandler.formatErrorResponse(400, "Current password is incorrect");
+                            }
+                        } catch (Exception e) {
+                            return responseHandler.formatErrorResponse(400, "Failed to compare oldPassword to the User's current password");
+                        }
+                    }
                     try {
                         String salt = EncryptionUtil.getNewSalt();
                         user.setSalt(salt);
@@ -421,10 +425,10 @@ public class UserService {
                     } catch (Exception e) {
                         response = responseHandler.formatErrorResponse(400, "Error while creating new password");
                     }
-                }else{
+                } else {
                     response = responseHandler.formatErrorResponse(400, "Error while creating new password");
                 }
-            }else{
+            } else {
                 return responseHandler.formatErrorResponse(400, "Invalid Session");
             }
         } else {

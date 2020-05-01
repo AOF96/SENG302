@@ -94,18 +94,13 @@ public class User {
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
 
+    @JsonProperty("permission_level")
+    @Column(name = "permission_level")
+    private Integer permissionLevel = 0;
 
+    public User() {}
 
-    protected User() {}
-
-    public User(String firstName,
-                String lastName,
-                String primaryEmail,
-                String birthDate,
-                Gender gender,
-                int fitnessLevel,
-                String password
-    ) {
+    public User(String firstName, String lastName, String primaryEmail, String birthDate, Gender gender, int fitnessLevel, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -269,6 +264,14 @@ public class User {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public Integer getPermissionLevel() {
+        return permissionLevel;
+    }
+
+    public void setPermissionLevel(Integer permissionLevel) {
+        this.permissionLevel = permissionLevel;
     }
 
     @Override
