@@ -768,3 +768,24 @@ body{
     line-height: 30px;
 
 }
+
+#deleteActivitySubmit {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #ee5e5e;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float:right;
+    margin:20px;
+}
+
+#deleteActivitySubmit:hover {
+    background: #ee5e5e;
+    color: #fff;
+}

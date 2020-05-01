@@ -63,6 +63,7 @@
             </div>
 
             <button type="submit" class="btn" v-on:click="addActivity">Create</button>
+            <button id="deleteActivitySubmit" type="submit">Delete Activity</button>
         </form>
     </div>
 </template>
