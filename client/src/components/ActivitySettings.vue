@@ -62,8 +62,8 @@
                 <button v-on:click="removeActivityType(addedActivity)">Remove</button>
             </div>
 
-            <button type="submit" class="btn" v-on:click="addActivity">Create</button>
-            <button id="deleteActivitySubmit" type="submit">Delete Activity</button>
+            <button id="addActivityButton" type="submit" class="btn" v-on:click="addActivity">Create</button>
+            <button id="deleteActivityButton" type="submit">Delete Activity</button>
         </form>
     </div>
 </template>

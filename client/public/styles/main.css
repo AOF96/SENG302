@@ -294,7 +294,7 @@ body{
     margin:0 auto;
     margin-top: 20px;
 }
-#settingsPasswordSubmit, #settingsProfileSubmit{
+#settingsPasswordSubmit, #settingsProfileSubmit, #addActivityButton{
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -309,7 +309,7 @@ body{
     float:right;
     margin:20px;
 }
-#settingsPasswordSubmit:hover , #settingsProfileSubmit:hover{
+#settingsPasswordSubmit:hover , #settingsProfileSubmit:hover, #addActivityButton:hover{
     background: #1cca92;
     color: #fff;
 }
@@ -769,7 +769,27 @@ body{
 
 }
 
-#deleteActivitySubmit {
+#addActivityButton{
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float:right;
+    margin:20px;
+}
+#addActivityButton:hover{
+    background: #1cca92;
+    color: #fff;
+}
+
+#deleteActivityButton {
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -782,10 +802,10 @@ body{
     transition: all 0.2s ease;
     text-decoration: none;
     float:right;
-    margin:20px;
+    margin:30px;
 }
 
-#deleteActivitySubmit:hover {
+#deleteActivityButton:hover {
     background: #ee5e5e;
     color: #fff;
 }
