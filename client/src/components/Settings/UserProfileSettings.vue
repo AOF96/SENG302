@@ -66,7 +66,7 @@ export default {
             console.log(this.user.fitness);
             apiUser.editProfile(this.user.profile_id, this.user.firstname, this.user.lastname, this.user.middlename,
                 this.user.nickname, this.user.primary_email, this.user.bio, this.user.date_of_birth, this.user.gender,
-                Number(this.user.fitness), this.user.additional_email, this.user.passports).then((response) => {
+                Number(this.user.fitness), this.user.additional_email, this.user.passports, this.user.activities).then((response) => {
                 this.updateUserProfile(this.user);
                 document.getElementById("success").hidden = false;
                 document.getElementById("success").innerText = "Updated Successfully";

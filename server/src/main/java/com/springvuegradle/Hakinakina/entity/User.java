@@ -12,6 +12,7 @@ import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -71,6 +72,16 @@ public class User {
     )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
+    @JsonProperty("activities")
+    @JsonSerialize(using=ActivityTypeSerializer.class)
+    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
+    @JoinTable(
+            name = "User_ActivityTypes",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "type_id") }
+    )
+    private Set<ActivityType> activityTypes = new HashSet<>();
+
     @JsonIgnore
     private String salt;
 
@@ -129,6 +140,14 @@ public class User {
         return passportCountries;
     }
 
+    public Set<ActivityType> getActivityTypes() {
+        return activityTypes;
+    }
+
+    public void setActivityTypes(Set<ActivityType> activityTypes) {
+        this.activityTypes = activityTypes;
+    }
+
     /**
      * Adds passport country to relation
      * @param passportCountry
@@ -136,6 +155,15 @@ public class User {
     public void addPassportCountry(PassportCountry passportCountry) {
         passportCountries.add(passportCountry);
         passportCountry.getUsers().add(this);
+    }
+
+    /**
+     * Adds activity type to relation
+     * @param acitivityType
+     */
+    public void addActivityTypes(ActivityType acitivityType) {
+        activityTypes.add(acitivityType);
+        acitivityType.getUsers().add(this);
     }
 
     public Set<Email> getEmails() {

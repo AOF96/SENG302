@@ -1,14 +1,23 @@
 package com.springvuegradle.Hakinakina.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +33,7 @@ public class UserController {
     public PassportCountryRepository countryRepository;
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
+    public ActivityTypeRepository activityTypeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private UserService userService;
@@ -36,11 +46,14 @@ public class UserController {
      * @param emailRepository   The repository containing Emails
      * @param sessionRepository The repository containing Sessions
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, UserService userService) {
+    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository,
+                          EmailRepository emailRepository, SessionRepository sessionRepository,
+                          ActivityTypeRepository activityTypeRepository, UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
         this.sessionRepository = sessionRepository;
+        this.activityTypeRepository = activityTypeRepository;
         this.userService = userService;
     }
 
@@ -245,6 +258,58 @@ public class UserController {
             return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
         }
         return userService.changePassword(profileId, sessionToken, oldPassword, newPassword);
+    }
+
+    /**
+     * Handles the editing of a user's activity types. Parses the list of activities and calls the service method,
+     * returning the result as a ResponseEntity
+     * @param jsonString The json as a string
+     * @param profileId The ID of the user to update
+     * @return A ResponseEntity stating the result
+     * @throws JsonProcessingException If there is an issue while parsing the JSON
+     */
+    @PutMapping("/profiles/{profileId}/activity-types")
+    public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
+        List<String> activities;
+
+        if (activitiesNode.isArray()) {
+            activities = parseActivityList(activitiesNode);
+        } else {
+            return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
+        }
+
+        return userService.editActivityTypes(activities, profileId);
+    }
+
+    /**
+     * Retrieve the names of all the Activity Types in the database
+     * @return A JSON list of names of activity types
+     */
+    @GetMapping("/activity-types")
+    public List<String> getActivityTypes() {
+        List<ActivityType> activityTypes = activityTypeRepository.findAll();
+        List<String> activityTypeStrings = new ArrayList<>();
+
+        for (ActivityType type : activityTypes) {
+            activityTypeStrings.add(type.getName());
+        }
+        return activityTypeStrings;
+    }
+
+    /**
+     * Parses a list of activity types
+     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
+     * @return A List of Strings of the activity types
+     */
+    public static List<String> parseActivityList(JsonNode activitiesNode) {
+        List<String> activities = new ArrayList<>();
+        for (JsonNode activity : activitiesNode) {
+            activities.add(activity.textValue());
+        }
+
+        return activities;
     }
 
     // Create Exception Handle

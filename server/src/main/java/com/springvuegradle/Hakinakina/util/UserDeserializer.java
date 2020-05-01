@@ -23,6 +23,9 @@ public class UserDeserializer extends StdDeserializer<User> {
     @Autowired
     EmailRepository emailRepository;
 
+    @Autowired
+    ActivityTypeRepository activityTypeRepository;
+
     public UserDeserializer() {
         this(null);
     }
@@ -75,6 +78,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
+        Set<ActivityType> activityTypes = getActivityTypes(node, "activity_types");
 
         // Create user with compulsory attributes
         User user = new User(firstName, lastName, primaryEmail, dateOfBirth, gender, fitnessLevel, password);
@@ -85,6 +89,9 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
         for (Email email : additionalEmail) {
             user.addEmail(email);
+        }
+        for (ActivityType activityType : activityTypes) {
+            user.addActivityTypes(activityType);
         }
         if (middleName != null) {
             user.setMiddleName(middleName);
@@ -170,6 +177,26 @@ public class UserDeserializer extends StdDeserializer<User> {
                 emails.add(emailRepository.findEmailByString(emailNode.asText()));
             }
             return emails;
+        }
+    }
+
+    /**
+     * Returns set of ActivityTypes in user creation request
+     *
+     * @param node
+     * @param field
+     * @return
+     */
+    public Set<ActivityType> getActivityTypes(JsonNode node, String field) {
+        JsonNode activityTypeNodes = node.get(field);
+        if (activityTypeNodes == null) {
+            return new HashSet<>();
+        } else {
+            Set<ActivityType> userActivityTypes = new HashSet<>();
+            for (JsonNode activityTypeNode : activityTypeNodes) {
+                userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
+            }
+            return userActivityTypes;
         }
     }
 }
