@@ -31,8 +31,6 @@
             <div>
                 <select v-model="adding_country"
                         name="countries"
-                        placeholder="Countries"
-                        value="Countries"
                         required>
                     <option selected disabled hidden>Countries</option>
                     <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
@@ -47,9 +45,6 @@
                         v-on:change="selectActivityType"
                         v-model="selected_activity"
                         name="activityType"
-                        placeholder="Activity Type"
-                        value="Activity Type"
-                        required
                 >
                     <option selected disabled hidden>Activity Type</option>
                     <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
@@ -62,6 +57,9 @@
                 <button v-on:click="removeActivityType(addedActivity)">Remove</button>
             </div>
 
+            <h6 class="edit_success" id="activity_success" hidden="false">Saved successfully</h6>
+            <h6 class="edit_error" id="activity_error" hidden="false">An error has occurred</h6>
+
             <button id="addActivityButton" type="submit" class="btn" v-on:click="addActivity">Create</button>
             <button id="deleteActivityButton" type="submit">Delete Activity</button>
         </form>
@@ -72,7 +70,6 @@
     import {mapGetters, mapActions} from 'vuex'
     import {apiUser, apiActivity} from "../api";
     import axios from "axios";
-    import router from "../router";
     const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
     export default {
@@ -152,22 +149,46 @@
                 }
             },
             addActivity() {
-                let combinedStartTime = this.start_date + 'T' + this.start_time + ':00+1300';
-                let combinedEndTime = this.end_date + 'T' + this.end_time + ':00+1300';
-                console.log(combinedEndTime);
+                console.log(this.start_date);
+                if (this.activity.name === null) {
+                    this.displayError("Please select an activity name.")
+                } else if (this.duration !== 'duration' && this.duration !== 'continuous') {
+                    this.displayError("Please select a duration");
+                } else if (this.duration === 'duration' && (this.start_date === null || this.end_date === null)) {
+                    this.displayError("Please select start and end date");
+                } else {
+                    let combinedStartTime;
+                    let combinedEndTime;
+                    if (this.duration !== 'duration') {
+                        combinedStartTime = null;
+                        combinedEndTime = null;
+                    } else {
+                        combinedStartTime = this.start_date + 'T' + this.start_time + ':00+1300';
+                        combinedEndTime = this.end_date + 'T' + this.end_time + ':00+1300';
+                    }
 
-                this.duration = this.duration !== 'duration';
+                    this.duration = this.duration !== 'duration';
 
-                apiActivity.addActivity(this.user.profile_id, this.activity.name, this.duration, combinedStartTime,
-                    combinedEndTime, this.activity.description, this.adding_country, this.activity_types_selected)
-                    .then(response => {
-                        console.log(response);
-                            router.push("Profile");
-                        },
-                        error => {
-                            console.log(error);
-                        }
-                    );
+                    apiActivity.addActivity(this.user.profile_id, this.activity.name, this.duration, combinedStartTime,
+                        combinedEndTime, this.activity.description, this.adding_country, this.activity_types_selected)
+                        .then(response => {
+                                document.getElementById("activity_success").hidden = false;
+                                document.getElementById("activity_error").hidden = true;
+                                console.log(response);
+                            },
+                            error => {
+                                document.getElementById("activity_error").hidden = false;
+                                document.getElementById("activity_error").innerText = error.response.data.error;
+                                document.getElementById("activity_success").hidden = true;
+                                console.log(error);
+                            }
+                        );
+                }
+            },
+            displayError(error) {
+                document.getElementById("activity_error").hidden = false;
+                document.getElementById("activity_error").innerText = error;
+                document.getElementById("activity_success").hidden = true;
             }
         }
     }
