@@ -16,6 +16,7 @@ const userInterface = {
   password: null,
   passports: [],
   tmp_passports: [],
+  activities: [],
   permission_level: null,
 };
 
@@ -127,10 +128,10 @@ const mutations = {
     state.user.activities = data.activities;
   },
   setUserIsLogin(state, data) {
-    if(data.isLogin !== ""){
-      state.user.isLogin = data.isLogin
+    if (data.isLogin !== "") {
+      state.user.isLogin = data.isLogin;
     }
-
+  },
   setUserPermissionLevel(state, data) {
     state.user.permission_level = data.permission_level;
   },

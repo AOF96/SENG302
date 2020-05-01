@@ -87,7 +87,7 @@ export const apiUser = {
       }
     );
     return await searchedUser;
-  }
+  },
 
   /**
    * Request to update activity types

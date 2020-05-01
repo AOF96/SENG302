@@ -162,7 +162,7 @@ public class UserControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("{\"bio\":null,\"profile_id\":1,\"firstname\":" +
                         "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
-                        "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
+                        "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
                         "\"additional_email\":[],\"permission_level\":0}")));
     }
 
