@@ -19,12 +19,11 @@ public class ActivityTestSteps {
 
     @Before
     public void resetLocalFields() throws SQLException {
-        activityRepository.deleteAll();
-        userRepository.deleteAll();
+        System.out.println("True");
     }
 
     @Given("that user {int} adds the following activity")
-    public void theUserAddsTheFollowingActivity(io.cucumber.datatable.DataTable dataTable) throws Exception {
+    public void theUserAddsTheFollowingActivity(int id, io.cucumber.datatable.DataTable dataTable) throws Exception {
         assertTrue(true);
     }
 
