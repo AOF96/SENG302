@@ -90,19 +90,9 @@ const mutations = {
     state.user.tmp_passports = data.tmp_passports;
   },
   setUserContinuousActivities(state, data) {
-    let result = [];
-    for (let i = 0; i < data.length; i++) {
-      console.log(data[i]);
-      result.push(data[i].name + " - " + data[i].description)
-    }
-    state.user.cont_activities = result;
+    state.user.cont_activities = data;
   },
   setUserDurationActivities(state, data) {
-    let result = [];
-    for (let i = 0; i < data.length; i++) {
-      console.log(data[i]);
-      result.push(data[i].name + " - " + data[i].description)
-    }
     state.user.dur_activities = data;
   },
   setUserFitnessLevel(state, data) {
