@@ -52,27 +52,22 @@
           </div>
 
           <div id="userActivities">
-<!--              <table>-->
+            <h3>Activity types:</h3>
 
+            <div  v-for="type in user.activities" v-bind:key="type">
+              <label >Name:</label> {{type.name}}<br>
+            </div>
+            <h3 style="display: inline-block">Duration Activities:</h3>
+            <hr>
+            <div  v-for="activity in user.dur_activities" v-bind:key="activity">
+              <label >Name:</label> {{activity.name}}<br> <label>Description:</label> {{activity.description}} <hr>
+            </div>
 
-                <h3>Activity types:</h3>
-<!--              <tr>-->
-<!--                <td class="profileTableTd">Activity types:</td>-->
-<!--                <td class="profileTableTd">{{ user.activities }}</td>-->
-<!--              </tr>-->
-<!--              <tr>-->
-<!--                <td class="profileTableTd">Continuous Activities:</td>-->
-<!--                <td class="profileTableTd">{{ user.cont_activities }}</td>-->
-<!--              </tr>-->
-<!--              <tr>-->
-                <h3 style="display: inline-block">Duration Activities:</h3>
-              <hr>
-                <div  v-for="activity in user.dur_activities" v-bind:key="activity">
-                    <label >Name:</label> {{activity.name}}<br> <label>Description:</label> {{activity.description}} <hr>
+            <h3 style="display: inline-block">Continuous Activities:</h3>
 
-                </div>
-<!--              </tr>-->
-<!--              </table>-->
+            <div  v-for="activity in user.cont_activities" v-bind:key="activity">
+              <label >Name:</label> {{activity.name}}<br> <label>Description:</label> {{activity.description}} <hr>
+            </div>
 
           </div>
 
