@@ -3,11 +3,9 @@ np<template>
         <NavBar/>
         <div id="profileBanner">
         </div>
-        <div id="profileWrap">
+        <div id="activityWrap">
             <div id="profilePublicInfo">
-                <div id="ActivityWrap">
                     <ActivityPageInfo :activityInfo="activityData"/>
-                </div>
                 <div class="floatClear"></div>
             </div>
         </div>
@@ -19,6 +17,7 @@ np<template>
   import NavBar from '@/components/NavBar';
   import ActivityPageInfo from "@/components/modules/ActivityPageInfo";
   import {mapGetters} from "vuex";
+  import {apiActivity} from "@/api";
 
   export default {
     name: "Activity",
@@ -29,8 +28,8 @@ np<template>
           start: "25th April 2020",
           end: "26th April 2020",
           location: "Kaikoura, New Zealand",
-          duration: "5 minutes",
-          description: "Trail running is a popular sport which involves running trails through challenging terrain. Always be sure to follow the Outdoor Safety Code, especially if you plan to head out alone, and seriously consider hiring or purchasing a personal locator beacon. Essential guides and helpful informaiton can be found in the links (left).",
+          continuous: true,
+          description: "Trail running is a popular sport which involves running trails through challenging terrain. Trail running is a popular sport which involves running trails through challenging terrain.Trail running is a popular sport which involves running trails through challenging terrain.Trail running is a popular sport which involves running trails through challenging terrain. Trail running is a popular sport which involves running trails through challenging terrain.",
           activityTypes: [
             {
               "type_id": 6,
@@ -45,6 +44,24 @@ np<template>
         }
       }
     },
+    mounted() {
+      apiActivity.getActivity(this.$route.params.activityId)
+        .then(
+          response => {
+            this.activityData.name = response.data.activity_name;
+            this.activityData.description = response.data.description;
+            this.activityData.activityTypes = response.data.activity_type;
+            this.activityData.start = response.data.start_time;
+            this.activityData.end = response.data.end_time;
+            this.activityData.location = response.data.location;
+            this.activityData.continuous = response.data.continuous;
+
+          }
+        ).catch(err => {
+          console.log(err);
+        }
+      )
+    },
     components: {
       NavBar,
       ActivityPageInfo
@@ -56,74 +73,11 @@ np<template>
 </script>
 
 <style scoped>
-
-    .profileInfo {
-        font-family: Roboto;
+    #activityWrap{
+        width: 60%;
+        margin: 0 auto;
+        display: block;
+        position: relative;
+        top: -56px;
     }
-
-    .activityTitle {
-        text-align: center;
-        margin-left: 20px;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 22px;
-        color: #1cca92;
-        background-color: gold;
-        grid-area: Title;
-
-    }
-
-    .activityDescription {
-        text-align: center;
-        margin-left: 20px;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 18px;
-        grid-area: Description;
-        background-color: pink;
-    }
-
-    .activityLocation {
-        text-align: left;
-        margin-left: 20px;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 18px;
-        grid-area: Location;
-    }
-
-    .activityType {
-        text-align: left;
-        margin-left: 20px;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 18px;
-        grid-area: ActivityType;
-    }
-
-    .activityStart {
-        text-align: left;
-        margin-left: 20px;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 18px;
-        grid-area: Start;
-
-    }
-
-    .activityEnd {
-        text-align: left;
-        margin-left: 20px;
-        margin-right: auto;
-        padding-top: 2rem;
-        font-size: 18px;
-        grid-area: End;
-
-    }
-
-
-    .profileTableTd {
-        padding: 10px 20px 10px 0;
-    }
-
 </style>

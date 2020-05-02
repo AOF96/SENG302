@@ -3,9 +3,8 @@
         <div id="activityTitle" class="activityTitle">{{ activityInfo.name }}</div>
         <div id="activityDescription" class="activityDescription">{{ activityInfo.description }}</div>
         <div id="activityLocation" class="activityLocation">{{ activityInfo.location }}</div>
-        <div id="activityStartDate" class="activityStart"><h3> Start date: {{ activityInfo.start }}</h3></div>
-        <div id="activityEndDate" class="activityEnd"><h3> End date: {{ activityInfo.end }}</h3></div>
-        <div id="activityDuration" class="activityDuration">{{ activityInfo.duration }}</div>
+        <div id="activityStartDate" class="activityStart" v-if="activityInfo.continuous === false"><h3> Start date: {{ startDate }}</h3></div>
+        <div id="activityEndDate" class="activityEnd" v-if="activityInfo.continuous === false"><h3> End date: {{ endDate }}</h3></div>
         <div class="activityTypeTitle"><p>Activity Type: </p></div>
         <div id="activityTypeListing" class="activityTypes">
             <span v-for="a in activityInfo.activityTypes" :key="a.type_id">
@@ -25,24 +24,33 @@
 <script>
   export default {
     name: "ActivityPageInfo",
-    props: ["activityInfo"]
+    props: ["activityInfo"],
+
+    computed: {
+      startDate() {
+        return new Date(this.activityInfo.start).toLocaleString()
+      },
+
+      endDate() {
+        return new Date(this.activityInfo.end).toLocaleString()
+      }
+    }
   }
 </script>
 
 <style scoped>
     .activityInfo {
-        font-family: sans-serif;
-        margin: 0;
         font-family: 'Roboto';
         display: grid;
-        grid-template-columns: auto 30%;
-        grid-template-rows: 2fr 2fr 1fr 1fr 2fr;
-        grid-template-areas: "Title Title" "Description Location" "Description Start" "ActivityTypesTitle End" "ActivityTypes Duration";
+        grid-template-columns: auto 35%;
+        grid-template-rows: 1fr 2fr 1fr 50px 50px;
+        min-height: 300px;
+        grid-template-areas: "Title Title" "Description Location" "Description Start" "ActivityTypesTitle End" "ActivityTypes Continuous";
     }
 
     .activityTitle {
         padding-left: 1rem;
-        padding-top: 0.5rem;
+        padding-top: 1rem;
         padding-bottom: 0.5rem;
         display: flex;
         justify-content: center;
@@ -58,12 +66,14 @@
     .activityDescription {
         display: flex;
         grid-area: Description;
+        justify-content: center;
         align-items: center;
+        text-align: center;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
-        padding-left: 2rem;
+        padding-left: 1rem;
         padding-right: 0.5rem;
         font-size: 17px;
-
     }
 
     .activityLocation {
@@ -74,7 +84,6 @@
         grid-area: Location;
         color: #6b6b6b;
         font-size: 17px;
-
     }
 
     .activityStart {
@@ -85,6 +94,7 @@
         grid-area: Start;
         font-size: 12px;
         color: #6b6b6b;
+        padding-right: 1rem;
 
     }
 
@@ -92,22 +102,11 @@
         text-align: center;
         grid-area: End;
         font-size: 12px;
+        padding-right: 1rem;
         color: #6b6b6b;
 
     }
 
-
-    .activityDuration {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        grid-area: Duration;
-        font-size: 15px;
-        color: #6b6b6b;
-
-
-    }
 
     .activityTypeTitle{
         grid-area: ActivityTypesTitle;
@@ -118,7 +117,6 @@
         text-align: center;
         font-weight: 500;
         colour: black;
-
 
     }
 

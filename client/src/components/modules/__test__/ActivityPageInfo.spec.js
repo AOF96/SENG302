@@ -6,30 +6,31 @@ const localVue = createLocalVue()
 localVue.use(VueRouter)
 const router = new VueRouter()
 
+let activityInfo = {
+  name: "NZ AUS Trail Running Walking",
+    start: "2020-02-20T08:00:00+1300",
+    end: "2020-02-20T08:00:00+1300",
+    location: "Kaikoura, New Zealand",
+    continuous: false,
+    description: "Trail running is a popular sport which involves running trails through challenging terrain.",
+    activityTypes: [
+    {
+      "type_id": 6,
+      "name": "Hiking"
+    },
+    {
+      "type_id": 7,
+      "name": "Running"
+    },
+  ]
+}
+
 describe('Activity page display check', () => {
   const wrapper = mount(ActivityPageInfo, {
     localVue,
     router,
     propsData: {
-      activityInfo: {
-        name: "NZ AUS Trail Running Walking",
-        start: "25th April 2020",
-        end: "26th April 2020",
-        location: "Kaikoura, New Zealand",
-        duration: "5 minutes",
-        description: "Trail running is a popular sport which involves running trails through challenging terrain.",
-        activityTypes: [
-          {
-            "type_id": 6,
-            "name": "Hiking"
-          },
-          {
-            "type_id": 7,
-            "name": "Running"
-          },
-        ]
-
-      }
+      activityInfo: activityInfo
     }
   })
 
@@ -52,18 +53,12 @@ describe('Activity page display check', () => {
   // *** come back to this after backend is implemented, this will fail ***
   it('Activity start date should be visible ', () => {
     expect(wrapper.find("#activityStartDate").isVisible()).toBe(true)
-    expect(wrapper.find("#activityStartDate").text()).toBe("Start date: 25th April 2020")
+    expect(wrapper.find("#activityStartDate").text()).toBe("Start date: 2/20/2020, 8:00:00 AM")
   })
 
   it('Activity end date should be visible ', () => {
     expect(wrapper.find("#activityEndDate").isVisible()).toBe(true)
-    expect(wrapper.find("#activityEndDate").text()).toBe("End date: 26th April 2020")
-  })
-
-  // *** come back to this after backend is implemented, this will fail ***
-  it('Activity duration should be visible ', () => {
-    expect(wrapper.find("#activityDuration").isVisible()).toBe(true)
-    expect(wrapper.find("#activityDuration").text()).toBe("5 minutes")
+    expect(wrapper.find("#activityEndDate").text()).toBe("End date: 2/20/2020, 8:00:00 AM")
   })
 
   it('Activity end date should be visible ', () => {
@@ -73,3 +68,38 @@ describe('Activity page display check', () => {
   })
 
 })
+
+let activityInfo2 = {
+  name: "NZ AUS Trail Running Walking",
+  start: "25th April 2020",
+  end: "26th April 2020",
+  location: "Kaikoura, New Zealand",
+  continuous: true,
+  description: "Trail running is a popular sport which involves running trails through challenging terrain.",
+  activityTypes: [
+    {
+      "type_id": 6,
+      "name": "Hiking"
+    },
+    {
+      "type_id": 7,
+      "name": "Running"
+    },
+  ]
+}
+
+describe('Activity page should not display check', () => {
+  const wrapper = mount(ActivityPageInfo, {
+    localVue,
+    router,
+    propsData: {
+      activityInfo: activityInfo2
+    }
+  })
+
+  it('Activity start and end date should not be visible ', () => {
+    expect(wrapper.find("#activityEndDate").exists()).toBe(false)
+    expect(wrapper.find("#activityStartDate").exists()).toBe(false)
+  })
+})
+

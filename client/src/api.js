@@ -90,5 +90,8 @@ export const apiActivity = {
     description: description,
     location: location,
     activity_type: activity_types
-  })
+  }),
+
+  getActivity: (activityId) => instance.get(`/activities/${activityId}`)
+
 };
