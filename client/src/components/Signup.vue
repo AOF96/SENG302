@@ -308,7 +308,7 @@ export default {
           //Save token to local storage
           localStorage.setItem("s_id", response.data[1]["sessionToken"]);
           apiUser.refreshInstance();
-          router.push("Profile");
+          router.push('profile?u='+response.data[0].profile_id);
         },
         error => {
           document.getElementById("missing_field").hidden = false;

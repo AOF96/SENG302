@@ -101,8 +101,8 @@ const mutations = {
   setUserPermissionLevel(state, data) {
     state.user.permission_level = data.permission_level;
   },
-  setUserActivity(state) {
-    state.user.activities = state.user.tmp_activities.slice();
+  setUserActivity(state, data) {
+    state.user.activities = data.activities;
   },
   setUserTmpActivity(state, data) {
     state.user.tmp_activities = data.tmp_activities;

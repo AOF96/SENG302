@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const SERVER_URL = 'http://localhost:9499';
 
@@ -90,6 +90,13 @@ export const apiActivity = {
     description: description,
     location: location,
     activity_type: activity_types
+  }),
+
+  /**
+   * Request to update activity types
+   */
+  editUserActivityTypes: (profile_id, activities) => instance.put('/profiles/'+ profile_id + '/activity-types', {
+    activities: activities
   }),
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`)

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import com.springvuegradle.Hakinakina.util.RandomToken;
@@ -141,6 +140,22 @@ public class UserController {
         return responseHandler.formatGetUsers(users);
     }
 
+
+    /**
+     * Validates user login by checking their sessionToken and returns user info
+     *
+     * @return User json object for user with matching sessionToken
+     */
+    @GetMapping("/validateLogin")
+    public ResponseEntity validateLogin(@RequestHeader("token") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponse(401, "User not currently logged in");
+        }
+        User user = session.getUser();
+        return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+    }
+
     /**
      * Processes request to retrieve certain user and returns
      *
@@ -148,13 +163,24 @@ public class UserController {
      * @return Specific user
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
-        Optional<User> optional = userRepository.findById(profileId);
-        if (optional.isPresent()) {
-            User user = optional.get();
-            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @RequestHeader("token") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
+        // only a user and an admin can edit the user profile
+        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
+        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
+        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
+            Optional<User> optional = userRepository.getUserById(profileId);
+            if (optional.isPresent()) {
+                User user = optional.get();
+                return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+            } else {
+                return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
+            }
         } else {
-            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
+            return responseHandler.formatErrorResponse(400, "Session mismatch");
         }
     }
 
@@ -175,6 +201,11 @@ public class UserController {
         return emailRepository.getAllEmails();
          */
         return userRepository.getAllPrimaryEmails().toString();
+    }
+
+    @GetMapping("/token/{profile_id}")
+    public List<String> getUserSessionToken(@PathVariable("profile_id") long profileId) {
+        return sessionRepository.getUserSessionToken(profileId);
     }
 
     /**
@@ -249,13 +280,7 @@ public class UserController {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
 
-        boolean userExists = userService.editActivityTypes(activities, profileId);
-
-        if (userExists) {
-            return new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
-        }
+        return userService.editActivityTypes(activities, profileId);
     }
 
     /**
