@@ -73,13 +73,7 @@ router.beforeEach((to, from, next) => {
     apiUser.getUserByToken().then(
       (response) => {
         const responseData = response.data;
-        if (responseData.permission_level === 2) {
-          if (store.adminUser) {
-            store.adminUser.adminUserLogin(responseData);
-          }
-        } else {
-          store._actions.updateUserProfile[0](responseData);
-        }
+        store._actions.updateUserProfile[0](responseData);
         if (to.path === "/signup" || to.path === "/login") {
           next("/profile");
         } else {
@@ -99,8 +93,8 @@ router.beforeEach((to, from, next) => {
     );
   } else {
     if (
-      to.path === "/settings/admin_dashboard" &&
-      store.getters.adminUser.isLogin
+      to.path === "/settings/admin_dashboard" && store.getters &&
+      store.getters.user.isAdmin
     ) {
       console.log("login as an admin user");
       next();

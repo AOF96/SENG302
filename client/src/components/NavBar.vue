@@ -5,7 +5,11 @@
     </router-link>
 
     <router-link v-bind:to="'/profile?u='+user.profile_id" v-if="!isAdmin && user.isLogin">
-      <button id="headerNavButton" class="myaccount" v-on:click="goToProfile">Profile</button>
+      <button id="headerNavButton" class="myaccount" >Profile</button>
+    </router-link>
+
+    <router-link v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">
+      <button id="headerNavButton" class="myaccount" >Dashboard</button>
     </router-link>
 
     <router-link to="/signup" v-if="!user.isLogin">
@@ -19,15 +23,13 @@
 
 <script>
   import { mapGetters, mapActions } from "vuex";
-  import { apiUser } from "../api";
+  // import { apiUser } from "../api";
 
   export default {
     name: "NavBar",
     computed: {
-      ...mapGetters(["user"]),
-      isAdmin() {
-        return this.user.permission_level > 0;
-      }
+      ...mapGetters(["user", "isAdmin"]),
+
     },
     data() {
       return {
@@ -41,11 +43,11 @@
       /*
                   Redirects the user into the profile page. Refreshes the data by making a request to the server side.
               */
-      goToProfile() {
-        apiUser.refreshUserData(this.user.profile_id).then(response => {
-          this.updateUserProfile(response.data);
-        });
-      },
+      // goToProfile() {
+      //   apiUser.refreshUserData(this.user.profile_id).then(response => {
+      //     this.updateUserProfile(response.data);
+      //   });
+      // },
       /*
                  Sends a request to the server side when to log a user out when the log out button is pressed.
                */

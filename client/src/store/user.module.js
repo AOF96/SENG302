@@ -20,50 +20,31 @@ const userInterface = {
 };
 
 //only for normal user with permission level 0
-const initialUserState = {
-  user: userInterface,
-};
+const initialUserState = {user: userInterface};
 
-//only for default admin with permission level 2
-const initialAdminUserState = {
-  adminUser: {
-    email: null,
-    password: null,
-    permission_level: 0,
-    isLogin: false
-  },
-};
 
 const state = {
-  adminUser: {
-    email: null,
-    password: null,
-    permission_level: 0,
-    isLogin: false
-  },
-  ...initialUserState,
+  ...initialUserState
 };
 
 const getters = {
   user(state) {
     return state.user;
   },
-  adminUser(state) {
-    return state.adminUser;
-  },
-
   searchedUser(state) {
     return state.user;
   },
   isLoggedIn(state) {
     return state.user.isLogin;
   },
+  isAdmin(state) {
+    return (state.user.permission_level > 0);
+  },
 };
 
 const mutations = {
   resetUser(state) {
     state.user = initialUserState.user;
-    state.adminUser = initialAdminUserState.adminUser;
   },
   setUser(state, data) {
     state.user = data;
@@ -128,15 +109,6 @@ const mutations = {
     state.user.permission_level = data.permission_level;
   },
 
-  adminUserLogin() {
-    state.user.isLogin = true;
-  },
-
-  adminUserLogout() {
-    state.user.isLogin = false;
-    apiUser.logout();
-  },
-
   userLogin() {
     state.user.isLogin = true;
   },
@@ -150,16 +122,6 @@ const mutations = {
     if (data.password != "") {
       state.user.password = data.password;
     }
-  },
-  setAdminUser(state, data) {
-    state.adminUser.email = data.email;
-    state.adminUser.password = data.password;
-    state.adminUser.permission_level = data.permission_level;
-  },
-  resetAdminUser(state) {
-    state.adminUser.email = null;
-    state.adminUser.password = null;
-    state.adminUser.permission_level = null;
   },
 };
 
@@ -211,14 +173,6 @@ const actions = {
   },
   resetUser({ commit }) {
     commit("resetUser");
-  },
-  loginAdminUser({ commit }, data) {
-    commit("setAdminUser", data);
-    commit("adminUserLogin");
-  },
-  logoutAdminUser({ commit }) {
-    commit("resetAdminUser");
-    commit("adminUserLogout");
   },
 };
 

@@ -50,11 +50,11 @@
       NavBar
     },
     computed: {
-      ...mapGetters(['user','adminUser']),
+      ...mapGetters(['user']),
 
     },
     methods: {
-      ...mapActions(['updateUserProfile','loginAdminUser']),
+      ...mapActions(['updateUserProfile']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
@@ -75,12 +75,11 @@
             apiUser.refreshInstance();
             if(responseData[0].permission_level == 2){
               console.log(responseData[0].permission_level);
-              this.loginAdminUser(responseData[0]);
               router.push('/settings/admin_dashboard');
             } else {
-              this.updateUserProfile(responseData[0]);
               router.push('profile?u='+responseData[0].profile_id);
             }
+            this.updateUserProfile(responseData[0]);
           }, (error) => {
             const responseData = error.response.data;
             const responseCode = error.response.status;
