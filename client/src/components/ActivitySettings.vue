@@ -1,70 +1,82 @@
 <template>
-    <div class="form-popup" id="myForm">
-        <form class="form-container">
-            <h1>New Activity</h1>
+    <div>
+        <NavBar/>
+        <div id="settingsWrap">
+            <div class="settingsContent">
+                <form class="form-container">
+                    <h1>Create an Activity</h1>
 
-            <label for="name"><b>Activity Name</b></label>
-            <input type="text" id="name" v-model="activity.name" required>
+                    <label class="editActivityLabel" for="name">Activity Name</label>
+                    <input class="editActivityInput" type="text" id="name" v-model="activity.name" required>
 
-            <label for="time">Continuous?</label>
-            <select id="time" v-on:change="setDuration" v-model="duration">
-                <option value="continuous">Continuous</option>
-                <option value="duration">Duration</option>
-            </select>
+                    <label class="editActivityLabel" for="time">Continuous?</label>
+                    <select class="editActivityDropbox" id="time" v-on:change="setDuration" v-model="duration">
+                        <option value="continuous">Continuous</option>
+                        <option value="duration">Duration</option>
+                    </select>
 
-            <label class="activityDurationLabel" for="start_date">Start Date</label>
-            <input type = "date" id="start_date" v-model="start_date">
+                    <label class="editActivityLabel" for="start_date">Start Date</label>
+                    <input class="editActivityInput" type = "date" id="start_date" v-model="start_date">
 
-            <label class="activityDurationLabel" for="end_date">End Date</label>
-            <input type = "date" id="end_date" v-model="end_date">
+                    <label class="editActivityLabel" for="end_date">End Date</label>
+                    <input class="editActivityInput" type = "date" id="end_date" v-model="end_date">
 
-            <label class="activityDurationLabel" for="start_time">Start Time</label>
-            <input type = "time" id="start_time" v-model="start_time">
+                    <label class="editActivityLabel" for="start_time">Start Time</label>
+                    <input class="editActivityInput" type = "time" id="start_time" v-model="start_time">
 
-            <label class="activityDurationLabel" for="end_time">End Time</label>
-            <input type = "time" id="end_time" v-model="end_time">
+                    <label class="editActivityLabel" for="end_time">End Time</label>
+                    <input class="editActivityInput" type = "time" id="end_time" v-model="end_time">
 
-            <label for="desc"><b>Description</b></label>
-            <input type="text" id="desc" v-model="activity.description">
+                    <label class="editActivityLabel" for="desc">Description</label>
+                    <textarea class="editActivityTextarea" maxlength="255" type="text" id="desc" v-model="activity.description"></textarea>
 
-            <label><b>Location</b></label>
-            <div>
-                <select v-model="adding_country"
-                        name="countries"
-                        required
-                >
-                    <option selected disabled hidden>Countries</option>
-                    <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
-                        {{addingCountry}}
-                    </option>
-                </select>
+                    <label class="editActivityLabel">Location</label>
+                    <div>
+                        <select v-model="adding_country"
+                                name="countries"
+                                class="editActivityDropbox"
+                                required
+                        >
+                            <option selected disabled hidden>Countries</option>
+                            <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
+                                {{addingCountry}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <label class="editActivityLabel">Activity Types</label>
+                    <div>
+                        <select
+                                v-on:change="selectActivityType"
+                                v-model="selected_activity"
+                                name="activityType"
+                                class="editActivityDropbox"
+                                required
+                        >
+                            <option selected disabled hidden>Activity Type</option>
+                            <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
+                                {{addingActivity}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="addedActivitiesContainer">
+                        <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+                            <label class="addedActivityTypeLabel">{{addedActivity}}</label>
+                            <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+                        </div>
+                    </div>
+
+                    <h6 class="edit_success" id="activity_success" hidden="false">Saved successfully</h6>
+                    <h6 class="edit_error" id="activity_error" hidden="false">An error has occurred</h6>
+
+                    <div class="confirmButtonContainer">
+                        <button id="editActivityButton" type="button" v-on:click="addActivity">Create</button>
+                        <button id="deleteActivityButton">Delete Activity</button>
+                    </div>
+                </form>
             </div>
-
-            <label><b>Activity Types</b></label>
-            <div>
-                <select
-                        v-on:change="selectActivityType"
-                        v-model="selected_activity"
-                        name="activityType"
-                        required
-                >
-                    <option selected disabled hidden>Activity Type</option>
-                    <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
-                        {{addingActivity}}
-                    </option>
-                </select>
-            </div>
-            <div v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
-                <h5>{{addedActivity}}</h5>
-                <button v-on:click="removeActivityType(addedActivity)">Remove</button>
-            </div>
-
-            <h6 class="edit_success" id="activity_success" hidden="false">Saved successfully</h6>
-            <h6 class="edit_error" id="activity_error" hidden="false">An error has occurred</h6>
-
-            <button id="addActivityButton" type="button" class="btn" v-on:click="addActivity">Create</button>
-            <button id="deleteActivityButton">Delete Activity</button>
-        </form>
+        </div>
+        <div class="activitySettingsSpacer"></div>
     </div>
 </template>
 
@@ -73,9 +85,14 @@
     import {apiUser, apiActivity} from "../api";
     import router from "../router";
     import axios from "axios";
-    const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
+    import NavBar from '@/components/NavBar';
+
+    const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all';
 
     export default {
+        components: {
+            NavBar
+        },
         data() {
             return {
                 selected_activity: "Activity Type",

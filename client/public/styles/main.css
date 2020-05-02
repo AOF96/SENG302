@@ -769,43 +769,136 @@ body{
 
 }
 
-#addActivityButton{
+/* Edit activity */
+.editActivityInput {
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin: 5px auto 20px;
+}
+
+.editActivityLabel {
+    font-family: 'Roboto';
+    text-decoration: none;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #5c5c5c;
+    font-weight: 400;
+}
+
+.editActivityDropbox {
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin: 5px auto 20px;
+    width: calc(100% - 40px);
+}
+
+.confirmButtonContainer #editActivityButton {
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 15px;
     color: #1cca92;
-    right: 20px;
     font-weight: 500;
     background: #ffffff;
     border: 2px solid #1cca92;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
-    float:right;
-    margin:20px;
 }
-#addActivityButton:hover{
+.confirmButtonContainer #editActivityButton:hover {
     background: #1cca92;
     color: #fff;
 }
 
-#deleteActivityButton {
+.confirmButtonContainer #deleteActivityButton {
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 15px;
     color: #ee5e5e;
-    right: 20px;
     font-weight: 500;
     background: #ffffff;
     border: 2px solid #ee5e5e;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
-    float:right;
-    margin:30px;
+    margin-left: 20px;
 }
 
-#deleteActivityButton:hover {
+.confirmButtonContainer #deleteActivityButton:hover {
     background: #ee5e5e;
     color: #fff;
+}
+
+.confirmButtonContainer {
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    float: right;
+}
+
+.addedActivitiesContainer {
+    border: 1px solid #d8d8d8;
+    margin-left: 20px;
+    border-radius: 15px;
+    min-height: 50px;
+    padding: 10px;
+    margin-right: 20px;
+    margin-top: -10px;
+}
+
+.addedActivityContainer {
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.deleteActivityTypeButton {
+    padding: 3px 8px;
+    border-radius: 25px;
+    color: #ee5e5e;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin-right: 10px;
+}
+
+.deleteActivityTypeButton:hover {
+    background: #ee5e5e;
+    color: #fff;
+}
+
+.addedActivityTypeLabel {
+    display: inline;
+    padding: 5px 10px 7px 5px;
+}
+
+.editActivityTextarea {
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display: block;
+    margin: 5px auto 20px;
+    height: 100px;
+    resize: none;
+}
+
+.activitySettingsSpacer {
+    height: 50px;
 }
