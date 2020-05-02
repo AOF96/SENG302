@@ -1,6 +1,6 @@
 <template>
     <div class="form-popup" id="myForm">
-        <form action="/action_page.php" class="form-container">
+        <form class="form-container">
             <h1>New Activity</h1>
 
             <label for="name"><b>Activity Name</b></label>
@@ -31,7 +31,8 @@
             <div>
                 <select v-model="adding_country"
                         name="countries"
-                        required>
+                        required
+                >
                     <option selected disabled hidden>Countries</option>
                     <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
                         {{addingCountry}}
@@ -45,6 +46,7 @@
                         v-on:change="selectActivityType"
                         v-model="selected_activity"
                         name="activityType"
+                        required
                 >
                     <option selected disabled hidden>Activity Type</option>
                     <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
@@ -60,8 +62,8 @@
             <h6 class="edit_success" id="activity_success" hidden="false">Saved successfully</h6>
             <h6 class="edit_error" id="activity_error" hidden="false">An error has occurred</h6>
 
-            <button id="addActivityButton" type="submit" class="btn" v-on:click="addActivity">Create</button>
-            <button id="deleteActivityButton" type="submit">Delete Activity</button>
+            <button id="addActivityButton" type="button" class="btn" v-on:click="addActivity">Create</button>
+            <button id="deleteActivityButton">Delete Activity</button>
         </form>
     </div>
 </template>
@@ -69,6 +71,7 @@
 <script>
     import {mapGetters, mapActions} from 'vuex'
     import {apiUser, apiActivity} from "../api";
+    import router from "../router";
     import axios from "axios";
     const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
@@ -96,6 +99,7 @@
             await apiUser.getActivityTypes().then((response) => {
                 this.activities_option = response.data;
             }).catch(error => console.log(error));
+            // Gets list of countries that can be selected
             await axios.get(COUNTRIES_URL).then((response) => {
                 const countries = [];
                 const data = response.data;
@@ -110,6 +114,9 @@
         methods: {
             ...mapActions(['createActivity']),
 
+            /**
+             * Shows/hides date and time selection if duration is duration/continuous
+             */
             setDuration() {
                 let i;
                 if (this.duration === "duration") {
@@ -132,6 +139,9 @@
                     }
                 }
             },
+            /**
+             * Adds activity type to selected options
+             */
             selectActivityType() {
                 if (this.selected_activity !== undefined) {
                     this.activity_types_selected.push(this.selected_activity);
@@ -141,6 +151,9 @@
                     }
                 }
             },
+            /**
+             * Removes activity type from selection
+             */
             removeActivityType(addedActivity) {
                 this.activities_option.push(addedActivity);
                 let index = this.activity_types_selected.indexOf(addedActivity);
@@ -148,23 +161,55 @@
                     this.activity_types_selected.splice(index, 1);
                 }
             },
+            /**
+             * Checks form conditions and sends create activity request if conditions pass
+             */
             addActivity() {
-                console.log(this.start_date);
-                if (this.activity.name === null) {
+                let currentDate = new Date(Date.now());
+                let timeZone = currentDate.toString().slice(currentDate.toString().indexOf('+'), 5);
+                if (this.activity.name === null || this.activity.name.trim() === "") {
                     this.displayError("Please select an activity name.")
                 } else if (this.duration !== 'duration' && this.duration !== 'continuous') {
-                    this.displayError("Please select a duration");
-                } else if (this.duration === 'duration' && (this.start_date === null || this.end_date === null)) {
-                    this.displayError("Please select start and end date");
+                    this.displayError("Please select a duration.");
+                } else if (this.duration === 'duration' && (this.start_date === null || this.end_date === null ||
+                    this.start_date === "" || this.end_date === "")) {
+                    this.displayError("Please select start and end date.");
+                } else if (this.activity_types_selected.length < 1) {
+                    this.displayError("Please select at least one activity type.")
                 } else {
                     let combinedStartTime;
                     let combinedEndTime;
                     if (this.duration !== 'duration') {
                         combinedStartTime = null;
                         combinedEndTime = null;
+                    } else if (this.start_time === null && this.end_time === null) {
+                        combinedStartTime = this.start_date + 'T00:00:00' + timeZone;
+                        combinedEndTime = this.end_date + 'T00:00:00' + timeZone;
+                    } else if (this.start_time === null) {
+                        combinedStartTime = this.start_date + 'T00:00:00' + timeZone;
+                        combinedEndTime = this.end_date + 'T' + this.end_time + ':00' + timeZone;
+                    } else if (this.end_time === null) {
+                        combinedStartTime = this.start_date + 'T' + this.start_time + ':00' + timeZone;
+                        combinedEndTime = this.end_date + 'T00:00:00' + timeZone;
                     } else {
-                        combinedStartTime = this.start_date + 'T' + this.start_time + ':00+1300';
-                        combinedEndTime = this.end_date + 'T' + this.end_time + ':00+1300';
+                        combinedStartTime = this.start_date + 'T' + this.start_time + ':00' + timeZone;
+                        combinedEndTime = this.end_date + 'T' + this.end_time + ':00' + timeZone;
+                    }
+
+                    currentDate.setHours(0);
+                    currentDate.setMinutes(0);
+                    currentDate.setSeconds(0);
+                    currentDate.setMilliseconds(0);
+                    if (new Date(combinedStartTime) > new Date(combinedEndTime)) {
+                        this.displayError("End time must be after start time.");
+                        return;
+                    } else if (currentDate > new Date(this.start_date + 'T00:00:00' + timeZone)) {
+                        this.displayError("Start date must be in the future.");
+                        return;
+                    } else if (currentDate.getFullYear() + 2 < new Date(this.start_date + 'T00:00:00' + timeZone).getFullYear()
+                        || currentDate.getFullYear() + 2 < new Date(this.end_date + 'T00:00:00' + timeZone).getFullYear()) {
+                        this.displayError('Must be less than 2 years in the future.');
+                        return;
                     }
 
                     this.duration = this.duration !== 'duration';
@@ -172,19 +217,23 @@
                     apiActivity.addActivity(this.user.profile_id, this.activity.name, this.duration, combinedStartTime,
                         combinedEndTime, this.activity.description, this.adding_country, this.activity_types_selected)
                         .then(response => {
-                                document.getElementById("activity_success").hidden = false;
-                                document.getElementById("activity_error").hidden = true;
-                                console.log(response);
-                            },
-                            error => {
+                            document.getElementById("activity_success").hidden = false;
+                            document.getElementById("activity_error").hidden = true;
+                            console.log(response);
+                            router.push('Profile');
+                        }, error => {
                                 document.getElementById("activity_error").hidden = false;
                                 document.getElementById("activity_error").innerText = error.response.data.error;
                                 document.getElementById("activity_success").hidden = true;
                                 console.log(error);
                             }
-                        );
+                        )
                 }
             },
+            /**
+             * Shows error text for given error string
+             * @param error
+             */
             displayError(error) {
                 document.getElementById("activity_error").hidden = false;
                 document.getElementById("activity_error").innerText = error;
