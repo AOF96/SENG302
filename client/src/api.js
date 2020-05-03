@@ -78,7 +78,14 @@ export const apiUser = {
   /**
    * Request to get all activity types from the server
    */
-  getActivityTypes: () => instance.get('/activity-types')
+  getActivityTypes: () => instance.get('/activity-types'),
+
+  /**
+   * Request to update activity types
+   */
+  editUserActivityTypes: (profile_id, activities) => instance.put('/profiles/'+ profile_id + '/activity-types', {
+    activities: activities
+  }),
 };
 
 export const apiActivity = {
@@ -90,13 +97,6 @@ export const apiActivity = {
     description: description,
     location: location,
     activity_type: activity_types
-  }),
-
-  /**
-   * Request to update activity types
-   */
-  editUserActivityTypes: (profile_id, activities) => instance.put('/profiles/'+ profile_id + '/activity-types', {
-    activities: activities
   }),
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`)

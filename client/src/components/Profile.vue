@@ -31,42 +31,42 @@
               </tr>
 
             </table>
-
-            <router-link to="/activity_settings">
-              <button type="button" onclick="">Add Activity</button>
-            </router-link>
           </div>
+
         </div>
         <div id="centreColumn">
           <div id="profilePublicInfo">
             <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
             <div id="userQuickInfoWrap">
               <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
-              <h2 id="userFitnessLevel">Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
+              <h2 class="userFitnessLevel">Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
             </div>
-
-
 
             <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
             <div class="floatClear"></div>
           </div>
 
           <div id="userActivities">
-            <h3>Activity types:</h3>
-
-            <div  v-for="type in user.activities" v-bind:key="type">
-              <label >Name:</label> {{type.name}}<br>
-            </div>
-            <h3 style="display: inline-block">Duration Activities:</h3>
+            <router-link to="/activity_settings">
+              <button class="addActivityButton" type="button" onclick="">Add Activity</button>
+            </router-link>
+            <h2 id="activityTitle">Activities</h2>
+            <h3>Activity Types:</h3>
+            <ul id="activityTypesList">
+              <li  v-for="type in user.activities" v-bind:key="type">
+                {{type}}
+              </li>
+            </ul>
             <hr>
-            <div  v-for="activity in user.dur_activities" v-bind:key="activity">
-              <label >Name:</label> {{activity.name}}<br> <label>Description:</label> {{activity.description}} <hr>
+            <h3 style="display: inline-block">Duration Activities:</h3>
+            <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
+              {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
             </div>
-
+            <hr>
             <h3 style="display: inline-block">Continuous Activities:</h3>
 
-            <div  v-for="activity in user.cont_activities" v-bind:key="activity">
-              <label >Name:</label> {{activity.name}}<br> <label>Description:</label> {{activity.description}} <hr>
+            <div class="activitySummaryDiv" v-for="activity in user.cont_activities" v-bind:key="activity">
+              {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
             </div>
 
           </div>
