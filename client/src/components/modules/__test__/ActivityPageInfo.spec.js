@@ -35,8 +35,8 @@ describe('Activity page display check', () => {
   })
 
   it('Activity title should be visible ', () => {
-    expect(wrapper.find("#activityTitle").isVisible()).toBe(true)
-    expect(wrapper.find("#activityTitle").text()).toBe("NZ AUS Trail Running Walking")
+    expect(wrapper.find("#activityPageTitle").isVisible()).toBe(true)
+    expect(wrapper.find("#activityPageTitle").text()).toBe("NZ AUS Trail Running Walking")
   })
 
   it('Activity description should be visible ', () => {
@@ -53,12 +53,12 @@ describe('Activity page display check', () => {
   // *** come back to this after backend is implemented, this will fail ***
   it('Activity start date should be visible ', () => {
     expect(wrapper.find("#activityStartDate").isVisible()).toBe(true)
-    expect(wrapper.find("#activityStartDate").text()).toBe("Start date: 2/20/2020, 8:00:00 AM")
+    expect(wrapper.find("#activityStartDate").text()).toBe("Starts Thu, 20 February 2020 8:00 am")
   })
 
   it('Activity end date should be visible ', () => {
     expect(wrapper.find("#activityEndDate").isVisible()).toBe(true)
-    expect(wrapper.find("#activityEndDate").text()).toBe("End date: 2/20/2020, 8:00:00 AM")
+    expect(wrapper.find("#activityEndDate").text()).toBe("Ends Thu, 20 February 2020 8:00 am")
   })
 
   it('Activity end date should be visible ', () => {
