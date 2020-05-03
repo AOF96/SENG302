@@ -1,103 +1,46 @@
 <template>
   <div>
+    <link rel="stylesheet" type="text/css" href="/styles/pages/signUp.css">
     <NavBar />
-    <div class="credentials-box-wrap">
-      <div id="credentials-box">
+    <div class="signUpContainer">
+      <div class="signUpFormContainer">
         <h1>Sign Up</h1>
         <h2>Create an account</h2>
 
         <form @submit.prevent>
-          <div class="signup-row">
-            <h6 class="signup_error" id="missing_field" hidden="true"></h6>
+          <div class="signUpRow">
+            <h6 class="errorMessage" id="missing_field" hidden="true"></h6>
           </div>
-          <div class="signup-row">
-            <input
-              class="fmName"
-              v-model="user.firstname"
-              name="fname"
-              type="text"
-              placeholder="First Name*"
-              required
-            />
-            <input
-              class="fmName"
-              v-model="user.middlename"
-              name="middlename"
-              type="text"
-              placeholder="Middle Name"
-            />
+          <div class="signUpRow">
+            <input class="signUpHalfWidthInput" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required/>
+            <input class="signUpHalfWidthInput" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name"/>
           </div>
-
-          <div class="signup-row">
-            <input
-              class="signupInput-lastname"
-              v-model="user.lastname"
-              name="lname"
-              type="text"
-              placeholder="Last Name*"
-              required
-            />
+          <div class="signUpRow">
+            <input class="signUpInput" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required/>
           </div>
-          <div class="signup-row">
+          <div class="signUpRow">
             <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname" />
-            <select
-              v-model="user.gender"
-              name="gender"
-              placeholder="Gender"
-              value="Gender"
-              required
-            >
+            <select v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
               <option selected disabled hidden>Gender</option>
               <option>Non-Binary</option>
               <option>Female</option>
               <option>Male</option>
             </select>
           </div>
-
-          <p v-if="warning.bio" class="signup_error">{{ this.bio_warning_msg }}</p>
-          <div class="signup-row">
-            <textarea
-              maxlength="255"
-              v-model="user.bio"
-              class="signupTextarea"
-              name="bio"
-              type="text"
-              placeholder="Bio"
-            ></textarea>
+          <p v-if="warning.bio" class="errorMessage">{{ this.bio_warning_msg }}</p>
+          <div class="signUpRow">
+            <textarea maxlength="255" v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
           </div>
-
-          <div class="signup-row">
-            <input
-              v-model="user.primary_email"
-              class="signupInput-email"
-              name="email"
-              type="email"
-              placeholder="Email*"
-              required
-            />
+          <div class="signUpRow">
+            <input v-model="user.primary_email" class="signUpInput" name="email" type="email" placeholder="Email*" required/>
           </div>
-          <div class="signup-row">
-            <h3 id="signupText-birthday">Birthday</h3>
-            <input
-              v-model="user.date_of_birth"
-              class="signupInput-birthday"
-              name="birthday"
-              type="date"
-              placeholder="Birthday"
-              required
-            />
+          <div class="signUpRow">
+            <h3 class="signUpText">Birthday</h3>
+            <input v-model="user.date_of_birth" class="signUpInputBirthday" name="birthday" type="date" placeholder="Birthday" required/>
           </div>
-
-          <div class="signup-row">
-            <h3 id="fitnessLevelText">Fitness Level</h3>
-            <select
-              id="levels"
-              v-model="user.fitness"
-              name="fitnesslevel"
-              placeholder="Fitness Level"
-              value="Fitness"
-              required
-            >
+          <div class="signUpRow">
+            <h3 class="signUpText">Fitness Level</h3>
+            <select class="fitnessLevelSelect" v-model="user.fitness" name="fitnesslevel" placeholder="Fitness Level" value="Fitness" required>
               <option value="0">I never exercise</option>
               <option value="1">I can walk a short distance</option>
               <option value="2">I can jog a short distance</option>
@@ -105,30 +48,13 @@
               <option value="4">I can run a marathon</option>
             </select>
           </div>
-
-          <div class="signup-row">
-            <input
-              v-model="password1"
-              class="signupInput-password"
-              name="pass1"
-              type="password"
-              placeholder="Password*"
-              required
-            />
+          <div class="signUpRow">
+            <input v-model="password1" class="signUpInput" name="pass1" type="password" placeholder="Password*" required/>
           </div>
-
-          <div class="signup-row">
-            <input
-              v-model="password2"
-              class="signupInput-password"
-              name="pass2"
-              type="password"
-              placeholder="Password Again*"
-              required
-            />
+          <div class="signUpRow">
+            <input v-model="password2" class="signUpInput" name="pass2" type="password" placeholder="Password Again*" required/>
           </div>
-
-          <ul class="validation-errors">
+          <ul class="errorMessage">
             <li v-if="!validation.password.match">{{ this.err_msg.password.match }}</li>
             <li v-if="!validation.password.length">{{ this.err_msg.password.length }}</li>
             <li v-if="!validation.password.number">{{ this.err_msg.password.number }}</li>
@@ -136,7 +62,9 @@
             <li v-if="!validation.password.uppercase">{{ this.err_msg.password.uppercase }}</li>
           </ul>
           <hr />
-          <input v-on:click="submitSignUp()" id="signupButton-submit" type="submit" value="Sign Up" />
+          <div class="signUpRow">
+            <button v-on:click="submitSignUp()" class="loginButton" type="submit">Sign Up</button>
+          </div>
         </form>
       </div>
       <h4>

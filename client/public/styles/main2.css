@@ -1,0 +1,112 @@
+/* -- General ---- */
+p, h1, h2, h3, h4, h5, h6, input, select, textarea, label, button, ul {
+    font-family: Roboto, sans-serif;
+    text-decoration: none;
+}
+
+/* -- Forms ---- */
+input, select, textarea {
+    border-radius: 50px;
+    font-size: 14px;
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    padding: 10px 15px;
+}
+.successMessage {
+    font-weight: 500;
+    font-size: 14px;
+    color: #1dca92;
+}
+.errorMessage {
+    font-weight: 500;
+    font-size: 14px;
+    color: #f06a6a;
+}
+
+/* -- Default Containers ---- */
+#appContainer{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+}
+#pageContent{
+    top:58px;
+    height:calc(100% - 58px);
+    position: relative;
+}
+
+/* -- Buttons ---- */
+.navBarButton {
+    background-color: #1dca92;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 2px solid #1dca92;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+    border-radius: 100px;
+    padding: 8px 18px;
+    float: right;
+    margin-right: 10px;
+}
+.navBarButton:hover{
+    background: #fff;
+    color:#1dca92;
+}
+.genericButton {
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition:all 0.2s ease;
+    text-decoration: none;
+}
+.genericButton:hover {
+    background: #1cca92;
+    color: #ffffff;
+}
+.genericDeleteButton {
+    border-radius: 50px;
+    font-size: 15px;
+    color: #ee5e5e;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition:all 0.2s ease;
+    text-decoration: none;
+}
+.genericDeleteButton:hover {
+    background: #ee5e5e;
+    color: #ffffff;
+}
+.loginButton {
+    border-radius: 0;
+    background: none;
+    color: #1dca92;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    outline: initial !important;
+}
+
+/* -- NavBar ---- */
+.navBarContainer {
+    left: 0;
+    top:0;
+    width: 100%;
+    position: fixed;
+    background: #ffffff;
+    padding: 10px 0;
+    color: #fff;
+    z-index: 100;
+    box-shadow: 0 3px 4px 0 rgba(0,0,0,0.14), 0 3px 3px -2px rgba(0,0,0,0.12), 0 1px 8px 0 rgba(0,0,0,0.20);
+}
