@@ -39,9 +39,10 @@
         document.getElementById("myOverlay").style.display = "none";
     },
             async goToSearchedUser() {
+
                     var tempSearchedUser = await apiUser.getUserById(this.searchedUser.profile_id)
                 console.log(tempSearchedUser)
-                    if(tempSearchedUser ==  "Invalid permissions"){
+                    if(tempSearchedUser ==  "Invalid permissions" || tempSearchedUser.permission_level == 2){
                         alert("User does not exist");
                     }
                     else{
