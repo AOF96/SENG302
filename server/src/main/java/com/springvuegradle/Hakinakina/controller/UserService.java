@@ -188,17 +188,17 @@ public class UserService {
         }
     }
 
-    /** adds email
-     * POST /profiles/{profileId}/emails
-     * {
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *     ]
-     * }
-     *
-     *
-     * @return*/
+
+
+    /***
+     * Handles adding emails for the given user. Returns appropriate error messages if the request format is invalid or
+     * if the provided emails are invalid. Saves the given emails if the request is correct.
+     * @param request a JSON object containing the emails to be processed.
+     * @param userId the ID of the user that wants to add emails.
+     * @param sessionToken the authorization token of user adding emails.
+     * @return 400 response if the JSON format is incorrect or if the user exceeded the allowed number of additional
+     * emails. 403 if an existing email is tried to be added again. 201 if the request succeeded.
+     */
     public ResponseEntity addEmails(String request, long userId, String sessionToken) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = null;
@@ -235,6 +235,13 @@ public class UserService {
         return responseHandler.formatErrorResponse(201, "New emails successfully added");
     }
 
+    /***
+     * Validates the data provided when creating a new profile. Provides error messages if any of the required inputs are
+     * invalid or the given email already exits in the database.
+     * @param user the user to be created.
+     * @return An error response 400 if the provided data is invalid. 403 response if the given email already exists.
+     * 201 created response if the request was succesful, with the JSON object of the created user and a session token.
+     */
     public ResponseEntity validateCreateProfile(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
@@ -285,6 +292,12 @@ public class UserService {
         }
     }
 
+    /***
+     * Checks that all the information provided to edit a user is valid. Provides detailed information to the user if
+     * any of the input fields contain invalid data. If all the inputs are valid, updated the details on the database.
+     * @param user the user to be edited.
+     * @return a 403 error response if any of the inputs are incorrect. A 200 response if all the details are correct.
+     */
     public ResponseEntity validateEditUser(User user) {
         ArrayList<String> messages = new ArrayList<String>();
 
