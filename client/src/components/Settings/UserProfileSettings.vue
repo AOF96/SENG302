@@ -7,6 +7,14 @@
         <h6 class="edit_error" id="error" hidden="true"></h6>
         <h6 class="edit_success" id="success" hidden="true"></h6>
         <form @submit.prevent>
+            <div id="adminToggle" v-if="user.permission_level == 2 && searchedUser.permission_level != 2 && user.profile_id != searchedUser.profile_id">
+                <h2>Enable Admin Abilities</h2>
+                <div class="togswitch" :position="searchedUser.permission_level == 1 ? 'on' : 'off'" v-on:click="toggleAdmin()">
+                    <div class="togswitchnob"></div>
+                    <div class="togswitchnob_touch"></div>
+                </div>
+                <div class="floatClear"></div>
+            </div>
             <h2>First Name</h2>
             <input class="editProfileInput" type="text" name="fname" v-model="searchedUser.firstname" placeholder="First Name*" required>
             <h2>Middle Name</h2>
@@ -52,7 +60,7 @@ export default {
         UserSettingsMenu
     },
     computed: {
-        ...mapGetters(['user'])
+        ...mapGetters(['user']),
     },
     data: function() {
       return {
@@ -71,7 +79,7 @@ export default {
             console.log(this.searchedUser.fitness);
             apiUser.editProfile(this.searchedUser.profile_id, this.searchedUser.firstname, this.searchedUser.lastname, this.searchedUser.middlename,
                 this.searchedUser.nickname, this.searchedUser.primary_email, this.searchedUser.bio, this.searchedUser.date_of_birth, this.searchedUser.gender,
-                Number(this.searchedUser.fitness), this.searchedUser.additional_email, this.searchedUser.passports).then((response) => {
+                Number(this.searchedUser.fitness), this.searchedUser.additional_email, this.searchedUser.passports, this.searchedUser.permission_level).then((response) => {
                 this.updateUserProfile(this.user);
                 document.getElementById("success").hidden = false;
                 document.getElementById("success").innerText = "Updated Successfully";
@@ -83,6 +91,14 @@ export default {
                 document.getElementById("success").hidden = true;
                 console.log(error);
             });
+        },
+
+        toggleAdmin() {
+            if(this.searchedUser.permission_level == 1){
+                this.searchedUser.permission_level = 0;
+            }else if(this.searchedUser.permission_level == 0){
+                this.searchedUser.permission_level = 1;
+            }
         },
 
         /*

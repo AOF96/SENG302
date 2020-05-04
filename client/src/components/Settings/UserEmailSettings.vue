@@ -158,6 +158,10 @@
                 this.updateUserEmail(this.searchedUser);
                 apiUser.editEmail(this.searchedUser.profile_id, this.searchedUser.primary_email, this.searchedUser.additional_email);
             },
+
+            /*
+                Uses user id from url to request user data.
+             */
             async loadSearchedUser() {
                 if(this.$route.query.u == null){
                     this.$router.push('/settings/email?u=?u='+this.user.user.profile_id);

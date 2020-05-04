@@ -724,3 +724,68 @@ body{
     padding: 10px;
     margin-top: 10px;
 }
+.togswitch{
+  width: 40px;
+  height: 16px;
+  background: rgba(0,0,0,0.26);
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.togswitchnob {
+    width: 24px;
+    height: 24px;
+    background: #fafafa;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+    -webkit-transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    z-index: 2;
+}
+.togswitchnob_touch {
+    width: 24px;
+    height: 24px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 50%;
+    transform: scale(1,1);
+    -webkit-transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    z-index: 1;
+    opacity: 0;
+}
+.togswitch:active .togswitchnob_touch{
+		transform:scale(2.6,2.6);
+		opacity:1;
+}
+.togswitch[position=on] {
+  background: rgba(29, 202, 146, 0.498039);
+}
+.togswitch[position=on] .togswitchnob{
+  left: 20px;
+  background: rgb(29, 202, 146);
+}
+.togswitch[position=on] .togswitchnob_touch{
+  left: 20px;
+  background: rgba(29, 202, 146, 0.0980392);
+}
+#adminToggle{
+  position: relative;
+  margin-top:10px;
+}
+#adminToggle h2{
+  float:left;
+  margin-bottom:20px;
+}
+#adminToggle .togswitch{
+  position: absolute;
+  right:20px;
+  top:50%;
+  transform:translateY(-50%);
+}
