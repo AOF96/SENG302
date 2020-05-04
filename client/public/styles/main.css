@@ -10,9 +10,9 @@
     height:100%;
 }
 #pageContent{
-    top:58px;
-    height:calc(100% - 58px);
-    position: relative;
+    display: block;
+    overflow: auto;
+    padding: 58px 0;
 }
 p, h1, h2, h3, h4, h5, h6 span, input, button, li, a, label{
     font-family: 'Roboto';
@@ -906,10 +906,6 @@ body{
     resize: none;
 }
 
-.activitySettingsSpacer {
-    height: 50px;
-}
-
 #activityTypesList {
     margin-left: 40px;
     margin-bottom: 15px;
@@ -943,4 +939,16 @@ body{
 }
 .profileInfoContainer h3 {
     font-weight: 500;
+}
+
+.activitySettingsContent{
+    float: right;
+    width: calc(100% - 270px);
+    background:white;
+    border-radius: 14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+}
+.activitySettingsContent h1{
+    padding:15px 20px;
+    font-size:19px;
 }

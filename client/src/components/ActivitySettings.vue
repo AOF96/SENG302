@@ -2,7 +2,7 @@
     <div>
         <NavBar/>
         <div id="settingsWrap">
-            <div class="settingsContent">
+            <div class="activitySettingsContent">
                 <form class="form-container">
                     <h1>Create an Activity</h1>
 
@@ -15,16 +15,16 @@
                         <option value="duration">Duration</option>
                     </select>
 
-                    <label class="editActivityLabel" for="start_date">Start Date</label>
+                    <label class="editActivityLabel" id="startDateLabel" for="start_date">Start Date</label>
                     <input class="editActivityInput" type = "date" id="start_date" v-model="start_date">
 
-                    <label class="editActivityLabel" for="end_date">End Date</label>
+                    <label class="editActivityLabel" id="endDateLabel" for="end_date">End Date</label>
                     <input class="editActivityInput" type = "date" id="end_date" v-model="end_date">
 
-                    <label class="editActivityLabel" for="start_time">Start Time</label>
+                    <label class="editActivityLabel" id="startTimeLabel" for="start_time">Start Time</label>
                     <input class="editActivityInput" type = "time" id="start_time" v-model="start_time">
 
-                    <label class="editActivityLabel" for="end_time">End Time</label>
+                    <label class="editActivityLabel" id="endTimeLabel" for="end_time">End Time</label>
                     <input class="editActivityInput" type = "time" id="end_time" v-model="end_time">
 
                     <label class="editActivityLabel" for="desc">Description</label>
@@ -76,7 +76,6 @@
                 </form>
             </div>
         </div>
-        <div class="activitySettingsSpacer"></div>
     </div>
 </template>
 
@@ -135,25 +134,24 @@
              * Shows/hides date and time selection if duration is duration/continuous
              */
             setDuration() {
-                let i;
                 if (this.duration === "duration") {
-                    document.getElementById("start_date").hidden = false;
-                    document.getElementById("end_date").hidden = false;
-                    document.getElementById("start_time").hidden = false;
-                    document.getElementById("end_time").hidden = false;
-                    let labels = document.getElementsByClassName("activityDurationLabel");
-                    for(i = 0; i < labels.length; i++) {
-                        labels[i].hidden = false;
-                    }
+                    document.getElementById("start_date").type = "date";
+                    document.getElementById("end_date").type = "date";
+                    document.getElementById("start_time").type = "date";
+                    document.getElementById("end_time").type = "date";
+                    document.getElementById("startDateLabel").hidden = false;
+                    document.getElementById("endDateLabel").hidden = false;
+                    document.getElementById("startTimeLabel").hidden = false;
+                    document.getElementById("endTimeLabel").hidden = false;
                 } else {
-                    document.getElementById("start_date").hidden = true;
-                    document.getElementById("end_date").hidden = true;
-                    document.getElementById("start_time").hidden = true;
-                    document.getElementById("end_time").hidden = true;
-                    let labels = document.getElementsByClassName("activityDurationLabel");
-                    for(i = 0; i < labels.length; i++) {
-                        labels[i].hidden = true;
-                    }
+                    document.getElementById("start_date").type = "hidden";
+                    document.getElementById("end_date").type = "hidden";
+                    document.getElementById("start_time").type = "hidden";
+                    document.getElementById("end_time").type = "hidden";
+                    document.getElementById("startDateLabel").hidden = true;
+                    document.getElementById("endDateLabel").hidden = true;
+                    document.getElementById("startTimeLabel").hidden = true;
+                    document.getElementById("endTimeLabel").hidden = true;
                 }
             },
             /**
