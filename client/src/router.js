@@ -94,7 +94,7 @@ router.beforeEach((to, from, next) => {
   } else {
     if (
       to.path === "/settings/admin_dashboard" && store.getters &&
-      store.getters.user.isAdmin
+      store.getters.user.isAdmin && store.getters.user.permission_level == 2
     ) {
       console.log("login as an admin user");
       next();

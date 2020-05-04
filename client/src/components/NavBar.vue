@@ -4,7 +4,7 @@
       <button id="headerNavButton" class="login" v-on:click="logoutUser">Logout</button>
     </router-link>
 
-    <router-link v-bind:to="'/profile?u='+user.profile_id" v-if="!isAdmin && user.isLogin">
+    <router-link v-bind:to="'/profile?u='+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
       <button id="headerNavButton" class="myaccount" >Profile</button>
     </router-link>
 
