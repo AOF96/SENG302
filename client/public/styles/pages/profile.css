@@ -1,0 +1,159 @@
+/* -- Main Containers ---- */
+.profileBanner {
+    width: 100%;
+    height: 300px;
+    background: url(../../images/user_banner.jpg) no-repeat center center;
+    background-size: cover;
+}
+.profileContainer{
+    width: 80%;
+    min-width: 1000px;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    top: -56px;
+}
+.leftSidebarContainer {
+    width: 19%;
+    height: 40px;
+    float: left;
+    min-width: 190px;
+}
+.rightSidebarContainer {
+    width: 19%;
+    height: 40px;
+    float: right;
+    min-width: 190px;
+}
+.centreContainer {
+    width: 60%;
+    min-width: 600px;
+    float: left;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+.profileModule{
+    width:100%;
+    background:white;
+    border-radius: 14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    overflow: hidden;
+}
+.profileModule h1{
+    font-size: 17px;
+    padding: 20px;
+    color: rgba(0,0,0,0.85);
+}
+
+/* -- Content containers ---- */
+/* Left Sidebar */
+.profileInfoTable {
+    padding: 20px;
+}
+.profileInfoTd {
+    padding: 10px 0 10px 0;
+}
+.profileInfoEmail {
+    margin-top: 4px;
+}
+/* Centre */
+.profileHeaderContainer {
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    position: relative;
+    margin: auto;
+}
+.profileMainInfoIcon {
+    padding: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background: #1cca92;
+    fill: white;
+    float: left;
+    margin:20px;
+    text-align: center;
+}
+.profileMainInfoContainer {
+    float: left;
+    margin-top: 36px;
+}
+.profileMainInfoContainer h1 {
+    font-size: 18px;
+}
+.profileMainInfoContainer h2 {
+    color: #7f7f7f;
+    font-size: 13px;
+    font-weight: 500;
+    padding-top: 3px;
+}
+.profileHeaderContainer .genericButton {
+    position: absolute;
+    padding: 6px 16px;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.profileActivitiesContainer {
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    position: relative;
+    margin-top: 10px;
+    padding: 20px;
+    line-height: 30px;
+    margin-bottom: 50px;
+}
+.profileActivitiesContainer h2 {
+    text-align: center;
+    padding-left: 90px;
+}
+.profileActivitiesContainer h3 {
+    display: inline-block;
+}
+.activityTypesList {
+    margin-left: 40px;
+    margin-bottom: 15px;
+}
+.activitySummaryContainer {
+    margin-left: 25px;
+    line-height: 20px;
+    margin-bottom: 15px;
+}
+.profileActivitiesContainer h4 {
+    color: #7f7f7f;
+    font-size: 13px;
+    font-weight: 500;
+    padding-top: 3px;
+}
+/* Right sidebar */
+.passportCountriesContainer {
+    padding-bottom:2px;
+    overflow: hidden;
+}
+.passportCountryContainer {
+    padding: 10px 20px;
+    border-top: 1px solid #f3f3f3;
+    transition:all .2s ease;
+    cursor:pointer;
+}
+.passportCountryContainer:hover {
+    background: #f8f8f8;
+}
+.passportCountryContainer img {
+    height: 30px;
+    width: 45px;
+    float: right;
+    border-radius: 15px;
+    border: 2px solid #1cca92;
+}
+.passportCountryContainer h2 {
+    font-size: 16px;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
+    float: left;
+}

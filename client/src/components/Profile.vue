@@ -1,78 +1,75 @@
 <template>
     <div>
+      <link rel="stylesheet" type="text/css" href="/styles/pages/profile.css">
       <NavBar/>
-      <div id="profileBanner">
+      <div class="profileBanner">
       </div>
-      <div id="profileWrap">
-        <div id="sidebarLeft">
+      <div class="profileContainer">
+        <div class="leftSidebarContainer">
           <div class="profileInfo">
-            <table id ="profileTable">
+            <table class="profileInfoTable">
               <tr>
-                <td class="profileTableTd" col width = "150">Gender:</td>
-                <td class="profileTableTd">{{ user.gender }}</td>
+                <td class="profileInfoTd" col width = "150">Gender:</td>
+                <td class="profileInfoTd">{{ user.gender }}</td>
               </tr>
               <tr>
-                <td class="profileTableTd">DOB:</td>
-                <td class="profileTableTd">{{ user.date_of_birth }}</td>
+                <td class="profileInfoTd">DOB:</td>
+                <td class="profileInfoTd">{{ user.date_of_birth }}</td>
               </tr>
               <tr>
-                <td class="profileTableTd">Primary Email:</td>
-                <td class="profileTableTd">{{ user.primary_email }}</td>
+                <td class="profileInfoTd">Primary Email:</td>
+                <td class="profileInfoTd">{{ user.primary_email }}</td>
               </tr>
               <tr>
-                <td class="profileTableTd">Bio:</td>
-                <td class="profileTableTd">{{ user.bio }}</td>
+                <td class="profileInfoTd">Bio:</td>
+                <td class="profileInfoTd">{{ user.bio }}</td>
               </tr>
               <tr>
-                <td class="profileTableTd">Secondary Emails:</td>
-                <div style="margin-top: 4px" v-for="email in user.additional_email" v-bind:key="email">
+                <td class="profileInfoTd">Secondary Emails:</td>
+                <div class="profileInfoEmail" v-for="email in user.additional_email" v-bind:key="email">
                   <p >{{email}}</p>
                 </div>
               </tr>
 
             </table>
           </div>
-
         </div>
-        <div id="centreColumn">
-          <div id="profilePublicInfo">
-            <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
-            <div id="userQuickInfoWrap">
-              <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
-              <h2 class="userFitnessLevel">Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
+        <div class="centreContainer">
+          <div class="profileHeaderContainer">
+            <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
+            <div class="profileMainInfoContainer">
+              <h1>{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
+              <h2>Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
             </div>
-
-            <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
+            <router-link to="/settings/profile">
+              <button class="genericButton">Edit Profile</button>
+            </router-link>
             <div class="floatClear"></div>
           </div>
-
-          <div id="userActivities">
+          <div class="profileActivitiesContainer">
             <router-link to="/activity_settings">
-              <button class="addActivityButton" type="button" onclick="">Add Activity</button>
+              <button class="genericButton" type="button" onclick="">Add Activity</button>
             </router-link>
-            <h2 id="activityTitle">Activities</h2>
+            <h2>Activities</h2>
             <h3>Activity Types:</h3>
-            <ul id="activityTypesList">
-              <li  v-for="type in user.activities" v-bind:key="type">
+            <ul class="activityTypesList">
+              <li v-for="type in user.activities" v-bind:key="type">
                 {{type}}
               </li>
             </ul>
             <hr>
-            <h3 style="display: inline-block">Duration Activities:</h3>
-            <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
-              {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
+            <h3>Duration Activities:</h3>
+            <div class="activitySummaryContainer" v-for="activity in user.dur_activities" v-bind:key="activity">
+              {{activity.name}}<br> <h4>{{activity.description}}</h4>
             </div>
             <hr>
-            <h3 style="display: inline-block">Continuous Activities:</h3>
-
-            <div class="activitySummaryDiv" v-for="activity in user.cont_activities" v-bind:key="activity">
-              {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
+            <h3>Continuous Activities:</h3>
+            <div class="activitySummaryContainer" v-for="activity in user.cont_activities" v-bind:key="activity">
+              {{activity.name}}<br> <h4>{{activity.description}}</h4>
             </div>
-
           </div>
-
         </div>
-        <div id="sidebarRight">
+        <div class="rightSidebarContainer">
           <PassportCountries/>
         </div>
       </div>

@@ -37,6 +37,9 @@ input, select, textarea {
     height:calc(100% - 58px);
     position: relative;
 }
+.floatClear {
+    clear:both;
+}
 
 /* -- Buttons ---- */
 .navBarButton {
