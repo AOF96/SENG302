@@ -160,7 +160,7 @@
             },
             async loadSearchedUser() {
                 if(this.$route.query.u == null){
-                    this.$router.push('profile?u='+this.user.user.profile_id);
+                    this.$router.push('/settings/email?u=?u='+this.user.user.profile_id);
                     this.searchedUser = this.user.user;
                 }else{
                     var tempUserData = await apiUser.getUserById(this.$route.query.u);

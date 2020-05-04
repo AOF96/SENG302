@@ -93,12 +93,12 @@
              */
             async loadSearchedUser() {
                 if(this.$route.query.u == null){
-                    this.$router.push('/settings/password?u='+this.user.profile_id);
+                    this.$router.push('/settings/passport_countries?u='+this.user.profile_id);
                     this.searchedUser = this.user;
                 }else{
                     var tempUserData = await apiUser.getUserById(this.$route.query.u);
                     if(tempUserData == "Invalid permissions"){
-                        this.$router.push('/settings/password?u='+this.user.profile_id);
+                        this.$router.push('/settings/passport_countries?u='+this.user.profile_id);
                         this.searchedUser = this.user;
                     }else{
                         this.searchedUser = tempUserData;
