@@ -14,8 +14,6 @@ import AdminDashboard from "./components/Settings/AdminDashboard";
 
 Vue.use(VueRouter);
 
-var firstLoad = true;
-
 const routes = [
   {
     path: "/profile",
