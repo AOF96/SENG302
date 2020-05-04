@@ -5,34 +5,17 @@
       </div>
       <div id="profileWrap">
         <div id="sidebarLeft">
-          <div class="profileInfo">
-            <table id ="profileTable">
-              <tr>
-                <td class="profileTableTd" col width = "150">Gender:</td>
-                <td class="profileTableTd">{{ user.gender }}</td>
-              </tr>
-              <tr>
-                <td class="profileTableTd">DOB:</td>
-                <td class="profileTableTd">{{ user.date_of_birth }}</td>
-              </tr>
-              <tr>
-                <td class="profileTableTd">Primary Email:</td>
-                <td class="profileTableTd">{{ user.primary_email }}</td>
-              </tr>
-              <tr>
-                <td class="profileTableTd">Bio:</td>
-                <td class="profileTableTd">{{ user.bio }}</td>
-              </tr>
-              <tr>
-                <td class="profileTableTd">Secondary Emails:</td>
-                <div style="margin-top: 4px" v-for="email in user.additional_email" v-bind:key="email">
-                  <p >{{email}}</p>
-                </div>
-              </tr>
-
-            </table>
+          <div class="profileInfoContainer">
+            <h3>Profile Info</h3>
+            <hr>
+            <div class="profileRow">Gender: {{ user.gender }}</div>
+            <hr>
+            <div class="profileRow">Date of Birth: {{ user.date_of_birth }}</div>
+            <hr>
+            <div class="profileRow">Email: {{ user.primary_email }}</div>
+            <hr>
+            <div class="profileRow">Bio: {{ user.bio }}</div>
           </div>
-
         </div>
         <div id="centreColumn">
           <div id="profilePublicInfo">
@@ -174,14 +157,5 @@
 
   button {
       margin-left: 8px;
-  }
-
-  .profileInfo {
-      width: 100%;
-      margin: auto;
-      background: white;
-      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-      border-radius: 14px;
-    font-family: Roboto;
   }
 </style>
