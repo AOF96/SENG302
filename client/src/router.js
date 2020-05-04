@@ -93,7 +93,7 @@ router.beforeEach((to, from, next) => {
       }
     );
   } else {
-    if (to.path === "/settings/admin_dashboard" && isAdmin) {
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2) {
       console.log("login as an admin user");
       next();
     } else if (isAuthPath) {

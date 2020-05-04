@@ -16,7 +16,7 @@ const userInterface = {
   password: null,
   passports: [],
   tmp_passports: [],
-  permission_level: null,
+  permission_level: 0,
 };
 
 //only for normal user with permission level 0
