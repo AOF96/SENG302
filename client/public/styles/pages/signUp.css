@@ -7,13 +7,13 @@
     width: calc(100% - 30px);
     max-width: 380px;
 }
-.signUpContainer h4{
+.signUpContainer h4 {
     text-align: center;
     color: #9eabbb;
     font-size: 14px;
     padding-top: 18px;
 }
-.signUpContainer h4 a{
+.signUpContainer h4 a {
     color: #1dca92;
     font-weight: 500;
     text-decoration: none;
@@ -33,22 +33,22 @@
     display: flex;
     justify-content: space-between;
 }
-.signUpRow > input:first-child{
+.signUpRow > input:first-child {
     margin-right:15px;
 }
 /* Elements */
-.signUpFormContainer h1{
+.signUpFormContainer h1 {
     font-size: 20px;
     color: #2d2d2d;
     text-align: center;
 }
-.signUpFormContainer h2{
+.signUpFormContainer h2 {
     font-size: 13px;
     color: #808080;
     padding-bottom: 25px;
     text-align: center;
 }
-.signUpFormContainer input, .signUpFormContainer select, .signUpFormContainer textarea{
+.signUpFormContainer input, .signUpFormContainer select, .signUpFormContainer textarea {
     margin-bottom: 15px;
     width: 100%;
 }
@@ -71,7 +71,7 @@
 .fitnessLevelSelect {
     width: calc(100% - 106px) !important;
 }
-.signUpFormContainer hr{
+.signUpFormContainer hr {
     border: 0;
     height: 0;
     border-top: 1px solid #dedede;

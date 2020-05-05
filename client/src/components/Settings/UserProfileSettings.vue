@@ -1,29 +1,29 @@
 <template>
-<div id="settingsWrap">
+<div class="settingsContainer">
     <UserSettingsMenu />
-    <div class="settingsContent">
+    <div class="settingsContentContainer">
         <h1>Edit Profile Info</h1>
         <hr>
-        <h6 class="edit_error" id="error" hidden="true"></h6>
-        <h6 class="edit_success" id="success" hidden="true"></h6>
-        <form @submit.prevent>
+        <h6 class="errorMessage" id="error" hidden="true"></h6>
+        <h6 class="successMessage" id="success" hidden="true"></h6>
+        <form @submit.prevent class="editForm">
             <h2>First Name</h2>
-            <input class="editProfileInput" type="text" name="fname" v-model="user.firstname" placeholder="First Name*" required>
+            <input type="text" name="fname" v-model="user.firstname" placeholder="First Name*" required>
             <h2>Middle Name</h2>
-            <input class="editProfileInput" type="text" name="lname" v-model="user.middlename" placeholder="Middle Name">
+            <input type="text" name="lname" v-model="user.middlename" placeholder="Middle Name">
             <h2>Last Name</h2>
-            <input class="editProfileInput" type="text" name="lname" v-model="user.lastname" placeholder="Last Name*" required>
+            <input type="text" name="lname" v-model="user.lastname" placeholder="Last Name*" required>
             <h2>Nickname</h2>
-            <input class="editProfileInput" type="text" name="nickname" v-model="user.nickname" placeholder="Nickname">
+            <input type="text" name="nickname" v-model="user.nickname" placeholder="Nickname">
             <h2>Gender</h2>
-            <select class="editProfileInput editProfileInputGender" v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
+            <select v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
                 <option selected disabled hidden>Gender</option>
                 <option>Non-Binary</option>
                 <option>Female</option>
                 <option>Male</option>
             </select>
             <h2>Fitness Level</h2>
-            <select class="editProfileInput editProfileInputGender" v-model="user.fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
+            <select v-model="user.fitness" name="fitnesslevel" placeholder="fitness" value="fitness" required>
                 <option value = 0>I never exercise</option>
                 <option value = 1>I can walk a short distance</option>
                 <option value = 2>I can jog a short distance</option>
@@ -31,10 +31,10 @@
                 <option value = 4>I can run a marathon</option>
             </select>
             <h2>Birthday</h2>
-            <input v-model="user.date_of_birth" class="editProfileInput" name="birthday" type="date" required>
+            <input v-model="user.date_of_birth" name="birthday" type="date" required>
             <h2>Bio</h2>
-            <textarea maxlength="255" class="editProfileTextarea" name="bio" v-model="user.bio" placeholder="Write about yourself"></textarea>
-            <button id="settingsProfileSubmit" v-on:click="updateProfile()" type="submit">Update Profile</button>
+            <textarea maxlength="255" name="bio" v-model="user.bio" placeholder="Write about yourself"></textarea>
+            <button class="genericButton" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
 </div>

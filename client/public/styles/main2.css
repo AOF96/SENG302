@@ -1,12 +1,12 @@
 /* -- General ---- */
-p, h1, h2, h3, h4, h5, h6, input, select, textarea, label, button, ul {
+* {
     font-family: Roboto, sans-serif;
     text-decoration: none;
 }
 
 /* -- Forms ---- */
 input, select, textarea {
-    border-radius: 50px;
+    border-radius: 20px;
     font-size: 14px;
     background: #ffffff;
     outline: none;

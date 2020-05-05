@@ -1,0 +1,84 @@
+/* -- Navigation ---- */
+.settingsNavContainer {
+    float: left;
+    width: 250px;
+}
+.settingsNavContainer h1 {
+    font-size: 20px;
+    padding:10px 20px;
+    font-weight: 500;
+    color:rgba(0,0,0,0.8);
+}
+.navButtonContainer {
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    overflow:hidden;
+}
+.settingsNavButton {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight:500;
+    color:rgba(0,0,0,0.65);
+    transition:all .2s ease;
+}
+.settingsNavButton:hover {
+    background:rgba(0,0,0,0.03);
+}
+.settingsNavContainer hr {
+    border:none;
+    border-top:1px solid #d8d8d8;
+    margin: 0;
+}
+
+/* -- General ---- */
+.settingsContainer {
+    width: calc(100% - 30px);
+    margin: 0 auto;
+    max-width: 900px;
+    padding-top:50px;
+}
+.settingsContentContainer {
+    float: right;
+    width: calc(100% - 270px);
+    background:white;
+    border-radius: 14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+}
+.settingsContentContainer h1 {
+    padding:15px 20px;
+    font-size:19px;
+}
+.settingsContentContainer h2 {
+    padding: 0 20px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #5c5c5c;
+    font-weight: 400;
+}
+.settingsContentContainer hr {
+    border:none;
+    border-top:1px solid #d8d8d8;
+}
+.settingsContentContainer .genericButton {
+    padding: 8px 16px;
+    float: right;
+    margin: 10px 0 15px;
+}
+
+/* -- Main settings -- */
+.editForm {
+    padding: 0 20px;
+}
+.editForm input, textarea {
+    width: calc(100% - 35px);
+}
+.editForm textarea {
+    height: 100px;
+    resize: none;
+}
+.editForm select {
+    width: 100%;
+}
