@@ -1,9 +1,9 @@
 <template>
     <div>
         <NavBar/>
-        <div id="settingsWrap">
-            <div class="settingsContent">
-                <form class="form-container">
+        <div class="createActivityContainer">
+            <div class="createActivityContentContainer">
+                <form class="CreateActivityFormContainer">
                     <h1>Create an Activity</h1>
 
                     <label class="editActivityLabel" for="name">Activity Name</label>
@@ -59,15 +59,15 @@
                             </option>
                         </select>
                     </div>
-                    <div class="addedActivitiesContainer">
+                    <div class="addedActivityTypeContainer">
                         <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
-                            <label class="addedActivityTypeLabel">{{addedActivity}}</label>
+                            <label class="addedTypeContainer">{{addedActivity}}</label>
                             <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
                         </div>
                     </div>
 
-                    <h6 class="edit_success" id="activity_success" hidden="false">Saved successfully</h6>
-                    <h6 class="edit_error" id="activity_error" hidden="false">An error has occurred</h6>
+                    <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
+                    <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
 
                     <div class="confirmButtonContainer">
                         <button id="editActivityButton" type="button" v-on:click="addActivity">Create</button>
@@ -261,6 +261,6 @@
 </script>
 
 <style>
-    /*@import "../../public/styles/pages/activities.css";*/
-    @import "../../public/styles/oldStyle.css";
+    @import "../../public/styles/pages/activities.css";
+    /*@import "../../public/styles/oldStyle.css";*/
 </style>

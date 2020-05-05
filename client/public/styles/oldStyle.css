@@ -247,12 +247,14 @@ body{
     font-size: 13px;
     color:#6b6b6b;
 }
+
 #settingsWrap{
     width: calc(100% - 30px);
     margin: 0 auto;
     max-width: 900px;
     padding-top:50px;
 }
+
 #settingsNavWrap{
     float: left;
     width: 250px;
