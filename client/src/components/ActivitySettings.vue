@@ -259,3 +259,8 @@
         }
     }
 </script>
+
+<style>
+    /*@import "../../public/styles/pages/activities.css";*/
+    @import "../../public/styles/main.css";
+</style>

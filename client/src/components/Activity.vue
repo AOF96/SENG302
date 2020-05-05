@@ -1,10 +1,10 @@
 np<template>
     <div>
         <NavBar/>
-        <div id="profileBanner">
+        <div class="profileBanner">
         </div>
-        <div id="activityWrap">
-            <div id="profilePublicInfo">
+        <div class="activityContainer">
+            <div class="profilePublicInfo">
                     <ActivityPageInfo :activityInfo="activityData"/>
                 <div class="floatClear"></div>
             </div>
@@ -72,12 +72,6 @@ np<template>
   }
 </script>
 
-<style scoped>
-    #activityWrap{
-        width: 60%;
-        margin: 0 auto;
-        display: block;
-        position: relative;
-        top: -56px;
-    }
+<style>
+    @import "../../public/styles/pages/activities.css";
 </style>
