@@ -1,6 +1,5 @@
 <template>
   <div>
-    <link rel="stylesheet" type="text/css" href="/styles/pages/signUp.css">
     <NavBar />
     <div class="signUpContainer">
       <div class="signUpFormContainer">
@@ -248,3 +247,7 @@ export default {
   }
 };
 </script>
+
+<style>
+  @import '../../public/styles/pages/signUpStyle.css';
+</style>

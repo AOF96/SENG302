@@ -1,6 +1,5 @@
 <template>
     <div>
-      <link rel="stylesheet" type="text/css" href="/styles/pages/profile.css">
       <NavBar/>
       <div class="profileBanner">
       </div>
@@ -42,13 +41,13 @@
               <h2>Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
             </div>
             <router-link to="/settings/profile">
-              <button class="genericButton">Edit Profile</button>
+              <button class="genericConfirmButton">Edit Profile</button>
             </router-link>
             <div class="floatClear"></div>
           </div>
           <div class="profileActivitiesContainer">
             <router-link to="/activity_settings">
-              <button class="genericButton" type="button" onclick="">Add Activity</button>
+              <button class="genericConfirmButton" type="button" onclick="">Add Activity</button>
             </router-link>
             <h2>Activities</h2>
             <h3>Activity Types:</h3>
@@ -141,44 +140,5 @@
 </script>
 
 <style scoped>
-  .form-popup {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    right: 15px;
-    border: 3px solid #f1f1f1;
-    z-index: 9;
-  }
-
-  .btn {
-    border: black;
-    background-color: inherit;
-    padding: 14px 28px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  /* Green */
-  .btn:hover {
-    background-color: #4CAF50;
-    color: white;
-  }
-  body{
-    padding-top:20px;
-    padding-left: 10px;
-  }
-
-  button {
-      margin-left: 8px;
-  }
-
-  .profileInfo {
-      width: 100%;
-      margin: auto;
-      background: white;
-      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-      border-radius: 14px;
-    font-family: Roboto;
-  }
+  @import '../../public/styles/pages/profileStyle.css';
 </style>

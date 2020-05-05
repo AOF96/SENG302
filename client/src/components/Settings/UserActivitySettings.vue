@@ -1,12 +1,12 @@
 <template>
-  <div id="settingsWrap">
+  <div class="settingsContainer">
     <UserSettingsMenu />
-    <div class="settingsContent">
+    <div class="settingsContentContainer">
       <h1>Edit Activities</h1>
       <hr>
-      <div class="activityBox"  v-for="activity in user.user.activities" v-bind:key="activity">
-        <h4 class="activityDisplay">{{activity}}</h4>
-        <button class="removeActivityButton" v-on:click="removeActivityType(activity)">remove</button>
+      <div class="itemContainer"  v-for="activity in user.user.activities" v-bind:key="activity">
+        <h4>{{activity}}</h4>
+        <button class="genericDeleteButton" v-on:click="removeActivityType(activity)">remove</button>
         <div class="floatClear"></div>
       </div>
 
@@ -17,7 +17,7 @@
                   name="activityType"
                   placeholder="Activity Type"
                   value="Activity Type"
-                  id="activityInput"
+                  class="itemSelect"
                   required
           >
             <option selected disabled hidden>Activity Type</option>
@@ -25,12 +25,12 @@
               {{addingActivity}}
             </option>
           </select>
-          <button id = "addActivityButton" v-on:click="addActivityType()">Add</button>
-          <button id = "saveChangesButton"  v-on:click="saveActivityTypes()">Save</button>
+          <button class="genericConfirmButton addItemButton" v-on:click="addActivityType()">Add</button>
+          <button class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
         </form>
       </div>
-      <h6 class="edit_success" id="activity_type_success" hidden="false">Saved successfully</h6>
-      <h6 class="edit_error" id="activity_type_error" hidden="false">An error has occurred</h6>
+      <h6 class="successMessage" id="activity_type_success" hidden="false">Saved successfully</h6>
+      <h6 class="errorMessage" id="activity_type_error" hidden="false">An error has occurred</h6>
     </div>
   </div>
 </template>

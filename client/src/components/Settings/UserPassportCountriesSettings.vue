@@ -1,34 +1,34 @@
 <template>
-    <div id="settingsWrap">
+    <div class="settingsContainer">
         <UserSettingsMenu />
-        <div class="settingsContent">
+        <div class="settingsContentContainer">
             <h1>Edit Passport Countries</h1>
             <hr>
-            <div class="countryBox" v-for="country in user.user.passports" v-bind:key="country">
-                <h4 class="countryDisplay">{{country}}</h4>
-                <button class="removeCountryButton" v-on:click="removePassportCountries(country)">remove</button>
+            <div class="itemContainer" v-for="country in user.user.passports" v-bind:key="country">
+                <h4>{{country}}</h4>
+                <button class="genericDeleteButton" v-on:click="removePassportCountries(country)">remove</button>
                 <div class="floatClear"></div>
             </div>
-            <div id="countryActions">
+            <div>
                 <form @submit.prevent>
                     <select v-model="adding_country"
                             name="passportCountries"
                             placeholder="Passport Countries"
                             value="Passport Countries"
-                            id="passportCountriesInput"
+                            class="itemSelect"
                             required>
                         <option selected disabled hidden>Passport Countries</option>
                         <option v-for="addingCountry in countries_option" v-bind:key="addingCountry">
                             {{addingCountry}}
                         </option>
                     </select>
-                    <button id = "addPassportButton" v-on:click="addPassportCountries()">Add</button>
-                    <button id ="saveChangesButton" v-on:click="savePassportCountries()">Save</button>
+                    <button class="genericConfirmButton addItemButton" v-on:click="addPassportCountries()">Add</button>
+                    <button class="genericConfirmButton saveButton" v-on:click="savePassportCountries()">Save</button>
                     <div class="floatClear"></div>
                 </form>
             </div>
-            <h6 class="edit_success" id="passport_success" hidden="false">Saved successfully</h6>
-            <h6 class="edit_error" id="passport_error" hidden="false">An error has occurred</h6>
+            <h6 class="successMessage" id="passport_success" hidden="false">Saved successfully</h6>
+            <h6 class="errorMessage" id="passport_error" hidden="false">An error has occurred</h6>
         </div>
     </div>
 </template>

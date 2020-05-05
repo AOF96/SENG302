@@ -63,6 +63,21 @@ input, select, textarea {
 .genericButton {
     border-radius: 50px;
     font-size: 15px;
+    color: #7a7a7a;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #7a7a7a;
+    cursor: pointer;
+    transition:all 0.2s ease;
+    text-decoration: none;
+}
+.genericButton:hover {
+    background: #7a7a7a;
+    color: #ffffff;
+}
+.genericConfirmButton {
+    border-radius: 50px;
+    font-size: 15px;
     color: #1cca92;
     font-weight: 500;
     background: #ffffff;
@@ -71,7 +86,7 @@ input, select, textarea {
     transition:all 0.2s ease;
     text-decoration: none;
 }
-.genericButton:hover {
+.genericConfirmButton:hover {
     background: #1cca92;
     color: #ffffff;
 }

@@ -1,6 +1,5 @@
 <template>
     <div class="settingsNavContainer">
-      <link rel="stylesheet" type="text/css" href="/styles/pages/profileSettingsStyle.css">
       <NavBar/>
       <h1>Settings</h1>
       <div class="navButtonContainer">
@@ -25,3 +24,7 @@
     },
   }
 </script>
+
+<style>
+  @import '../../../public/styles/pages/profileSettingsStyle.css';
+</style>

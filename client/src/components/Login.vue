@@ -1,6 +1,5 @@
 <template>
   <div>
-    <link rel="stylesheet" type="text/css" href="/styles/pages/login.css">
     <NavBar/>
     <div class="loginContainer">
       <div class="loginFormContainer">
@@ -119,3 +118,7 @@
     }
   }
 </script>
+
+<style>
+  @import '../../public/styles/pages/loginStyle.css';
+</style>
