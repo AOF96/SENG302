@@ -72,6 +72,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String middleName = getValueString(node, "middlename");
         String nickName = getValueString(node, "nickname");
         String bio = getValueString(node, "bio");
+        int permission_level = getValueInt(node, "permission_level");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
@@ -94,6 +95,11 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
         if (bio != null) {
             user.setBio(bio);
+        }
+        if (permission_level != -1) {
+            user.setPermissionLevel(permission_level);
+        } else {
+            user.setPermissionLevel(0);
         }
 
         return user;
