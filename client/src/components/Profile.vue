@@ -50,8 +50,9 @@
 
             <div class="activitySummaryDiv" v-for="activity in user.cont_activities" v-bind:key="activity">
               {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
+              <button id="deleteActivityButton" type="button" v-on:click="deleteContinuousActivity(activity)">Delete Activity</button>
             </div>
-
+\
           </div>
 
         </div>
@@ -69,6 +70,7 @@
   import PassportCountries from '@/components/modules/passportCountries';
   import json from '../../public/json/data.json';
   import axios from "axios";
+  import {apiActivity} from "../api";
   const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
   export default {
@@ -122,6 +124,16 @@
         console.log('init')
         this.user.passports = this.user.passports.slice()
       },
+      deleteDurationActivity(activity) {
+        let index = this.user.cont_activities.indexOf(activity);
+        this.user.cont_activities.splice(index, 1);
+        apiActivity.deleteActivity(this.activity.author_id, this.$route.params.activityId);
+      },
+      deleteContinuousActivity(activity) {
+        let index = this.user.dur_activities.indexOf(activity);
+        this.user.dur_activities.splice(index, 1);
+        apiActivity.deleteActivity(this.activity.author_id, this.$route.params.activityId);
+      }
     }
   }
 </script>
