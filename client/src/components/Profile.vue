@@ -43,13 +43,15 @@
             <hr>
             <h3 style="display: inline-block">Duration Activities:</h3>
             <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
-              {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
+              <a class="link" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+              <h2 class="userFitnessLevel">{{activity.description}}</h2>
             </div>
             <hr>
             <h3 style="display: inline-block">Continuous Activities:</h3>
 
             <div class="activitySummaryDiv" v-for="activity in user.cont_activities" v-bind:key="activity">
-              {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
+              <a class="link" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+              <h2 class="userFitnessLevel">{{activity.description}}</h2>
             </div>
 
           </div>
@@ -69,7 +71,9 @@
   import PassportCountries from '@/components/modules/passportCountries';
   import json from '../../public/json/data.json';
   import axios from "axios";
-  const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
+  const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all';
+  import {apiActivity} from "../api";
+  import router from "../router";
 
   export default {
     name: "Profile",
@@ -100,16 +104,16 @@
       this.startUp();
         axios.get(COUNTRIES_URL)
                 .then((response) => {
-                  const countries = []
-                  const data = response.data
+                  const countries = [];
+                  const data = response.data;
                   for (let country in data) {
-                    let country_name = data[country].name
+                    let country_name = data[country].name;
                     countries.push(country_name)
                   }
 
                   for(let country of this.user.passports) {
-                    const index = countries.indexOf(country)
-                    if (index === -1) continue
+                    const index = countries.indexOf(country);
+                    if (index === -1) continue;
                     countries.splice(index, 1)
                   }
                   this.countries_option = countries
@@ -118,10 +122,23 @@
       },
     methods: {
       ...mapActions(['updatePassports']),
+      ...mapActions(["createActivity"]),
       startUp() {
-        console.log('init')
-        this.user.passports = this.user.passports.slice()
+        console.log('init');
+        this.user.passports = this.user.passports.slice();
       },
+
+      goToActivity(id) {
+        apiActivity.getActivity(id)
+        .then(
+          response => {
+            this.createActivity(response.data);
+            router.push("/activity/" + id);
+          }
+        ).catch(err => {
+          console.log(err);
+        });
+      }
     }
   }
 </script>

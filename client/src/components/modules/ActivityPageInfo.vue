@@ -1,14 +1,14 @@
 <template>
     <div class="activityInfo">
-        <div id="activityPageTitle" class="activityTitle">{{ activityInfo.name }}</div>
-        <div id="activityDescription" class="activityDescription">{{ activityInfo.description }}</div>
-        <div id="activityLocation" class="activityLocation">{{ activityInfo.location }}</div>
-        <div id="activityStartDate" class="activityStart" v-if="activityInfo.continuous === false"><h3> Starts {{ startDate }}</h3></div>
-        <div id="activityEndDate" class="activityEnd" v-if="activityInfo.continuous === false"><h3> Ends {{ endDate }}</h3></div>
+        <div id="activityPageTitle" class="activityTitle">{{ activity.name }}</div>
+        <div id="activityDescription" class="activityDescription">{{ activity.description }}</div>
+        <div id="activityLocation" class="activityLocation">{{ activity.location }}</div>
+        <div id="activityStartDate" class="activityStart" v-if="activity.continuous === false"><h3> Starts {{ startDate }}</h3></div>
+        <div id="activityEndDate" class="activityEnd" v-if="activity.continuous === false"><h3> Ends {{ endDate }}</h3></div>
         <div class="activityTypeTitle"><p>Activity Type: </p></div>
         <div id="activityTypeListing" class="activityTypes">
-            <span v-for="a in activityInfo.activityTypes" :key="a.type_id">
-                <span v-if="activityInfo.activityTypes.indexOf(a) != activityInfo.activityTypes.length - 1">
+            <span v-for="a in activity.activity_types" :key="a.type_id">
+                <span v-if="activity.activity_types.indexOf(a) != activity.activity_types.length - 1">
                     {{a.name}} ,
                 </span>
                 <span v-else>
@@ -23,19 +23,20 @@
 
 <script>
 
-    import dateUtil from "@/util/date"
+    import dateUtil from "@/util/date";
+    import {mapGetters} from "vuex";
 
   export default {
     name: "ActivityPageInfo",
-    props: ["activityInfo"],
 
     computed: {
+        ...mapGetters(['activity']),
       startDate() {
-        return dateUtil.getFormatDate(new Date(this.activityInfo.start))
+        return dateUtil.getFormatDate(new Date(this.activity.start_time))
       },
 
       endDate() {
-        return dateUtil.getFormatDate(new Date(this.activityInfo.end))
+        return dateUtil.getFormatDate(new Date(this.activity.end_time))
       }
     }
   }
