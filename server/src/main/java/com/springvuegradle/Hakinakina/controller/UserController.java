@@ -89,6 +89,13 @@ public class UserController {
             for (PassportCountry country : oldUser.getPassportCountries()) {
                 country.removeUser(oldUser);
             }
+
+            // only the default admin can edit permission level
+           boolean isEditPermission = !oldUser.getPermissionLevel().equals(user.getPermissionLevel());
+            if(isEditPermission && !isDefaultAdmin) {
+                return responseHandler.formatErrorResponse(401, "Unauthorized: Only the default admin can edit the user permission level");
+            }
+
             oldUser.resetPassportCountries();
             user.setUserId(profileId);
             user.setEncryptedPassword(oldUser.getPassword());
