@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
-import NavBar from '../NavBar.vue'
+import NavBar from '../modules/NavBar.vue'
 import Vuex from 'vuex'
 
 const localVue = createLocalVue()

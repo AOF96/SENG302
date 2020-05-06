@@ -79,7 +79,7 @@ import router from "../router";
 import { mapGetters, mapActions } from "vuex";
 import { apiUser } from "../api";
 
-import NavBar from "@/components/NavBar";
+import NavBar from "./modules/NavBar";
 
 const ERR_MSG_FNAME = "Please enter your First name";
 const ERR_MSG_LNAME = "Please enter your Last name";
@@ -248,6 +248,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
   @import '../../public/styles/pages/signUpStyle.css';
 </style>
