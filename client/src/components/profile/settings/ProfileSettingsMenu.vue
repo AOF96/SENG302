@@ -17,7 +17,7 @@
 </template>
 
 <script>
-  import NavBar from '@/components/NavBar'
+  import NavBar from "../../modules/NavBar";
   export default {
     components: {
         NavBar

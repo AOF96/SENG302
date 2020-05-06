@@ -43,8 +43,7 @@
 <script>
 
 import { mapGetters, mapActions } from 'vuex'
-
-import UserSettingsMenu from '@/components/profile/UserSettingsMenu'
+import UserSettingsMenu from './ProfileSettingsMenu';
 import {apiUser} from "../../../api";
 
 export default {

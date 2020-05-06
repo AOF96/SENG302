@@ -88,10 +88,10 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { apiUser, apiActivity } from "../api";
-import router from "../router";
+import { apiUser, apiActivity } from "../../../api";
+import router from "../../../router";
 import axios from "axios";
-import NavBar from "@/components/NavBar";
+import NavBar from "../../modules/NavBar";
 
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
@@ -315,5 +315,5 @@ export default {
 </script>
 
 <style scoped>
-    @import "../../public/styles/pages/activitySettingsStyle.css";
+    @import "../../../../public/styles/pages/activitySettingsStyle.css";
 </style>

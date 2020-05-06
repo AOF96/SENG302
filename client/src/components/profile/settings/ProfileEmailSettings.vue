@@ -39,7 +39,7 @@
 
 <script>
     import {mapState, mapActions, mapGetters} from 'vuex';
-    import UserSettingsMenu from '@/components/profile/UserSettingsMenu';
+    import UserSettingsMenu from './ProfileSettingsMenu';
     import {apiUser} from "../../../api";
     const LIMIT_NUM_EMAIL = 4;
 

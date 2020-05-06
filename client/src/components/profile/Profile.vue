@@ -62,8 +62,8 @@
 <script>
   import {mapActions, mapGetters} from 'vuex';
 
-  import NavBar from '@/components/NavBar';
-  import PassportCountries from '@/components/modules/passportCountries';
+  import NavBar from "../modules/NavBar";
+  import PassportCountries from '../modules/PassportCountries';
   import json from '../../../public/json/data.json';
   import axios from "axios";
   const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all';

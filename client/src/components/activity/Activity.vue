@@ -13,9 +13,8 @@ np<template>
 </template>
 
 <script>
-
-  import NavBar from '@/components/NavBar';
-  import ActivityPageInfo from "@/components/modules/ActivityPageInfo";
+    import NavBar from "../modules/NavBar";
+  import ActivityPageInfo from "../modules/ActivityPageInfo";
   import {mapGetters} from "vuex";
 
   export default {
@@ -46,5 +45,5 @@ np<template>
 </script>
 
 <style scoped>
-    @import "../../public/styles/pages/activityStyle.css";
+    @import "../../../public/styles/pages/activityStyle.css";
 </style>

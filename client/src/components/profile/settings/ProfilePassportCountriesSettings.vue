@@ -34,9 +34,7 @@
 </template>
 
 <script>
-    import UserSettingsMenu from '@/components/profile/UserSettingsMenu'
-
-
+    import UserSettingsMenu from './ProfileSettingsMenu';
     import axios from "axios";
     const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
     import {apiUser} from "../../../api";
