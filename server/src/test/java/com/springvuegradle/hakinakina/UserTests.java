@@ -1,7 +1,7 @@
-package com.springvuegradle.Hakinakina;
+package com.springvuegradle.hakinakina;
 
-import com.springvuegradle.Hakinakina.controller.UserService;
-import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.hakinakina.service.UserService;
+import com.springvuegradle.hakinakina.entity.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

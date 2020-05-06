@@ -1,8 +1,8 @@
-package com.springvuegradle.Hakinakina.controller;
+package com.springvuegradle.hakinakina.controller;
 
-import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.ErrorHandler;
-import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

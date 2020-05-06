@@ -1,13 +1,12 @@
-package com.springvuegradle.Hakinakina.util;
+package com.springvuegradle.hakinakina.util;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.springvuegradle.Hakinakina.entity.PassportCountry;
-import com.springvuegradle.Hakinakina.entity.PassportCountryRepository;
+import com.springvuegradle.hakinakina.entity.PassportCountry;
+import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

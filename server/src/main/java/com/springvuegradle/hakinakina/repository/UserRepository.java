@@ -1,4 +1,4 @@
-package com.springvuegradle.Hakinakina.entity;
+package com.springvuegradle.hakinakina.entity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

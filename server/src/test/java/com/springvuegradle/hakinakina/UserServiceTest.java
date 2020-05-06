@@ -1,7 +1,8 @@
-package com.springvuegradle.Hakinakina;
+package com.springvuegradle.hakinakina;
 
-import com.springvuegradle.Hakinakina.controller.UserService;
-import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.hakinakina.service.UserService;
+import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

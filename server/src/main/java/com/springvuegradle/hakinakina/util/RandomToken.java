@@ -1,4 +1,4 @@
-package com.springvuegradle.Hakinakina.util;
+package com.springvuegradle.hakinakina.util;
 
 import java.util.Random;
 

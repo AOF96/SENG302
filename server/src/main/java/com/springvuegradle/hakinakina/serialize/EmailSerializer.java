@@ -1,10 +1,9 @@
-package com.springvuegradle.Hakinakina.util;
+package com.springvuegradle.hakinakina.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.springvuegradle.Hakinakina.entity.Email;
-import com.springvuegradle.Hakinakina.entity.PassportCountry;
+import com.springvuegradle.hakinakina.entity.Email;
 
 import java.io.IOException;
 import java.util.Set;

@@ -1,7 +1,7 @@
-package com.springvuegradle.Hakinakina;
+package com.springvuegradle.hakinakina;
 
-import com.springvuegradle.Hakinakina.entity.User;
-import com.springvuegradle.Hakinakina.entity.UserRepository;
+import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

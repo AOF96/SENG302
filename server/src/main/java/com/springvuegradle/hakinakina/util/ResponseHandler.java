@@ -1,7 +1,7 @@
-package com.springvuegradle.Hakinakina.util;
+package com.springvuegradle.hakinakina.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.Hakinakina.entity.User;
+import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
