@@ -25,6 +25,6 @@
   }
 </script>
 
-<style>
-  @import '../../../public/styles/pages/profileSettingsStyle.css';
+<style scoped>
+  @import '../../../../public/styles/pages/profileSettingsStyle.css';
 </style>

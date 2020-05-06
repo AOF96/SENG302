@@ -27,7 +27,7 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex';
-    import {apiUser} from "../api";
+    import {apiUser} from "../../api";
 
     export default {
         name: "NavBar",

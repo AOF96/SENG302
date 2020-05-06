@@ -43,7 +43,7 @@
   import { apiUser } from '../api'
   //import {getEncryptPassword} from "../common.js"
 
-  import NavBar from '@/components/NavBar'
+  import NavBar from "./modules/NavBar";
 
   export default {
     name: 'Login',
@@ -119,6 +119,6 @@
   }
 </script>
 
-<style>
+<style scoped>
   @import '../../public/styles/pages/loginStyle.css';
 </style>

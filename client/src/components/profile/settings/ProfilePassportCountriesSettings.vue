@@ -34,12 +34,12 @@
 </template>
 
 <script>
-    import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
+    import UserSettingsMenu from '@/components/profile/UserSettingsMenu'
 
 
     import axios from "axios";
     const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
-    import {apiUser} from "../../api";
+    import {apiUser} from "../../../api";
     import { mapState, mapActions } from 'vuex'
 
     export default {

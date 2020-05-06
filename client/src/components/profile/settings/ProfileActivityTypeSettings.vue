@@ -36,9 +36,9 @@
 </template>
 
 <script>
-  import UserSettingsMenu from "./UserSettingsMenu";
+  import UserSettingsMenu from "./ProfileSettingsMenu";
   import {mapActions, mapState} from 'vuex'
-  import {apiUser} from "../../api";
+  import {apiUser} from "../../../api";
 
   export default {
     components: {

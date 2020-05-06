@@ -45,6 +45,6 @@ np<template>
   }
 </script>
 
-<style>
-    @import "../../public/styles/pages/activities.css";
+<style scoped>
+    @import "../../public/styles/pages/activityStyle.css";
 </style>

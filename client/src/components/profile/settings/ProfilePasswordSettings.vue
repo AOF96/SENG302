@@ -27,8 +27,8 @@
 </template>
 
 <script>
-    import UserSettingsMenu from '@/components/Settings/UserSettingsMenu';
-    import {apiUser} from "../../api";
+    import UserSettingsMenu from '@/components/profile/UserSettingsMenu';
+    import {apiUser} from "../../../api";
     import { mapGetters } from 'vuex'
 
 

@@ -44,8 +44,8 @@
 
 import { mapGetters, mapActions } from 'vuex'
 
-import UserSettingsMenu from '@/components/Settings/UserSettingsMenu'
-import {apiUser} from "../../api";
+import UserSettingsMenu from '@/components/profile/UserSettingsMenu'
+import {apiUser} from "../../../api";
 
 export default {
     components: {

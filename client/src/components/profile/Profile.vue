@@ -3,8 +3,8 @@
       <NavBar/>
       <div class="profileBanner">
       </div>
-      <div id="profileWrap">
-        <div id="sidebarLeft">
+      <div class="profileContainer">
+        <div class="leftSidebarContainer">
           <div class="profileInfoContainer">
             <h3>Profile Info</h3>
             <hr>
@@ -64,11 +64,11 @@
 
   import NavBar from '@/components/NavBar';
   import PassportCountries from '@/components/modules/passportCountries';
-  import json from '../../public/json/data.json';
+  import json from '../../../public/json/data.json';
   import axios from "axios";
   const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all';
-  import {apiActivity} from "../api";
-  import router from "../router";
+  import {apiActivity} from "../../api";
+  import router from "../../router";
 
   export default {
     name: "Profile",
@@ -139,5 +139,5 @@
 </script>
 
 <style scoped>
-  @import '../../public/styles/pages/profileStyle.css';
+  @import '../../../public/styles/pages/profileStyle.css';
 </style>

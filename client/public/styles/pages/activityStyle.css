@@ -25,29 +25,6 @@
     font-weight: 500;
 }
 
-.createActivityContainer{
-    width: calc(100% - 30px);
-    margin: 0 auto;
-    max-width: 900px;
-    padding-top:50px;
-}
-
-.createActivityContentContainer{
-    float: right;
-    width: calc(100% - 270px);
-    background:white;
-    border-radius: 14px;
-    overflow:hidden;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-    padding:15px 20px;
-    font-size:19px;
-}
-
-.createActivityContentContainer h1{
-    padding:15px 20px;
-    font-size:19px;
-}
-
 .addedActivityTypeContainer {
     border: 1px solid #d8d8d8;
     margin-left: 20px;
@@ -180,15 +157,6 @@
     colour: black;
 }
 
-.editActivityLabel {
-    font-family: 'Roboto';
-    text-decoration: none;
-    padding: 0 20px;
-    font-size: 16px;
-    color: #5c5c5c;
-    font-weight: 400;
-}
-
 .editSuccessMessage {
     font-family: 'Roboto';
     font-weight: 500;
@@ -205,45 +173,6 @@
     margin: 15px;
     color: #f06a6a;
     text-align: center;
-}
-
-/* -- Input fields ---- */
-.editActivityInput {
-    padding: 10px 15px;
-    border-radius: 50px;
-    font-size: 14px;
-    width: calc(100% - 70px);
-    background: #ffffff;
-    outline: none;
-    border: 1px solid #d8d8d8;
-    display:block;
-    margin: 5px auto 20px;
-}
-
-.editActivityDropbox {
-    padding: 10px 15px;
-    border-radius: 50px;
-    font-size: 14px;
-    background: #ffffff;
-    outline: none;
-    border: 1px solid #d8d8d8;
-    display:block;
-    margin: 5px auto 20px;
-    width: calc(100% - 40px);
-}
-
-.editActivityTextarea {
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    width: calc(100% - 70px);
-    background: #ffffff;
-    outline: none;
-    border: 1px solid #d8d8d8;
-    display: block;
-    margin: 5px auto 20px;
-    height: 100px;
-    resize: none;
 }
 
 /* -- Buttons ---- */

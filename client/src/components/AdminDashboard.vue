@@ -18,7 +18,7 @@
 
 <script>
 
-    import NavBar from '@/components/NavBar'
+    import NavBar from "./modules/NavBar";
     // import axios from 'axios'
     // import router from "../../router";
     export default {
@@ -38,7 +38,7 @@
             //    //do the get request for the user entered by admin and then push and then set the userinterface data in user.module.js
             //    // and then push the page to profile. We are here potraying as if the admin is that user, which would give it access to edit
             //    //the users information.
-            //    //  router.push('Profile');
+            //    //  router.push('profile');
             // }
         }
     }

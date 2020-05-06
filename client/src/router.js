@@ -1,17 +1,17 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Profile from '@/components/Profile.vue'
-import Signup from '@/components/Signup.vue'
-import Login from '@/components/Login.vue'
-import UserProfileSettings from '@/components/Settings/UserProfileSettings'
-import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
-import UserEmailSettings from '@/components/Settings/UserEmailSettings'
-import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
-import UserActivitySettings from "./components/Settings/UserActivitySettings";
-import Activity from '@/components/Activity.vue'
+import Profile from './components/profile/Profile.vue'
+import Signup from './components/Signup.vue'
+import Login from './components/Login.vue'
+import UserProfileSettings from './components/profile/settings/ProfileInfoSettings'
+import UserPasswordSettings from './components/profile/settings/ProfilePasswordSettings'
+import UserEmailSettings from './components/profile/settings/ProfileEmailSettings'
+import UserPassportCountriesSettings from './components/profile/settings/ProfilePassportCountriesSettings'
+import UserActivitySettings from "./components/profile/settings/ProfileActivityTypeSettings";
+import Activity from './components/activity/Activity.vue'
 
-import store from '@/store/index.js';
-import ActivitySettings from "./components/ActivitySettings";
+import store from './store/index.js';
+import ActivitySettings from "./components/activity/settings/ActivitySettings";
 
 Vue.use(VueRouter);
 
