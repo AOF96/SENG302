@@ -827,7 +827,7 @@ body{
     color: #fff;
 }
 
-.confirmButtonContainer #deleteActivityButton {
+.confirmButtonContainer .deleteActivityButton {
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -841,7 +841,7 @@ body{
     margin-left: 20px;
 }
 
-.confirmButtonContainer #deleteActivityButton:hover {
+.confirmButtonContainer .deleteActivityButton:hover {
     background: #ee5e5e;
     color: #fff;
 }

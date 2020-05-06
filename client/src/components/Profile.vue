@@ -44,7 +44,7 @@
             <h3 style="display: inline-block">Duration Activities:</h3>
             <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
               {{activity.name}}<br> <h2 class="userFitnessLevel">{{activity.description}}</h2>
-              <button class="addActivityButton" type="button" v-on:click="deleteDurationActivity(activity)">Delete Activity</button>
+              <button class="deleteActivityButton" type="button" v-on:click="deleteDurationActivity(activity)">Delete Activity</button>
             </div>
             <hr>
             <h3 style="display: inline-block">Continuous Activities:</h3>

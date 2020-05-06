@@ -87,7 +87,7 @@
 
           <div class="confirmButtonContainer">
             <button id="editActivityButton" type="button" v-on:click="addActivity">Create</button>
-            <button id="deleteActivityButton">Delete Activity</button>
+            <button class="deleteActivityButton">Delete Activity</button>
           </div>
         </form>
       </div>
