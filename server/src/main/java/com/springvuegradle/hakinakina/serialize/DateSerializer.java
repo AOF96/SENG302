@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina.util;
+package com.springvuegradle.hakinakina.serialize;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import java.sql.Date;
 
+/**
+ * Formats date object when parsing to json
+ */
 public class DateSerializer extends JsonSerializer<Date> {
 
     @Override

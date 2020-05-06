@@ -1,4 +1,4 @@
-package com.springvuegradle.Hakinakina.endpoints;
+package com.springvuegradle.hakinakina.endpoints;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,10 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.Hakinakina.controller.UserController;
-import com.springvuegradle.Hakinakina.controller.UserService;
-import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import com.springvuegradle.hakinakina.controller.UserController;
+import com.springvuegradle.hakinakina.service.UserService;
+import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.*;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +29,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

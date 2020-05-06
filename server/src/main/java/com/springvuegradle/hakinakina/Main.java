@@ -1,12 +1,12 @@
-package com.springvuegradle.Hakinakina;
+package com.springvuegradle.hakinakina;
 
-import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.*;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Date;
 import java.util.*;
 
 /**

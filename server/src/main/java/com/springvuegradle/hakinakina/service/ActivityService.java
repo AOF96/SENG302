@@ -1,6 +1,7 @@
-package com.springvuegradle.hakinakina.controller;
+package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;

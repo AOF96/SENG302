@@ -1,9 +1,9 @@
-package com.springvuegradle.Hakinakina.endpoints;
+package com.springvuegradle.hakinakina.endpoints;
 
-import com.springvuegradle.Hakinakina.entity.Gender;
-import com.springvuegradle.Hakinakina.entity.SessionRepository;
-import com.springvuegradle.Hakinakina.entity.User;
-import com.springvuegradle.Hakinakina.entity.UserRepository;
+import com.springvuegradle.hakinakina.entity.Gender;
+import com.springvuegradle.hakinakina.repository.SessionRepository;
+import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

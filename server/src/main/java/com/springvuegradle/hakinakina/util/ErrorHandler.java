@@ -1,4 +1,4 @@
-package com.springvuegradle.Hakinakina.util;
+package com.springvuegradle.hakinakina.util;
 
 /**
  * Class with methods for handling program exceptions and for handling errors to return to client application

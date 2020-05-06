@@ -1,18 +1,17 @@
-package com.springvuegradle.Hakinakina.entity;
+package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.springvuegradle.Hakinakina.util.*;
+import com.springvuegradle.hakinakina.serialize.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.springvuegradle.Hakinakina.util.EncryptionUtil;
-import com.springvuegradle.Hakinakina.util.ErrorHandler;
+import com.springvuegradle.hakinakina.util.EncryptionUtil;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,7 +61,7 @@ public class User {
     private int fitnessLevel;
 
     @JsonProperty("passports")
-    @JsonSerialize(using=PassportSerializer.class)
+    @JsonSerialize(using= PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
@@ -73,7 +72,7 @@ public class User {
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
     @JsonProperty("activities")
-    @JsonSerialize(using=ActivityTypeSerializer.class)
+    @JsonSerialize(using= ActivityTypeSerializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
             name = "User_ActivityTypes",
@@ -98,7 +97,7 @@ public class User {
     private String primaryEmail;
 
     @JsonProperty("additional_email")
-    @JsonSerialize(using=EmailSerializer.class)
+    @JsonSerialize(using= EmailSerializer.class)
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REMOVE, orphanRemoval = true)
     private Set<Email> emails = new HashSet<>();
 

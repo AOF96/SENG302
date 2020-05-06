@@ -1,13 +1,12 @@
-package com.springvuegradle.Hakinakina;
+package com.springvuegradle.hakinakina;
 
-import com.springvuegradle.Hakinakina.controller.ActivityService;
-import com.springvuegradle.Hakinakina.entity.Activity;
+import com.springvuegradle.hakinakina.service.ActivityService;
+import com.springvuegradle.hakinakina.entity.Activity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
 import java.util.ArrayList;

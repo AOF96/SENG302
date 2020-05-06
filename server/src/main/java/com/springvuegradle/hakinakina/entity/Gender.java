@@ -1,4 +1,4 @@
-package com.springvuegradle.Hakinakina.entity;
+package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

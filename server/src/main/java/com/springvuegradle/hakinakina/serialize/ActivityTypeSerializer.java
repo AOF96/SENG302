@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina.util;
+package com.springvuegradle.hakinakina.serialize;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -8,6 +8,9 @@ import com.springvuegradle.hakinakina.entity.ActivityType;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Formats activity types when serializing a set of ActivityType objects
+ */
 public class ActivityTypeSerializer extends JsonSerializer<Set<ActivityType>> {
 
     @Override

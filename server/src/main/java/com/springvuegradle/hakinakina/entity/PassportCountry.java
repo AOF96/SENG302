@@ -1,4 +1,4 @@
-package com.springvuegradle.Hakinakina.entity;
+package com.springvuegradle.hakinakina.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;

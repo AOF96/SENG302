@@ -1,6 +1,4 @@
-package com.springvuegradle.Hakinakina.entity;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package com.springvuegradle.hakinakina.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;

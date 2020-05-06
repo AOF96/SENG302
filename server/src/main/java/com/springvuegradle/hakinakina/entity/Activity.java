@@ -1,8 +1,8 @@
-package com.springvuegradle.Hakinakina.entity;
+package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.Hakinakina.util.ErrorHandler;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

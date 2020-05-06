@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina.util;
+package com.springvuegradle.hakinakina.serialize;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -8,6 +8,9 @@ import com.springvuegradle.hakinakina.entity.PassportCountry;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Correctly formats passport countries during serialization of a set of PassportCountry objects to json
+ */
 public class PassportSerializer extends JsonSerializer<Set<PassportCountry>> {
 
     @Override

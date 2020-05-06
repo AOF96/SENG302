@@ -1,24 +1,20 @@
-package com.springvuegradle.Hakinakina.endpoints;
+package com.springvuegradle.hakinakina.endpoints;
 
-import com.springvuegradle.Hakinakina.controller.ActivityController;
-import com.springvuegradle.Hakinakina.controller.ActivityService;
-import com.springvuegradle.Hakinakina.controller.UserController;
-import com.springvuegradle.Hakinakina.controller.UserService;
-import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.RandomToken;
+import com.springvuegradle.hakinakina.controller.ActivityController;
+import com.springvuegradle.hakinakina.service.ActivityService;
+import com.springvuegradle.hakinakina.service.UserService;
+import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Date;
 import java.util.*;

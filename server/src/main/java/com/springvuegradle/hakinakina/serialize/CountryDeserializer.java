@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina.util;
+package com.springvuegradle.hakinakina.serialize;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Parses a set of PassportCountry objects from json
+ */
 @Service
 public class CountryDeserializer extends StdDeserializer<Set<PassportCountry>> {
 

@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina.util;
+package com.springvuegradle.hakinakina.serialize;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Parses a User object from json.
+ * Could not use default spring parser because of specific missing attribute handling and converting gender to an object
+ */
 @Service
 public class UserDeserializer extends StdDeserializer<User> {
 

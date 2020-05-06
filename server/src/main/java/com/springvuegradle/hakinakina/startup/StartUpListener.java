@@ -1,14 +1,13 @@
-package com.springvuegradle.Hakinakina.startup;
+package com.springvuegradle.hakinakina.startup;
 
-import com.springvuegradle.Hakinakina.entity.User;
-import com.springvuegradle.Hakinakina.entity.UserRepository;
-import com.springvuegradle.Hakinakina.util.EncryptionUtil;
+import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 /**
