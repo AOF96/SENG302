@@ -160,8 +160,8 @@ export default {
       if (this.duration === "duration") {
         document.getElementById("start_date").type = "date";
         document.getElementById("end_date").type = "date";
-        document.getElementById("start_time").type = "date";
-        document.getElementById("end_time").type = "date";
+        document.getElementById("start_time").type = "time";
+        document.getElementById("end_time").type = "time";
         document.getElementById("startDateLabel").hidden = false;
         document.getElementById("endDateLabel").hidden = false;
         document.getElementById("startTimeLabel").hidden = false;

@@ -952,3 +952,11 @@ body{
     padding:15px 20px;
     font-size:19px;
 }
+
+.link {
+    color: #1cca92;
+    cursor: pointer;
+}
+.link:hover {
+    text-decoration: underline;
+}

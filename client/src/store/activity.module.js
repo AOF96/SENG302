@@ -19,28 +19,28 @@ const getters = {
 
 const mutations = {
     setAuthor(state, data) {
-        state.author = data;
+        state.activity.author_id = data.users[0].profile_id;
     },
     setName(state, data) {
-        state.name = data;
+        state.activity.name = data.activity_name;
     },
     setContinuous(state, data) {
-        state.continuous = data;
+        state.activity.continuous = data.continuous;
     },
     setStartTime(state, data) {
-        state.start_time = data;
+        state.activity.start_time = data.start_time;
     },
     setEndTime(state, data) {
-        state.end_time = data;
+        state.activity.end_time = data.end_time;
     },
     setDescription(state, data) {
-        state.description = data;
+        state.activity.description = data.description;
     },
     setLocation(state, data) {
-        state.location = data;
+        state.activity.location = data.location;
     },
     setActivityTypes(state, data) {
-        state.activity_types = data;
+        state.activity.activity_types = data.activity_type;
     }
 };
 
