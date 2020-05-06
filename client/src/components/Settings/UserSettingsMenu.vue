@@ -1,18 +1,17 @@
 <template>
-    <div id="settingsNavWrap">
+    <div class="settingsNavContainer">
       <NavBar/>
       <h1>Settings</h1>
-      <div id="settingsNav">
-        <router-link  v-bind:to="'/settings/profile?u=' + this.$route.query.u"><div class="settingsNavItem">Profile</div></router-link>
+      <div class="navButtonContainer">
+        <router-link  v-bind:to="'/settings/profile?u=' + this.$route.query.u"><div class="settingsNavButton">Profile</div></router-link>
         <hr>
-        <router-link v-bind:to="'/settings/email?u=' + this.$route.query.u"><div class="settingsNavItem">Emails</div></router-link>
+        <router-link v-bind:to="'/settings/email?u=' + this.$route.query.u"><div class="settingsNavButton">Emails</div></router-link>
         <hr>
-        <router-link v-bind:to="'/settings/password?u=' + this.$route.query.u"><div class="settingsNavItem">Password</div></router-link>
+        <router-link v-bind:to="'/settings/password?u=' + this.$route.query.u"><div class="settingsNavButton">Password</div></router-link>
         <hr>
-        <router-link to="/settings/passport_countries"><div class="settingsNavItem">Passport Countries</div></router-link>
+        <router-link to="/settings/passport_countries"><div class="settingsNavButton">Passport Countries</div></router-link>
         <hr>
-        <router-link to="/settings/activities"><div class="settingsNavItem">Activities</div></router-link>
-
+        <router-link to="/settings/activities"><div class="settingsNavButton">Activities</div></router-link>
       </div>
     </div>
 </template>
@@ -25,3 +24,7 @@
     },
   }
 </script>
+
+<style>
+  @import '../../../public/styles/pages/profileSettingsStyle.css';
+</style>

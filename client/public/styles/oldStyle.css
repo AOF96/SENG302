@@ -1,0 +1,931 @@
+*{
+    margin:0;
+    padding:0;
+}
+#appContainer{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+}
+#pageContent{
+    top:58px;
+    height:calc(100% - 58px);
+    position: relative;
+}
+p, h1, h2, h3, h4, h5, h6 span, input, button, li, a, label{
+    font-family: 'Roboto';
+    font-weight: 400;
+    text-decoration: none;
+}
+body{
+    width: 100%;
+    height: 100%;
+    background: #f7f7f7;
+}
+.credentials-box-wrap{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 30px);
+    max-width: 380px;
+}
+.credentials-box-wrap h4{
+    text-align: center;
+    color: #9eabbb;
+    font-size: 14px;
+    padding-top: 18px;
+}
+.credentials-box-wrap h4 a{
+    color: #1dca92;
+    font-weight: 500;
+    text-decoration: none;
+}
+#credentials-box{
+    width: calc(100% - 42px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    background: white;
+}
+#credentials-box h1{
+    font-size: 20px;
+    color: #2d2d2d;
+}
+#credentials-box h2{
+    font-size: 13px;
+    color: #808080;
+    padding-bottom: 25px;
+}
+#credentials-box input, #credentials-box select{
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    width: 100%;
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+}
+#credentials-box select{
+    width:120px;
+    padding: 6px 12px;
+}
+#credentials-box .signupInput-birthday{
+    padding: 8px 12px;
+}
+.signupInput-email, .signupInput-password, .signupInput-lastname{
+    margin-right:0 !important;
+}
+.loginInput-email, .loginInput-password{
+    margin-right:0 !important;
+}
+.signup-row{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.signup-row > input:first-child{
+    margin-right:15px;
+}
+#signupText-birthday ,#fitnessLevelText{
+    color: #777777;
+    font-size: 13px;
+    font-weight: 400;
+    padding-top: 9px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+#levels{
+    width: calc(100% - 106px) !important;
+}
+#credentials-box hr{
+    border: 0;
+    height: 0;
+    border-top: 1px solid #dedede;
+    border-bottom: none;
+    margin-top: 10px;
+}
+#credentials-box #signupButton-submit{
+    border-radius: 0;
+    background: none;
+    color: #1dca92;
+    margin: 0;
+    font-size: 17px;
+    padding: 5px 0;
+    margin-top: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    outline: initial !important;
+}
+#profileBanner{
+    width: 100%;
+    height: 300px;
+    background: url(../images/user_banner.jpg) no-repeat center center;
+    background-size: cover;
+}
+
+/* Wrap around all profile info */
+#profileWrap{
+    width: 80%;
+    min-width: 1000px;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    top: -56px;
+}
+
+/* Container for main feed on profile */
+#centreColumn {
+    width: 60%;
+    min-width: 600px;
+    float: left;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+#sidebarRight {
+    width: 19%;
+    height: 40px;
+    float: right;
+    min-width: 190px;
+}
+
+#sidebarLeft {
+    width: 19%;
+    height: 40px;
+    float: left;
+    min-width: 190px;
+}
+
+#profilePublicInfo{
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    position: relative;
+    margin: auto;
+}
+#profileTable {
+    padding: 20px;
+}
+.profileTableTd {
+    padding: 10px 0 10px 0;
+}
+
+#profileUserIcon{
+    padding: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background: #1cca92;
+    fill: white;
+    float: left;
+    margin:20px;
+    text-align: center;
+}
+.floatClear{
+    clear:both;
+}
+#userQuickInfoWrap{
+    float: left;
+    margin-top: 36px;
+}
+#userName{
+    font-size: 18px;
+}
+.userFitnessLevel{
+    color: #7f7f7f;
+    font-size: 13px;
+    font-weight: 500;
+    padding-top: 3px;
+}
+#userNickname{
+    color: #7f7f7f;
+}
+#profileEditButton{
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    position: absolute;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition:all 0.2s ease;
+    text-decoration: none;
+}
+#profileEditButton:hover, .addActivityButton:hover {
+    background: #1cca92;
+    color: #fff;
+}
+.addActivityButton{
+    padding: 6px 16px;
+    float: right;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition:all 0.2s ease;
+    text-decoration: none;
+}
+.validation-errors li{
+    margin:0 20px;
+    padding-bottom:5px;
+    font-size: 13px;
+    color:#6b6b6b;
+}
+
+#settingsWrap{
+    width: calc(100% - 30px);
+    margin: 0 auto;
+    max-width: 900px;
+    padding-top:50px;
+}
+
+#settingsNavWrap{
+    float: left;
+    width: 250px;
+}
+#settingsNavWrap h1{
+    font-size: 20px;
+    padding:10px 20px;
+    font-weight: 500;
+    color:rgba(0,0,0,0.8);
+}
+#settingsNav{
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    overflow:hidden;
+}
+.settingsContent{
+    float: right;
+    width: calc(100% - 270px);
+    background:white;
+    border-radius: 14px;
+    overflow:hidden;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+}
+.settingsContent h1{
+    padding:15px 20px;
+    font-size:19px;
+}
+.settingsNavItem{
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight:500;
+    color:rgba(0,0,0,0.65);
+    transition:all .2s ease;
+}
+.settingsNavItem:hover{
+    background:rgba(0,0,0,0.03);
+}
+#settingsNav hr, .settingsContent hr{
+    border:none;
+    border-top:1px solid #d8d8d8;
+}
+.changePasswordFeild{
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin:0 auto;
+    margin-top: 20px;
+}
+#settingsPasswordSubmit, #settingsProfileSubmit, #addActivityButton{
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float:right;
+    margin:20px;
+}
+#settingsPasswordSubmit:hover , #settingsProfileSubmit:hover, #addActivityButton:hover{
+    background: #1cca92;
+    color: #fff;
+}
+.settingsContent h2{
+    padding: 0 20px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #5c5c5c;
+    font-weight: 400;
+}
+.editProfileInput{
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin:0 auto;
+}
+.editProfileInputGender{
+    width: calc(100% - 40px);
+}
+.editProfileTextarea{
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin:0 auto;
+    height:100px;
+    resize: none;
+}
+.signupTextarea{
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: calc(100%);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin-bottom:15px;
+    height:50px;
+    resize: none;
+}
+
+.fmName{
+    width: calc(50% - 40px) !important;
+}
+.settingsContent h3{
+    padding: 20px 20px;
+    padding-bottom: 8px;
+    font-size: 15px;
+    color: #494949;
+}
+.emailBlock{
+    width: calc(100% - 40px);
+    display: block;
+    margin: 0 auto;
+    border-radius: 50px;
+    background: #1cca92;
+    position: relative;
+    overflow: hidden;
+    margin-bottom:15px;
+}
+.emailBlock h4{
+    padding: 13px 25px;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    text-align: center;
+}
+.emailBlock.emailSecondary{
+    border: 1px solid #d2d2d2;
+    background: white;
+}
+.emailBlock.emailSecondary h4{
+    color:rgba(0,0,0,0.75);
+    text-align: left;
+    display: inline-block;
+    padding-right: 5px;
+    cursor:pointer;
+}
+.editIcon{
+    display: inline-table;
+    fill: #717171;
+    width: 20px;
+    height: 20px;
+    transform: translate(2px,5px);
+    cursor: pointer;
+    opacity: 0;
+    transition: all .15s ease;
+}
+.emailSecondary:hover .editIcon{
+    opacity: 1;
+}
+.setPrimaryButton{
+    position: absolute;
+    top: 50%;
+    right: 70px;
+    transform: translateY(-50%);
+    padding: 5px 9px;
+    border: 2px solid #7a7a7a;
+    color: #575757;
+    background: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    transition:all .2s ease;
+    cursor:pointer;
+}
+.removeEmailButton{
+    position: absolute;
+    right: 0;
+    background: #ee5e5e;
+    top: 0;
+    fill: white;
+    padding: 10px 14px;
+    padding-right: 17px;
+    cursor: pointer;
+    transition:all .2s ease;
+}
+.removeEmailButton:hover{
+    background:#f06a6a;
+}
+.setPrimaryButton:hover{
+    background:#7a7a7a;
+    color:white;
+}
+#addEmailInput{
+    display: inline;
+    margin: 20px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background: white;
+    border: 2px solid #a8a8a8;
+    font-size: 14px;
+    width: calc(100% - 165px);
+    margin-right: 0;
+    margin-top: 0;
+    display:inline;
+}
+#addEmailButton, #updateFitnessButton{
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin: 20px;
+    margin-left: 0;
+    margin-top: 0;
+}
+
+.passwordChange_error {
+    margin: 0 auto;
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 13px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+
+}
+
+.passwordChange_success {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    margin: 10px;
+    padding-bottom: 3px;
+    color: #4CAF50;
+
+}
+
+
+
+.removeCountryButton, .removeActivityButton{
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    right: 20px;
+    font-weight: 500;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    color: white;
+    background: #1cca92;
+}
+#addPassportButton, #saveChangesButton, #addActivityButton{
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin: 20px;
+    margin-left: 0;
+    margin-top: 0;
+}
+#saveChangesButton{
+    width: calc(100% - 40px);
+}
+#passportCountriesInput, #activityInput{
+    margin: 20px;
+    padding: 8px 20px;
+    border-radius: 30px;
+    background: white;
+    border: 2px solid #a8a8a8;
+    font-size: 14px;
+    width: calc(100% - 120px);
+    margin-right: 0;
+    margin-top: 0;
+    display: inline;
+}
+.removeCountryButton:hover, .removeActivityButton:hover{
+    background: #ffffff;
+    color: #1cca92;
+}
+.settingsActivity {
+    text-align: left;
+}
+
+.profileModule{
+    width:100%;
+    background:white;
+    border-radius: 14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    overflow: hidden;
+}
+.profileModule h1{
+    font-size: 17px;
+    padding: 20px;
+    color: rgba(0,0,0,0.85);
+}
+#passportCountries{
+    padding-bottom:2px;
+    overflow: hidden;
+}
+.passportCountry{
+    padding: 10px 20px;
+    border-top: 1px solid #f3f3f3;
+    transition:all .2s ease;
+    cursor:pointer;
+}
+.passportCountry:hover{
+    background: #f8f8f8;
+}
+.passportCountry img{
+    height: 30px;
+    width: 45px;
+    float: right;
+    border-radius: 15px;
+    border: 2px solid #1cca92;
+}
+.passportCountry h2{
+    font-size: 16px;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
+    float: left;
+}
+#cover{
+    width:100%;
+    height:100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 101;
+}
+.floatingBox{
+    position: fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+    background:white;
+    border-radius:14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    z-index: 102;
+}
+#editEmailBox{
+    max-width:400px;
+    width:calc(100% - 30px);
+}
+#editEmailBox h1{
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
+    padding: 15px;
+}
+#editEmailInput{
+    padding: 10px 15px;
+    margin: 0 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    width: calc(100% - 62px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+}
+#editEmailButton{
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    right: 20px;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin: 15px;
+    margin-top: 0px;
+}
+#addEmailButton:hover, #editEmailButton:hover{
+    background: #1cca92;
+    color: #ffffff;
+}
+.fade-enter-active, .fade-leave-active{
+    transition:all .25s ease;
+}
+.fadeup-enter-active, .fadeup-leave-active {
+    transition:all .2s ease .02s;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+.fadeup-enter, .fadeup-leave-to {
+    opacity: 0;
+    transform:translate(-50%, calc(-50% + 50px));
+}
+
+
+#example {
+    padding-right: 17px;
+}
+
+.spacer {
+    width: 100%;
+    height: 1px;
+    margin: 0 auto;
+    background-color: blue;
+}
+
+.login_error {
+    margin: 0 auto;
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 13px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.signup_error {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 10px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.edit_error {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    margin: 15px;
+    color: #f06a6a;
+    text-align: center;
+}
+
+.edit_success {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    margin: 15px;
+    color: #4CAF50;
+    text-align: center;
+}
+.passport_error {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    margin: 15px;
+    padding-bottom: 3px;
+    color: #f06a6a;
+}
+
+.edit_success,.passport_success {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    margin: 15px;
+    padding-bottom: 3px;
+    color: #4CAF50;
+}
+
+.passportBlock{
+    width: calc(100% - 40px);
+    display: block;
+    margin: 0 auto;
+    border-radius: 50px;
+    background: #1cca92;
+    position: relative;
+    overflow: hidden;
+    margin-bottom:15px;
+}
+#countryActions, #activityActions{
+    margin-top:20px;
+}
+.countryDisplay, .activityDisplay {
+    float: left;
+    padding-top: 3px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #3d3d3d;
+}
+.countryBox, .activityBox{
+    width: calc(100% - 40px);
+    margin: 0 auto;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#userActivities {
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    position: relative;
+    margin-top: 10px;
+    padding: 20px;
+    line-height: 30px;
+    margin-bottom: 50px;
+    font-family: Roboto;
+}
+
+/* Edit activity */
+.editActivityInput {
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin: 5px auto 20px;
+}
+
+.editActivityLabel {
+    font-family: 'Roboto';
+    text-decoration: none;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #5c5c5c;
+    font-weight: 400;
+}
+
+.editActivityDropbox {
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display:block;
+    margin: 5px auto 20px;
+    width: calc(100% - 40px);
+}
+
+.confirmButtonContainer #editActivityButton {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.confirmButtonContainer #editActivityButton:hover {
+    background: #1cca92;
+    color: #fff;
+}
+
+.confirmButtonContainer #deleteActivityButton {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #ee5e5e;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.confirmButtonContainer #deleteActivityButton:hover {
+    background: #ee5e5e;
+    color: #fff;
+}
+
+.confirmButtonContainer {
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    float: right;
+}
+
+.addedActivitiesContainer {
+    border: 1px solid #d8d8d8;
+    margin-left: 20px;
+    border-radius: 15px;
+    min-height: 50px;
+    padding: 10px;
+    margin-right: 20px;
+    margin-top: -10px;
+}
+
+.addedActivityContainer {
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.deleteActivityTypeButton {
+    padding: 3px 8px;
+    border-radius: 25px;
+    color: #ee5e5e;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin-right: 10px;
+}
+
+.deleteActivityTypeButton:hover {
+    background: #ee5e5e;
+    color: #fff;
+}
+
+.addedActivityTypeLabel {
+    display: inline;
+    padding: 5px 10px 7px 5px;
+}
+
+.editActivityTextarea {
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: calc(100% - 70px);
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    display: block;
+    margin: 5px auto 20px;
+    height: 100px;
+    resize: none;
+}
+
+.activitySettingsSpacer {
+    height: 50px;
+}
+
+#activityTypesList {
+    margin-left: 40px;
+    margin-bottom: 15px;
+}
+
+.activitySummaryDiv {
+    margin-left: 25px;
+    line-height: 20px;
+    margin-bottom: 15px;
+}

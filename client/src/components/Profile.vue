@@ -1,7 +1,7 @@
 <template>
     <div>
       <NavBar/>
-      <div id="profileBanner">
+      <div class="profileBanner">
       </div>
       <div id="profileWrap">
         <div id="sidebarLeft">
@@ -17,47 +17,42 @@
             <div class="profileRow">Bio: {{ user.bio }}</div>
           </div>
         </div>
-        <div id="centreColumn">
-          <div id="profilePublicInfo">
-            <svg id="profileUserIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
-            <div id="userQuickInfoWrap">
-              <h1 id="userName">{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
-              <h2 class="userFitnessLevel">Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
+        <div class="centreContainer">
+          <div class="profileHeaderContainer">
+            <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"/></svg>
+            <div class="profileMainInfoContainer">
+              <h1>{{ user.firstname }} {{user.middlename}} {{ user.lastname }} <span id="userNickname">({{ user.nickname }})</span></h1>
+              <h2>Fitness Level: {{ fitnessDict[user.fitness] }}</h2>
             </div>
-
-            <router-link to="/settings/profile" id="profileEditButton">Edit profile</router-link>
+            <router-link to="/settings/profile">
+              <button class="genericConfirmButton">Edit Profile</button>
+            </router-link>
             <div class="floatClear"></div>
           </div>
-
-          <div id="userActivities">
+          <div class="profileActivitiesContainer">
             <router-link to="/activity_settings">
-              <button class="addActivityButton" type="button" onclick="">Add Activity</button>
+              <button class="genericConfirmButton" type="button" onclick="">Add Activity</button>
             </router-link>
-            <h2 id="activityTitle">Activities</h2>
+            <h2>Activities</h2>
             <h3>Activity Types:</h3>
-            <ul id="activityTypesList">
-              <li  v-for="type in user.activities" v-bind:key="type">
+            <ul class="activityTypesList">
+              <li v-for="type in user.activities" v-bind:key="type">
                 {{type}}
               </li>
             </ul>
             <hr>
-            <h3 style="display: inline-block">Duration Activities:</h3>
-            <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
-              <a class="link" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
-              <h2 class="userFitnessLevel">{{activity.description}}</h2>
+            <h3>Duration Activities:</h3>
+            <div class="activitySummaryContainer" v-for="activity in user.dur_activities" v-bind:key="activity">
+              {{activity.name}}<br> <h4>{{activity.description}}</h4>
             </div>
             <hr>
-            <h3 style="display: inline-block">Continuous Activities:</h3>
-
-            <div class="activitySummaryDiv" v-for="activity in user.cont_activities" v-bind:key="activity">
-              <a class="link" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
-              <h2 class="userFitnessLevel">{{activity.description}}</h2>
+            <h3>Continuous Activities:</h3>
+            <div class="activitySummaryContainer" v-for="activity in user.cont_activities" v-bind:key="activity">
+              {{activity.name}}<br> <h4>{{activity.description}}</h4>
             </div>
-
           </div>
-
         </div>
-        <div id="sidebarRight">
+        <div class="rightSidebarContainer">
           <PassportCountries/>
         </div>
       </div>
@@ -144,35 +139,5 @@
 </script>
 
 <style scoped>
-  .form-popup {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    right: 15px;
-    border: 3px solid #f1f1f1;
-    z-index: 9;
-  }
-
-  .btn {
-    border: black;
-    background-color: inherit;
-    padding: 14px 28px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  /* Green */
-  .btn:hover {
-    background-color: #4CAF50;
-    color: white;
-  }
-  body{
-    padding-top:20px;
-    padding-left: 10px;
-  }
-
-  button {
-      margin-left: 8px;
-  }
+  @import '../../public/styles/pages/profileStyle.css';
 </style>

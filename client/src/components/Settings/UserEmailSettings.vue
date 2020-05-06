@@ -1,38 +1,36 @@
 <template>
-    <div id="settingsWrap">
+    <div class="settingsContainer">
         <UserSettingsMenu />
-        <div class="settingsContent">
+        <div class="settingsContentContainer">
             <h1>Edit Email Settings</h1>
             <hr>
-            <h3>Primary email</h3>
-            <div class="emailBlock">
+            <h2>Primary email</h2>
+            <div class="primaryEmailContainer">
                 <h4>{{ user.primary_email }}</h4>
             </div>
-            <h3>Secondary emails:</h3>
-            <div class="emailBlock emailSecondary" v-for="email in user.additional_email" v-bind:key="email">
+            <h2>Secondary emails:</h2>
+            <div class="secondaryEmailContainer" v-for="email in user.additional_email" v-bind:key="email">
                 <h4 v-on:click="openEmailEditBox(email)">{{email}}</h4>
                 <svg v-on:click="openEmailEditBox(email)" class="editIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                     <path d="M0 0h24v24H0z" fill="none" /></svg>
-                <button class="setPrimaryButton" v-on:click="updatePrimaryEmail(email)">Set Primary</button>
-                <svg class="removeEmailButton" v-on:click="removeEmail(email)" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                    <path d="M0 0h24v24H0z" fill="none" /></svg>
+                <button class="genericDeleteButton" v-on:click="removeEmail(email)">Remove</button>
+                <button class="genericButton" v-on:click="updatePrimaryEmail(email)">Set Primary</button>
             </div>
-            <form @submit.prevent v-if="user.additional_email.length < 4">
-                <input id="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
-                <button id="addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
+            <form class="addEmailForm" @submit.prevent v-if="user.additional_email.length < 4">
+                <input class="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
+                <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
             </form>
         </div>
         <transition name="fade">
-            <div id="cover" v-if="showEditBox" @click="showEditBox = false"></div>
+            <div class="transparentCover" v-if="showEditBox" @click="showEditBox = false"></div>
         </transition>
         <transition name="fadeup">
-            <div class="floatingBox" id="editEmailBox" v-if="showEditBox">
+            <div class="editEmailContainer" v-if="showEditBox">
                 <h1>Edit Email</h1>
-                <form @submit.prevent>
-                    <input id="editEmailInput" v-model="editEmailInput" type="email" placeholder="Secondary Email" required>
-                    <button id="editEmailButton" v-on:click="editEmail()">Update</button>
+                <form class="addEmailForm" @submit.prevent>
+                    <input class="addEmailInput" v-model="editEmailInput" type="email" placeholder="Secondary Email" required>
+                    <button class="genericConfirmButton addEmailButton" v-on:click="editEmail()">Update</button>
                 </form>
             </div>
         </transition>

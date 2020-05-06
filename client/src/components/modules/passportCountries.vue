@@ -1,8 +1,8 @@
 <template>
   <div class="profileModule">
     <h1>Passport Countries</h1>
-    <div id="passportCountries">
-        <div class="passportCountry" v-for="country_dict in country_dicts" v-bind:key="country_dict">
+    <div class="passportCountriesContainer">
+        <div class="passportCountryContainer" v-for="country_dict in country_dicts" v-bind:key="country_dict">
             <h2>{{country_dict[0]}}</h2>
             <img :src="country_dict[1]">
             <div class="floatClear"></div>

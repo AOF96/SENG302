@@ -1,0 +1,85 @@
+/* -- Outer container ---- */
+.signUpContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 30px);
+    max-width: 380px;
+}
+.signUpContainer h4 {
+    text-align: center;
+    color: #9eabbb;
+    font-size: 14px;
+    padding-top: 18px;
+}
+.signUpContainer h4 a {
+    color: #1dca92;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* -- Form container ---- */
+.signUpFormContainer {
+    width: calc(100% - 42px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    background: white;
+}
+/* Rows */
+.signUpRow {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.signUpRow > input:first-child {
+    margin-right:15px;
+}
+/* Elements */
+.signUpFormContainer h1 {
+    font-size: 20px;
+    color: #2d2d2d;
+    text-align: center;
+}
+.signUpFormContainer h2 {
+    font-size: 13px;
+    color: #808080;
+    padding-bottom: 25px;
+    text-align: center;
+}
+.signUpFormContainer input, .signUpFormContainer select, .signUpFormContainer textarea {
+    margin-bottom: 15px;
+    width: 100%;
+}
+.signUpHalfWidthInput {
+    width: calc(50% - 40px) !important;
+}
+.signUpInputBirthday {
+    padding: 8px 12px;
+}
+.signUpInput {
+    margin-right:0 !important;
+}
+.signUpText {
+    color: #777777;
+    font-size: 13px;
+    font-weight: 400;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.fitnessLevelSelect {
+    width: calc(100% - 106px) !important;
+}
+.signUpFormContainer hr {
+    border: 0;
+    height: 0;
+    border-top: 1px solid #dedede;
+    border-bottom: none;
+    margin-top: 10px;
+}
+
+.loginButton {
+    padding: 5px;
+    margin: 10px auto 0;
+}

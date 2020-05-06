@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <NavBar />
-    <div id="settingsWrap">
-      <div class="activitySettingsContent">
-        <form class="form-container">
-          <h1>Create an Activity</h1>
+    <div>
+        <NavBar/>
+        <div class="createActivityContainer">
+            <div class="createActivityContentContainer">
+                <form class="CreateActivityFormContainer">
+                    <h1>Create an Activity</h1>
 
           <label class="editActivityLabel" for="name">Activity Name</label>
           <input class="editActivityInput" type="text" id="name" v-model="activity.name" required />
@@ -52,38 +52,30 @@
             </select>
           </div>
 
-          <label class="editActivityLabel">Activity Types</label>
-          <div>
-            <select
-              v-on:change="selectActivityType"
-              v-model="selected_activity"
-              name="activityType"
-              class="editActivityDropbox"
-              required
-            >
-              <option selected disabled hidden>Activity Type</option>
-              <option
-                v-for="addingActivity in activities_option"
-                v-bind:key="addingActivity"
-              >{{addingActivity}}</option>
-            </select>
-          </div>
-          <div class="addedActivitiesContainer">
-            <div
-              class="addedActivityContainer"
-              v-for="addedActivity in activity_types_selected"
-              v-bind:key="addedActivity"
-            >
-              <label class="addedActivityTypeLabel">{{addedActivity}}</label>
-              <button
-                class="deleteActivityTypeButton"
-                v-on:click="removeActivityType(addedActivity)"
-              >Remove</button>
-            </div>
-          </div>
+                    <label class="editActivityLabel">Activity Types</label>
+                    <div>
+                        <select
+                                v-on:change="selectActivityType"
+                                v-model="selected_activity"
+                                name="activityType"
+                                class="editActivityDropbox"
+                                required
+                        >
+                            <option selected disabled hidden>Activity Type</option>
+                            <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
+                                {{addingActivity}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="addedActivityTypeContainer">
+                        <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+                            <label class="addedTypeContainer">{{addedActivity}}</label>
+                            <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+                        </div>
+                    </div>
 
-          <h6 class="edit_success" id="activity_success" hidden="false">Saved successfully</h6>
-          <h6 class="edit_error" id="activity_error" hidden="false">An error has occurred</h6>
+                    <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
+                    <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
 
           <div class="confirmButtonContainer">
             <button id="editActivityButton" type="button" v-on:click="addActivity">Create</button>
@@ -322,3 +314,8 @@ export default {
   }
 };
 </script>
+
+<style>
+    @import "../../public/styles/pages/activities.css";
+    /*@import "../../public/styles/oldStyle.css";*/
+</style>
