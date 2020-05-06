@@ -1,14 +1,14 @@
 <template>
-    <div class="activityInfoContainer">
-        <div id="activityTitle" class="activityTitleLabel">{{ activityInfo.name }}</div>
-        <div id="activityDescription" class="activityDescriptionLabel">{{ activityInfo.description }}</div>
-        <div id="activityLocation" class="activityLocationLabel">{{ activityInfo.location }}</div>
-        <div id="activityStartDate" class="activityStartLabel" v-if="activityInfo.continuous === false"><h3> Start date: {{ startDate }}</h3></div>
-        <div id="activityEndDate" class="activityEndLabel" v-if="activityInfo.continuous === false"><h3> End date: {{ endDate }}</h3></div>
-        <div class="activityTypeTitle"><p>Activity Type: </p></div>
-        <div id="activityTypeListing" class="activityTypesContainer">
-            <span v-for="a in activityInfo.activityTypes" :key="a.type_id">
-                <span v-if="activityInfo.activityTypes.indexOf(a) != activityInfo.activityTypes.length - 1">
+    <div class="activityContainer">
+        <div id="activityPageTitle" class="activityTitleLabel">{{ activity.name }}</div>
+        <div id="activityPageDescription" class="activityDescriptionLabel">{{ activity.description }}</div>
+        <div id="activityPageLocation" class="activityLocationLabel">{{ activity.location }}</div>
+        <div id="activityPageStartDate" class="activityStartLabel" v-if="activity.continuous === false"><h3> Start date: {{ startDate }}</h3></div>
+        <div id="activityPageEndDate" class="activityEndLabel" v-if="activity.continuous === false"><h3> End date: {{ endDate }}</h3></div>
+        <div class="activityPageTypeTitle"><p>Activity Type: </p></div>
+        <div id="activityPageTypeListing" class="activityTypesContainer">
+            <span v-for="a in activity.activityTypes" :key="a.type_id">
+                <span v-if="activity.activityTypes.indexOf(a) != activity.activityTypes.length - 1">
                         {{a.name}} ,
                 </span>
                 <span v-else>

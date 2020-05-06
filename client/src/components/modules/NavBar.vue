@@ -7,18 +7,18 @@
         </router-link>
 
         <router-link to="/profile" v-if="user.isLogin">
-            <button class="navBarButton" v-on:click="goToProfile">
+            <button class="myaccount navBarButton" v-on:click="goToProfile">
                 Profile
             </button>
         </router-link>
 
         <router-link to="/signup" v-if="!user.isLogin">
-            <button class="navBarButton" name ="Sign Up">
+            <button class=" signup navBarButton" name ="Sign Up">
                 Sign Up 
             </button>
         </router-link>
         <router-link to="/Login" v-if="!user.isLogin"> 
-            <button class="navBarButton" value ="Login In">
+            <button class="login navBarButton" value ="Login In">
                 Login
             </button>
         </router-link>

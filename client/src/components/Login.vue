@@ -38,7 +38,6 @@
 </template>
 
 <script>
-  import router from "../router";
   import { mapGetters, mapActions} from 'vuex';
   import { apiUser } from '../api'
   //import {getEncryptPassword} from "../common.js"
@@ -76,7 +75,7 @@
             localStorage.setItem("s_id", responseData[1]["sessionToken"]);
             apiUser.refreshInstance();
             this.updateUserProfile(responseData[0]);
-            router.push('Profile');
+            this.$router.push('Profile');
 
             apiUser.getUserContinuousActivities(responseData[0].profile_id).then((response) => {
               this.updateUserContinuousActivities(response.data);
@@ -94,6 +93,7 @@
               document.getElementById("incorrect_password").hidden = true;
               document.getElementById("empty_fields").hidden = true;
               document.getElementById("other_error").hidden = true;
+
             } else if (responseCode === 403 && responseData === "Incorrect password") {
               document.getElementById("incorrect_password").hidden = false;
               document.getElementById("empty_fields").hidden = true;
