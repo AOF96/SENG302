@@ -42,13 +42,19 @@
             </ul>
             <hr>
             <h3>Duration Activities:</h3>
-            <div class="activitySummaryContainer" v-for="activity in user.dur_activities" v-bind:key="activity">
+            <div class="activitySummaryContainer" v-for="activity in user.dur_activities" v-bind:key="activity" v-on:click="getActivity(activity.id)">
               {{activity.name}}<br> <h4>{{activity.description}}</h4>
+              <router-link to="/activity_editing">
+                <button class="genericConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
+              </router-link>
             </div>
             <hr>
             <h3>Continuous Activities:</h3>
             <div class="activitySummaryContainer" v-for="activity in user.cont_activities" v-bind:key="activity">
               {{activity.name}}<br> <h4>{{activity.description}}</h4>
+              <router-link to="/activity_editing">
+                <button class="genericConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
+              </router-link>
             </div>
           </div>
         </div>
@@ -123,17 +129,17 @@
         this.user.passports = this.user.passports.slice();
       },
 
-      goToActivity(id) {
+      getActivity(id) {
         apiActivity.getActivity(id)
         .then(
           response => {
             this.createActivity(response.data);
-            router.push("/activity/" + id);
+            router.push("/activity_editing/");
           }
         ).catch(err => {
           console.log(err);
         });
-      }
+      },
     }
   }
 </script>

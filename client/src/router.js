@@ -12,6 +12,7 @@ import Activity from '@/components/Activity.vue'
 
 import store from '@/store/index.js';
 import ActivitySettings from "./components/ActivitySettings";
+import EditActivity from "./components/EditActivity";
 
 Vue.use(VueRouter);
 
@@ -58,6 +59,10 @@ const routes = [
     {
         path: '/activity_settings',
         component: ActivitySettings
+    },
+    {
+        path: '/activity_editing',
+        component: EditActivity
     }
 ];
 
