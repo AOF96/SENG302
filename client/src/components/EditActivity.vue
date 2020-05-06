@@ -97,7 +97,7 @@
     import {apiUser, apiActivity} from "../api";
     import router from "../router";
     import axios from "axios";
-    import NavBar from "@/components/NavBar";
+    import NavBar from "./modules/NavBar";
 
     const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
@@ -364,8 +364,3 @@
         }
     };
 </script>
-
-<style>
-    @import "../../public/styles/pages/activities.css";
-    /*@import "../../public/styles/oldStyle.css";*/
-</style>
