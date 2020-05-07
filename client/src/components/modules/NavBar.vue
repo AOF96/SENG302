@@ -14,15 +14,37 @@
 
         <router-link to="/signup" v-if="!user.isLogin">
             <button class=" signup navBarButton" name ="Sign Up">
-                Sign Up 
+                Sign Up
             </button>
         </router-link>
-        <router-link to="/Login" v-if="!user.isLogin"> 
+        <router-link to="/Login" v-if="!user.isLogin">
             <button class="login navBarButton" value ="Login In">
                 Login
             </button>
         </router-link>
     </header>
+</template>
+<template>
+  <header class="navBarContainer">
+    <router-link to="/logout" v-if="user.isLogin">
+      <button id="headerNavButton" class="navBarButton" v-on:click="logoutUser">Logout</button>
+    </router-link>
+
+    <router-link v-bind:to="'/profile?u='+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+      <button id="headerNavButton" class="myaccount navBarButton" >Profile</button>
+    </router-link>
+
+    <router-link v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">
+      <button id="headerNavButton" class="myaccount" >Dashboard</button>
+    </router-link>
+
+    <router-link to="/signup" v-if="!user.isLogin">
+      <button id="headerNavButton" class="signup navBarButton" name="Sign Up">Sign Up</button>
+    </router-link>
+    <router-link to="/login" v-if="!user.isLogin">
+      <button id="headerNavButton" class="login navBarButton" value="Login In">Login</button>
+    </router-link>
+  </header>
 </template>
 
 <script>
@@ -59,8 +81,7 @@
                Sends a request to the server side when to log a user out when the log out button is pressed.
              */
             logoutUser() {
-                apiUser.logout();
-                this.resetUser();
+                this.logout();
             }
         }
     }
