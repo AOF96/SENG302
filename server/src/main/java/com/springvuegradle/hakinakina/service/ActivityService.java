@@ -41,8 +41,12 @@ public class ActivityService {
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
         try {
-            activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
-            activity.getEndTime().setTime((activity.getEndTime().getTime() - (12 * 60 * 60 * 1000)));
+            if (activity.getStartTime() != null) {
+                activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
+            }
+            if (activity.getEndTime() != null) {
+                activity.getEndTime().setTime((activity.getEndTime().getTime() - (12 * 60 * 60 * 1000)));
+            }
             System.out.println(activity);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
