@@ -5,6 +5,7 @@ import com.springvuegradle.Hakinakina.controller.ActivityService;
 import com.springvuegradle.Hakinakina.controller.UserController;
 import com.springvuegradle.Hakinakina.controller.UserService;
 import com.springvuegradle.Hakinakina.entity.*;
+import com.springvuegradle.Hakinakina.util.DatabaseConnection;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -36,7 +37,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.sql.Date;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +78,26 @@ public class UserTestSteps {
 
     @Given("I create a new account with email {string}")
     public void iCreateANewAccountWithEmail(String email) throws Exception {
-        String input = "{\n" +
+
+        try(Connection conn = DatabaseConnection.getInstance().getConnection()) {
+            String sql = "INSERT INTO USER (firstname, lastname, middlename, gender, password, bio, nickname, birthdate, fitnesslevel, salt, primaryemail, permissionlevel) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, "Mayuko");
+            statement.setString(2, "Mayuko");
+            statement.setString(3, "Mayuko");
+            statement.setString(4, "FEMALE");
+            statement.setString(5, "FEMALE123");
+            statement.setString(6, "FEMALE123");
+            statement.setString(7, "FEMALE123");
+            statement.setDate(8, new Date(2000,12,12));
+            statement.setInt(9, 1);
+            statement.setString(10, "asdasd");
+            statement.setString(11, "%" + email + "%");
+            statement.setInt(12, 0);
+
+            statement.executeUpdate();
+        }
+        /*String input = "{\n" +
                 "  \"lastname\": \"Williams\",\n" +
                 "  \"firstname\": \"Mayuko\",\n" +
                 "  \"middlename\": \"007\",\n" +
@@ -91,7 +114,7 @@ public class UserTestSteps {
                 .formatSuccessResponse(200, "User updated"));
         this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON)
                 .content(input)).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("User updated")));
+                .andExpect(content().string(containsString("User updated")));*/
     }
 
     @When("I get all the accounts the have been created")

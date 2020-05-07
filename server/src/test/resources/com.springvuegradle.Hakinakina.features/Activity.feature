@@ -1,5 +1,9 @@
 Feature: Activity
 
+  Background:
+    Given I have a connection to the database
+    And there is no data already existing in the database
+
   @U8-activity
   Scenario Outline: Add a new activity
     Given I create an account with email "john@doe.com"

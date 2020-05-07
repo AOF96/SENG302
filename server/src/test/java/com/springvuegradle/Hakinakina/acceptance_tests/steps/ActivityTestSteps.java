@@ -4,9 +4,6 @@ import com.springvuegradle.Hakinakina.controller.ActivityController;
 import com.springvuegradle.Hakinakina.controller.ActivityService;
 import com.springvuegradle.Hakinakina.controller.UserService;
 import com.springvuegradle.Hakinakina.entity.*;
-import com.springvuegradle.Hakinakina.util.ResponseHandler;
-import io.cucumber.core.gherkin.vintage.internal.gherkin.deps.com.google.gson.JsonObject;
-import io.cucumber.core.gherkin.vintage.internal.gherkin.deps.com.google.gson.JsonParser;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -18,29 +15,24 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.containsString;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @WebMvcTest(Activity.class)
 @AutoConfigureWebMvc
 public class ActivityTestSteps {
+
     @Autowired
     private MockMvc mockMvc;
 
