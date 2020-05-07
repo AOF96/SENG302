@@ -19,7 +19,7 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: '/profile',
+        path: '/profile/:profileId',
         component: Profile
     },
     {
@@ -34,28 +34,32 @@ const routes = [
         path: '/logout',
     },
     {
-        path: '/settings/profile',
+        path: '/settings/profile/:profileId',
         component: UserProfileSettings
     },
     {
-        path: '/settings/password',
+        path: '/settings/password/:profileId',
         component: UserPasswordSettings
     },
     {
-        path: '/settings/email',
+        path: '/settings/email/:profileId',
         component: UserEmailSettings
     },
     {
-        path: '/settings/passport_countries',
+        path: '/settings/passport_countries/:profileId',
         component: UserPassportCountriesSettings
     },
     {
-        path: '/settings/activities',
+        path: '/settings/activities/:profileId',
         component: UserActivitySettings
     },
     {
         path: "/settings/admin_dashboard",
         component: AdminDashboard,
+    },
+    {
+        path: "/profile*",
+        component: Profile,
     },
     {
         path: "*",

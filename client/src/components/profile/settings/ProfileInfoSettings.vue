@@ -105,13 +105,13 @@ export default {
             Uses user id from url to request user data.
          */
         async loadSearchedUser() {
-          if(this.$route.query.u == null || this.$route.query.u == ""){
-            this.$router.push('/settings/profile?u='+this.user.profile_id);
+          if(this.$route.params.profileId == null || this.$route.params.profileId == ""){
+            this.$router.push('/settings/profile/'+this.user.profile_id);
             this.searchedUser = this.user;
           }else{
-            var tempUserData = await apiUser.getUserById(this.$route.query.u);
+            var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
             if(tempUserData == "Invalid permissions"){
-              this.$router.push('/settings/profile?u='+this.user.profile_id);
+              this.$router.push('/settings/profile/'+this.user.profile_id);
               this.searchedUser = this.user;
             }else{
               this.searchedUser = tempUserData;

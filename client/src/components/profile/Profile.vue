@@ -24,7 +24,7 @@
               <h1>{{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }} <span id="userNickname">({{ searchedUser.nickname }})</span></h1>
               <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
             </div>
-            <router-link v-bind:to="'/settings/profile?u=' + searchedUser.profile_id">
+            <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
               <button class="genericConfirmButton">Edit Profile</button>
             </router-link>
             <div class="floatClear"></div>
@@ -68,7 +68,7 @@
         </div>
         <div class="rightSidebarContainer">
           <template v-if="searchedUser.passports">
-            <PassportCountries :passports="searchedUser.passports"></PassportCountries>
+            <PassportCountries :passports="searchedUser.passports" :key="componentKey"></PassportCountries>
           </template>
         </div>
       </div>
@@ -106,6 +106,7 @@
         countries_option: [],
         searchedUser: {},
         country:'',
+        componentKey: 0,
         fitnessDict: {
           0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance",
           3: "I can run a medium distance", 4: "I can run a marathon"
@@ -115,6 +116,13 @@
 
     mounted() {
         this.loadSearchedUser();
+    },
+    watch: {
+        '$route.params': {
+            handler() {
+                this.loadSearchedUser();
+            }
+        }
     },
     methods: {
       ...mapActions(['updatePassports']),
@@ -126,19 +134,20 @@
           Uses user id from url to request user data.
        */
       async loadSearchedUser() {
-          if(this.$route.query.u == null || this.$route.query.u == ""){
-            this.$router.push('profile?u='+this.user.profile_id);
+          if(this.$route.params.profileId == null || this.$route.params.profileId == ""){
+            this.$router.push('profile/'+this.user.profile_id);
             this.searchedUser = this.user;
           }else{
-            var tempUserData = await apiUser.getUserById(this.$route.query.u);
+            var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
             if(tempUserData == "Invalid permissions"){
-              this.$router.push('profile?u='+this.user.profile_id);
+              this.$router.push('profile/'+this.user.profile_id);
               this.searchedUser = this.user;
             }else{
               this.searchedUser = tempUserData;
             }
           }
           this.startUp();
+          this.componentKey++;
       },
       startUp() {
         console.log('init');

@@ -45,7 +45,7 @@
                     alert("User does not exist");
                 }
                 else{
-                    this.$router.push('/profile?u='+this.searchedUser.profile_id);
+                    this.$router.push('/profile/'+this.searchedUser.profile_id);
                 }
                 //console.log("User does not exist");
             }
