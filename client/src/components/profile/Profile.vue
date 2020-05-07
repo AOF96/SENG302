@@ -42,7 +42,7 @@
             </ul>
             <hr>
             <h3>Duration Activities:</h3>
-            <div class="activitySummaryContainer" v-for="activity in searchedUser.dur_activities" v-bind:key="activity">
+            <div class="activitySummaryContainer" v-for="activity in dur_activities" v-bind:key="activity">
               <router-link to="activity/:activityId">
                 <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
               </router-link>
@@ -54,7 +54,7 @@
             </div>
             <hr>
             <h3>Continuous Activities:</h3>
-            <div class="activitySummaryContainer" v-for="activity in searchedUser.cont_activities" v-bind:key="activity">
+            <div class="activitySummaryContainer" v-for="activity in cont_activities" v-bind:key="activity">
               <router-link to="activity/:activityId">
                 <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
               </router-link>
@@ -105,6 +105,8 @@
         adding_country: "Passport Countries",
         countries_option: [],
         searchedUser: {},
+        cont_activities: [],
+        dur_activities: [],
         country:'',
         componentKey: 0,
         fitnessDict: {
@@ -135,16 +137,22 @@
        */
       async loadSearchedUser() {
           if(this.$route.params.profileId == null || this.$route.params.profileId == ""){
-            this.$router.push('profile/'+this.user.profile_id);
+            this.$router.push('/profile/'+this.user.profile_id);
             this.searchedUser = this.user;
           }else{
             var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
             if(tempUserData == "Invalid permissions"){
-              this.$router.push('profile/'+this.user.profile_id);
+              this.$router.push('/profile/'+this.user.profile_id);
               this.searchedUser = this.user;
             }else{
               this.searchedUser = tempUserData;
             }
+            apiUser.getUserContinuousActivities(this.$route.params.profileId).then((response) => {
+                this.cont_activities = response.data;
+            });
+            apiUser.getUserDurationActivities(this.$route.params.profileId).then((response) => {
+                this.dur_activities = response.data;
+            });
           }
           this.startUp();
           this.componentKey++;
@@ -192,16 +200,16 @@
         });
       },
       deleteDurationActivity(activity) {
-        let index = this.searchedUser.dur_activities.indexOf(activity);
-        this.searchedUser.dur_activities.splice(index, 1);
+        let index = this.dur_activities.indexOf(activity);
+        this.dur_activities.splice(index, 1);
         apiActivity.deleteActivity(this.searchedUser.profile_id, activity.id);
-        this.updateUserDurationActivities(this.searchedUser.dur_activities);
+        this.updateUserDurationActivities(this.dur_activities);
       },
       deleteContinuousActivity(activity) {
-        let index = this.searchedUser.cont_activities.indexOf(activity);
-        this.searchedUser.cont_activities.splice(index, 1);
+        let index = this.cont_activities.indexOf(activity);
+        this.cont_activities.splice(index, 1);
         apiActivity.deleteActivity(this.searchedUser.profile_id, activity.id);
-        this.updateUserContinuousActivities(this.searchedUser.cont_activities);
+        this.updateUserContinuousActivities(this.cont_activities);
       }
     }
   }
