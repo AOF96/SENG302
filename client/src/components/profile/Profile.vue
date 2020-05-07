@@ -42,8 +42,11 @@
             </ul>
             <hr>
             <h3>Duration Activities:</h3>
-            <div class="activitySummaryContainer" v-for="activity in user.dur_activities" v-bind:key="activity" v-on:click="getActivity(activity.id)">
-              {{activity.name}}<br> <h4>{{activity.description}}</h4>
+            <div class="activitySummaryContainer" v-for="activity in user.dur_activities" v-bind:key="activity">
+              <router-link to="activity/:activityId">
+                <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+              </router-link>
+              <h4>{{activity.description}}</h4>
               <router-link to="/activity_editing">
                 <button class="genericConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
               </router-link>
@@ -52,7 +55,10 @@
             <hr>
             <h3>Continuous Activities:</h3>
             <div class="activitySummaryContainer" v-for="activity in user.cont_activities" v-bind:key="activity">
-              {{activity.name}}<br> <h4>{{activity.description}}</h4>
+              <router-link to="activity/:activityId">
+                <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+              </router-link>
+              <h4>{{activity.description}}</h4>
               <router-link to="/activity_editing">
                 <button class="genericConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
               </router-link>
@@ -133,13 +139,23 @@
         console.log('init');
         this.user.passports = this.user.passports.slice();
       },
-
+      goToActivity(id) {
+        apiActivity.getActivity(id)
+                .then(
+                        response => {
+                          this.createActivity(response.data);
+                          router.push("/activity/" + id);
+                        }
+                ).catch(err => {
+          console.log(err);
+        });
+      },
       getActivity(id) {
         apiActivity.getActivity(id)
         .then(
           response => {
             this.createActivity(response.data);
-            router.push("/activity_editing/");
+            router.push();
           }
         ).catch(err => {
           console.log(err);
