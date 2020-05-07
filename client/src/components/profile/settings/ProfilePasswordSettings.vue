@@ -65,7 +65,7 @@
                 Uses user id from url to request user data.
              */
             async loadSearchedUser() {
-              if(this.$route.query.u == null){
+              if(this.$route.query.u == null || this.$route.query.u == ""){
                 this.$router.push('/settings/password?u='+this.user.profile_id);
                 this.searchedUser = this.user;
               }else{

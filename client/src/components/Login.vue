@@ -40,7 +40,7 @@
 <script>
   import { mapGetters, mapActions} from 'vuex';
   import { apiUser } from '../api'
-  //import {getEncryptPassword} from "../common.js"
+  import router from "../router";
 
   import NavBar from "./modules/NavBar";
 

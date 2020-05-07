@@ -36,7 +36,7 @@
 
 <script>
   import UserSettingsMenu from "./ProfileSettingsMenu";
-  import {mapActions, mapState} from 'vuex'
+  import {mapActions, mapState, mapGetters} from 'vuex'
   import {apiUser} from "../../../api";
 
   export default {
@@ -129,7 +129,7 @@
         Uses user id from url to request user data.
      */
     async loadSearchedUser() {
-        if(this.$route.query.u == null){
+        if(this.$route.query.u == null || this.$route.query.u == ""){
             this.$router.push('/settings/activities?u='+this.user.profile_id);
             this.searchedUser = this.user;
         }else{

@@ -83,18 +83,18 @@
             Uses user id from url to request user data.
          */
         async loadSearchedUser() {
-        if(this.$route.query.u == null){
-          this.$router.push('profile?u='+this.user.profile_id);
-          this.searchedUser = this.user;
-        }else{
-          var tempUserData = await apiUser.getUserById(this.$route.query.u);
-          if(tempUserData == "Invalid permissions"){
-            this.$router.push('profile?u='+this.user.profile_id);
-            this.searchedUser = this.user;
-          }else{
-            this.searchedUser = tempUserData;
-          }
-        }
+            if(this.$route.query.u == null){
+              this.$router.push('profile?u='+this.user.profile_id);
+              this.searchedUser = this.user;
+            }else{
+              var tempUserData = await apiUser.getUserById(this.$route.query.u);
+              if(tempUserData == "Invalid permissions"){
+                this.$router.push('profile?u='+this.user.profile_id);
+                this.searchedUser = this.user;
+              }else{
+                this.searchedUser = tempUserData;
+              }
+            }
         }
     },
     mounted() {

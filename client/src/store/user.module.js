@@ -25,13 +25,6 @@ const state = {
   }
 };
 
-//only for normal user with permission level 0
-const initialUserState = {user: userInterface};
-
-
-const state = {
-  ...initialUserState
-};
 
 const getters = {
   user(state) {
@@ -49,8 +42,27 @@ const getters = {
 };
 
 const mutations = {
-  resetUser(state) {
-    state.user = initialUserState.user;
+  resetUser() {
+    state.user.firstname = null;
+    state.user.lastname = null;
+    state.user.middlename = null;
+    state.user.nickname = null;
+    state.user.gender = null;
+    state.user.primary_email = null;
+    state.user.additional_email = [];
+    state.user.date_of_birth = null;
+    state.user.bio = null;
+    state.user.isLogin = false;
+    state.user.fitness = null;
+    state.user.profile_id = null;
+    state.user.password = null;
+    state.user.passports = [];
+    state.user.tmp_passports = [];
+    state.user.permission_level = 0;
+    state.user.activities =  [];
+    state.user.tmp_activities = [];
+    state.user.cont_activities = [];
+    state.user.dur_activities = [];
   },
   setUser(state, data) {
     state.user = data;
@@ -199,28 +211,6 @@ const actions = {
   },
   updateTmpActivities({commit}, data){
     commit('setUserTmpActivity', data)
-  },
-  resetUser() {
-    state.user.firstname = null;
-    state.user.lastname = null;
-    state.user.middlename = null;
-    state.user.nickname = null;
-    state.user.gender = null;
-    state.user.primary_email = null;
-    state.user.additional_email = [];
-    state.user.date_of_birth = null;
-    state.user.bio = null;
-    state.user.isLogin = false;
-    state.user.fitness = null;
-    state.user.profile_id = null;
-    state.user.password = null;
-    state.user.passports = [];
-    state.user.tmp_passports = [];
-    state.user.permission_level = null;
-    state.user.activities =  [];
-    state.user.tmp_activities = [];
-    state.user.cont_activities = [];
-    state.user.dur_activities = [];
   }
 };
 

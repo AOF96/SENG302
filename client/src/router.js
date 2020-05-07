@@ -13,7 +13,7 @@ import store from './store/index.js';
 import ActivitySettings from "./components/activity/settings/ActivitySettings";
 import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
-import AdminDashboard from "./components/Settings/AdminDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 
 Vue.use(VueRouter);
 
@@ -54,12 +54,12 @@ const routes = [
         component: UserActivitySettings
     },
     {
-    path: "/settings/admin_dashboard",
-    component: AdminDashboard,
+        path: "/settings/admin_dashboard",
+        component: AdminDashboard,
     },
     {
-    path: "*",
-    redirect: "/profile",
+        path: "*",
+        redirect: "/profile",
     },
     {
         path: '/activity/:activityId',

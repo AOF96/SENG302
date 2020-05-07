@@ -74,6 +74,24 @@ export const apiUser = {
   }),
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
+  getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
+
+  getUserByToken: () => instance.get('validateLogin'),
+
+  async getUserById(profile_id) {
+    let searchedUser = await apiUser.refreshUserData(profile_id).then(
+      response => {
+        return response.data;
+      },
+      error => {
+        if(error){
+          return "Invalid permissions";
+        }
+      }
+    );
+    return await searchedUser;
+  },
+
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
   /**

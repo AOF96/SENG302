@@ -75,7 +75,7 @@
                than 5 emails or from trying to enter an existing email.
             */
             async addEmail(textInput) {
-                if (this.searchedUser.additional_email.length === 4) {
+                if (this.searchedUser.additional_email.length === LIMIT_NUM_EMAIL) {
                     alert("You already have 5 emails, delete one if you want to add more.");
                     this.showButton = false;
                     return;
@@ -163,14 +163,14 @@
                 Uses user id from url to request user data.
              */
             async loadSearchedUser() {
-                if(this.$route.query.u == null){
-                    this.$router.push('/settings/email?u=?u='+this.user.user.profile_id);
-                    this.searchedUser = this.user.user;
+                if(this.$route.query.u == null || this.$route.query.u == ""){
+                    this.$router.push('/settings/email?u='+this.user.profile_id);
+                    this.searchedUser = this.user;
                 }else{
                     var tempUserData = await apiUser.getUserById(this.$route.query.u);
                     if(tempUserData == "Invalid permissions"){
-                        this.$router.push('/settings/email?u='+this.user.user.profile_id);
-                        this.searchedUser = this.user.user;
+                        this.$router.push('/settings/email?u='+this.user.profile_id);
+                        this.searchedUser = this.user;
                     }else{
                         this.searchedUser = tempUserData;
                     }

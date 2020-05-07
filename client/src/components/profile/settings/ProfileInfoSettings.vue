@@ -42,7 +42,7 @@
             <input v-model="searchedUser.date_of_birth" name="birthday" type="date" required>
             <h2>Bio</h2>
             <textarea maxlength="255" name="bio" v-model="searchedUser.bio" placeholder="Write about yourself"></textarea>
-            <button id="settingsProfileSubmit" v-on:click="updateProfile()" type="submit">Update Profile</button>
+            <button class="genericConfirmButton updateProfileButton" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
 </div>
@@ -105,7 +105,7 @@ export default {
             Uses user id from url to request user data.
          */
         async loadSearchedUser() {
-          if(this.$route.query.u == null){
+          if(this.$route.query.u == null || this.$route.query.u == ""){
             this.$router.push('/settings/profile?u='+this.user.profile_id);
             this.searchedUser = this.user;
           }else{

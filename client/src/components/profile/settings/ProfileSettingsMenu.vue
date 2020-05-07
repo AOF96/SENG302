@@ -9,9 +9,9 @@
         <hr>
         <router-link v-bind:to="'/settings/password?u=' + this.$route.query.u"><div class="settingsNavButton">Password</div></router-link>
         <hr>
-        <router-link to="/settings/passport_countries"><div class="settingsNavButton">Passport Countries</div></router-link>
+        <router-link v-bind:to="'/settings/passport_countries?u=' + this.$route.query.u"><div class="settingsNavButton">Passport Countries</div></router-link>
         <hr>
-        <router-link to="/settings/activities"><div class="settingsNavButton">Activities</div></router-link>
+        <router-link v-bind:to="'/settings/activities?u=' + this.$route.query.u"><div class="settingsNavButton">Activities</div></router-link>
       </div>
     </div>
 </template>
