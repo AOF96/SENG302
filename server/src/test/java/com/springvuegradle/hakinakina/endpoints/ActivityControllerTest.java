@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
@@ -100,7 +101,8 @@ public class ActivityControllerTest {
         long time = 1000000000;
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
-        Activity testActivity = new Activity("name", "description", false, startTime, endTime, "location");
+        Activity testActivity = new Activity("name", "description", false,
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
 
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -225,8 +227,10 @@ public class ActivityControllerTest {
 
         User user1 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
         user1.setUserId((long) 1);
+        Date startTime = new Date(2021, 10, 10);
+        Date endTime = new Date(2021, 10, 11);
         Activity activity1 = new Activity("Storm area 51", "Let's unfold the truth together",
-               true, new Date(2021, 10, 10), new Date(2021, 10, 11),
+               true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()),
                 "Area 51");
 
         activity1.setId((long) 1);

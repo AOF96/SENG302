@@ -8,6 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,11 +47,11 @@ public class Activity {
 
     @JsonProperty("start_time")
     @Column(name = "start_time")
-    private java.sql.Date startTime;
+    private java.sql.Timestamp startTime;
 
     @JsonProperty("end_time")
     @Column(name = "end_time")
-    private java.sql.Date endTime;
+    private java.sql.Timestamp endTime;
 
     @JsonProperty("location")
     @Column(name = "location")
@@ -60,7 +62,7 @@ public class Activity {
 
     protected Activity() {}
 
-    public Activity(String name, String description, boolean continuous, java.sql.Date startTime, java.sql.Date endTime, String location) {
+    public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;
         this.description = description;
         this.continuous = continuous;
@@ -117,19 +119,19 @@ public class Activity {
         this.continuous = continuous;
     }
 
-    public Date getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public Timestamp getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
 

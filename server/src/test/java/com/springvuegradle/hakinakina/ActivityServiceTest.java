@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +27,17 @@ public class ActivityServiceTest {
 
     @Test
     public void getActivitySummariesTest() {
+        Date startDate1 = new Date(2021, 10, 10);
+        Date endDate1 = new Date(2021, 10, 12);
         Activity activity1 = new Activity("Climb Mount Everest", "Let's climb Mount Everest together",
-                true, new Date(2021, 10, 10), new Date(2021, 10, 11),
+                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()),
                 "Mount Everest");
         activity1.setId((long) 1);
 
+        Date startDate2 = new Date(2021, 10, 11);
+        Date endDate2 = new Date(2021, 10, 12);
         Activity activity2 = new Activity("Descend Mount Everest", "Let's descend Mount Everest together",
-                true, new Date(2021, 10, 11), new Date(2021, 10, 12),
+                true, new Timestamp(startDate2.getTime()), new Timestamp(endDate2.getTime()),
                 "Mount Everest");
         List<Activity> activities = new ArrayList<>();
         activity2.setId((long) 2);
