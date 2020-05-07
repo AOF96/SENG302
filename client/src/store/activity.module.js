@@ -7,7 +7,8 @@ const state = {
         end_time: null,
         description: null,
         location: null,
-        activity_types: []
+        activity_types: [],
+        activity_id: null
     }
 };
 
@@ -41,11 +42,15 @@ const mutations = {
     },
     setActivityTypes(state, data) {
         state.activity.activity_types = data.activity_type;
+    },
+    setActivityId(state, data) {
+        state.activity.activity_id = data.id;
     }
 };
 
 const actions = {
     createActivity({commit}, data) {
+        commit('setActivityId', data);
         commit('setAuthor', data);
         commit('setName', data);
         commit('setContinuous', data);

@@ -1,31 +1,33 @@
 <template>
   <div>
     <NavBar/>
-    <div id="loginBox" class="credentials-box-wrap">
-      <div id="credentials-box">
+    <div class="loginContainer">
+      <div class="loginFormContainer">
         <h1>Login</h1>
         <h2>Sign in to your account</h2>
         <form @submit.prevent>
-          <div class="signup-row">
-            <h6 class="login_error" id="email_exist" hidden="true">Account does not exist</h6>
-            <h6 class="login_error" id="empty_fields" hidden="true">Please enter email/password</h6>
+          <div class="loginRow">
+            <h6 class="errorMessage" id="email_exist" hidden="true">Account does not exist</h6>
+            <h6 class="errorMessage" id="empty_fields" hidden="true">Please enter email/password</h6>
           </div>
-          <div class="signup-row">
-            <input type="email" v-model="user.primary_email" class="loginInput-email" name="email" placeholder="Email"
+          <div class="loginRow">
+            <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
               required>
           </div>
-          <div class="signup-row">
-            <h6 class="login_error" id="incorrect_password" hidden="true">Incorrect Password</h6>
+          <div class="loginRow">
+            <h6 class="errorMessage" id="incorrect_password" hidden="true">Incorrect Password</h6>
           </div>
-          <div class="signup-row">
-            <input type="password" v-model="user.password" class="loginInput-password" name="password"
+          <div class="loginRow">
+            <input type="password" v-model="user.password" name="password"
               placeholder="Password" required>
           </div>
-          <div class="signup-row">
-            <h6 class="login_error" id="other_error" hidden="true"></h6>
+          <div class="loginRow">
+            <h6 class="errorMessage" id="other_error" hidden="true"></h6>
           </div>
           <hr>
-          <input type="submit" v-on:click="submitLogin()" id="signupButton-submit" value="Login">
+          <div class="loginRow">
+            <button type="submit" v-on:click="submitLogin()" class="loginButton"> Login </button>
+          </div>
         </form>
       </div>
       <h4>Don't have an account?
@@ -36,12 +38,11 @@
 </template>
 
 <script>
-  import router from "../router";
   import { mapGetters, mapActions} from 'vuex';
   import { apiUser } from '../api'
   //import {getEncryptPassword} from "../common.js"
 
-  import NavBar from '@/components/NavBar'
+  import NavBar from "./modules/NavBar";
 
   export default {
     name: 'Login',
@@ -74,7 +75,7 @@
             localStorage.setItem("s_id", responseData[1]["sessionToken"]);
             apiUser.refreshInstance();
             this.updateUserProfile(responseData[0]);
-            router.push('Profile');
+            this.$router.push('Profile');
 
             apiUser.getUserContinuousActivities(responseData[0].profile_id).then((response) => {
               this.updateUserContinuousActivities(response.data);
@@ -92,6 +93,7 @@
               document.getElementById("incorrect_password").hidden = true;
               document.getElementById("empty_fields").hidden = true;
               document.getElementById("other_error").hidden = true;
+
             } else if (responseCode === 403 && responseData === "Incorrect password") {
               document.getElementById("incorrect_password").hidden = false;
               document.getElementById("empty_fields").hidden = true;
@@ -116,3 +118,7 @@
     }
   }
 </script>
+
+<style scoped>
+  @import '../../public/styles/pages/loginStyle.css';
+</style>

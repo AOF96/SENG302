@@ -99,7 +99,20 @@ export const apiActivity = {
     activity_type: activity_types
   }),
 
-  getActivity: (activityId) => instance.get(`/activities/${activityId}`),
+
+  editActivity: (author_id, name, continuous, start_time, end_time, description, location, activity_types, activity_id) => instance.put('/profiles/' + author_id + '/activities/' + activity_id, {
+    activity_name: name,
+    continuous: continuous,
+    start_time: start_time,
+    end_time: end_time,
+    description: description,
+    location: location,
+    activity_type: activity_types,
+    activity_id: activity_id
+
+  }),
+
+  getActivity: (activityId) => instance.get(`/activities/${activityId}`)
 
   deleteActivity: (authorId, activityId) => instance.delete(`/profiles/${authorId}/activities/${activityId}`)
 };
