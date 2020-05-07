@@ -1,30 +1,4 @@
 <template>
-    <header class="navBarContainer">
-        <router-link to="/logout" v-if="user.isLogin">
-            <button class="navBarButton" v-on:click="logoutUser">
-                Logout
-            </button>
-        </router-link>
-
-        <router-link to="/profile" v-if="user.isLogin">
-            <button class="myaccount navBarButton" v-on:click="goToProfile">
-                Profile
-            </button>
-        </router-link>
-
-        <router-link to="/signup" v-if="!user.isLogin">
-            <button class=" signup navBarButton" name ="Sign Up">
-                Sign Up
-            </button>
-        </router-link>
-        <router-link to="/Login" v-if="!user.isLogin">
-            <button class="login navBarButton" value ="Login In">
-                Login
-            </button>
-        </router-link>
-    </header>
-</template>
-<template>
   <header class="navBarContainer">
     <router-link to="/logout" v-if="user.isLogin">
       <button id="headerNavButton" class="navBarButton" v-on:click="logoutUser">Logout</button>
@@ -54,7 +28,7 @@
     export default {
         name: "NavBar",
         computed: {
-            ...mapGetters(['user'])
+            ...mapGetters(["user", "isAdmin"]),
         },
         methods: {
             ...mapActions(['logout']),

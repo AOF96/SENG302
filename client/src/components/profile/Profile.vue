@@ -67,7 +67,7 @@
           </div>
         </div>
         <div class="rightSidebarContainer">
-          <template v-if="user.passports">
+          <template v-if="searchedUser.passports">
             <PassportCountries :passports="searchedUser.passports"></PassportCountries>
           </template>
         </div>
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-  import {mapActions, mapGetters} from 'vuex';
+  import {mapActions, mapGetters, mapState} from 'vuex';
 
   import NavBar from "../modules/NavBar";
   import PassportCountries from '../modules/PassportCountries';
@@ -93,6 +93,7 @@
       PassportCountries
     },
     computed: {
+      ...mapState(['user']),
       ...mapGetters(['user'])
     },
     data: function () {
