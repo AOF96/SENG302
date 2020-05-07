@@ -24,7 +24,7 @@
               <h1>{{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }} <span id="userNickname">({{ searchedUser.nickname }})</span></h1>
               <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
             </div>
-            <router-link to="/settings/profile">
+            <router-link v-bind:to="'/settings/profile?u=' + searchedUser.profile_id">
               <button class="genericConfirmButton">Edit Profile</button>
             </router-link>
             <div class="floatClear"></div>
