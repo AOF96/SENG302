@@ -16,7 +16,7 @@
                 </span>
             </span>
         </div>
-
+        <button class="deleteActivityButton" type="button" v-on:click="deleteActivity(activity, user)">Delete Activity</button>
 
     </div>
 </template>
@@ -24,20 +24,35 @@
 <script>
 
     import dateUtil from "@/util/date";
-    import {mapGetters} from "vuex";
+    import {mapActions, mapGetters} from "vuex";
+    import {apiActivity} from "../../api";
+    import router from "../../router";
 
   export default {
     name: "ActivityPageInfo",
 
     computed: {
         ...mapGetters(['activity']),
-      startDate() {
+        ...mapGetters(['user']),
+
+        startDate() {
         return dateUtil.getFormatDate(new Date(this.activity.start_time))
       },
 
       endDate() {
         return dateUtil.getFormatDate(new Date(this.activity.end_time))
       }
+    },
+    methods: {
+        ...mapActions(['updateUserDurationActivities']),
+        ...mapActions(['updateUserContinuousActivities']),
+
+        deleteActivity(activity, user) {
+            apiActivity.deleteActivity(activity.author_id, this.$route.params.activityId);
+            this.updateUserDurationActivities(user.dur_activities);
+            this.updateUserContinuousActivities(user.cont_activities);
+            router.push("/profile");
+        }
     }
   }
 </script>
