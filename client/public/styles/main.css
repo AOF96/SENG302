@@ -827,7 +827,7 @@ body{
     color: #fff;
 }
 
-.confirmButtonContainer .deleteActivityButton {
+.deleteActivityButton {
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -841,9 +841,32 @@ body{
     margin-left: 20px;
 }
 
-.confirmButtonContainer .deleteActivityButton:hover {
+.deleteActivityButton:hover {
     background: #ee5e5e;
     color: #fff;
+}
+
+.profileActivityDeleteButton {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    padding: 5px 12px;
+}
+
+.profileActivityDescription {
+    color: #7f7f7f;
+    font-size: 12px;
+    font-weight: 500;
+    padding-top: 3px;
+}
+
+.activityTextWrapDiv {
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .confirmButtonContainer {
@@ -912,9 +935,14 @@ body{
 }
 
 .activitySummaryDiv {
-    margin-left: 25px;
     line-height: 20px;
     margin-bottom: 15px;
+    position: relative;
+    height: 50px;
+}
+
+.profileActivityHeader {
+    font-size: 18px;
 }
 
 #activityTitle {
@@ -953,10 +981,18 @@ body{
     font-size:19px;
 }
 
-.link {
+.profileActivityTitle {
     color: #1cca92;
     cursor: pointer;
 }
-.link:hover {
+.profileActivityTitle:hover {
     text-decoration: underline;
+}
+
+.profileActivitySeparator {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 10px 0;
 }

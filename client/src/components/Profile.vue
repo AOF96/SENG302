@@ -34,26 +34,28 @@
               <button class="addActivityButton" type="button" onclick="">Add Activity</button>
             </router-link>
             <h2 id="activityTitle">Activities</h2>
-            <h3>Activity Types:</h3>
             <ul id="activityTypesList">
               <li  v-for="type in user.activities" v-bind:key="type">
                 {{type}}
               </li>
             </ul>
-            <hr>
-            <h3 style="display: inline-block">Duration Activities:</h3>
-            <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
-              <a class="link" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
-              <h2 class="userFitnessLevel">{{activity.description}}</h2>
-              <button class="deleteActivityButton" type="button" v-on:click="deleteDurationActivity(activity)">Delete Activity</button>
-            </div>
-            <hr>
-            <h3 style="display: inline-block">Continuous Activities:</h3>
 
+            <h3 class="profileActivityHeader">Duration Activities</h3>
+            <div class="activitySummaryDiv" v-for="activity in user.dur_activities" v-bind:key="activity">
+              <div class="activityTextWrapDiv">
+                <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+                <h2 class="profileActivityDescription">{{activity.description}}</h2>
+              </div>
+              <button class="deleteActivityButton profileActivityDeleteButton" type="button" v-on:click="deleteDurationActivity(activity)">Delete Activity</button>
+            </div>
+            <hr class="profileActivitySeparator">
+            <h3 class="profileActivityHeader">Continuous Activities</h3>
             <div class="activitySummaryDiv" v-for="activity in user.cont_activities" v-bind:key="activity">
-              <a class="link" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
-              <h2 class="userFitnessLevel">{{activity.description}}</h2>
-              <button class="deleteActivityButton" type="button" v-on:click="deleteContinuousActivity(activity)">Delete Activity</button>
+              <div class="activityTextWrapDiv">
+                <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+                <h2 class="profileActivityDescription">{{activity.description}}</h2>
+              </div>
+              <button class="deleteActivityButton profileActivityDeleteButton" type="button" v-on:click="deleteContinuousActivity(activity)">Delete Activity</button>
             </div>
           </div>
 
