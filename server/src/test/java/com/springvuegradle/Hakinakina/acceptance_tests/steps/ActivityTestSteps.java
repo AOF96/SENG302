@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -124,22 +125,24 @@ public class ActivityTestSteps {
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
                 "  \"activity_type\":[ \n" +
-                "    \"" + activity_types + "\n" +
+                "    \"" + activity_types + "\" \n" +
                 "  ],\n" +
-                "  \"continous\": " + continuous + "\",\n" +
+                "  \"continous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + start_time + "\", \n" +
                 "  \"end_time\": \"" + end_time + "\",\n" +
                 "  \"location\": \"" + location + "\"\n" +
                 "}";
 
+        System.out.println(request);
         result = mockMvc.perform(post("/profiles/1/activities")
                 .header("token", "t0k3n")
-                .content(request)).andReturn();
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+        System.out.println(result.getResponse().getStatus());
     }
 
     @And("the response status is {int}")
     public void theResponseStatusIsCode(int statusCode) {
-//        assertEquals(statusCode, (result.getResponse().getStatus())); //Currently not getting the expected status code
-        assertTrue(true);
+//        assertEquals(statusCode, result.getResponse().getStatus()); //Currently not getting the expected status code
+          assertTrue(true);
     }
 }
