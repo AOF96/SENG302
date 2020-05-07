@@ -17,7 +17,7 @@ const state = {
     password: null,
     passports: [],
     tmp_passports: [],
-    permission_level: null,
+    permission_level: 0,
     activities: [],
     tmp_activities: [],
     cont_activities: [],
@@ -25,19 +25,35 @@ const state = {
   }
 };
 
+//only for normal user with permission level 0
+const initialUserState = {user: userInterface};
+
+
+const state = {
+  ...initialUserState
+};
+
 const getters = {
   user(state) {
-    return state.user
+    return state.user;
+  },
+  searchedUser(state) {
+    return state.user;
   },
   isLoggedIn(state) {
     return state.user.isLogin;
+  },
+  isAdmin(state) {
+    return (state.user.permission_level > 0);
   }
-
 };
 
 const mutations = {
+  resetUser(state) {
+    state.user = initialUserState.user;
+  },
   setUser(state, data) {
-    state.user = data
+    state.user = data;
   },
   setUserFirstName(state, data) {
     if(data.firstname != ""){
@@ -98,9 +114,6 @@ const mutations = {
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
   },
-  setUserPermissionLevel(state, data) {
-    state.user.permission_level = data.permission_level;
-  },
   setUserActivity(state, data) {
     state.user.activities = data.activities;
   },
@@ -108,9 +121,12 @@ const mutations = {
     state.user.tmp_activities = data.tmp_activities;
   },
   setUserIsLogin(state, data) {
-    if(data.isLogin != ""){
-      state.user.isLogin = data.isLogin
+    if (data.isLogin != "") {
+      state.user.isLogin = data.isLogin;
     }
+  },
+  setUserPermissionLevel(state, data) {
+    state.user.permission_level = data.permission_level;
   },
   userLogin() {
     state.user.isLogin = true;
@@ -124,7 +140,7 @@ const mutations = {
       state.user.password = data.password
     }
   }
-}
+};
 
 const actions = {
   createUserProfile({ commit }, data) {

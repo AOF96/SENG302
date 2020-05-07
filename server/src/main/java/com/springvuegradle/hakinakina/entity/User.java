@@ -103,7 +103,7 @@ public class User {
 
     @JsonProperty("permission_level")
     @Column(name = "permission_level")
-    private Integer permissionLevel = 0;
+    private Integer permissionLevel;
 
     public User() {}
 
@@ -127,6 +127,9 @@ public class User {
         }
         this.fitnessLevel = fitnessLevel;
         this.primaryEmail = primaryEmail;
+        if(this.permissionLevel == null) {
+            this.permissionLevel = 0;
+        }
 
         try {
             this.salt = EncryptionUtil.getNewSalt();

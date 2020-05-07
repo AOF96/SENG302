@@ -4,7 +4,7 @@
         <div class="settingsContentContainer">
             <h1>Edit Passport Countries</h1>
             <hr>
-            <div class="itemContainer" v-for="country in user.user.passports" v-bind:key="country">
+            <div class="itemContainer" v-for="country in searchedUser.passports" v-bind:key="country">
                 <h4>{{country}}</h4>
                 <button class="genericDeleteButton" v-on:click="removePassportCountries(country)">remove</button>
                 <div class="floatClear"></div>
@@ -38,7 +38,7 @@
     import axios from "axios";
     const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
     import {apiUser} from "../../../api";
-    import { mapState, mapActions } from 'vuex'
+    import { mapState, mapActions, mapGetters } from 'vuex'
 
     export default {
         components: {
@@ -48,56 +48,72 @@
             return {
                 countries_option: [],
                 adding_country: "Passport Countries",
-                num_of_countries: 1
+                num_of_countries: 1,
+                searchedUser: {}
             }
         },
         computed: {
             ...mapState(['user']),
-        },
-
-        /*
-          Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
-          from selecting the same country twice.
-        */
-        created: function() {
-            axios.get(COUNTRIES_URL)
-                .then((response) => {
-                    const countries = []
-                    const data = response.data
-                    for (let country in data) {
-                        let country_name = data[country].name
-                        countries.push(country_name)
-                    }
-
-                    for(let country of this.user.user.passports) {
-                        const index = countries.indexOf(country)
-                        if (index === -1) continue
-                        countries.splice(index, 1)
-                    }
-                    this.countries_option = countries
-                })
-                .catch(error => console.log(error))
+            ...mapGetters(['user'])
         },
         mounted() {
-            this.startUp()
+            this.loadSearchedUser();
         },
         methods: {
             ...mapActions(['updatePassports']),
+            /*
+              Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
+              from selecting the same country twice.
+            */
             startUp() {
-                console.log('init')
-                this.user.user.passports = this.user.user.passports.slice()
+                this.searchedUser.passports = this.searchedUser.passports.slice();
+                axios.get(COUNTRIES_URL)
+                    .then((response) => {
+                        const countries = []
+                        const data = response.data
+                        for (let country in data) {
+                            let country_name = data[country].name
+                            countries.push(country_name)
+                        }
+                        for(let country of this.searchedUser.passports) {
+                            const index = countries.indexOf(country)
+                            if (index === -1) continue
+                            countries.splice(index, 1)
+                        }
+                        this.countries_option = countries
+                    })
+                    .catch(error => console.log(error));
+            },
+
+            /*
+                Uses user id from url to request user data.
+             */
+            async loadSearchedUser() {
+                if(this.$route.query.u == null){
+                    this.$router.push('/settings/passport_countries?u='+this.user.profile_id);
+                    this.searchedUser = this.user;
+                }else{
+                    var tempUserData = await apiUser.getUserById(this.$route.query.u);
+                    if(tempUserData == "Invalid permissions"){
+                        this.$router.push('/settings/passport_countries?u='+this.user.profile_id);
+                        this.searchedUser = this.user;
+                    }else{
+                        this.searchedUser = tempUserData;
+                    }
+                }
+                this.startUp();
             },
 
             /*
               Removes a passport country from an user account.
             */
             removePassportCountries(country) {
-                const index = this.user.user.passports.indexOf(country)
+                const index = this.searchedUser.passports.indexOf(country)
                 if (index === -1) return
-                this.user.user.passports.splice(index, 1)
+                this.searchedUser.passports.splice(index, 1)
                 this.countries_option.push(country)
                 this.countries_option.sort()
-                this.updatePassports(this.user.user)
+                this.updatePassports(this.searchedUser)
             },
 
             /*
@@ -105,12 +121,12 @@
              */
             addPassportCountries() {
                 if(!this.adding_country || this.adding_country == "Passport Countries") return
-                this.user.user.passports.push(this.adding_country)
+                this.searchedUser.passports.push(this.adding_country)
                 const index = this.countries_option.indexOf(this.adding_country)
                 if (index == -1) return
                 this.countries_option.splice(index, 1)
                 this.adding_country = "Passport Countries"
-                this.updatePassports(this.user.user)
+                this.updatePassports(this.searchedUser)
             },
 
             /*
@@ -118,11 +134,11 @@
                 appropriate error messages if the update was unsuccessful.
              */
             savePassportCountries() {
-                this.updatePassports(this.user.user);
+                this.updatePassports(this.searchedUser);
                 console.log(this.countries_code_name_option);
-                apiUser.editProfile(this.user.user.profile_id, this.user.user.firstname, this.user.user.lastname, this.user.user.middlename,
-                    this.user.user.nickname, this.user.user.primary_email, this.user.user.bio, this.user.user.date_of_birth, this.user.user.gender,
-                    Number(this.user.user.fitness), this.user.user.additional_email, this.user.user.passports, this.user.user.activities).then((response) => {
+                apiUser.editProfile(this.searchedUser.profile_id, this.searchedUser.firstname, this.searchedUser.lastname, this.searchedUser.middlename,
+                    this.searchedUser.nickname, this.searchedUser.primary_email, this.searchedUser.bio, this.searchedUser.date_of_birth, this.searchedUser.gender,
+                    Number(this.searchedUser.fitness), this.searchedUser.additional_email, this.searchedUser.passports, this.searchedUser.activities).then((response) => {
                     document.getElementById("passport_success").hidden = false;
                     document.getElementById("passport_error").hidden = true;
                     console.log(response);

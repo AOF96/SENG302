@@ -73,6 +73,18 @@ public class UserControllerTest {
             "  \"fitness\": 4\n" +
             "}";
 
+    private final String EDIT_PERMISSSION_LEVEL_JSON = "{\n" +
+            "  \"lastname\": \"Smith\",\n" +
+            "  \"firstname\": \"John\",\n" +
+            "  \"middlename\": \"Jack\",\n" +
+            "  \"nickname\": \"Jacky\",\n" +
+            "  \"primary_email\": \"john@google.com\",\n" +
+            "  \"bio\": \"Jacky loves to ride his bike on crazy mountains.\",\n" +
+            "  \"date_of_birth\": \"1985-12-20\",\n" +
+            "  \"gender\": \"male\",\n" +
+            "  \"permission_level\": 1\n" +
+            "}";
+
     @Test
     public void userCreationSuccess() throws Exception {
         String input = "{\n" +
@@ -316,6 +328,64 @@ public class UserControllerTest {
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Session mismatch")));
     }
+
+    /**
+     * An default admin can edit any user permission level registered in the system.
+     */
+    @Test
+    public void editUserPermissionLevelByDefaultAdminSuccessTest() throws Exception {
+        // When the default admin try to change the normal user to the admin, it should success
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 1, "Password1");
+
+        // create another default admin
+        User defaultAdmin = new User();
+        defaultAdmin.setPermissionLevel(2);
+
+        testUser.setUserId((long) 1);
+        testUser.setPermissionLevel(0);
+        testUser.resetPassportCountries();
+        testSession.setUser(defaultAdmin);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(service.validateEditUser(any(User.class)))
+                .thenReturn(responseHandler.formatSuccessResponse(200, "User updated"));
+        this.mockMvc.perform(put("/profiles/1").header("token", "t0k3n")
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PERMISSSION_LEVEL_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("User updated")));
+    }
+
+    /**
+     * An admin(not default admin) or user should not be able to
+     * edit any user permission level registered in the system.
+     */
+    @Test
+    public void editUserPermissionLevelByAdminFailTest() throws Exception {
+        // When the admin try to change the normal user to the admin, it should fail
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 1, "Password1");
+
+        // create another admin who cannot edit user permission level
+        User defaultAdmin = new User();
+        defaultAdmin.setPermissionLevel(1);
+
+        testUser.setUserId((long) 1);
+        testUser.setPermissionLevel(0);
+        testUser.resetPassportCountries();
+        testSession.setUser(defaultAdmin);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        this.mockMvc.perform(put("/profiles/1").header("token", "t0k3n")
+                .contentType(MediaType.APPLICATION_JSON).content(EDIT_PERMISSSION_LEVEL_JSON))
+                .andExpect(status().is(401))
+                .andExpect(content().string(containsString("Unauthorized: Only the default admin can edit the user permission level")));
+    }
+
 
     @Test
     public void editPasswordSuccessTest() throws Exception {
