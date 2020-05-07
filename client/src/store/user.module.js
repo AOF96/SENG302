@@ -16,6 +16,7 @@ const userInterface = {
   password: null,
   passports: [],
   tmp_passports: [],
+  activities: [],
   permission_level: 0,
 };
 
@@ -50,12 +51,12 @@ const mutations = {
     state.user = data;
   },
   setUserFirstName(state, data) {
-    if (data.firstname != "") {
+    if(data.firstname !== ""){
       state.user.firstname = data.firstname;
     }
   },
   setUserLastName(state, data) {
-    if (data.lastname != "") {
+    if(data.lastname !== ""){
       state.user.lastname = data.lastname;
     }
   },
@@ -66,17 +67,17 @@ const mutations = {
     state.user.nickname = data.nickname;
   },
   setUserGender(state, data) {
-    if (data.gender != "") {
+    if(data.gender !== ""){
       state.user.gender = data.gender;
     }
   },
   setUserEmail(state, data) {
-    if (data.primary_email != "") {
+    if(data.primary_email !== ""){
       state.user.primary_email = data.primary_email;
     }
   },
   setUserID(state, data) {
-    if (data.profile_id != "") {
+    if(data.profile_id !== ""){
       state.user.profile_id = data.profile_id;
     }
   },
@@ -84,12 +85,12 @@ const mutations = {
     state.user.additional_email = data.additional_email;
   },
   setUserBirthday(state, data) {
-    if (data.birthday != "") {
+    if(data.birthday !== ""){
       state.user.date_of_birth = data.date_of_birth;
     }
   },
   setUserBio(state, data) {
-    if (data.bio != "") {
+    if(data.bio !== ""){
       state.user.bio = data.bio;
     }
   },
@@ -104,7 +105,14 @@ const mutations = {
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
   },
-
+  setUserActivity(state, data) {
+    state.user.activities = data.activities;
+  },
+  setUserIsLogin(state, data) {
+    if (data.isLogin !== "") {
+      state.user.isLogin = data.isLogin;
+    }
+  },
   setUserPermissionLevel(state, data) {
     state.user.permission_level = data.permission_level;
   },
@@ -119,8 +127,8 @@ const mutations = {
   },
 
   setUserPassword(state, data) {
-    if (data.password != "") {
-      state.user.password = data.password;
+    if(data.password !== ""){
+      state.user.password = data.password
     }
   },
 };
@@ -156,6 +164,7 @@ const actions = {
     commit("setUserID", data);
     commit("setUserPermissionLevel", data);
     commit("userLogin");
+    commit('setUserActivity', data);
   },
   updateUserEmail({ commit }, data) {
     commit("setUserEmail", data);
@@ -173,6 +182,9 @@ const actions = {
   },
   resetUser({ commit }) {
     commit("resetUser");
+  },
+  updateActivities({commit}, data){
+    commit('setUserActivity', data)
   },
 };
 

@@ -1,14 +1,23 @@
 package com.springvuegradle.Hakinakina.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
+import com.springvuegradle.Hakinakina.util.RandomToken;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +33,7 @@ public class UserController {
     public PassportCountryRepository countryRepository;
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
+    public ActivityTypeRepository activityTypeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private UserService userService;
@@ -36,11 +46,14 @@ public class UserController {
      * @param emailRepository   The repository containing Emails
      * @param sessionRepository The repository containing Sessions
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository, EmailRepository emailRepository, SessionRepository sessionRepository, UserService userService) {
+    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository,
+                          EmailRepository emailRepository, SessionRepository sessionRepository,
+                          ActivityTypeRepository activityTypeRepository, UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
         this.sessionRepository = sessionRepository;
+        this.activityTypeRepository = activityTypeRepository;
         this.userService = userService;
     }
 
@@ -74,6 +87,14 @@ public class UserController {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
+    /***
+     * Endpoint for handling the editing of a user's profile information. Returns appropriate error codes if something
+     * is wrong with the request. Checks if the request comes from an admin so it can edit someone else profile.
+     * @param user the JSON object containing the values the user wants to edit.
+     * @param profileId the ID of the given user.
+     * @param sessionToken authentication token to validate the user sending the request.
+     * @return a 400 response if the provided ID and token don't match or is not an admin. 200 if it's a valid request.
+     */
     @PutMapping("/profiles/{profileId}")
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
@@ -188,15 +209,24 @@ public class UserController {
         return countryRepository.findAll().toString();
     }
 
+    /***
+     * Endpoint for retrieving all the primary emails that are stored in the database.
+     * @return a list with all the primary emails.
+     */
     @GetMapping("/emails")
     public String getAllEmails() {
         //ToDO use the commented out return statement rather than the current one once the email table has been fixed
         /*
-        return emailRepository.getAllEmails();
+//        return emailRepository.getAllEmails();
          */
         return userRepository.getAllPrimaryEmails().toString();
     }
 
+    /***
+     * Retrieves the session token of an user. Based on the profile ID that is provided.
+     * @param profileId the user's ID
+     * @return a list containing all the tokens that belong to the given user.
+     */
     @GetMapping("/token/{profile_id}")
     public List<String> getUserSessionToken(@PathVariable("profile_id") long profileId) {
         return sessionRepository.getUserSessionToken(profileId);
@@ -252,6 +282,58 @@ public class UserController {
             return responseHandler.formatErrorResponse(400, "newPassword and repeatPassword do no match");
         }
         return userService.changePassword(profileId, sessionToken, oldPassword, newPassword);
+    }
+
+    /**
+     * Handles the editing of a user's activity types. Parses the list of activities and calls the service method,
+     * returning the result as a ResponseEntity
+     * @param jsonString The json as a string
+     * @param profileId The ID of the user to update
+     * @return A ResponseEntity stating the result
+     * @throws JsonProcessingException If there is an issue while parsing the JSON
+     */
+    @PutMapping("/profiles/{profileId}/activity-types")
+    public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
+        List<String> activities;
+
+        if (activitiesNode.isArray()) {
+            activities = parseActivityList(activitiesNode);
+        } else {
+            return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
+        }
+
+        return userService.editActivityTypes(activities, profileId);
+    }
+
+    /**
+     * Retrieve the names of all the Activity Types in the database
+     * @return A JSON list of names of activity types
+     */
+    @GetMapping("/activity-types")
+    public List<String> getActivityTypes() {
+        List<ActivityType> activityTypes = activityTypeRepository.findAll();
+        List<String> activityTypeStrings = new ArrayList<>();
+
+        for (ActivityType type : activityTypes) {
+            activityTypeStrings.add(type.getName());
+        }
+        return activityTypeStrings;
+    }
+
+    /**
+     * Parses a list of activity types
+     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
+     * @return A List of Strings of the activity types
+     */
+    public static List<String> parseActivityList(JsonNode activitiesNode) {
+        List<String> activities = new ArrayList<>();
+        for (JsonNode activity : activitiesNode) {
+            activities.add(activity.textValue());
+        }
+
+        return activities;
     }
 
     // Create Exception Handle

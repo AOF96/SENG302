@@ -471,7 +471,7 @@ body{
 
 
 
-.removeCountryButton{
+.removeCountryButton, .removeActivityButton{
     padding: 4px 12px;
     border-radius: 50px;
     font-size: 12px;
@@ -485,7 +485,7 @@ body{
     color: white;
     background: #1cca92;
 }
-#addPassportButton, #saveChangesButton{
+#addPassportButton, #saveChangesButton, #addActivityButton{
     padding: 8px 16px;
     border-radius: 50px;
     font-size: 15px;
@@ -505,7 +505,7 @@ body{
 #saveChangesButton{
     width: calc(100% - 40px);
 }
-#passportCountriesInput{
+#passportCountriesInput, #activityInput{
     margin: 20px;
     padding: 8px 20px;
     border-radius: 30px;
@@ -517,10 +517,14 @@ body{
     margin-top: 0;
     display: inline;
 }
-.removeCountryButton:hover{
+.removeCountryButton:hover, .removeActivityButton:hover{
     background: #ffffff;
     color: #1cca92;
 }
+.settingsActivity {
+    text-align: left;
+}
+
 .profileModule{
     width:100%;
     background:white;
@@ -689,7 +693,7 @@ body{
     color: #f06a6a;
 }
 
-.passport_success {
+.edit_success,.passport_success {
     font-family: 'Roboto';
     font-weight: 500;
     font-size: 14px;
@@ -708,17 +712,17 @@ body{
     overflow: hidden;
     margin-bottom:15px;
 }
-#countryActions{
+#countryActions, #activityActions{
     margin-top:20px;
 }
-.countryDisplay {
+.countryDisplay, .activityDisplay {
     float: left;
     padding-top: 3px;
     font-size: 16px;
     font-weight: 500;
     color: #3d3d3d;
 }
-.countryBox {
+.countryBox, .activityBox{
     width: calc(100% - 40px);
     margin: 0 auto;
     padding: 10px;

@@ -1,51 +1,55 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Profile from "@/components/Profile.vue";
-import Signup from "@/components/Signup.vue";
-import Login from "@/components/Login.vue";
-import UserProfileSettings from "@/components/Settings/UserProfileSettings";
-import UserPasswordSettings from "@/components/Settings/UserPasswordSettings";
-import UserEmailSettings from "@/components/Settings/UserEmailSettings";
-import UserPassportCountriesSettings from "@/components/Settings/UserPassportCountriesSettings";
-import store from "@/store/index.js";
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import Profile from '@/components/Profile.vue'
+import Signup from '@/components/Signup.vue'
+import Login from '@/components/Login.vue'
+import UserProfileSettings from '@/components/Settings/UserProfileSettings'
+import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
+import UserEmailSettings from '@/components/Settings/UserEmailSettings'
+import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
+import UserActivitySettings from "./components/Settings/UserActivitySettings";
+import store from '@/store/index.js';
 import { apiUser } from "./api";
 import AdminDashboard from "./components/Settings/AdminDashboard";
-//import { mapGetters, mapActions} from 'vuex';
 
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: "/profile",
-    component: Profile,
-  },
-  {
-    path: "/signup",
-    component: Signup,
-  },
-  {
-    path: "/login",
-    component: Login,
-  },
-  {
-    path: "/logout",
-  },
-  {
-    path: "/settings/profile",
-    component: UserProfileSettings,
-  },
-  {
-    path: "/settings/password",
-    component: UserPasswordSettings,
-  },
-  {
-    path: "/settings/email",
-    component: UserEmailSettings,
-  },
-  {
-    path: "/settings/passport_countries",
-    component: UserPassportCountriesSettings,
-  },
+    {
+        path: '/profile',
+        component: Profile
+    },
+    {
+        path: '/signup',
+        component: Signup
+    },
+    {
+        path: '/login',
+        component: Login
+    },
+    {
+        path: '/logout',
+    },
+    {
+        path: '/settings/profile',
+        component: UserProfileSettings
+    },
+    {
+        path: '/settings/password',
+        component: UserPasswordSettings
+    },
+    {
+        path: '/settings/email',
+        component: UserEmailSettings
+    },
+    {
+        path: '/settings/passport_countries',
+        component: UserPassportCountriesSettings
+    },
+    {
+        path: '/settings/activities',
+        component: UserActivitySettings
+    },
   {
     path: "/settings/admin_dashboard",
     component: AdminDashboard,
