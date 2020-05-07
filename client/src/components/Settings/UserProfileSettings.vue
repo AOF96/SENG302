@@ -7,7 +7,7 @@
         <h6 class="edit_error" id="error" hidden="true"></h6>
         <h6 class="edit_success" id="success" hidden="true"></h6>
         <form @submit.prevent>
-            <div id="adminToggle" v-if="user.permission_level == 2 && searchedUser.permission_level != 2 && user.profile_id != searchedUser.profile_id">
+            <div id="adminToggle" v-bind:class="{ showadmin: showAdmin }" v-if="user.permission_level == 2 && searchedUser.permission_level != 2 && user.profile_id != searchedUser.profile_id">
                 <h2>Enable Admin Abilities</h2>
                 <div class="togswitch" :position="searchedUser.permission_level == 1 ? 'on' : 'off'" v-on:click="toggleAdmin()">
                     <div class="togswitchnob"></div>
@@ -64,7 +64,8 @@ export default {
     },
     data: function() {
       return {
-        searchedUser: {}
+        searchedUser: {},
+        showAdmin: false
       }
     },
     methods: {
@@ -117,6 +118,7 @@ export default {
               this.searchedUser = tempUserData;
             }
           }
+          this.showAdmin = true;
         }
     },
     mounted() {

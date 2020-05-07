@@ -782,6 +782,7 @@ body{
 #adminToggle{
   position: relative;
   margin-top:10px;
+  display:none;
 }
 #adminToggle h2{
   float:left;
@@ -792,4 +793,7 @@ body{
   right:20px;
   top:50%;
   transform:translateY(-50%);
+}
+.showadmin{
+  display:block !important;
 }
