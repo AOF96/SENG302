@@ -67,7 +67,9 @@
           </div>
         </div>
         <div class="rightSidebarContainer">
-          <PassportCountries/>
+          <template v-if="user.passports">
+            <PassportCountries :passports="user.passports"></PassportCountries>
+          </template>
         </div>
       </div>
     </div>
