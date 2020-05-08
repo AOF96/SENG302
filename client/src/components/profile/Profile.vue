@@ -49,8 +49,8 @@
                 </router-link>
                 <h4 class="profileActivityDescription">{{activity.description}}</h4>
               </div>
-              <router-link to="/activity_editing">
-                <button class="genericConfirmButton profileActivityConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
+              <router-link v-bind:to="'/activity_editing/' + activity.id">
+                <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
               </router-link>
             </div>
             <hr class="profileActivitySeparator">
@@ -62,8 +62,8 @@
                 </router-link>
                 <h4 class="profileActivityDescription">{{activity.description}}</h4>
               </div>
-              <router-link to="/activity_editing">
-                <button class="genericConfirmButton profileActivityConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
+              <router-link v-bind:to="'/activity_editing/' + activity.id">
+                <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
               </router-link>
             </div>
           </div>
@@ -161,7 +161,6 @@
           this.componentKey++;
       },
       startUp() {
-        console.log('init');
         this.searchedUser.passports = this.searchedUser.passports.slice();
         axios.get(COUNTRIES_URL)
         .then((response) => {

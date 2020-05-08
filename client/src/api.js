@@ -133,5 +133,19 @@ export const apiActivity = {
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`),
 
-  deleteActivity: (authorId, activityId) => instance.delete(`/profiles/${authorId}/activities/${activityId}`)
+  deleteActivity: (authorId, activityId) => instance.delete(`/profiles/${authorId}/activities/${activityId}`),
+
+  async getActivityById(activityId) {
+    let activity = await apiActivity.getActivity(activityId).then(
+      response => {
+        return response.data;
+      },
+      error => {
+        if(error){
+          return "Invalid permissions";
+        }
+      }
+    );
+    return await activity;
+  }
 };

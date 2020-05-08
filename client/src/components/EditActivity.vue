@@ -127,46 +127,28 @@ export default {
       start_time: null,
       end_time: null,
       activity_name: "",
-      continuous: "",
+      continuous: false,
       description: ""
     };
   },
   computed: {
-    ...mapGetters(["activity"]),
     ...mapGetters(["user"]),
     isDuration() {
       return this.duration == "duration";
     }
   },
   created: async function() {
+    this.loadActivity();
     // Ensures only activity types from the database can be selected and cannot select ones already selected
     await apiUser
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
-        this.activity_name = this.activity.name;
-        this.end_time = this.formatTime(this.activity.end_time);
-        this.start_time = this.formatTime(this.activity.start_time);
-        this.continous = this.activity.continous;
-        this.description = this.activity.description;
-        this.activity_type = this.activity.activity_types.slice();
-        this.adding_country = this.activity.location;
-        this.activity_types_selected = this.activity.activity_types.map(
-          e => e.name
-        );
-        this.activity_types_selected.forEach(e => {
-          this.activities_option.some((v, i) => {
-            if (v == e) this.activities_option.splice(i, 1);
-          });
-        });
-        this.start_date = this.formatDate(this.activity.start_time);
-        this.end_date = this.formatDate(this.activity.end_time);
       })
       .catch(error => console.log(error));
 
     // Gets list of countries that can be selected
-    await axios
-      .get(COUNTRIES_URL)
+    await axios.get(COUNTRIES_URL)
       .then(response => {
         const countries = [];
         const data = response.data;
@@ -178,10 +160,48 @@ export default {
       })
       .catch(error => console.log(error));
   },
+  // mounted() {
+  //     this.loadActivity();
+  // },
   methods: {
     ...mapActions(["createActivity"]),
     ...mapActions(["updateUserContinuousActivities"]),
     ...mapActions(["updateUserDurationActivities"]),
+
+    /*
+      Uses activity id from url to request activity data.
+    */
+    async loadActivity() {
+      if(this.$route.params.activityId == null || this.$route.params.activityId == ""){
+        this.$router.push('/profile');
+      }else{
+        var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+        if(tempActivityData == "Invalid permissions"){
+          this.$router.push('/profile');
+        }else{
+          this.activity_name = tempActivityData.activity_name;
+          this.continuous = tempActivityData.continuous;
+          if(this.continuous){
+              this.duration = "continuous";
+          }else{
+              this.duration = "duration";
+              this.end_time = this.formatTime(tempActivityData.end_time);
+              this.start_time = this.formatTime(tempActivityData.start_time);
+              this.start_date = this.formatDate(tempActivityData.start_time);
+              this.end_date = this.formatDate(tempActivityData.end_time);
+          }
+          this.description = tempActivityData.description;
+          this.activity_type = tempActivityData.activity_type.slice();
+          this.adding_country = tempActivityData.location;
+          this.activity_types_selected = tempActivityData.activity_type.map(e => e.name);
+          this.activity_types_selected.forEach(e => {
+            this.activities_option.some((v, i) => {
+              if (v == e) this.activities_option.splice(i, 1);
+            });
+          });
+        }
+      }
+    },
 
     /**
      * Shows/hides date and time selection if duration is duration/continuous
@@ -191,25 +211,6 @@ export default {
       this.end_date = null;
       this.start_time = null;
       this.end_time = null;
-      if (this.duration === "duration") {
-        document.getElementById("start_date").type = "date";
-        document.getElementById("end_date").type = "date";
-        document.getElementById("start_time").type = "time";
-        document.getElementById("end_time").type = "time";
-        document.getElementById("startDateLabel").hidden = false;
-        document.getElementById("endDateLabel").hidden = false;
-        document.getElementById("startTimeLabel").hidden = false;
-        document.getElementById("endTimeLabel").hidden = false;
-      } else {
-        document.getElementById("start_date").type = "hidden";
-        document.getElementById("end_date").type = "hidden";
-        document.getElementById("start_time").type = "hidden";
-        document.getElementById("end_time").type = "hidden";
-        document.getElementById("startDateLabel").hidden = true;
-        document.getElementById("endDateLabel").hidden = true;
-        document.getElementById("startTimeLabel").hidden = true;
-        document.getElementById("endTimeLabel").hidden = true;
-      }
     },
     /**
      * This function converts the milli seconds to the format YYYY-MM-DD
@@ -264,7 +265,7 @@ export default {
       let timeZone = currentDate
         .toString()
         .slice(currentDate.toString().indexOf("+"), 5);
-      if (this.activity.name === null || this.activity.name.trim() === "") {
+      if (this.activity_name === null || this.activity_name.trim() === "") {
         this.displayError("Please select an activity name.");
       } else if (
         this.duration !== "duration" &&
@@ -327,19 +328,19 @@ export default {
           return;
         }
 
-        this.duration = this.duration !== "duration";
+        var tempIsDuration = this.duration !== "duration";
 
         apiActivity
           .editActivity(
             this.user.profile_id,
             this.activity_name,
-            this.duration,
+            tempIsDuration,
             combinedStartTime,
             combinedEndTime,
             this.description,
             this.adding_country,
             this.activity_types_selected,
-            this.activity.activity_id
+            this.$route.params.activityId
           )
           .then(
             response => {
@@ -356,7 +357,7 @@ export default {
                 .then(response => {
                   this.updateUserDurationActivities(response.data);
                 });
-              router.push("profile");
+              router.push("/profile");
             },
             error => {
               document.getElementById("activity_error").hidden = false;

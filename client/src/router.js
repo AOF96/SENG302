@@ -74,7 +74,7 @@ const routes = [
         component: ActivitySettings
     },
     {
-        path: '/activity_editing',
+        path: '/activity_editing/:activityId',
         component: EditActivity
     }
 ];

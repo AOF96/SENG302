@@ -99,7 +99,7 @@ public class ActivityService {
             if (session == null) {
                 return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
             }
-            if (profileId != session.getUser().getUserId()) {
+            if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
                 return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
             }
 
