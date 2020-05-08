@@ -42,6 +42,7 @@
           <div class="signUpRow">
             <h3 class="signUpText">Fitness Level</h3>
             <select id="signup-fitness-level" class="fitnessLevelSelect" v-model="user.fitness" name="fitnesslevel" placeholder="Fitness Level" value="Fitness" required>
+                <option value="-1" selected disabled hidden>Fitness</option>
               <option value="0">I never exercise</option>
               <option value="1">I can walk a short distance</option>
               <option value="2">I can jog a short distance</option>
@@ -144,7 +145,7 @@ export default {
         gender: this.user.gender !== "Gender",
         email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
         birthday: this.user.date_of_birth !== "" && this.birthday_validation,
-        fitnesslevel: this.user.fitnessLevel !== "FitnessLevel",
+        fitnesslevel: this.user.fitnessLevel != -1,
         password: {
           match: this.password1 === this.password2,
           length: /.{8,}/.test(this.password1),
@@ -246,8 +247,4 @@ export default {
 
 <style scoped>
   @import '../../public/styles/pages/signUpStyle.css';
-  .errorMessage {
-    margin-top: -0.65rem;
-    margin-bottom: 1rem;
-  }
 </style>
