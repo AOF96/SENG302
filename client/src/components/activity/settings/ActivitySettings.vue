@@ -6,7 +6,7 @@
                 <form class="CreateActivityFormContainer">
                     <h1>Create an Activity</h1>
                     <label class="editActivityLabel" for="name">Activity Name</label>
-                    <input class="editActivityInput" type="text" id="name" v-model="activity.name" required />
+                    <input class="editActivityInput" type="text" id="name" v-model="name" required />
 
                     <label class="editActivityLabel" for="time">Continuous?</label>
                     <select
@@ -37,7 +37,7 @@
                         maxlength="255"
                         type="text"
                         id="desc"
-                        v-model="activity.description">
+                        v-model="description">
                     </textarea>
 
                     <label class="editActivityLabel">Location</label>
@@ -106,6 +106,8 @@ export default {
             countries_option: [],
             adding_country: "Countries",
             duration: "duration",
+            name: "",
+            description: "",
             activity_types_selected: [],
             start_date: null,
             end_date: null,
@@ -116,10 +118,12 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(["activity"]),
         ...mapGetters(["user"])
     },
     created: async function () {
+        if(this.$route.params.profileId != this.user.profile_id && this.user.permission_level == 0){
+            this.$router.push('/profile');
+        }
         // Ensures only activity types from the database can be selected and cannot select ones already selected
         await apiUser
             .getActivityTypes()
@@ -248,7 +252,7 @@ export default {
          * @return boolean true if passes, false if fails
          */
         checkFormConditions() {
-            if (this.activity.name === null || this.activity.name.trim() === "") {
+            if (this.name === null || this.name.trim() === "") {
                 // Name is empty
                 this.displayError("Please select an activity name.");
                 return false;
@@ -286,11 +290,11 @@ export default {
             }
 
             // Sets duration to a boolean for the request
-            this.duration = this.duration !== "duration";
+            var tempIsDuration = this.duration !== "duration";
 
             // Send a create request
-            apiActivity.addActivity(this.user.profile_id, this.activity.name, this.duration, this.combinedStartTime,
-                this.combinedEndTime, this.activity.description, this.adding_country, this.activity_types_selected)
+            apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
+                this.combinedEndTime, this.description, this.adding_country, this.activity_types_selected)
                 .then(
                     response => {
                         document.getElementById("activity_success").hidden = false;
@@ -304,11 +308,12 @@ export default {
                             .then(response => {
                                 this.updateUserDurationActivities(response.data);
                             });
-                        router.push("Profile");
+                        router.push("/profile/"+this.$route.params.profileId);
                     },
                     error => {
-                        this.displayError(error.data.error);
-                        console.log(error);
+                        if(error){
+                            this.displayError("An error occured");
+                        }
                     });
         },
         /**

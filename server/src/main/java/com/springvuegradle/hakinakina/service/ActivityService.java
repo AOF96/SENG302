@@ -41,24 +41,26 @@ public class ActivityService {
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
         try {
+            if(userRepository.getUserById(profileId).isEmpty()){
+                return new ResponseEntity("Invalid User ID", HttpStatus.valueOf(403));
+            }
             if (activity.getStartTime() != null) {
                 activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
             }
             if (activity.getEndTime() != null) {
                 activity.getEndTime().setTime((activity.getEndTime().getTime() - (12 * 60 * 60 * 1000)));
             }
-            System.out.println(activity);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
                 return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
             }
-            if (profileId != session.getUser().getUserId()) {
+            if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
                 return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
             }
 
             //If there are no activity types listed
             if (activity.getActivityTypes().size() == 0) {
-                return new ResponseEntity("Activity must have atleast one activity type", HttpStatus.valueOf(400));
+                return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
             }
 
             for (ActivityType activityType : activity.getActivityTypes()) {

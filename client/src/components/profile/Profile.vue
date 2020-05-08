@@ -30,7 +30,7 @@
             <div class="floatClear"></div>
           </div>
           <div class="profileActivitiesContainer">
-            <router-link to="/activity_settings">
+            <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
               <button class="genericConfirmButton" type="button" onclick="">Add Activity</button>
             </router-link>
             <h2>Activities</h2>

@@ -70,7 +70,7 @@ const routes = [
         component: Activity
     },
     {
-        path: '/activity_settings',
+        path: '/activity_settings/:profileId',
         component: ActivitySettings
     },
     {
