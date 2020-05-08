@@ -15,10 +15,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 
 import java.sql.Date;
 import java.util.HashSet;
@@ -27,7 +31,10 @@ import java.util.Set;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.when;
+
 
 
 @WebMvcTest(Activity.class)
@@ -46,12 +53,17 @@ public class ActivityTestSteps {
     private ActivityService activityService;
     @Mock
     private UserService userService;
-
+    @Mock
+    private SessionRepository sessionRepository;
     @InjectMocks
     private ActivityController activityController;
 
     private User user1;
+    private User user;
+    Session session;
+
     Session session1 = new Session("t0k3n");
+    Activity activity;
     Activity activity1;
 
 
@@ -64,29 +76,95 @@ public class ActivityTestSteps {
                 .standaloneSetup(activityController).build();
     }
 
-    @Given("that user {int} adds the following activity")
-    public void theUserAddsTheFollowingActivity(int id) throws Exception {
-        assertTrue(true);
+    @Given("I create an account with name {string}, email {string} and ID {int}")
+    public void iCreateAccountWithNameEmailAndID(String name, String email, int ID) throws Exception {
+        user = new User(name, "Doe", email, "1995-12-20", Gender.MALE, 4, "password");
+        user.setUserId((long) ID);
+        userRepository.save(user);
+        assertEquals(email, user.getPrimaryEmail());
+        assertEquals(ID, user.getUserId());
+
     }
 
-    @When("user {int} activities are retrieved")
-    public void userActivitiesAreRetrieved(int userId) {
-        assertTrue(true);
+    @And("I have the authorization token {string}")
+    public void iHaveTheToken(String token) {
+        session = new Session(token);
+        session.setUser(user);
+        sessionRepository.insertToken(token, user.getUserId());
+        assertEquals(session.getUser().getPrimaryEmail(), user.getPrimaryEmail());
     }
 
-    @Then("exactly {int} activity should be returned")
-    public void exactlyActivityShouldBeReturned(int expectedNumOfAcitivities) {
-        assertTrue(true);
+    @When("I create the following activity: {string} {string} {string} {string} {string} {string} {string}")
+    public void iCreateTheFollowingActivity(
+            String activity_name, String description, String activity_types, String continuous, String start_time,
+            String end_time, String location) throws Exception {
+
+        String request = "{\n" +
+                "  \"activity_name\": \"" + activity_name + "\",\n" +
+                "  \"description\": \"" + description + "\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"" + activity_types + "\" \n" +
+                "  ],\n" +
+                "  \"continous\": " + continuous + ",\n" +
+                "  \"start_time\": \"" + start_time + "\", \n" +
+                "  \"end_time\": \"" + end_time + "\",\n" +
+                "  \"location\": \"" + location + "\"\n" +
+                "}";
+
+        System.out.println(request);
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));;
+        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
+                .header("token", session)
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+        System.out.println(result.getResponse().getStatus());
+    }
+
+    @Then("the response status is {int}")
+    public void theResponseStatusIsCode(int statusCode) {
+        assertEquals(statusCode, result.getResponse().getStatus());
+    }
+
+    @When("I create the activity: {string} {string} {string} {string} {string} {string} {string} with token {string}")
+    public void iCreateTheActivityWithToken(
+            String activity_name, String description, String activity_types, String continuous, String start_time,
+            String end_time, String location, String token) throws Exception {
+
+        String request = "{\n" +
+                "  \"activity_name\": \"" + activity_name + "\",\n" +
+                "  \"description\": \"" + description + "\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"" + activity_types + "\" \n" +
+                "  ],\n" +
+                "  \"continous\": " + continuous + ",\n" +
+                "  \"start_time\": \"" + start_time + "\", \n" +
+                "  \"end_time\": \"" + end_time + "\",\n" +
+                "  \"location\": \"" + location + "\"\n" +
+                "}";
+
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN));;
+        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities").header("token", token)
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+        String test = "/profiles/" + user.getUserId() + "/activities";
+        System.out.println(test);
+        System.out.println(result.getResponse().getStatus());
     }
 
 
-    @Given("I create an account with email {string}")
-    public void iCreateAccountWithEmail(String email) throws Exception {
-        user1 = new User("John", "Doe", email, "1985-12-20", Gender.MALE, 4, "password");
-        assertEquals(email, user1.getPrimaryEmail());
-        user1.setUserId((long) 1);
-        session1.setUser(user1);
-    }
+
+
+//    @When("user {int} activities are retrieved")
+//    public void userActivitiesAreRetrieved(int userId) {
+//        user1.
+//        assertTrue(true);
+//    }
+
+//    @Then("exactly {int} activity should be returned")
+//    public void exactlyActivityShouldBeReturned(int expectedNumOfAcitivities) {
+//        assertTrue(true);
+//    }
+
+
+
 
     @And("I create an activity with name {string}, description {string} and ID {long}")
     public void i_create_an_activity(String name, String description, long id) throws Exception {
@@ -116,33 +194,7 @@ public class ActivityTestSteps {
     }
 
 
-    @And("they add the following activity: {string} {string} {string} {string} {string} {string} {string}")
-    public void theyAddTheFollowingActivityActivity_nameDescriptionActivity_typeContinuousStart_timeEnd_timeLocation(
-            String activity_name, String description, String activity_types, String continuous, String start_time,
-            String end_time, String location) throws Exception {
 
-        String request = "{\n" +
-                "  \"activity_name\": \"" + activity_name + "\",\n" +
-                "  \"description\": \"" + description + "\",\n" +
-                "  \"activity_type\":[ \n" +
-                "    \"" + activity_types + "\" \n" +
-                "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
-                "  \"start_time\": \"" + start_time + "\", \n" +
-                "  \"end_time\": \"" + end_time + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
-                "}";
 
-        System.out.println(request);
-        result = mockMvc.perform(post("/profiles/1/activities")
-                .header("token", "t0k3n")
-                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
-        System.out.println(result.getResponse().getStatus());
-    }
 
-    @And("the response status is {int}")
-    public void theResponseStatusIsCode(int statusCode) {
-//        assertEquals(statusCode, result.getResponse().getStatus()); //Currently not getting the expected status code
-          assertTrue(true);
-    }
 }
