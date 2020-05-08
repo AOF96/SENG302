@@ -73,6 +73,7 @@
             <PassportCountries :passports="searchedUser.passports" :key="componentKey"></PassportCountries>
           </template>
         </div>
+        <div class="floatClear"></div>
       </div>
     </div>
 </template>
