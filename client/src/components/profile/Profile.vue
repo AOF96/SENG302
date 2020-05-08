@@ -34,35 +34,37 @@
               <button class="genericConfirmButton" type="button" onclick="">Add Activity</button>
             </router-link>
             <h2>Activities</h2>
-            <h3>Activity Types:</h3>
+            <h3>Activity Types</h3>
             <ul class="activityTypesList">
               <li v-for="type in searchedUser.activities" v-bind:key="type">
                 {{type}}
               </li>
             </ul>
-            <hr>
-            <h3>Duration Activities:</h3>
+            <hr class="profileActivitySeparator">
+            <h3>Duration Activities</h3>
             <div class="activitySummaryContainer" v-for="activity in dur_activities" v-bind:key="activity">
-              <router-link to="activity/:activityId">
-                <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
-              </router-link>
-              <h4>{{activity.description}}</h4>
+              <div class="activityTextWrapDiv">
+                <router-link to="activity/:activityId">
+                  <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+                </router-link>
+                <h4 class="profileActivityDescription">{{activity.description}}</h4>
+              </div>
               <router-link to="/activity_editing">
-                <button class="genericConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
+                <button class="genericConfirmButton profileActivityConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
               </router-link>
-              <button class="deleteActivityButton profileActivityDeleteButton" type="button" v-on:click="deleteDurationActivity(activity)">Delete Activity</button>
             </div>
-            <hr>
-            <h3>Continuous Activities:</h3>
+            <hr class="profileActivitySeparator">
+            <h3>Continuous Activities</h3>
             <div class="activitySummaryContainer" v-for="activity in cont_activities" v-bind:key="activity">
-              <router-link to="activity/:activityId">
-                <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
-              </router-link>
-              <h4>{{activity.description}}</h4>
+              <div class="activityTextWrapDiv">
+                <router-link to="activity/:activityId">
+                  <a class="profileActivityTitle" v-on:click="goToActivity(activity.id)">{{activity.name}}</a>
+                </router-link>
+                <h4 class="profileActivityDescription">{{activity.description}}</h4>
+              </div>
               <router-link to="/activity_editing">
-                <button class="genericConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
+                <button class="genericConfirmButton profileActivityConfirmButton" type="button" v-on:click="getActivity(activity.id)">Edit Activity</button>
               </router-link>
-              <button class="deleteActivityButton profileActivityDeleteButton" type="button" v-on:click="deleteContinuousActivity(activity)">Delete Activity</button>
             </div>
           </div>
         </div>
