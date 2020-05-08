@@ -10,7 +10,7 @@
         <div class="floatClear"></div>
       </div>
       <div id="activityActions">
-        <form @submit.prevent>
+        <form class="formTopSpacing" @submit.prevent>
           <select
                   v-model="selected_activity"
                   name="activityType"
@@ -69,8 +69,7 @@
       }).catch(error => console.log(error))
     },
     mounted() {
-        this.loadSearchedUser(),
-        this.startUp()
+        this.loadSearchedUser()
     },
     methods: {
       ...mapActions(['updateActivities']),
