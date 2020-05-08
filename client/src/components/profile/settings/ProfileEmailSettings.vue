@@ -59,7 +59,7 @@
                 limit_num_email: LIMIT_NUM_EMAIL,
                 tempOldEmail: '',
                 editEmailInput: '',
-                searchedUser: {},
+                searchedUser: {primary_email: "", additional_email: []},
                 showEditBox: false
             }
         },
