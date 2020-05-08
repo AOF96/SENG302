@@ -7,10 +7,8 @@
         <div id="myOverlay" class="overlay">
             <span class="closebtn" v-on:click="closeSearch()" title="Close Overlay">x</span>
             <div class="overlay-content">
-                <form action="action_page.php">
-                    <input type="text" placeholder="User Id...." name="search">
-                    <button type="submit">Submit</button>
-                </form>
+                    <input type="text"   v-model="searchedUser.profile_id" placeholder="User Id...." name="search">
+                    <button type="submit" v-on:click="goToSearchedUser()">Submit</button>
             </div>
         </div>
     </div>
@@ -19,12 +17,19 @@
 <script>
 
     import NavBar from '@/components/NavBar'
+    import {apiUser} from "../../api";
+    // import json from "../../../public/json/data.json";
     // import axios from 'axios'
     // import router from "../../router";
     export default {
         name: "AdminDashboard",
         components: {
             NavBar
+        },
+        data: function() {
+            return {
+                searchedUser: {}
+                }
         },
         methods:{
             openSearch() {
@@ -33,14 +38,22 @@
      closeSearch() {
         document.getElementById("myOverlay").style.display = "none";
     },
-            // searchUser(){
-            //     axios.get()
-            //    //do the get request for the user entered by admin and then push and then set the userinterface data in user.module.js
-            //    // and then push the page to profile. We are here potraying as if the admin is that user, which would give it access to edit
-            //    //the users information.
-            //    //  router.push('Profile');
-            // }
-        }
+            async goToSearchedUser() {
+
+                    var tempSearchedUser = await apiUser.getUserById(this.searchedUser.profile_id)
+                console.log(tempSearchedUser)
+                    if(tempSearchedUser ==  "Invalid permissions" || tempSearchedUser.permission_level == 2){
+                        alert("User does not exist");
+                    }
+                    else{
+                        this.$router.push('/profile?u='+this.searchedUser.profile_id);
+                    }
+
+                    //
+                    console.log("User does not exist");
+                // }
+            }
+        },
     }
 </script>
 

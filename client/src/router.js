@@ -14,8 +14,6 @@ import AdminDashboard from "./components/Settings/AdminDashboard";
 
 Vue.use(VueRouter);
 
-var firstLoad = true;
-
 const routes = [
     {
         path: '/profile',
@@ -56,6 +54,10 @@ const routes = [
     path: "/settings/admin_dashboard",
     component: AdminDashboard,
   },
+  {
+    path: "*",
+    redirect: "/profile",
+  },
 ];
 
 const router = new VueRouter({
@@ -63,6 +65,7 @@ const router = new VueRouter({
   mode: "history",
 });
 
+let firstLoad = true;
 
 router.beforeEach((to, from, next) => {
   // Make sure that the next function is called exactly once in any given pass through the navigation guard.
@@ -72,50 +75,34 @@ router.beforeEach((to, from, next) => {
   // console.log("start routering to.path=" + to.path);
   // console.log("admin user.isLogin=" + store.getters.adminUser.isLogin);
   // console.log("Is user logged in=" + store.getters.user.isLogin);
+  const isAdmin = store ? store.getters.isAdmin : null;
+  const isLoggedIn = store ? store.getters.isLoggedIn : null;
+  const isAuthPath = to.path === "/signup" || to.path === "/login";
+  console.log("start routing to " + to.path);
+  console.log("isAdmin: " + isAdmin);
+  console.log("isLogin: " + isLoggedIn);
 
   if (firstLoad === true) {
     firstLoad = false;
     apiUser.getUserByToken().then(
-        response => {
-          const responseData = response.data;
-          if (responseData.permission_level === 2) {
-            store.adminUser.adminUserLogin(responseData);
-          } else {
-            store._actions.updateUserProfile[0](responseData);
-          }
-          if (to.path === "/signup" || to.path === "/login") {
-            next('/profile');
-          } else {
-            next();
-          }
-        },
-        error => {
-          if (!(to.path === "/signup" || to.path === "/login")) {
-            next('/login');
-          } else {
-            next();
-          }
-          if (error) {
-            console.log("Not logged in!");
-          }
-        }
-    );
-  } else {
-    if (
-        to.path === "/settings/admin_dashboard" &&
-        store.getters.adminUser.isLogin
-    ) {
-      console.log("login as an admin user");
-      next();
-    } else if (to.path === "/signup" || to.path === "/login") {
-      if (store.getters.user.isLogin) {
-        next("/profile");
-      } else {
+      (response) => {
+        console.log("Token is matched");
+        const responseData = response.data;
+        store._actions.updateUserProfile[0](responseData);
+        isAuthPath ? next("/profile") : next();
+      },
+      (error) => {
+        console.log("Not logged in: " + error);
         next();
       }
-    } else if (to.path === "/logout") {
-      next("/login");
-    } else if (store.getters.user.isLogin) {
+    );
+  } else {
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2) {
+      console.log("login as an admin user");
+      next();
+    } else if (isAuthPath) {
+      isLoggedIn ? next("/profile") : next();
+    } else if (to.path !== "/logout" && isLoggedIn) {
       next();
     } else {
       localStorage.removeItem("s_id");

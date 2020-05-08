@@ -75,12 +75,14 @@
         notFull: true ,
         textInput: "",
         searchedUser: {},
-        fitnessDict: {0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance",
-          3: "I can run a medium distance", 4: "I can run a marathon"}
+        fitnessDict: {0: "I never exercise", 1: "I can walk a short distance", 2: "I can jog a short distance", 3: "I can run a medium distance", 4: "I can run a marathon"}
       }
     },
     methods: {
-      async loadSearchedUser() {
+        /*
+            Uses user id from url to request user data.
+         */
+        async loadSearchedUser() {
         if(this.$route.query.u == null){
           this.$router.push('profile?u='+this.user.profile_id);
           this.searchedUser = this.user;
@@ -93,7 +95,7 @@
             this.searchedUser = tempUserData;
           }
         }
-      }
+        }
     },
     mounted() {
       this.loadSearchedUser();
