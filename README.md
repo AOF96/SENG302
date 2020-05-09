@@ -20,7 +20,7 @@ Please have the server and client running at the same time while using the appli
 ## Page structure
 
 - As a normal user, you can login or signup and then go to our system.
-- As a default admin user with email "passageAdmin@gmail.com" and password "ocNE9sqcyfHBAKr", you can login and search user by id. Then you will go to our system as the normal user you searched.
+- As a default admin user with email "passageAdmin@gmail.com" and password "EjOHik0c07PL3I8", you can login and search user by id. Then you will go to our system as the normal user you searched.
 
 ![page_structure](/uploads/a6b190030d901a8574176e1e64811922/page_structure.png)
 
