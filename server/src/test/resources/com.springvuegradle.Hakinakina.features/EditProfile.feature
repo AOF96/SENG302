@@ -7,3 +7,9 @@ Feature: EditProfile
     And User can swap initial primary email to "some@123.com"
     And User edits the name to "Julia"
     Then User has a new primary email "some@123.com", name "Julia", fitness level 2 and 0 countries"
+
+  @U5-EditingPassword
+  Scenario: Checking if the user is logged in and wants to update password
+    Given User creates a new account with primary email "actests2@testing.ac.nz" and password "Samsung01"
+    When User provides "Samsung01" as the old password to update it to "Nokia6610" as a new password
+    Then The user password is updated

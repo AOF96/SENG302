@@ -41,7 +41,9 @@ public class EditProfileSteps {
 
     private User user1;
     private User user2;
+    String oldPasswordEncryption;
     Session session1 = new Session("t0k3n");
+    Session session2 = new Session("newToken");
 
     @Before
     public void setup()
@@ -88,6 +90,41 @@ public class EditProfileSteps {
         Assert.assertEquals(user1.getPrimaryEmail(), updatedEmail);
         Assert.assertEquals(user1.getFitnessLevel(), fitnessLevel);
         Assert.assertEquals(user1.getPassportCountries().size(), countryNum);
+    }
+
+    @When("User cannot delete mandatory field such as the name")
+    public void user_cannot_delete_mandatory_field_such_as_the_name() {
+        // Write code here that turns the phrase above into concrete actions
+        user1.setFirstName("");
+        System.out.println("the user name is :" + user1.getFirstName());
+//        throw new io.cucumber.java.PendingException();
+    }
+
+    @Given("User creates a new account with primary email {string} and password {string}")
+    public void user_creates_a_new_account_with_primary_email_and_password(String email, String password) {
+        user2 = new User("Mika", "Tika", email, "1985-12-20", Gender.MALE,
+                4, password);
+        oldPasswordEncryption = user2.getPassword();
+        user2.setUserId((long) 2);
+        user2.addPassportCountry(passportCountry);
+        user2.setMiddleName("Nika");
+        session2.setUser(user2);
+        Assert.assertEquals(session2.getUser().getPrimaryEmail(),email);
+    }
+
+    @When("User provides {string} as the old password to update it to {string} as a new password")
+    public void user_provides_as_the_old_password_to_update_it_to_as_a_new_password(String oldPassword, String newPassword) {
+    userService.changePassword(user2.getUserId(),"newToken", oldPassword, newPassword);
+
+
+    }
+
+    @Then("The user password is updated")
+    public void the_user_password_is_updated() {
+        System.out.println(oldPasswordEncryption);
+        System.out.println(user2.getPassword());
+//        Assert.assertNotEquals(user2.getPassword(),oldPasswordEncryption);
+
     }
 
 }
