@@ -93,7 +93,7 @@
               type="button"
               v-on:click="saveEditedActivity()"
             >Save Changes</button>
-            <button id="deleteActivityButton">Delete Activity</button>
+            <button class="genericDeleteButton" type="button" v-on:click="deleteActivity(activity, user)">Delete Activity</button>
           </div>
         </form>
       </div>
@@ -366,6 +366,26 @@ export default {
             }
           );
       }
+    },
+
+    deleteActivity(activity) {
+      apiActivity.deleteActivity(activity.author_id, activity.activity_id)
+      .then(
+        response => {
+          console.log(response);
+          apiUser
+            .getUserContinuousActivities(this.user.profile_id)
+            .then(response => {
+              this.updateUserContinuousActivities(response.data);
+            });
+          apiUser
+            .getUserDurationActivities(this.user.profile_id)
+            .then(response => {
+              this.updateUserDurationActivities(response.data);
+            });
+          router.push("profile");
+        }
+      );
     },
     /**
      * Shows error text for given error string

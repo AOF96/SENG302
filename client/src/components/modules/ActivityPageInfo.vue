@@ -16,8 +16,7 @@
                 </span>
             </span>
         </div>
-        <button class="deleteActivityButton" type="button" v-on:click="deleteActivity(activity, user)">Delete Activity</button>
-
+        <button class="genericDeleteButton" type="button" v-on:click="deleteActivity(activity)">Delete Activity</button>
     </div>
 </template>
 
@@ -25,7 +24,7 @@
 
     import dateUtil from "@/util/date";
     import {mapActions, mapGetters} from "vuex";
-    import {apiActivity} from "../../api";
+    import {apiActivity, apiUser} from "../../api";
     import router from "../../router";
 
   export default {
@@ -44,14 +43,27 @@
       }
     },
     methods: {
-        ...mapActions(['updateUserDurationActivities']),
-        ...mapActions(['updateUserContinuousActivities']),
+    ...mapActions(['updateUserDurationActivities']),
+    ...mapActions(['updateUserContinuousActivities']),
 
-        deleteActivity(activity, user) {
-            apiActivity.deleteActivity(activity.author_id, this.$route.params.activityId);
-            this.updateUserDurationActivities(user.dur_activities);
-            this.updateUserContinuousActivities(user.cont_activities);
-            router.push("/profile");
+        deleteActivity(activity) {
+            apiActivity.deleteActivity(activity.author_id, this.$route.params.activityId)
+            .then(
+                response => {
+                    console.log(response);
+                    apiUser
+                        .getUserContinuousActivities(this.user.profile_id)
+                        .then(response => {
+                            this.updateUserContinuousActivities(response.data);
+                        });
+                    apiUser
+                        .getUserDurationActivities(this.user.profile_id)
+                        .then(response => {
+                            this.updateUserDurationActivities(response.data);
+                        });
+                    router.push("profile");
+                }
+            );
         }
     }
   }
