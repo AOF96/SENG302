@@ -78,7 +78,6 @@
 
           <div class="confirmButtonContainer">
             <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
-            <button class="genericDeleteButton">Delete Activity</button>
           </div>
         </form>
       </div>

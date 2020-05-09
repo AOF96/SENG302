@@ -59,7 +59,6 @@ const actions = {
         commit('setDescription', data);
         commit('setLocation', data);
         commit('setActivityTypes', data);
-        console.log("YEET");
     }
 };
 
