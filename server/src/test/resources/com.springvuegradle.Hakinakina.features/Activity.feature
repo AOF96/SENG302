@@ -8,7 +8,7 @@ Feature: Activity
   Scenario: Add a new activity
     Given I create an account with name "John", email "john@doe.com" and ID 1
     And I have the authorization token "Aw3s0m3 T0k3n"
-    When I create the following activity: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'true' 'null' 'null' 'Christchurch, NZ'
+    When I create the following activity: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'true' 'null' 'null' 'Christchurch, NZ' 1
 #    When user 1 activities are retrieved
 #    Then exactly 1 activity should be returned
     Then the response status is 201
@@ -34,6 +34,13 @@ Feature: Activity
     When I create the activity: 'Drinking competition' 'Drink till you drop' 'Extreme' 'true' 'null' 'null' 'Christchurch, NZ' with token "Aw3s0m3 T0k3n"
     Then the response status is 403
 
+  @U8-activity
+  Scenario: Edit an activity
+    Given I create an account with name "Greg", email "greg@doe.com" and ID 3
+    And I have the authorization token "L0v3 T0k3ns"
+    When I create the following activity: 'Running Marathon' 'Challenge yourself in this race' 'Fun' 'true' 'null' 'null' 'Red pit, Mars' 2
+    And I edit the activity with ID 2, token "L0v3 T0k3ns" and new values: 'Running Marathon', 'Challenge yourself in this race', 'Fun', 'true', 'null', 'null', 'Christchurch, NZ'
+    Then the response status is 200
 
 
 
