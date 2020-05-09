@@ -57,11 +57,11 @@
             <input id="signup-password-2" v-model="password2" class="signUpInput" name="pass2" type="password" placeholder="Password Again*" required/>
           </div>
           <ul id="signup-password-err" class="errorMessage">
-            <li v-if="!validation.password.match">{{ this.err_msg.password.match }}</li>
-            <li v-if="!validation.password.length">{{ this.err_msg.password.length }}</li>
-            <li v-if="!validation.password.number">{{ this.err_msg.password.number }}</li>
-            <li v-if="!validation.password.lowercase">{{ this.err_msg.password.lowercase }}</li>
-            <li v-if="!validation.password.uppercase">{{ this.err_msg.password.uppercase }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.match">{{ this.err_msg.password.match }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.length">{{ this.err_msg.password.length }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.number">{{ this.err_msg.password.number }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.lowercase">{{ this.err_msg.password.lowercase }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.uppercase">{{ this.err_msg.password.uppercase }}</li>
           </ul>
           <hr />
           <div class="signUpRow">
@@ -176,6 +176,10 @@ export default {
     valid() {
       this.all_err_msg() // Get all the errors on the field and show it on the top of the page
       return this.errorMessages.length === 0;
+    },
+
+    passwordInputIsFilled() {
+      return this.password1 || this.password2
     }
   },
 
