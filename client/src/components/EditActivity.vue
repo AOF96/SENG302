@@ -4,10 +4,10 @@
     <div class="createActivityContainer">
       <div class="createActivityContentContainer">
         <form class="CreateActivityFormContainer">
-          <h1>Edit an Activity</h1>
+          <h1>Edit Activity</h1>
 
           <label class="editActivityLabel" for="name">Activity Name</label>
-          <input class="editActivityInput" type="text" id="name" v-model="activity_name" required />
+          <input class="editActivityInput" type="text" id="name" v-model="activity_name" placeholder="Activity Name" required />
 
           <label class="editActivityLabel" for="time">Continuous?</label>
           <select
@@ -41,6 +41,7 @@
             type="text"
             id="desc"
             v-model="description"
+            placeholder="Activity Description"
           ></textarea>
 
           <label class="editActivityLabel">Location</label>
@@ -132,8 +133,12 @@ export default {
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
-      })
-      .catch(error => console.log(error));
+        this.activity_types_selected.forEach(e => {
+          this.activities_option.some((v, i) => {
+            if (v == e) this.activities_option.splice(i, 1);
+          });
+        });
+      }).catch(error => console.log(error));
 
     // Gets list of countries that can be selected
     await axios.get(COUNTRIES_URL)
@@ -145,12 +150,8 @@ export default {
           countries.push(country_name);
         }
         this.countries_option = countries;
-      })
-      .catch(error => console.log(error));
+      }).catch(error => console.log(error));
   },
-  // mounted() {
-  //     this.loadActivity();
-  // },
   methods: {
     ...mapActions(["createActivity"]),
     ...mapActions(["updateUserContinuousActivities"]),
@@ -182,11 +183,6 @@ export default {
           this.activity_type = tempActivityData.activity_type.slice();
           this.adding_country = tempActivityData.location;
           this.activity_types_selected = tempActivityData.activity_type.map(e => e.name);
-          this.activity_types_selected.forEach(e => {
-            this.activities_option.some((v, i) => {
-              if (v == e) this.activities_option.splice(i, 1);
-            });
-          });
         }
       }
     },
@@ -200,10 +196,10 @@ export default {
       this.start_time = null;
       this.end_time = null;
     },
+
     /**
      * This function converts the milli seconds to the format YYYY-MM-DD
      */
-
     formatDate(date) {
       let d = new Date(date);
       let month = "" + (d.getMonth() + 1);

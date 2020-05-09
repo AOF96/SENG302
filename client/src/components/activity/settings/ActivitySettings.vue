@@ -4,9 +4,9 @@
         <div class="createActivityContainer">
             <div class="createActivityContentContainer">
                 <form class="CreateActivityFormContainer">
-                    <h1>Create an Activity</h1>
+                    <h1>Create a new Activity</h1>
                     <label class="editActivityLabel" for="name">Activity Name</label>
-                    <input class="editActivityInput" type="text" id="name" v-model="name" required />
+                    <input class="editActivityInput" type="text" id="name" v-model="name" placeholder="Activity Name" required />
 
                     <label class="editActivityLabel" for="time">Continuous?</label>
                     <select
@@ -37,7 +37,8 @@
                         maxlength="255"
                         type="text"
                         id="desc"
-                        v-model="description">
+                        v-model="description"
+                        placeholder="Activity Description">
                     </textarea>
 
                     <label class="editActivityLabel">Location</label>
