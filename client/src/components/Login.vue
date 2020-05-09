@@ -40,7 +40,7 @@
 <script>
   import { mapGetters, mapActions} from 'vuex';
   import { apiUser } from '../api'
-  //import {getEncryptPassword} from "../common.js"
+  import router from "../router";
 
   import NavBar from "./modules/NavBar";
 
@@ -51,7 +51,6 @@
     },
     computed: {
       ...mapGetters(['user']),
-
     },
     methods: {
       ...mapActions(['updateUserProfile']),
@@ -63,7 +62,6 @@
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
-        console.log(typeof(this.user.primary_email));
         if (this.user.primary_email == null || this.user.password == null){
           document.getElementById("empty_fields").hidden = false;
           return;
@@ -76,14 +74,19 @@
             apiUser.refreshInstance();
             this.updateUserProfile(responseData[0]);
             this.$router.push('Profile');
-
             apiUser.getUserContinuousActivities(responseData[0].profile_id).then((response) => {
               this.updateUserContinuousActivities(response.data);
             });
             apiUser.getUserDurationActivities(responseData[0].profile_id).then((response) => {
               this.updateUserDurationActivities(response.data);
             });
-          }, (error) => {
+            if (responseData[0].permission_level == 2) {
+              router.push("/settings/admin_dashboard");
+            } else {
+              router.push("profile?u=" + responseData[0].profile_id);
+            }
+          },
+          error => {
             const responseData = error.response.data;
             const responseCode = error.response.status;
             console.log(responseCode + ": " + responseData);
@@ -93,7 +96,6 @@
               document.getElementById("incorrect_password").hidden = true;
               document.getElementById("empty_fields").hidden = true;
               document.getElementById("other_error").hidden = true;
-
             } else if (responseCode === 403 && responseData === "Incorrect password") {
               document.getElementById("incorrect_password").hidden = false;
               document.getElementById("empty_fields").hidden = true;
@@ -104,8 +106,7 @@
               document.getElementById("empty_fields").hidden = false;
               document.getElementById("email_exist").hidden = true;
               document.getElementById("other_error").hidden = true;
-            }
-            else {
+            } else {
               document.getElementById("email_exist").hidden = true;
               document.getElementById("incorrect_password").hidden = true;
               document.getElementById("empty_fields").hidden = true;
@@ -116,7 +117,7 @@
         }
       }
     }
-  }
+  };
 </script>
 
 <style scoped>

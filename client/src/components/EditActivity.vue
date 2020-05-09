@@ -187,6 +187,10 @@ export default {
      * Shows/hides date and time selection if duration is duration/continuous
      */
     setDuration() {
+      this.start_date = null;
+      this.end_date = null;
+      this.start_time = null;
+      this.end_time = null;
       if (this.duration === "duration") {
         document.getElementById("start_date").type = "date";
         document.getElementById("end_date").type = "date";

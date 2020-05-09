@@ -121,7 +121,7 @@
     padding-left: 90px;
 }
 .profileActivitiesContainer h3 {
-    display: inline-block;
+    font-size: 17px;
 }
 .profileActivitiesContainer .genericConfirmButton {
     padding: 6px 16px;
@@ -131,16 +131,54 @@
     margin-left: 40px;
     margin-bottom: 15px;
 }
+.activityTypesList li {
+    font-size: 14px;
+}
 .activitySummaryContainer {
-    margin-left: 25px;
     line-height: 20px;
     margin-bottom: 15px;
+    position: relative;
+    height: 50px;
 }
 .profileActivitiesContainer h4 {
     color: #7f7f7f;
     font-size: 13px;
     font-weight: 500;
     padding-top: 3px;
+}
+.profileActivityTitle {
+    color: #1cca92;
+    cursor: pointer;
+}
+.profileActivityTitle:hover {
+    text-decoration: underline;
+}
+.profileActivitySeparator {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 10px 0;
+}
+.profileActivityConfirmButton {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    padding: 5px 12px;
+}
+.profileActivityDescription {
+    color: #7f7f7f;
+    font-size: 12px;
+    font-weight: 500;
+    padding-top: 3px;
+}
+.activityTextWrapDiv {
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 /* Right sidebar */
 .passportCountriesContainer {
@@ -161,7 +199,6 @@
     width: 45px;
     float: right;
     border-radius: 15px;
-    border: 2px solid #1cca92;
 }
 .passportCountryContainer h2 {
     font-size: 16px;

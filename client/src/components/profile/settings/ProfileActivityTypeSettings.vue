@@ -4,14 +4,13 @@
     <div class="settingsContentContainer">
       <h1>Edit Activities</h1>
       <hr>
-      <div class="itemContainer"  v-for="activity in user.user.activities" v-bind:key="activity">
+      <div class="itemContainer"  v-for="activity in searchedUser.activities" v-bind:key="activity">
         <h4>{{activity}}</h4>
         <button class="genericDeleteButton" v-on:click="removeActivityType(activity)">remove</button>
         <div class="floatClear"></div>
       </div>
-
       <div id="activityActions">
-        <form @submit.prevent>
+        <form class="formTopSpacing" @submit.prevent>
           <select
                   v-model="selected_activity"
                   name="activityType"
@@ -37,7 +36,7 @@
 
 <script>
   import UserSettingsMenu from "./ProfileSettingsMenu";
-  import {mapActions, mapState} from 'vuex'
+  import {mapActions, mapState, mapGetters} from 'vuex'
   import {apiUser} from "../../../api";
 
   export default {
@@ -49,17 +48,19 @@
         selected_activity: "Activity Type",
         activities_option: [],
         num_of_activities: 1,
+        searchedUser: {}
       }
     },
     computed: {
-      ...mapState(['user'])
+      ...mapState(['user']),
+      ...mapGetters(['user'])
     },
     created: async function() {
         // Ensures only activity types from the database can be selected and cannot select ones already selected
         await apiUser.getActivityTypes().then((response) => {
         const activityTypes = response.data;
 
-        for(let activity of this.user.user.activities) {
+        for(let activity of this.searchedUser.activities) {
           const index = activityTypes.indexOf(activity);
           if (index === -1) continue;
           activityTypes.splice(index, 1)
@@ -68,50 +69,50 @@
       }).catch(error => console.log(error))
     },
     mounted() {
-      this.startUp()
+        this.loadSearchedUser()
     },
     methods: {
       ...mapActions(['updateActivities']),
 
       startUp() {
         console.log('init');
-        this.user.user.activities = this.user.user.activities.slice()
+        this.searchedUser.activities = this.searchedUser.activities.slice()
       },
 
       /**
-       * Adds an activity type to the user on add button click
+       * Adds an activity type to the searchedUser on add button click
        */
       addActivityType(){
         if(!this.selected_activity || this.selected_activity === "Activity Type") return;
-        this.user.user.activities.push(this.selected_activity);
-        console.log(this.user.user.activities);
+        this.searchedUser.activities.push(this.selected_activity);
+        console.log(this.searchedUser.activities);
         const index = this.activities_option.indexOf(this.selected_activity);
         if(index === -1) return;
         this.activities_option.splice(index, 1);
         this.selected_activity = "Activity Type";
-        this.updateActivities(this.user.user)
+        this.updateActivities(this.searchedUser)
       },
 
       /**
-       * Removes an activity from the user on remove button click
+       * Removes an activity from the searchedUser on remove button click
        * @param activity to remove
        */
       removeActivityType(activity) {
-        const index = this.user.user.activities.indexOf(activity);
+        const index = this.searchedUser.activities.indexOf(activity);
         if (index === -1) return;
-        this.user.user.activities.splice(index, 1);
+        this.searchedUser.activities.splice(index, 1);
         this.activities_option.push(activity);
         this.activities_option.sort();
-        this.updateActivities(this.user.user)
+        this.updateActivities(this.searchedUser)
       },
 
       /**
        * Sends update request for all activity type changes to server on save button click
        */
       saveActivityTypes() {
-        this.updateActivities(this.user.user);
-        console.log(this.user.user.activities);
-        apiUser.editUserActivityTypes(this.user.user.profile_id, this.user.user.activities).then((response) => {
+        this.updateActivities(this.searchedUser);
+        console.log(this.searchedUser.activities);
+        apiUser.editUserActivityTypes(this.searchedUser.profile_id, this.searchedUser.activities).then((response) => {
           document.getElementById("activity_type_success").hidden = false;
           document.getElementById("activity_type_error").hidden = true;
           console.log(response);
@@ -121,7 +122,26 @@
           document.getElementById("activity_type_success").hidden = true;
           console.log(error);
         });
-      }
+    },
+
+    /*
+        Uses user id from url to request user data.
+     */
+    async loadSearchedUser() {
+        if(this.$route.params.profileId == null || this.$route.params.profileId == ""){
+            this.$router.push('/settings/activities/'+this.user.profile_id);
+            this.searchedUser = this.user;
+        }else{
+            var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
+            if(tempUserData == "Invalid permissions"){
+                this.$router.push('/settings/activities/'+this.user.profile_id);
+                this.searchedUser = this.user;
+            }else{
+                this.searchedUser = tempUserData;
+            }
+        }
+        this.startUp();
     }
   }
+};
 </script>

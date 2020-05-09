@@ -42,6 +42,7 @@
                 oldPassword: '',
                 newPassword: '',
                 confirmPassword: '',
+                searchedUser: {}
             }
         },
         computed: {
@@ -51,7 +52,7 @@
              */
             validation() {
                 return {
-                    oldPassword: this.oldPassword !== '' || this.user.permission_level > 0,
+                    oldPassword: this.oldPassword !== '' || this.searchedUser.permission_level > 0,
                     match: this.newPassword == this.confirmPassword,
                     length: /.{8,}/.test(this.newPassword),
                     number: /\d/.test(this.newPassword),
@@ -60,6 +61,24 @@
             }
         },
         methods: {
+            /*
+                Uses user id from url to request user data.
+             */
+            async loadSearchedUser() {
+              if(this.$route.params.profileId == null || this.$route.params.profileId == ""){
+                this.$router.push('/settings/password/'+this.user.profile_id);
+                this.searchedUser = this.user;
+              }else{
+                var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
+                if(tempUserData == "Invalid permissions"){
+                  this.$router.push('/settings/password/'+this.user.profile_id);
+                  this.searchedUser = this.user;
+                }else{
+                  this.searchedUser = tempUserData;
+                }
+              }
+          },
+
             /*
                 Hides error messages once valid data is provided.
              */
@@ -80,7 +99,7 @@
                         if (this.validation.length) {
                             if (this.validation.number) {
                                 if (this.validation.uppercase) {
-                                    apiUser.changePassword(this.user.profile_id, this.oldPassword, this.newPassword, this.confirmPassword).then((response) => {
+                                    apiUser.changePassword(this.searchedUser.profile_id, this.oldPassword, this.newPassword, this.confirmPassword).then((response) => {
                                         this.hideErrorMessages();
                                         document.getElementById("success").hidden = false;
                                         console.log(response);
@@ -128,6 +147,9 @@
                     document.getElementById("other_error").innerText = "Enter your old password";
                 }
             }
+        },
+        mounted() {
+          this.loadSearchedUser();
         }
     }
 </script>

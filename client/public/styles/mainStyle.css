@@ -1,7 +1,12 @@
 /* -- General ---- */
-* {
+*{
+  margin:0;
+  padding:0;
+}
+p, h1, h2, h3, h4, h5, h6, span, a, li, button, textarea, input, label{
     font-family: Roboto, sans-serif;
     text-decoration: none;
+    font-weight: 400;
 }
 
 /* -- Forms ---- */
@@ -12,6 +17,7 @@ input, select, textarea {
     outline: none;
     border: 1px solid #d8d8d8;
     padding: 10px 15px;
+    resize: none;
 }
 .successMessage {
     font-weight: 500;
@@ -22,6 +28,10 @@ input, select, textarea {
     font-weight: 500;
     font-size: 14px;
     color: #f06a6a;
+    margin-bottom: 19px;
+}
+.errorMessage li{
+  margin: 3px 15px;
 }
 
 /* -- Default Containers ---- */
@@ -33,9 +43,9 @@ input, select, textarea {
     height:100%;
 }
 #pageContent{
-    display: block;
-    overflow: auto;
-    padding: 58px 0;
+  top:58px;
+  height:calc(100% - 58px);
+  position: relative;
 }
 .floatClear {
     clear:both;

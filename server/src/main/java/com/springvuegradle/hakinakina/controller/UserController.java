@@ -84,6 +84,14 @@ public class UserController {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
+    /***
+     * Endpoint for handling the editing of a user's profile information. Returns appropriate error codes if something
+     * is wrong with the request. Checks if the request comes from an admin so it can edit someone else profile.
+     * @param user the JSON object containing the values the user wants to edit.
+     * @param profileId the ID of the given user.
+     * @param sessionToken authentication token to validate the user sending the request.
+     * @return a 400 response if the provided ID and token don't match or is not an admin. 200 if it's a valid request.
+     */
     @PutMapping("/profiles/{profileId}")
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
@@ -99,6 +107,13 @@ public class UserController {
             for (PassportCountry country : oldUser.getPassportCountries()) {
                 country.removeUser(oldUser);
             }
+
+            // only the default admin can edit permission level
+           boolean isEditPermission = !oldUser.getPermissionLevel().equals(user.getPermissionLevel());
+            if(isEditPermission && !isDefaultAdmin) {
+                return responseHandler.formatErrorResponse(401, "Unauthorized: Only the default admin can edit the user permission level");
+            }
+
             oldUser.resetPassportCountries();
             user.setUserId(profileId);
             user.setEncryptedPassword(oldUser.getPassword());
@@ -191,15 +206,24 @@ public class UserController {
         return countryRepository.findAll().toString();
     }
 
+    /***
+     * Endpoint for retrieving all the primary emails that are stored in the database.
+     * @return a list with all the primary emails.
+     */
     @GetMapping("/emails")
     public String getAllEmails() {
         //ToDO use the commented out return statement rather than the current one once the email table has been fixed
         /*
-        return emailRepository.getAllEmails();
+//        return emailRepository.getAllEmails();
          */
         return userRepository.getAllPrimaryEmails().toString();
     }
 
+    /***
+     * Retrieves the session token of an user. Based on the profile ID that is provided.
+     * @param profileId the user's ID
+     * @return a list containing all the tokens that belong to the given user.
+     */
     @GetMapping("/token/{profile_id}")
     public List<String> getUserSessionToken(@PathVariable("profile_id") long profileId) {
         return sessionRepository.getUserSessionToken(profileId);

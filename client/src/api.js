@@ -47,7 +47,7 @@ export const apiUser = {
     this.refreshInstance();
   }),
   // Submit user signup information to the server
-  editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports, activities) => instance.put('/profiles/'+profile_id, {
+  editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports, permission_level, activities) => instance.put('/profiles/'+profile_id, {
     firstname: firstname,
     lastname: lastname,
     middlename: middlename,
@@ -59,6 +59,7 @@ export const apiUser = {
     fitness: fitness,
     additional_email: additional_email,
     passports: passports,
+    permission_level: permission_level,
     activities: activities
   }),
   refreshUserData: (profile_id) => instance.get('/profiles/' + profile_id),
@@ -73,6 +74,24 @@ export const apiUser = {
   }),
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
+  getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
+
+  getUserByToken: () => instance.get('validateLogin'),
+
+  async getUserById(profile_id) {
+    let searchedUser = await apiUser.refreshUserData(profile_id).then(
+      response => {
+        return response.data;
+      },
+      error => {
+        if(error){
+          return "Invalid permissions";
+        }
+      }
+    );
+    return await searchedUser;
+  },
+
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
   /**
