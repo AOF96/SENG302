@@ -23,6 +23,7 @@
                 </form>
             </div>
         </div>
+        <div class="floatClear"></div>
     </div>
 </template>
 

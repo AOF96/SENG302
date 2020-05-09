@@ -4,14 +4,14 @@
     <div class="createActivityContainer">
       <div class="createActivityContentContainer">
         <form class="CreateActivityFormContainer">
-          <h1>Edit an Activity</h1>
+          <h1>Edit Activity</h1>
 
           <label class="editActivityLabel" for="name">Activity Name</label>
-          <input class="editActivityInput" type="text" id="name" v-model="activity_name" required />
+          <input class="editActivityInput" type="text" id="name" v-model="activity_name" placeholder="Activity Name" required />
 
           <label class="editActivityLabel" for="time">Continuous?</label>
           <select
-            class="editActivityDropbox"
+            class="editActivitySelect"
             id="time"
             v-on:change="setDuration"
             v-model="duration"
@@ -41,11 +41,12 @@
             type="text"
             id="desc"
             v-model="description"
+            placeholder="Activity Description"
           ></textarea>
 
           <label class="editActivityLabel">Location</label>
           <div>
-            <select v-model="adding_country" name="countries" class="editActivityDropbox" required>
+            <select v-model="adding_country" name="countries" class="editActivitySelect" required>
               <option selected disabled hidden>Countries</option>
               <option
                 v-for="addingCountry in countries_option"
@@ -60,7 +61,7 @@
               v-on:change="selectActivityType"
               v-model="selected_activity"
               name="activityType"
-              class="editActivityDropbox"
+              class="editActivitySelect"
               required
             >
               <option selected disabled hidden>Activity Type</option>
@@ -71,29 +72,17 @@
             </select>
           </div>
           <div class="addedActivityTypeContainer">
-            <div
-              class="addedActivityContainer"
-              v-for="addedActivity in activity_types_selected"
-              v-bind:key="addedActivity"
-            >
-              <label class="addedTypeContainer">{{addedActivity}}</label>
-              <button
-                class="deleteActivityTypeButton"
-                v-on:click="removeActivityType(addedActivity)"
-              >Remove</button>
+            <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+              <h4 class="addedTypeContainer">{{addedActivity}}</h4>
+              <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+              <div class="floatClear"></div>
             </div>
           </div>
-
           <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
           <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
-
           <div class="confirmButtonContainer">
-            <button
-              id="editActivityButton"
-              type="button"
-              v-on:click="saveEditedActivity()"
-            >Save Changes</button>
             <button id="deleteActivityButton">Delete Activity</button>
+            <button id="editActivityButton" type="button" v-on:click="saveEditedActivity()">Save Changes</button>
           </div>
         </form>
       </div>
@@ -144,8 +133,12 @@ export default {
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
-      })
-      .catch(error => console.log(error));
+        this.activity_types_selected.forEach(e => {
+          this.activities_option.some((v, i) => {
+            if (v == e) this.activities_option.splice(i, 1);
+          });
+        });
+      }).catch(error => console.log(error));
 
     // Gets list of countries that can be selected
     await axios.get(COUNTRIES_URL)
@@ -157,12 +150,8 @@ export default {
           countries.push(country_name);
         }
         this.countries_option = countries;
-      })
-      .catch(error => console.log(error));
+      }).catch(error => console.log(error));
   },
-  // mounted() {
-  //     this.loadActivity();
-  // },
   methods: {
     ...mapActions(["createActivity"]),
     ...mapActions(["updateUserContinuousActivities"]),
@@ -194,11 +183,6 @@ export default {
           this.activity_type = tempActivityData.activity_type.slice();
           this.adding_country = tempActivityData.location;
           this.activity_types_selected = tempActivityData.activity_type.map(e => e.name);
-          this.activity_types_selected.forEach(e => {
-            this.activities_option.some((v, i) => {
-              if (v == e) this.activities_option.splice(i, 1);
-            });
-          });
         }
       }
     },
@@ -212,10 +196,10 @@ export default {
       this.start_time = null;
       this.end_time = null;
     },
+
     /**
      * This function converts the milli seconds to the format YYYY-MM-DD
      */
-
     formatDate(date) {
       let d = new Date(date);
       let month = "" + (d.getMonth() + 1);

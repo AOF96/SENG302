@@ -4,9 +4,9 @@
         <div class="createActivityContainer">
             <div class="createActivityContentContainer">
                 <form class="CreateActivityFormContainer">
-                    <h1>Create an Activity</h1>
+                    <h1>Create a new Activity</h1>
                     <label class="editActivityLabel" for="name">Activity Name</label>
-                    <input class="editActivityInput" type="text" id="name" v-model="name" required />
+                    <input class="editActivityInput" type="text" id="name" v-model="name" placeholder="Activity Name" required />
 
                     <label class="editActivityLabel" for="time">Continuous?</label>
                     <select
@@ -37,7 +37,8 @@
                         maxlength="255"
                         type="text"
                         id="desc"
-                        v-model="description">
+                        v-model="description"
+                        placeholder="Activity Description">
                     </textarea>
 
                     <label class="editActivityLabel">Location</label>
@@ -67,18 +68,18 @@
                         </select>
                     </div>
                     <div class="addedActivityTypeContainer">
-                        <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
-                            <label>{{addedActivity}}</label>
-                            <button class="genericDeleteButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
-                        </div>
+                      <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+                        <h4 class="addedTypeContainer">{{addedActivity}}</h4>
+                        <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+                        <div class="floatClear"></div>
+                      </div>
                     </div>
-
                     <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
                     <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
 
           <div class="confirmButtonContainer">
-            <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
             <button class="genericDeleteButton">Delete Activity</button>
+            <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
           </div>
         </form>
       </div>

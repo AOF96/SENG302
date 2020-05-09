@@ -30,6 +30,7 @@
             <h6 class="successMessage" id="passport_success" hidden="false">Saved successfully</h6>
             <h6 class="errorMessage" id="passport_error" hidden="false">An error has occurred</h6>
         </div>
+        <div class="floatClear"></div>
     </div>
 </template>
 

@@ -36,6 +36,7 @@
                 </form>
             </div>
         </transition>
+        <div class="floatClear"></div>
     </div>
 </template>
 

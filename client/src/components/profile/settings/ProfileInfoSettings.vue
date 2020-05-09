@@ -45,6 +45,7 @@
             <button class="genericConfirmButton updateProfileButton" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
+    <div class="floatClear"></div>
 </div>
 </template>
 
