@@ -10,16 +10,12 @@
           <input class="editActivityInput" type="text" id="name" v-model="activity_name" required />
 
           <label class="editActivityLabel" for="time">Continuous?</label>
-          <select
-            class="editActivityDropbox"
-            id="time"
-            v-on:change="setDuration"
-            v-model="duration"
-          >
+          <select class="editActivityDropbox" id="time" v-model="duration" placeholder="Select ">
             <option value="continuous">Continuous</option>
             <option value="duration">Duration</option>
           </select>
 
+          <br />
           <div v-if="isDuration">
             <label class="editActivityLabel" id="startDateLabel" for="start_date">Start Date</label>
             <input class="editActivityInput" type="date" id="start_date" v-model="start_date" />
@@ -34,6 +30,7 @@
             <input class="editActivityInput" type="time" id="end_time" v-model="end_time" />
           </div>
 
+          <br />
           <label class="editActivityLabel" for="desc">Description</label>
           <textarea
             class="editActivityTextarea"
@@ -89,11 +86,15 @@
 
           <div class="confirmButtonContainer">
             <button
-              id="editActivityButton"
+              class="genericConfirmButton"
               type="button"
               v-on:click="saveEditedActivity()"
             >Save Changes</button>
-            <button class="genericDeleteButton" type="button" v-on:click="deleteActivity(activity, user)">Delete Activity</button>
+            <button
+              class="genericDeleteButton"
+              type="button"
+              v-on:click="deleteActivity()"
+            >Delete Activity</button>
           </div>
         </form>
       </div>
@@ -120,7 +121,7 @@ export default {
       activities_option: [],
       countries_option: [],
       adding_country: "Countries",
-      duration: "duration",
+      duration: null,
       activity_types_selected: [],
       start_date: null,
       end_date: null,
@@ -128,7 +129,9 @@ export default {
       end_time: null,
       activity_name: "",
       continuous: "",
-      description: ""
+      description: "",
+      combinedEndTime: null,
+      combinedStartTime: null
     };
   },
   computed: {
@@ -144,23 +147,6 @@ export default {
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
-        this.activity_name = this.activity.name;
-        this.end_time = this.formatTime(this.activity.end_time);
-        this.start_time = this.formatTime(this.activity.start_time);
-        this.continous = this.activity.continous;
-        this.description = this.activity.description;
-        this.activity_type = this.activity.activity_types.slice();
-        this.adding_country = this.activity.location;
-        this.activity_types_selected = this.activity.activity_types.map(
-          e => e.name
-        );
-        this.activity_types_selected.forEach(e => {
-          this.activities_option.some((v, i) => {
-            if (v == e) this.activities_option.splice(i, 1);
-          });
-        });
-        this.start_date = this.formatDate(this.activity.start_time);
-        this.end_date = this.formatDate(this.activity.end_time);
       })
       .catch(error => console.log(error));
 
@@ -177,44 +163,37 @@ export default {
         this.countries_option = countries;
       })
       .catch(error => console.log(error));
+
+    this.setActivity(this.$store.getters.activity);
   },
+  watch: {},
   methods: {
     ...mapActions(["createActivity"]),
     ...mapActions(["updateUserContinuousActivities"]),
     ...mapActions(["updateUserDurationActivities"]),
 
-    /**
-     * Shows/hides date and time selection if duration is duration/continuous
-     */
-    setDuration() {
-      this.start_date = null;
-      this.end_date = null;
-      this.start_time = null;
-      this.end_time = null;
-      if (this.duration === "duration") {
-        document.getElementById("start_date").type = "date";
-        document.getElementById("end_date").type = "date";
-        document.getElementById("start_time").type = "time";
-        document.getElementById("end_time").type = "time";
-        document.getElementById("startDateLabel").hidden = false;
-        document.getElementById("endDateLabel").hidden = false;
-        document.getElementById("startTimeLabel").hidden = false;
-        document.getElementById("endTimeLabel").hidden = false;
-      } else {
-        document.getElementById("start_date").type = "hidden";
-        document.getElementById("end_date").type = "hidden";
-        document.getElementById("start_time").type = "hidden";
-        document.getElementById("end_time").type = "hidden";
-        document.getElementById("startDateLabel").hidden = true;
-        document.getElementById("endDateLabel").hidden = true;
-        document.getElementById("startTimeLabel").hidden = true;
-        document.getElementById("endTimeLabel").hidden = true;
-      }
+    setActivity(activity) {
+      this.activity_name = activity.name;
+      this.duration = activity.continuous ? "continuous" : "duration";
+      this.end_time = this.formatTime(activity.end_time);
+      this.start_time = this.formatTime(activity.start_time);
+      this.continous = activity.continous;
+      this.description = activity.description;
+      this.activity_type = activity.activity_types.slice();
+      this.adding_country = activity.location;
+      this.activity_types_selected = activity.activity_types.map(e => e.name);
+      this.activity_types_selected.forEach(e => {
+        this.activities_option.some((v, i) => {
+          if (v == e) this.activities_option.splice(i, 1);
+        });
+      });
+      this.start_date = this.formatDate(activity.start_time);
+      this.end_date = this.formatDate(activity.end_time);
     },
+
     /**
      * This function converts the milli seconds to the format YYYY-MM-DD
      */
-
     formatDate(date) {
       let d = new Date(date);
       let month = "" + (d.getMonth() + 1);
@@ -256,21 +235,88 @@ export default {
         this.activity_types_selected.splice(index, 1);
       }
     },
+
     /**
-     * Checks form conditions and sends create activity request if conditions pass
+     * Combines the times and dates given in the form to a single datetime format
+     * Sets datetime to null if continuous activity
      */
-    saveEditedActivity() {
+    combineDateTime() {
       let currentDate = new Date(Date.now());
       let timeZone = currentDate
         .toString()
         .slice(currentDate.toString().indexOf("+"), 5);
+
+      if (this.duration !== "duration") {
+        this.combinedStartTime = null;
+        this.combinedEndTime = null;
+      } else if (this.start_time === null && this.end_time === null) {
+        this.combinedStartTime = this.start_date + "T00:00:00" + timeZone;
+        this.combinedEndTime = this.end_date + "T00:00:00" + timeZone;
+      } else if (this.start_time === null) {
+        this.combinedStartTime = this.start_date + "T00:00:00" + timeZone;
+        this.combinedEndTime =
+          this.end_date + "T" + this.end_time + ":00" + timeZone;
+      } else if (this.end_time === null) {
+        this.combinedStartTime =
+          this.start_date + "T" + this.start_time + ":00" + timeZone;
+        this.combinedEndTime = this.end_date + "T00:00:00" + timeZone;
+      } else {
+        this.combinedStartTime =
+          this.start_date + "T" + this.start_time + ":00" + timeZone;
+        this.combinedEndTime =
+          this.end_date + "T" + this.end_time + ":00" + timeZone;
+      }
+    },
+
+    /**
+     * Checks if the datetime passes conditions. Ensures time is in the future and start is not later than end
+     * @return boolean true if passes, false if fails
+     */
+    checkTimeContinuity() {
+      let currentDate = new Date(Date.now());
+      let timeZone = currentDate
+        .toString()
+        .slice(currentDate.toString().indexOf("+"), 5);
+
+      currentDate.setHours(0);
+      currentDate.setMinutes(0);
+      currentDate.setSeconds(0);
+      currentDate.setMilliseconds(0);
+      if (new Date(this.combinedStartTime) > new Date(this.combinedEndTime)) {
+        this.displayError("End time must be after start time.");
+        return false;
+      } else if (
+        currentDate > new Date(this.start_date + "T00:00:00" + timeZone)
+      ) {
+        this.displayError("Start date must be in the future.");
+        return false;
+      } else if (
+        currentDate.getFullYear() + 2 <
+          new Date(this.start_date + "T00:00:00" + timeZone).getFullYear() ||
+        currentDate.getFullYear() + 2 <
+          new Date(this.end_date + "T00:00:00" + timeZone).getFullYear()
+      ) {
+        this.displayError("Must be less than 2 years in the future.");
+        return false;
+      }
+      return true;
+    },
+
+    /**
+     * Check all activity form conditions
+     * @return boolean true if passes, false if fails
+     */
+    checkFormConditions() {
       if (this.activity.name === null || this.activity.name.trim() === "") {
+        // Name is empty
         this.displayError("Please select an activity name.");
+        return false;
       } else if (
         this.duration !== "duration" &&
         this.duration !== "continuous"
       ) {
-        this.displayError("Please select a duration.");
+        // Duration is not set
+        return false;
       } else if (
         this.duration === "duration" &&
         (this.start_date === null ||
@@ -278,124 +324,84 @@ export default {
           this.start_date === "" ||
           this.end_date === "")
       ) {
-        this.displayError("Please select start and end date.");
+        return false;
       } else if (this.activity_types_selected.length < 1) {
-        this.displayError("Please select at least one activity type.");
+        return false;
+      } else if (this.duration === "duration" && !this.checkTimeContinuity()) {
+        // Time check failed
+        return false;
       } else {
-        let combinedStartTime;
-        let combinedEndTime;
-        if (this.duration !== "duration") {
-          combinedStartTime = null;
-          combinedEndTime = null;
-        } else if (this.start_time === null && this.end_time === null) {
-          combinedStartTime = this.start_date + "T00:00:00" + timeZone;
-          combinedEndTime = this.end_date + "T00:00:00" + timeZone;
-        } else if (this.start_time === null) {
-          combinedStartTime = this.start_date + "T00:00:00" + timeZone;
-          combinedEndTime =
-            this.end_date + "T" + this.end_time + ":00" + timeZone;
-        } else if (this.end_time === null) {
-          combinedStartTime =
-            this.start_date + "T" + this.start_time + ":00" + timeZone;
-          combinedEndTime = this.end_date + "T00:00:00" + timeZone;
-        } else {
-          combinedStartTime =
-            this.start_date + "T" + this.start_time + ":00" + timeZone;
-          combinedEndTime =
-            this.end_date + "T" + this.end_time + ":00" + timeZone;
-        }
-
-        currentDate.setHours(0);
-        currentDate.setMinutes(0);
-        currentDate.setSeconds(0);
-        currentDate.setMilliseconds(0);
-        if (new Date(combinedStartTime) > new Date(combinedEndTime)) {
-          this.displayError("End time must be after start time.");
-          return;
-        } else if (
-          currentDate > new Date(this.start_date + "T00:00:00" + timeZone)
-        ) {
-          this.displayError("Start date must be in the future.");
-          return;
-        } else if (
-          currentDate.getFullYear() + 2 <
-            new Date(this.start_date + "T00:00:00" + timeZone).getFullYear() ||
-          currentDate.getFullYear() + 2 <
-            new Date(this.end_date + "T00:00:00" + timeZone).getFullYear()
-        ) {
-          this.displayError("Must be less than 2 years in the future.");
-          return;
-        }
-
-        this.duration = this.duration !== "duration";
-
-        apiActivity
-          .editActivity(
-            this.user.profile_id,
-            this.activity_name,
-            this.duration,
-            combinedStartTime,
-            combinedEndTime,
-            this.description,
-            this.adding_country,
-            this.activity_types_selected,
-            this.activity.activity_id
-          )
-          .then(
-            response => {
-              document.getElementById("activity_success").hidden = false;
-              document.getElementById("activity_error").hidden = true;
-              console.log(response);
-              apiUser
-                .getUserContinuousActivities(this.user.profile_id)
-                .then(response => {
-                  this.updateUserContinuousActivities(response.data);
-                });
-              apiUser
-                .getUserDurationActivities(this.user.profile_id)
-                .then(response => {
-                  this.updateUserDurationActivities(response.data);
-                });
-              router.push("profile");
-            },
-            error => {
-              document.getElementById("activity_error").hidden = false;
-              document.getElementById("activity_error").innerText =
-                error.response.data.error;
-              document.getElementById("activity_success").hidden = true;
-            }
-          );
+        // All passed
+        return true;
       }
     },
 
-    deleteActivity(activity) {
-      apiActivity.deleteActivity(activity.author_id, activity.activity_id)
-      .then(
-        response => {
-          console.log(response);
-          apiUser
-            .getUserContinuousActivities(this.user.profile_id)
-            .then(response => {
-              this.updateUserContinuousActivities(response.data);
-            });
-          apiUser
-            .getUserDurationActivities(this.user.profile_id)
-            .then(response => {
-              this.updateUserDurationActivities(response.data);
-            });
-          router.push("profile");
-        }
-      );
-    },
     /**
-     * Shows error text for given error string
-     * @param error
+     * Checks form conditions and sends create activity request if conditions pass
      */
-    displayError(error) {
-      document.getElementById("activity_error").hidden = false;
-      document.getElementById("activity_error").innerText = error;
-      document.getElementById("activity_success").hidden = true;
+    saveEditedActivity() {
+      // Combines dates and times, must be done before checking form
+      this.combineDateTime();
+
+      // Checks all activity attribute conditions
+      if (!this.checkFormConditions()) {
+        return;
+      }
+
+      // Sets duration to a boolean for the request
+      this.duration = this.duration !== "duration";
+
+      apiActivity
+        .editActivity(
+          this.user.profile_id,
+          this.activity_name,
+          this.duration,
+          this.combinedStartTime,
+          this.combinedEndTime,
+          this.description,
+          this.adding_country,
+          this.activity_types_selected,
+          this.activity.activity_id
+        )
+        .then(
+          response => {
+            console.log(response);
+            apiUser
+              .getUserContinuousActivities(this.user.profile_id)
+              .then(response => {
+                this.updateUserContinuousActivities(response.data);
+              });
+            apiUser
+              .getUserDurationActivities(this.user.profile_id)
+              .then(response => {
+                this.updateUserDurationActivities(response.data);
+              });
+            router.push("profile");
+          },
+          error => {
+            console.log(error.data.error);
+          }
+        );
     }
+  },
+
+  deleteActivity() {
+    apiActivity
+      .deleteActivity(this.activity.author_id, this.activity.activity_id)
+      .then(response => {
+        console.log(response);
+        apiUser
+          .getUserContinuousActivities(this.user.profile_id)
+          .then(response => {
+            this.updateUserContinuousActivities(response.data);
+          });
+        apiUser
+          .getUserDurationActivities(this.user.profile_id)
+          .then(response => {
+            this.updateUserDurationActivities(response.data);
+          });
+        router.push("profile");
+      });
   }
 };
 </script>
