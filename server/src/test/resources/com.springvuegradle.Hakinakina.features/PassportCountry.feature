@@ -8,6 +8,6 @@ Feature: FitnessPassport
 
 
   Scenario: Adding the second passport country to the user
-    Given User exists with single passport country
+    Given User exists with 1 passport country
     When User adds another country "New Zealand" to his passport countries
     Then User has 2 passport countries added
