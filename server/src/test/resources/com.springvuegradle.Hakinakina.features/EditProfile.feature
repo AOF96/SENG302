@@ -7,3 +7,12 @@ Feature: EditProfile
     And User can swap initial primary email to "some@123.com"
     And User edits the name to "Julia"
     Then User has a new primary email "some@123.com", name "Julia", fitness level 2 and 0 countries"
+
+  @U4-Editing
+  Scenario: Checking if the user is logged in and cannot delete mandatory fields
+    Given User creates a new account with first name "John", last name "Doe", primary email "actests1@testing.ac.nz", birth date "1985-12-20"
+    When User cannot delete mandatory field such as the first name
+    And User cannot delete mandatory field such as the last name
+    And User cannot delete mandatory field such as the primary email
+    And User cannot delete mandatory field such as the birth date
+    Then The user still has first name "John", last name "Doe", primary email "actests1@testing.ac.nz", birth date "1985-12-20"

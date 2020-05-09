@@ -62,6 +62,7 @@ public class EditProfileSteps {
         session1.setUser(user1);
         Assert.assertEquals(session1.getUser().getPrimaryEmail(),email);
     }
+
     @When("User when logged in sets fitness level to {int} and sets non mandatory passport countries to {int}")
     public void non_mandatory_fields_updated(int newFitnessLevel, int countryNum) throws Exception {
         user1.resetPassportCountries();
@@ -69,6 +70,7 @@ public class EditProfileSteps {
         Assert.assertEquals(user1.getFitnessLevel(), 2);
         Assert.assertEquals(user1.getPassportCountries().size(), countryNum);
     }
+
     @When("User can swap initial primary email to {string}")
     public void user_can_swap_and_delete_the_initial_primary_email(String newEmail) {
         Email secondary = new Email(newEmail);
@@ -90,4 +92,42 @@ public class EditProfileSteps {
         Assert.assertEquals(user1.getPassportCountries().size(), countryNum);
     }
 
+    @Given("User creates a new account with first name {string}, last name {string}, primary email {string}, birth date {string}")
+    public void user_creates_a_new_account_with_first_name_last_name_primary_email_birth_date(String firstname, String lastname, String email, String birthDate) {
+        user1 = new User(firstname, lastname, email, birthDate, Gender.FEMALE, 3, "password");
+        Assert.assertEquals(email, user1.getPrimaryEmail());
+        user1.setUserId((long) 1);
+        user1.addPassportCountry(passportCountry);
+        user1.setMiddleName("Jacob");
+        session1.setUser(user1);
+        Assert.assertEquals(session1.getUser().getPrimaryEmail(),email);
+    }
+
+    @When("User cannot delete mandatory field such as the first name")
+    public void user_cannot_delete_mandatory_field_such_as_the_first_name() {
+        user1.setFirstName("");
+    }
+
+    @When("User cannot delete mandatory field such as the last name")
+    public void user_cannot_delete_mandatory_field_such_as_the_last_name() {
+        user1.setLastName("");
+    }
+
+    @When("User cannot delete mandatory field such as the primary email")
+    public void user_cannot_delete_mandatory_field_such_as_the_primary_email() {
+        user1.setPrimaryEmail("");
+    }
+
+    @When("User cannot delete mandatory field such as the birth date")
+    public void user_cannot_delete_mandatory_field_such_as_the_birth_date() {
+        user1.setBirthDate(null);
+    }
+
+    @Then("The user still has first name {string}, last name {string}, primary email {string}, birth date {string}")
+    public void the_user_still_has_first_name_last_namel_primary_email_birth_date(String firstname, String lastname, String email, String birthDate) {
+        Assert.assertEquals(firstname, user1.getFirstName());
+        Assert.assertEquals(lastname, user1.getLastName());
+        Assert.assertEquals(email, user1.getPrimaryEmail());
+        Assert.assertEquals(birthDate, user1.getBirthDate().toString());
+    }
 }

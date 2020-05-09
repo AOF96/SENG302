@@ -10,6 +10,7 @@ import com.springvuegradle.Hakinakina.util.EncryptionUtil;
 import com.springvuegradle.Hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ public class User {
 
     @JsonProperty("firstname")
     @Column(name = "first_name")
+    @NotBlank
     private String firstName;
 
     @JsonProperty("lastname")
@@ -189,6 +191,7 @@ public class User {
     }
 
     public void setPrimaryEmail(String primaryEmail) {
+        if(primaryEmail.isBlank()) return;
         this.primaryEmail = primaryEmail;
     }
 
@@ -205,6 +208,7 @@ public class User {
     }
 
     public void setFirstName(String firstName) {
+        if(firstName.isBlank()) return;
         this.firstName = firstName;
     }
 
@@ -213,6 +217,7 @@ public class User {
     }
 
     public void setLastName(String lastName) {
+        if(lastName.isBlank()) return;
         this.lastName = lastName;
     }
 
@@ -261,6 +266,7 @@ public class User {
     }
 
     public void setBirthDate(Date birthDate) {
+        if(birthDate == null) return;
         this.birthDate = birthDate;
     }
 
@@ -285,6 +291,7 @@ public class User {
     }
 
     public void setPermissionLevel(Integer permissionLevel) {
+        if(permissionLevel == null) return;
         this.permissionLevel = permissionLevel;
     }
 
