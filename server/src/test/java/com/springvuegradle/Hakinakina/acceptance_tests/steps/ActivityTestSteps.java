@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.mockito.Mockito.when;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 
 @WebMvcTest(Activity.class)
@@ -94,10 +94,24 @@ public class ActivityTestSteps {
         assertEquals(session.getUser().getPrimaryEmail(), user.getPrimaryEmail());
     }
 
-    @When("I create the following activity: {string} {string} {string} {string} {string} {string} {string}")
-    public void iCreateTheFollowingActivity(
+    @When("I create the following activity: {string} {string} {string} {string} {string} {string} {string} {int}")
+    public void iCreateTheFollowingActivityWithID(
             String activity_name, String description, String activity_types, String continuous, String start_time,
-            String end_time, String location) throws Exception {
+            String end_time, String location, int ID) throws Exception {
+
+          boolean isContinuous = Boolean.parseBoolean(continuous);
+        if (isContinuous) {
+            activity = new Activity(activity_name, description, true, null, null,  location);
+        } else {
+            activity = new Activity(activity_name, description, false, Date.valueOf(start_time), Date.valueOf(end_time),  location);
+        }
+
+        activity.setId((long)ID);
+        Set<ActivityType> activityTypes = new HashSet<>();
+        activityTypes.add(new ActivityType(activity_types));
+        activity.setActivityTypes(activityTypes);
+        activityRepository.save(activity);
+        activityRepository.insertActivityForUser(user.getUserId(), activity.getId());
 
         String request = "{\n" +
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
@@ -141,7 +155,7 @@ public class ActivityTestSteps {
                 "  \"location\": \"" + location + "\"\n" +
                 "}";
 
-        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN));;
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN));
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities").header("token", token)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
         String test = "/profiles/" + user.getUserId() + "/activities";
@@ -150,6 +164,29 @@ public class ActivityTestSteps {
     }
 
 
+    @And("I edit the activity with ID {int}, token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}, {string}")
+    public void iEditTheActivityWithNewValues(int activityID, String token, String name, String description, String activityTypes, String continuous,  String startTime, String endTime,
+                                              String location) throws Exception {
+        String request = "{\n" +
+                "  \"activity_name\": \"" + name + "\",\n" +
+                "  \"description\": \"" + description + "\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"" + activityTypes + "\" \n" +
+                "  ],\n" +
+                "  \"continous\": " + continuous + ",\n" +
+                "  \"start_time\": \"" + startTime + "\", \n" +
+                "  \"end_time\": \"" + endTime + "\",\n" +
+                "  \"location\": \"" + location + "\"\n" +
+                "}";
+        System.out.println(request);
+        when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been updated", HttpStatus.OK));
+        result = mockMvc.perform(put("/profiles/" + user.getUserId() + "/activities/" + activityID)
+                .header("token", session)
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+//        System.out.println(user.getActivities());
+//        assertTrue(true);
+//        System.out.println(result.getResponse().getStatus());
+    }
 
 
 //    @When("user {int} activities are retrieved")
