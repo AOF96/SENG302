@@ -92,12 +92,43 @@ public class EditProfileSteps {
         Assert.assertEquals(user1.getPassportCountries().size(), countryNum);
     }
 
-    @When("User cannot delete mandatory field such as the name")
-    public void user_cannot_delete_mandatory_field_such_as_the_name() {
-        // Write code here that turns the phrase above into concrete actions
+    @Given("User creates a new account with first name {string}, last name {string}, primary email {string}, birth date {string}")
+    public void user_creates_a_new_account_with_first_name_last_name_primary_email_birth_date(String firstname, String lastname, String email, String birthDate) {
+        user1 = new User(firstname, lastname, email, birthDate, Gender.FEMALE, 3, "password");
+        Assert.assertEquals(email, user1.getPrimaryEmail());
+        user1.setUserId((long) 1);
+        user1.addPassportCountry(passportCountry);
+        user1.setMiddleName("Jacob");
+        session1.setUser(user1);
+        Assert.assertEquals(session1.getUser().getPrimaryEmail(),email);
+    }
+
+    @When("User cannot delete mandatory field such as the first name")
+    public void user_cannot_delete_mandatory_field_such_as_the_first_name() {
         user1.setFirstName("");
-        System.out.println("the user name is :" + user1.getFirstName());
-//        throw new io.cucumber.java.PendingException();
+    }
+
+    @When("User cannot delete mandatory field such as the last name")
+    public void user_cannot_delete_mandatory_field_such_as_the_last_name() {
+        user1.setLastName("");
+    }
+
+    @When("User cannot delete mandatory field such as the primary email")
+    public void user_cannot_delete_mandatory_field_such_as_the_primary_email() {
+        user1.setPrimaryEmail("");
+    }
+
+    @When("User cannot delete mandatory field such as the birth date")
+    public void user_cannot_delete_mandatory_field_such_as_the_birth_date() {
+        user1.setBirthDate(null);
+    }
+
+    @Then("The user still has first name {string}, last name {string}, primary email {string}, birth date {string}")
+    public void the_user_still_has_first_name_last_namel_primary_email_birth_date(String firstname, String lastname, String email, String birthDate) {
+        Assert.assertEquals(firstname, user1.getFirstName());
+        Assert.assertEquals(lastname, user1.getLastName());
+        Assert.assertEquals(email, user1.getPrimaryEmail());
+        Assert.assertEquals(birthDate, user1.getBirthDate().toString());
     }
 
     @Given("User creates a new account with primary email {string} and password {string}")
@@ -114,7 +145,7 @@ public class EditProfileSteps {
 
     @When("User provides {string} as the old password to update it to {string} as a new password")
     public void user_provides_as_the_old_password_to_update_it_to_as_a_new_password(String oldPassword, String newPassword) {
-    userService.changePassword(user2.getUserId(),"newToken", oldPassword, newPassword);
+        userService.changePassword(user2.getUserId(),"newToken", oldPassword, newPassword);
 
 
     }
@@ -126,5 +157,4 @@ public class EditProfileSteps {
 //        Assert.assertNotEquals(user2.getPassword(),oldPasswordEncryption);
 
     }
-
 }
