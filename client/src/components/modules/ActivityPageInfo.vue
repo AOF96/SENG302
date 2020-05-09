@@ -1,14 +1,14 @@
 <template>
     <div class="activityContainer">
-        <div id="activityPageTitle" class="activityTitleLabel">{{ activity.name }}</div>
-        <div id="activityPageDescription" class="activityDescriptionLabel">{{ activity.description }}</div>
-        <div id="activityPageLocation" class="activityLocationLabel">{{ activity.location }}</div>
-        <div id="activityPageStartDate" class="activityStartLabel" v-if="activity.continuous === false"><h3> Start date: {{ startDate }}</h3></div>
-        <div id="activityPageEndDate" class="activityEndLabel" v-if="activity.continuous === false"><h3> End date: {{ endDate }}</h3></div>
+        <div id="activityPageTitle" class="activityTitleLabel"> {{ activity_name }} </div>
+        <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
+        <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
+        <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false"><h3> Start date: {{ start_date }}</h3></div>
+        <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false"><h3> End date: {{ end_date }}</h3></div>
         <div class="activityPageTypeTitle"><p>Activity Type: </p></div>
         <div id="activityPageTypeListing" class="activityTypesContainer">
-            <span v-for="a in activity.activityTypes" :key="a.type_id">
-                <span v-if="activity.activityTypes.indexOf(a) != activity.activityTypes.length - 1">
+            <span v-for="a in activity_types" :key="a.type_id">
+                <span v-if="activity_types.indexOf(a) != activity_types.length - 1">
                         {{a.name}} ,
                 </span>
                 <span v-else>
@@ -16,8 +16,7 @@
                 </span>
             </span>
         </div>
-        <button class="deleteActivityButton" type="button" v-on:click="deleteActivity(activity, user)">Delete Activity</button>
-
+        <button class="deleteActivityButton" type="button" v-on:click="deleteActivity(user)">Delete Activity</button>
     </div>
 </template>
 
@@ -30,29 +29,53 @@
 
   export default {
     name: "ActivityPageInfo",
+      data() {
+        return {
+            activity_name: "",
+            continuous: false,
+            description: "",
+            activity_types: [],
+            start_date: null,
+            end_date: null,
+            location: "",
+        }
+      },
 
     computed: {
         ...mapGetters(['activity']),
         ...mapGetters(['user']),
-
-        startDate() {
-        return dateUtil.getFormatDate(new Date(this.activity.start_time))
-      },
-
-      endDate() {
-        return dateUtil.getFormatDate(new Date(this.activity.end_time))
-      }
     },
+      created: function() {
+          this.loadActivity();
+      },
     methods: {
         ...mapActions(['updateUserDurationActivities']),
         ...mapActions(['updateUserContinuousActivities']),
 
-        deleteActivity(activity, user) {
-            apiActivity.deleteActivity(activity.author_id, this.$route.params.activityId);
+        deleteActivity(user) {
+            apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId);
             this.updateUserDurationActivities(user.dur_activities);
             this.updateUserContinuousActivities(user.cont_activities);
             router.push("/profile");
-        }
+        },
+        async loadActivity() {
+            if(this.$route.params.activityId == null || this.$route.params.activityId == ""){
+                this.$router.push('/profile');
+            }else{
+                var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+                if(tempActivityData == "Invalid permissions"){
+                    this.$router.push('/profile');
+                }else{
+                    this.activity_name = tempActivityData.activity_name;
+                    this.continuous = tempActivityData.continuous;
+                    this.description = tempActivityData.description;
+                    this.activity_types = tempActivityData.activity_type;
+                    this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
+                    this.end_date = dateUtil.getFormatDate(new Date(this.activity.end_time));
+                    this.location = tempActivityData.location;
+                }
+            }
+        },
     }
   }
 </script>

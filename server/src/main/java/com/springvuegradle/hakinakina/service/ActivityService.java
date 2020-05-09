@@ -168,7 +168,7 @@ public class ActivityService {
             } else if (activityToDelete == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
 
-            } else if (profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) {
+            } else if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) && session.getUser().getPermissionLevel() == 0) {
                 result = responseHandler.formatErrorResponse(403, "Invalid user");
 
             } else {
