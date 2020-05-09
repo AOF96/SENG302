@@ -11,7 +11,7 @@
 
           <label class="editActivityLabel" for="time">Continuous?</label>
           <select
-            class="editActivityDropbox"
+            class="editActivitySelect"
             id="time"
             v-on:change="setDuration"
             v-model="duration"
@@ -45,7 +45,7 @@
 
           <label class="editActivityLabel">Location</label>
           <div>
-            <select v-model="adding_country" name="countries" class="editActivityDropbox" required>
+            <select v-model="adding_country" name="countries" class="editActivitySelect" required>
               <option selected disabled hidden>Countries</option>
               <option
                 v-for="addingCountry in countries_option"
@@ -60,7 +60,7 @@
               v-on:change="selectActivityType"
               v-model="selected_activity"
               name="activityType"
-              class="editActivityDropbox"
+              class="editActivitySelect"
               required
             >
               <option selected disabled hidden>Activity Type</option>
@@ -71,29 +71,17 @@
             </select>
           </div>
           <div class="addedActivityTypeContainer">
-            <div
-              class="addedActivityContainer"
-              v-for="addedActivity in activity_types_selected"
-              v-bind:key="addedActivity"
-            >
-              <label class="addedTypeContainer">{{addedActivity}}</label>
-              <button
-                class="deleteActivityTypeButton"
-                v-on:click="removeActivityType(addedActivity)"
-              >Remove</button>
+            <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+              <h4 class="addedTypeContainer">{{addedActivity}}</h4>
+              <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+              <div class="floatClear"></div>
             </div>
           </div>
-
           <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
           <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
-
           <div class="confirmButtonContainer">
-            <button
-              id="editActivityButton"
-              type="button"
-              v-on:click="saveEditedActivity()"
-            >Save Changes</button>
             <button id="deleteActivityButton">Delete Activity</button>
+            <button id="editActivityButton" type="button" v-on:click="saveEditedActivity()">Save Changes</button>
           </div>
         </form>
       </div>

@@ -29,16 +29,16 @@
     border: 1px solid #d8d8d8;
     margin-left: 20px;
     border-radius: 15px;
-    min-height: 50px;
+    min-height: 38px;
     padding: 10px;
     margin-right: 20px;
     margin-top: -10px;
 }
 
 .addedTypeContainer {
-    padding-left: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+  font-size: 15px;
+  margin: 10px;
+  float: left;
 }
 
 .confirmButtonContainer #editActivityButton {
@@ -52,6 +52,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
+    margin-left: 15px;
 }
 .confirmButtonContainer #editActivityButton:hover {
     background: #1cca92;
@@ -69,7 +70,6 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
-    margin-left: 20px;
 }
 
 .confirmButtonContainer #deleteActivityButton:hover {
@@ -187,6 +187,7 @@
     text-decoration: none;
     float: right;
     margin-right: 10px;
+    margin-top: 6px;
 }
 
 .deleteActivityTypeButton:hover {

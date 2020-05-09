@@ -67,18 +67,18 @@
                         </select>
                     </div>
                     <div class="addedActivityTypeContainer">
-                        <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
-                            <label>{{addedActivity}}</label>
-                            <button class="genericDeleteButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
-                        </div>
+                      <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+                        <h4 class="addedTypeContainer">{{addedActivity}}</h4>
+                        <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+                        <div class="floatClear"></div>
+                      </div>
                     </div>
-
                     <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
                     <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
 
           <div class="confirmButtonContainer">
-            <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
             <button class="genericDeleteButton">Delete Activity</button>
+            <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
           </div>
         </form>
       </div>
