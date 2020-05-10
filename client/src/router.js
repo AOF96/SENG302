@@ -96,7 +96,7 @@ router.beforeEach((to, from, next) => {
   console.log("isAdmin: " + isAdmin);
   console.log("isLogin: " + isLoggedIn);
 
-  if (firstLoad === true) {
+  if (firstLoad === true && localStorage.getItem("s_id") !== null) {
     firstLoad = false;
     apiUser.getUserByToken().then(
       (response) => {
@@ -111,7 +111,7 @@ router.beforeEach((to, from, next) => {
       }
     );
   } else {
-    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2) {
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2 && isLoggedIn) {
       console.log("login as an admin user");
       next();
     } else if (isAuthPath) {
