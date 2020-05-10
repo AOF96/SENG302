@@ -316,5 +316,19 @@ public class ActivityTestSteps {
         System.out.println(result.getResponse().getStatus());
         System.out.println(result.getResponse().getContentAsString());
     }
+
+    @And("I attempt to delete an activity that doesn't exists with ID {int} and token {string}")
+    public void iAttemptToDeleteAnActivityThatDoesnTExistsWithIDAndToken(int ID, String token) throws Exception {
+        when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity not found", HttpStatus.NOT_FOUND));
+        result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + ID)
+                .header("token", token)).andReturn();
+    }
+
+    @And("Someone else attempts to delete my activity with token {string}")
+    public void someoneElseAttemptsToDeleteMyActivityWithToken(String token) throws Exception {
+        when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid user", HttpStatus.FORBIDDEN));
+        result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + activity.getId())
+                .header("token", token)).andReturn();
+    }
 }
 

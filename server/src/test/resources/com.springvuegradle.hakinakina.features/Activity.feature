@@ -87,3 +87,26 @@ Feature: Activity
     And I delete the activity with ID 3 and token "T0k3n"
     Then the response status is 200
     And The created activity with ID 3 no longer exists
+
+  @U8-activity
+  Scenario: Deleting an activity that doesn't exist
+    Given I create an account with name "Jane", email "jane@doe.com" and ID 4
+    And I have the authorization token "T0k3n"
+    And I attempt to delete an activity that doesn't exists with ID 999 and token "T0k3n"
+    Then the response status is 404
+
+  @U8-activity
+  Scenario: Deleting the activity of another user
+    Given I create an account with name "Jane", email "jane@doe.com" and ID 4
+    And I have the authorization token "T0k3n"
+    When I create the following activity: 'Surf at Sumner' 'Group surfing at Sumner' 'Fun' 'true' 'null' 'null' 'Christchurch, NZ' 3
+    And Someone else attempts to delete my activity with token "L0v3 T0k3ns"
+    Then the response status is 403
+
+
+
+
+
+
+
+
