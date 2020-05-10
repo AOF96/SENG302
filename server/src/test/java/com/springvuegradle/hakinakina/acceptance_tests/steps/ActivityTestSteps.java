@@ -265,5 +265,56 @@ public class ActivityTestSteps {
                 .header("token", token)).andReturn();
 //        System.out.println(result.getResponse().getStatus());
     }
+
+    @And("A different user with token {string} tries to edit my activity with values: {string}, {string}, {string}, {string}, {string}, {string}, {string}")
+    public void aDifferentUserTriesToEditMyActivity(String token, String name, String description, String activityTypes,
+                                                             String continuous,  String startTime, String endTime,
+                                                             String location) throws Exception {
+
+        String request = "{\n" +
+                "  \"activity_name\": \"" + name + "\",\n" +
+                "  \"description\": \"" + description + "\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"" + activityTypes + "\" \n" +
+                "  ],\n" +
+                "  \"continous\": " + continuous + ",\n" +
+                "  \"start_time\": \"" + startTime + "\", \n" +
+                "  \"end_time\": \"" + endTime + "\",\n" +
+                "  \"location\": \"" + location + "\"\n" +
+                "}";
+
+        when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid User", HttpStatus.FORBIDDEN));
+        result = mockMvc.perform(put("/profiles/" + user.getUserId() + "/activities/" + activity.getId())
+                .header("token", token)
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+
+        System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
+    @And("I edit my activity with token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}, {string}")
+    public void iEditMyActivityWithTokenAndNewValues(String token,  String name, String description, String activityTypes,
+                                                     String continuous,  String startTime, String endTime,
+                                                     String location) throws Exception {
+        String request = "{\n" +
+                "  \"activity_name\": \"" + name + "\",\n" +
+                "  \"description\": \"" + description + "\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"" + activityTypes + "\" \n" +
+                "  ],\n" +
+                "  \"continous\": " + continuous + ",\n" +
+                "  \"start_time\": \"" + startTime + "\", \n" +
+                "  \"end_time\": \"" + endTime + "\",\n" +
+                "  \"location\": \"" + location + "\"\n" +
+                "}";
+
+        when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Selected activity type \" + activityType.getName() + \" does not exist", HttpStatus.BAD_REQUEST));
+        result = mockMvc.perform(put("/profiles/" + user.getUserId() + "/activities/" + activity.getId())
+                .header("token", token)
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+
+        System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getContentAsString());
+    }
 }
 
