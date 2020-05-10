@@ -13,7 +13,6 @@
           <select
             class="editActivitySelect"
             id="time"
-            v-on:change="setDuration"
             v-model="duration"
           >
             <option value="continuous">Continuous</option>
@@ -116,6 +115,8 @@ export default {
       start_time: null,
       end_time: null,
       activity_name: "",
+      combinedEndTime: null,
+      combinedStartTime: null
       continuous: false,
       description: ""
     };
@@ -196,7 +197,6 @@ export default {
       this.start_time = null;
       this.end_time = null;
     },
-
     /**
      * This function converts the milli seconds to the format YYYY-MM-DD
      */
@@ -241,21 +241,88 @@ export default {
         this.activity_types_selected.splice(index, 1);
       }
     },
+
     /**
-     * Checks form conditions and sends create activity request if conditions pass
+     * Combines the times and dates given in the form to a single datetime format
+     * Sets datetime to null if continuous activity
      */
-    saveEditedActivity() {
+    combineDateTime() {
       let currentDate = new Date(Date.now());
       let timeZone = currentDate
         .toString()
         .slice(currentDate.toString().indexOf("+"), 5);
+
+      if (this.duration !== "duration") {
+        this.combinedStartTime = null;
+        this.combinedEndTime = null;
+      } else if (this.start_time === null && this.end_time === null) {
+        this.combinedStartTime = this.start_date + "T00:00:00" + timeZone;
+        this.combinedEndTime = this.end_date + "T00:00:00" + timeZone;
+      } else if (this.start_time === null) {
+        this.combinedStartTime = this.start_date + "T00:00:00" + timeZone;
+        this.combinedEndTime =
+          this.end_date + "T" + this.end_time + ":00" + timeZone;
+      } else if (this.end_time === null) {
+        this.combinedStartTime =
+          this.start_date + "T" + this.start_time + ":00" + timeZone;
+        this.combinedEndTime = this.end_date + "T00:00:00" + timeZone;
+      } else {
+        this.combinedStartTime =
+          this.start_date + "T" + this.start_time + ":00" + timeZone;
+        this.combinedEndTime =
+          this.end_date + "T" + this.end_time + ":00" + timeZone;
+      }
+    },
+
+    /**
+     * Checks if the datetime passes conditions. Ensures time is in the future and start is not later than end
+     * @return boolean true if passes, false if fails
+     */
+    checkTimeContinuity() {
+      let currentDate = new Date(Date.now());
+      let timeZone = currentDate
+        .toString()
+        .slice(currentDate.toString().indexOf("+"), 5);
+
+      currentDate.setHours(0);
+      currentDate.setMinutes(0);
+      currentDate.setSeconds(0);
+      currentDate.setMilliseconds(0);
+      if (new Date(this.combinedStartTime) > new Date(this.combinedEndTime)) {
+        this.displayError("End time must be after start time.");
+        return false;
+      } else if (
+        currentDate > new Date(this.start_date + "T00:00:00" + timeZone)
+      ) {
+        this.displayError("Start date must be in the future.");
+        return false;
+      } else if (
+        currentDate.getFullYear() + 2 <
+          new Date(this.start_date + "T00:00:00" + timeZone).getFullYear() ||
+        currentDate.getFullYear() + 2 <
+          new Date(this.end_date + "T00:00:00" + timeZone).getFullYear()
+      ) {
+        this.displayError("Must be less than 2 years in the future.");
+        return false;
+      }
+      return true;
+    },
+
+    /**
+     * Check all activity form conditions
+     * @return boolean true if passes, false if fails
+     */
+    checkFormConditions() {
       if (this.activity_name === null || this.activity_name.trim() === "") {
+        // Name is empty
         this.displayError("Please select an activity name.");
+        return false;
       } else if (
         this.duration !== "duration" &&
         this.duration !== "continuous"
       ) {
-        this.displayError("Please select a duration.");
+        // Duration is not set
+        return false;
       } else if (
         this.duration === "duration" &&
         (this.start_date === null ||
@@ -263,104 +330,84 @@ export default {
           this.start_date === "" ||
           this.end_date === "")
       ) {
-        this.displayError("Please select start and end date.");
+        return false;
       } else if (this.activity_types_selected.length < 1) {
-        this.displayError("Please select at least one activity type.");
+        return false;
+      } else if (this.duration === "duration" && !this.checkTimeContinuity()) {
+        // Time check failed
+        return false;
       } else {
-        let combinedStartTime;
-        let combinedEndTime;
-        if (this.duration !== "duration") {
-          combinedStartTime = null;
-          combinedEndTime = null;
-        } else if (this.start_time === null && this.end_time === null) {
-          combinedStartTime = this.start_date + "T00:00:00" + timeZone;
-          combinedEndTime = this.end_date + "T00:00:00" + timeZone;
-        } else if (this.start_time === null) {
-          combinedStartTime = this.start_date + "T00:00:00" + timeZone;
-          combinedEndTime =
-            this.end_date + "T" + this.end_time + ":00" + timeZone;
-        } else if (this.end_time === null) {
-          combinedStartTime =
-            this.start_date + "T" + this.start_time + ":00" + timeZone;
-          combinedEndTime = this.end_date + "T00:00:00" + timeZone;
-        } else {
-          combinedStartTime =
-            this.start_date + "T" + this.start_time + ":00" + timeZone;
-          combinedEndTime =
-            this.end_date + "T" + this.end_time + ":00" + timeZone;
-        }
-
-        currentDate.setHours(0);
-        currentDate.setMinutes(0);
-        currentDate.setSeconds(0);
-        currentDate.setMilliseconds(0);
-        if (new Date(combinedStartTime) > new Date(combinedEndTime)) {
-          this.displayError("End time must be after start time.");
-          return;
-        } else if (
-          currentDate > new Date(this.start_date + "T00:00:00" + timeZone)
-        ) {
-          this.displayError("Start date must be in the future.");
-          return;
-        } else if (
-          currentDate.getFullYear() + 2 <
-            new Date(this.start_date + "T00:00:00" + timeZone).getFullYear() ||
-          currentDate.getFullYear() + 2 <
-            new Date(this.end_date + "T00:00:00" + timeZone).getFullYear()
-        ) {
-          this.displayError("Must be less than 2 years in the future.");
-          return;
-        }
-
-        var tempIsDuration = this.duration !== "duration";
-
-        apiActivity
-          .editActivity(
-            this.user.profile_id,
-            this.activity_name,
-            tempIsDuration,
-            combinedStartTime,
-            combinedEndTime,
-            this.description,
-            this.adding_country,
-            this.activity_types_selected,
-            this.$route.params.activityId
-          )
-          .then(
-            response => {
-              document.getElementById("activity_success").hidden = false;
-              document.getElementById("activity_error").hidden = true;
-              console.log(response);
-              apiUser
-                .getUserContinuousActivities(this.user.profile_id)
-                .then(response => {
-                  this.updateUserContinuousActivities(response.data);
-                });
-              apiUser
-                .getUserDurationActivities(this.user.profile_id)
-                .then(response => {
-                  this.updateUserDurationActivities(response.data);
-                });
-              router.push("/profile");
-            },
-            error => {
-              document.getElementById("activity_error").hidden = false;
-              document.getElementById("activity_error").innerText =
-                error.response.data.error;
-              document.getElementById("activity_success").hidden = true;
-            }
-          );
+        // All passed
+        return true;
       }
     },
+
     /**
-     * Shows error text for given error string
-     * @param error
+     * Checks form conditions and sends create activity request if conditions pass
      */
-    displayError(error) {
-      document.getElementById("activity_error").hidden = false;
-      document.getElementById("activity_error").innerText = error;
-      document.getElementById("activity_success").hidden = true;
+    saveEditedActivity() {
+      // Combines dates and times, must be done before checking form
+      this.combineDateTime();
+
+      // Checks all activity attribute conditions
+      if (!this.checkFormConditions()) {
+        return;
+      }
+
+      // Sets duration to a boolean for the request
+      this.duration = this.duration !== "duration";
+
+      apiActivity
+        .editActivity(
+          this.user.profile_id,
+          this.activity_name,
+          this.duration,
+          this.combinedStartTime,
+          this.combinedEndTime,
+          this.description,
+          this.adding_country,
+          this.activity_types_selected,
+          this.$route.params.activityId
+        )
+        .then(
+          response => {
+            console.log(response);
+            apiUser
+              .getUserContinuousActivities(this.user.profile_id)
+              .then(response => {
+                this.updateUserContinuousActivities(response.data);
+              });
+            apiUser
+              .getUserDurationActivities(this.user.profile_id)
+              .then(response => {
+                this.updateUserDurationActivities(response.data);
+              });
+            router.push("profile");
+          },
+          error => {
+            console.log(error.data.error);
+          }
+        );
     }
+  },
+
+  deleteActivity() {
+    apiActivity
+      .deleteActivity(this.user.profile_id, this.$route.params.activityId)
+      .then(response => {
+        console.log(response);
+        apiUser
+          .getUserContinuousActivities(this.user.profile_id)
+          .then(response => {
+            this.updateUserContinuousActivities(response.data);
+          });
+        apiUser
+          .getUserDurationActivities(this.user.profile_id)
+          .then(response => {
+            this.updateUserDurationActivities(response.data);
+          });
+        router.push("profile");
+      });
   }
 };
 </script>
