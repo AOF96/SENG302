@@ -6,33 +6,66 @@ const state = {
     lastname: null,
     middlename: null,
     nickname: null,
-    gender: null,
+    gender: "Gender",
     primary_email: null,
     additional_email: [],
     date_of_birth: null,
     bio: null,
     isLogin: false,
-    fitness: null,
+    fitness: -1,
     profile_id: null,
     password: null,
     passports: [],
-    tmp_passports: []
+    tmp_passports: [],
+    permission_level: 0,
+    activities: [],
+    tmp_activities: [],
+    cont_activities: [],
+    dur_activities: []
   }
 };
+
 
 const getters = {
   user(state) {
-    return state.user
+    return state.user;
+  },
+  searchedUser(state) {
+    return state.user;
   },
   isLoggedIn(state) {
     return state.user.isLogin;
+  },
+  isAdmin(state) {
+    return (state.user.permission_level > 0);
   }
-
 };
 
 const mutations = {
+  resetUser() {
+    state.user.firstname = null;
+    state.user.lastname = null;
+    state.user.middlename = null;
+    state.user.nickname = null;
+    state.user.gender = null;
+    state.user.primary_email = null;
+    state.user.additional_email = [];
+    state.user.date_of_birth = null;
+    state.user.bio = null;
+    state.user.isLogin = false;
+    state.user.fitness = null;
+    state.user.profile_id = null;
+    state.user.password = null;
+    state.user.passports = [];
+    state.user.tmp_passports = [];
+    state.user.permission_level = 0;
+    state.user.activities =  [];
+    state.user.tmp_activities = [];
+    state.user.cont_activities = [];
+    state.user.dur_activities = [];
+  },
   setUser(state, data) {
-    state.user = data
+    state.user = data;
   },
   setUserFirstName(state, data) {
     if(data.firstname != ""){
@@ -84,13 +117,28 @@ const mutations = {
   setUserTmpPassports(state, data) {
     state.user.tmp_passports = data.tmp_passports;
   },
+  setUserContinuousActivities(state, data) {
+    state.user.cont_activities = data;
+  },
+  setUserDurationActivities(state, data) {
+    state.user.dur_activities = data;
+  },
   setUserFitnessLevel(state, data) {
     state.user.fitness = data.fitness;
   },
+  setUserActivity(state, data) {
+    state.user.activities = data.activities;
+  },
+  setUserTmpActivity(state, data) {
+    state.user.tmp_activities = data.tmp_activities;
+  },
   setUserIsLogin(state, data) {
-    if(data.isLogin != ""){
-      state.user.isLogin = data.isLogin
+    if (data.isLogin != "") {
+      state.user.isLogin = data.isLogin;
     }
+  },
+  setUserPermissionLevel(state, data) {
+    state.user.permission_level = data.permission_level;
   },
   userLogin() {
     state.user.isLogin = true;
@@ -104,7 +152,7 @@ const mutations = {
       state.user.password = data.password
     }
   }
-}
+};
 
 const actions = {
   createUserProfile({ commit }, data) {
@@ -131,15 +179,23 @@ const actions = {
     commit('setUserBirthday', data);
     commit('setUserBio', data);
     commit('setUserPassports', data);
+    commit('setUserActivity', data);
     commit('setUserFitnessLevel', data);
     commit('setUserEmail', data);
     commit('setUserSecondaryEmails', data);
-    commit('setUserID', data)
+    commit('setUserID', data);
+    commit('setUserPermissionLevel', data);
     commit('userLogin');
   },
+  updateUserContinuousActivities({ commit }, data) {
+    commit('setUserContinuousActivities', data);
+  },
+  updateUserDurationActivities({ commit }, data) {
+    commit('setUserDurationActivities', data);
+  },
   updateUserEmail({ commit }, data) {
-    commit('setUserEmail', data)
-    commit('setUserSecondaryEmails', data)
+    commit('setUserEmail', data);
+    commit('setUserSecondaryEmails', data);
   },
   logout({ commit }) {
     commit('userLogout')
@@ -150,22 +206,11 @@ const actions = {
   updateTmpPassports({commit}, data){
     commit('setUserTmpPassports', data)
   },
-  resetUser() {
-    state.user.firstname = null;
-    state.user.lastname = null;
-    state.user.middlename = null;
-    state.user.nickname = null;
-    state.user.gender = null;
-    state.user.primary_email = null;
-    state.user.additional_email = [];
-    state.user.date_of_birth = null;
-    state.user.bio = null;
-    state.user.isLogin = false;
-    state.user.fitness = null;
-    state.user.profile_id = null;
-    state.user.password = null;
-    state.user.passports = [];
-    state.user.tmp_passports = [];
+  updateActivities({commit}, data){
+    commit('setUserActivity', data)
+  },
+  updateTmpActivities({commit}, data){
+    commit('setUserTmpActivity', data)
   }
 };
 

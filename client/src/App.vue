@@ -14,7 +14,7 @@
       return {
       }
     }
-  }
+  };
 
   export default app
 </script>

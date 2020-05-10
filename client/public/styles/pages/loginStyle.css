@@ -1,0 +1,73 @@
+/* -- Outer container ---- */
+.loginContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: calc(100% - 30px);
+  max-width: 350px;
+}
+.loginContainer h4 {
+    text-align: center;
+    color: #9eabbb;
+    font-size: 14px;
+    padding-top: 18px;
+}
+.loginContainer h4 a {
+    color: #1dca92;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* -- Inner form container ---- */
+.loginFormContainer {
+    width: calc(100% - 42px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    background: white;
+}
+.loginFormContainer h1 {
+  font-size: 20px;
+  color: #2d2d2d;
+  text-align: center;
+  margin-bottom: 7px;
+}
+.loginFormContainer h2 {
+  font-size: 13px;
+  color: #808080;
+  padding-bottom: 20px;
+  text-align: center;
+}
+.loginFormContainer input, .loginFormContainer select {
+    margin-bottom: 15px;
+    width: 100%;
+}
+.loginFormContainer hr {
+    border: 0;
+    height: 0;
+    border-top: 1px solid #dedede;
+    border-bottom: none;
+}
+.loginButton {
+  padding: 5px;
+  margin: 15px auto 0;
+}
+
+/* -- Login form container elements ---- */
+.loginRow {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+@media only screen and (max-height: 415px) {
+  .loginContainer {
+    position: relative;
+    margin:30px auto;
+    left:0;
+    top:0;
+    transform: none;
+  }
+}

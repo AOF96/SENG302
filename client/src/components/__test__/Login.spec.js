@@ -1,15 +1,20 @@
-import { mount, createLocalVue } from '@vue/test-utils'
+import {createLocalVue, mount, shallowMount} from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import Login from '../Login.vue'
 import Vuex from 'vuex'
+import {apiUser} from '@/api'
+
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
 const router = new VueRouter()
 localVue.use(Vuex)
 
+//mock api
+jest.mock('@/api')
+
 describe('Login.vue', () => {
-  let getters 
+  let getters
   let actions
   let store
 
@@ -18,24 +23,33 @@ describe('Login.vue', () => {
       user: () => ({
         primary_email: "test@gmail.com",
         password: "Welcome1"
-      })
+      }),
+      isAdmin: () => {
+        false
+      },
     }
     store = new Vuex.Store({
       getters
     })
   })
 
+  apiUser.login.mockResolvedValue(
+    new Promise((resolve, reject) => {
+      reject({
+          response: {
+            data: "Email does not exist",
+            status: 403
+          }
+        }
+      )
+    })
+  )
+
   it('Login page should have ', () => {
-    const wrapper = mount(Login, { store, localVue, router })
+    const wrapper = mount(Login, {store, localVue, router})
     expect(wrapper.text()).toContain('Login')
     expect(wrapper.text()).toContain('Sign in to your account')
 
-  })
-
-  it('When login fails, the error message should show up', () => {
-    const wrapper = mount(Login, { store, localVue, router })
-    const submitButton = wrapper.find('input[type="submit"]')
-    submitButton.trigger('click')
   })
 
 })

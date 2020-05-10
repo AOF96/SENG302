@@ -1,0 +1,331 @@
+/* -- Main Containers ---- */
+
+.activityWhiteBoxContainer {
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    border-radius: 14px;
+    position: relative;
+    margin: auto;
+}
+
+.activityMainContainer {
+    width: calc(100% - 40px);
+    max-width: 1230px;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    top: -56px;
+}
+
+.activityContainer{
+    font-family: Roboto;
+    width: 60%;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+}
+
+.activityInfoContainer {
+    display: grid;
+    grid-template-columns: auto 35%;
+    grid-template-rows: 1fr 2fr 1fr 50px 50px;
+    min-height: 300px;
+    grid-template-areas: "Title Title" "Description Location" "Description Start" "ActivityTypesTitle End" "ActivityTypes Continuous";
+}
+
+.activityTypesContainer {
+    grid-area: ActivityTypes;
+    text-align: center;
+    font-size: 15px;
+    color: #1cca92;
+    font-weight: 500;
+}
+
+.addedActivityTypeContainer {
+    border: 1px solid #d8d8d8;
+    margin-left: 20px;
+    border-radius: 15px;
+    min-height: 38px;
+    padding: 10px;
+    margin-right: 20px;
+    margin-top: -10px;
+}
+
+.addedTypeContainer {
+  font-size: 15px;
+  margin: 10px;
+  float: left;
+}
+
+.confirmButtonContainer #editActivityButton {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #1cca92;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #1cca92;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    margin-left: 15px;
+}
+.confirmButtonContainer #editActivityButton:hover {
+    background: #1cca92;
+    color: #fff;
+}
+
+.confirmButtonContainer #deleteActivityButton {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 15px;
+    color: #ee5e5e;
+    font-weight: 500;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.confirmButtonContainer #deleteActivityButton:hover {
+    background: #ee5e5e;
+    color: #fff;
+}
+
+.confirmButtonContainer {
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    float: right;
+}
+
+/* -- Labels ---- */
+.activityTitleLabel {
+    padding-left: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #1cca92;
+    font-size: 22px;
+    grid-area: Title;
+    font-weight: 500;
+}
+
+#activityTitle {
+    text-align: center;
+    padding-left: 90px;
+}
+
+.activityDescriptionLabel {
+    display: flex;
+    grid-area: Description;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+    font-size: 17px;
+}
+
+.activityAuthorLabel {
+    display: flex;
+    grid-area: Author;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+    font-size: 15px;
+}
+
+.activityLocationLabel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    grid-area: Location;
+    color: #6b6b6b;
+    font-size: 17px;
+    padding-bottom: 1rem;
+}
+
+.activityStartLabel {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: center;
+    grid-area: Start;
+    font-size: 12px;
+    color: #6b6b6b;
+    padding-right: 1rem;
+}
+
+.activityEndLabel {
+    text-align: center;
+    grid-area: End;
+    font-size: 12px;
+    padding-right: 1rem;
+    color: #6b6b6b;
+    padding-bottom: 2rem;
+}
+
+.activityTypeTitle{
+    grid-area: ActivityTypesTitle;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: center;
+    font-weight: 500;
+    colour: black;
+}
+
+.editSuccessMessage {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    margin: 15px;
+    color: #4CAF50;
+    text-align: center;
+}
+
+.editErrorMessage {
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    margin: 15px;
+    color: #f06a6a;
+    text-align: center;
+}
+
+/* -- Buttons ---- */
+.deleteActivityTypeButton {
+    padding: 3px 8px;
+    border-radius: 25px;
+    color: #ee5e5e;
+    background: #ffffff;
+    border: 2px solid #ee5e5e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    float: right;
+    margin-right: 10px;
+    margin-top: 6px;
+}
+
+.deleteActivityTypeButton:hover {
+    background: #ee5e5e;
+    color: #fff;
+}
+
+.activityTitle {
+    padding-left: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 0.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #1cca92;
+    font-size: 22px;
+    grid-area: Title;
+    font-weight: 500;
+
+}
+
+.activityDescription {
+    display: flex;
+    grid-area: Description;
+    align-items: center;
+    padding-bottom: 1rem;
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    font-size: 17px;
+
+}
+
+.activityLocation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    grid-area: Location;
+    color: #6b6b6b;
+    font-size: 17px;
+
+}
+
+.activityStart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: center;
+    grid-area: Start;
+    font-size: 12px;
+    color: #6b6b6b;
+
+}
+
+.activityEnd {
+    text-align: center;
+    grid-area: End;
+    font-size: 12px;
+    color: #6b6b6b;
+
+}
+
+
+.activityDuration {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    grid-area: Duration;
+    font-size: 15px;
+    color: #6b6b6b;
+
+
+}
+
+.activityTypeTitle{
+    grid-area: ActivityTypesTitle;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: center;
+    font-weight: 500;
+    colour: black;
+
+
+}
+
+.activityTypes {
+    grid-area: ActivityTypes;
+    text-align: center;
+    font-size: 15px;
+    color: #1cca92;
+    font-weight: 500;
+}
+
+.activityWrap{
+    max-width: 760px;
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    top: -56px;
+}
+
+.activityPageTypeList{
+    text-align: center;
+    padding-bottom: 2rem;
+}
