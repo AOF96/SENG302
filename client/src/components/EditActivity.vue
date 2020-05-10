@@ -7,14 +7,17 @@
           <h1>Edit Activity</h1>
 
           <label class="editActivityLabel" for="name">Activity Name</label>
-          <input class="editActivityInput" type="text" id="name" v-model="activity_name" placeholder="Activity Name" required />
+          <input
+            class="editActivityInput"
+            type="text"
+            id="name"
+            v-model="activity_name"
+            placeholder="Activity Name"
+            required
+          />
 
           <label class="editActivityLabel" for="time">Continuous?</label>
-          <select
-            class="editActivitySelect"
-            id="time"
-            v-model="duration"
-          >
+          <select class="editActivitySelect" id="time" v-model="duration">
             <option value="continuous">Continuous</option>
             <option value="duration">Duration</option>
           </select>
@@ -71,17 +74,32 @@
             </select>
           </div>
           <div class="addedActivityTypeContainer">
-            <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+            <div
+              class="addedActivityContainer"
+              v-for="addedActivity in activity_types_selected"
+              v-bind:key="addedActivity"
+            >
               <h4 class="addedTypeContainer">{{addedActivity}}</h4>
-              <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">Remove</button>
+              <button
+                class="deleteActivityTypeButton"
+                v-on:click="removeActivityType(addedActivity)"
+              >Remove</button>
               <div class="floatClear"></div>
             </div>
           </div>
           <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
           <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
           <div class="confirmButtonContainer">
-            <button id="deleteActivityButton">Delete Activity</button>
-            <button id="editActivityButton" type="button" v-on:click="saveEditedActivity()">Save Changes</button>
+            <button
+              id="deleteActivityButton"
+              type="button"
+              v-on:click="deleteActivity()"
+            >Delete Activity</button>
+            <button
+              id="editActivityButton"
+              type="button"
+              v-on:click="saveEditedActivity()"
+            >Save Changes</button>
           </div>
         </form>
       </div>
@@ -116,9 +134,10 @@ export default {
       end_time: null,
       activity_name: "",
       combinedEndTime: null,
-      combinedStartTime: null
+      combinedStartTime: null,
       continuous: false,
-      description: ""
+      description: "",
+      author_id: null
     };
   },
   computed: {
@@ -139,10 +158,12 @@ export default {
             if (v == e) this.activities_option.splice(i, 1);
           });
         });
-      }).catch(error => console.log(error));
+      })
+      .catch(error => console.log(error));
 
     // Gets list of countries that can be selected
-    await axios.get(COUNTRIES_URL)
+    await axios
+      .get(COUNTRIES_URL)
       .then(response => {
         const countries = [];
         const data = response.data;
@@ -151,7 +172,8 @@ export default {
           countries.push(country_name);
         }
         this.countries_option = countries;
-      }).catch(error => console.log(error));
+      })
+      .catch(error => console.log(error));
   },
   methods: {
     ...mapActions(["createActivity"]),
@@ -162,28 +184,36 @@ export default {
       Uses activity id from url to request activity data.
     */
     async loadActivity() {
-      if(this.$route.params.activityId == null || this.$route.params.activityId == ""){
-        this.$router.push('/profile');
-      }else{
-        var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
-        if(tempActivityData == "Invalid permissions"){
-          this.$router.push('/profile');
-        }else{
+      if (
+        this.$route.params.activityId == null ||
+        this.$route.params.activityId == ""
+      ) {
+        this.$router.push("/profile");
+      } else {
+        var tempActivityData = await apiActivity.getActivityById(
+          this.$route.params.activityId
+        );
+        if (tempActivityData == "Invalid permissions") {
+          this.$router.push("/profile");
+        } else {
           this.activity_name = tempActivityData.activity_name;
           this.continuous = tempActivityData.continuous;
-          if(this.continuous){
-              this.duration = "continuous";
-          }else{
-              this.duration = "duration";
-              this.end_time = this.formatTime(tempActivityData.end_time);
-              this.start_time = this.formatTime(tempActivityData.start_time);
-              this.start_date = this.formatDate(tempActivityData.start_time);
-              this.end_date = this.formatDate(tempActivityData.end_time);
+          if (this.continuous) {
+            this.duration = "continuous";
+          } else {
+            this.duration = "duration";
+            this.end_time = this.formatTime(tempActivityData.end_time);
+            this.start_time = this.formatTime(tempActivityData.start_time);
+            this.start_date = this.formatDate(tempActivityData.start_time);
+            this.end_date = this.formatDate(tempActivityData.end_time);
           }
+          this.author_id = tempActivityData.users[0].profile_id;
           this.description = tempActivityData.description;
           this.activity_type = tempActivityData.activity_type.slice();
           this.adding_country = tempActivityData.location;
-          this.activity_types_selected = tempActivityData.activity_type.map(e => e.name);
+          this.activity_types_selected = tempActivityData.activity_type.map(
+            e => e.name
+          );
         }
       }
     },
@@ -382,32 +412,40 @@ export default {
               .then(response => {
                 this.updateUserDurationActivities(response.data);
               });
-            router.push("profile");
+            router.push("/profile/" + this.author_id);
           },
           error => {
             console.log(error.data.error);
           }
         );
+    },
+    deleteActivity() {
+      apiActivity
+        .deleteActivity(this.author_id, this.$route.params.activityId)
+        .then(response => {
+          console.log(response);
+          apiUser
+            .getUserContinuousActivities(this.user.profile_id)
+            .then(response => {
+              this.updateUserContinuousActivities(response.data);
+            });
+          apiUser
+            .getUserDurationActivities(this.user.profile_id)
+            .then(response => {
+              this.updateUserDurationActivities(response.data);
+            });
+          router.push("/profile/" + this.author_id);
+        });
+    },
+    /**
+     * Shows error text for given error string
+     * @param error
+     */
+    displayError(error) {
+      document.getElementById("activity_error").hidden = false;
+      document.getElementById("activity_error").innerText = error;
+      document.getElementById("activity_success").hidden = true;
     }
-  },
-
-  deleteActivity() {
-    apiActivity
-      .deleteActivity(this.user.profile_id, this.$route.params.activityId)
-      .then(response => {
-        console.log(response);
-        apiUser
-          .getUserContinuousActivities(this.user.profile_id)
-          .then(response => {
-            this.updateUserContinuousActivities(response.data);
-          });
-        apiUser
-          .getUserDurationActivities(this.user.profile_id)
-          .then(response => {
-            this.updateUserDurationActivities(response.data);
-          });
-        router.push("profile");
-      });
   }
 };
 </script>
