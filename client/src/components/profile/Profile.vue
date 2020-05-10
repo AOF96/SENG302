@@ -62,7 +62,7 @@
             v-bind:key="activity"
           >
             <div class="activityTextWrapDiv">
-              <router-link to="activity/:activityId"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
+              <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
               <h4 class="profileActivityDescription">{{activity.description}}</h4>
             </div>
             <router-link v-bind:to="'/activity_editing/' + activity.id">
@@ -80,7 +80,7 @@
             v-bind:key="activity"
           >
             <div class="activityTextWrapDiv">
-              <router-link to="activity/:activityId"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
+              <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
               <h4 class="profileActivityDescription">{{activity.description}}</h4>
             </div>
             <router-link v-bind:to="'/activity_editing/' + activity.id">
