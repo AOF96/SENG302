@@ -17,13 +17,11 @@ describe('NavBar before login or sign up', () => {
         getters = {
             user: () => ({
               isLogin: false
-            })
-        },
-            actions = {
-                user: () => ({
-                    isLogin: false
-                })
+            }),
+            isAdmin: () => {
+                false
             },
+        },
         store = new Vuex.Store({
             getters, actions
         })
@@ -36,5 +34,4 @@ describe('NavBar before login or sign up', () => {
         expect(wrapper.find( ".signup").exists()).toBe(true)
 
     })
-
 })
