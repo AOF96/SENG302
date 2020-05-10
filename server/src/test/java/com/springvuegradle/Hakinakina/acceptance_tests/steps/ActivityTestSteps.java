@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
@@ -32,9 +33,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
 @WebMvcTest(Activity.class)
@@ -225,13 +225,18 @@ public class ActivityTestSteps {
         activityService.removeActivity(user1.getUserId(), activity1.getId(), "t0k3n");
     }
 
-    @Then("The created activity with ID {long} no longer exists")
+    @And("The created activity with ID {long} no longer exists")
     public void activityNoLongerExists(long ID) {
         assertNull(activityRepository.findActivityById(ID));
     }
 
 
-
-
-
+    @And("I delete the activity with ID {int} and token {string}")
+    public void iDeleteTheActivityWithIDAndToken(int ID, String token) throws Exception {
+        when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity successfully deleted", HttpStatus.OK));
+        System.out.println(user.getUserId());
+        result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + ID)
+                .header("token", token)).andReturn();
+//        System.out.println(result.getResponse().getStatus());
+    }
 }
