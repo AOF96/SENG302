@@ -207,7 +207,7 @@ export default {
             this.start_date = this.formatDate(tempActivityData.start_time);
             this.end_date = this.formatDate(tempActivityData.end_time);
           }
-          this.author_id = tempActivityData.users[0].profile_id;
+          this.author_id = tempActivityData.author.profile_id;
           this.description = tempActivityData.description;
           this.activity_type = tempActivityData.activity_type.slice();
           this.adding_country = tempActivityData.location;
@@ -421,7 +421,7 @@ export default {
     },
     deleteActivity() {
       apiActivity
-        .deleteActivity(this.author_id, this.$route.params.activityId)
+        .deleteActivity(this.user.profile_id, this.$route.params.activityId)
         .then(response => {
           console.log(response);
           apiUser

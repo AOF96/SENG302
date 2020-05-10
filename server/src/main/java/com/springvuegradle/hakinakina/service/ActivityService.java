@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ActivityService {
@@ -77,9 +74,11 @@ public class ActivityService {
             }
 
             //TODO Validate activity location in U9
-
+            User user = userRepository.getUserById(profileId).get();
+            activity.setAuthor(user);
             Activity newActivity = activityRepository.save(activity);
-            activityRepository.insertActivityForUser(profileId, newActivity.getId());
+
+            //activityRepository.insertActivityForUser(profileId, newActivity.getId());
             return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");

@@ -27,4 +27,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "SELECT * FROM Activity a WHERE a.continuous = ? AND a.activity_id IN (SELECT u.activity_id FROM User_Activities u WHERE u.user_id = ?)", nativeQuery = true)
     List<Activity> getActivitiesForUserOfType(boolean isContinuous, Long id);
 
+    @Query(value = "SELECT * FROM Activity a WHERE a.continuous = ? AND author_user_id = ?", nativeQuery = true)
+    List<Activity> getActivitiesForAuthorOfType(boolean isContinuous, Long id);
+
+
 }

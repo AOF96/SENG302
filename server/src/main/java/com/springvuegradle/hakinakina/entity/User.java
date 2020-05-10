@@ -89,7 +89,10 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
-    private Set<Activity> activities = new HashSet<>();
+    private Set<Activity> activity = new HashSet<>();
+
+    @OneToMany
+    private Set<Activity> authoredActivities = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -166,6 +169,14 @@ public class User {
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
     }
+
+    public void setActivity(Set<Activity> activities) {
+        this.activity = activities;
+    }
+
+    /*public Set<Activity> getActivity() {
+        return activity;
+    }*/
 
     /**
      * Adds passport country to relation
@@ -296,6 +307,18 @@ public class User {
     public void setPermissionLevel(Integer permissionLevel) {
         if(permissionLevel == null) return;
         this.permissionLevel = permissionLevel;
+    }
+
+    public Set<Activity> getAuthoredActivities() {
+        return authoredActivities;
+    }
+
+    public void setAuthoredActivities(Set<Activity> authoredActivities) {
+        this.authoredActivities = authoredActivities;
+    }
+
+    public void addAuthoredActivities(Activity authoredActivity) {
+        this.authoredActivities.add(authoredActivity);
     }
 
     @Override

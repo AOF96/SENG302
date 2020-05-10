@@ -97,28 +97,43 @@ public class ActivityController {
         }
     }
 
-    /**
-     * Retrieves all of the continuous activities that a user is subscribed to
-     * @param profileId The ID of the user
-     * @return A response entity with the result and a status code
-     */
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
-        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
+        List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
-    /**
-     * Retrieves all of the duration activities that a user is subscribed to
-     * @param profileId The ID of the user
-     * @return A response entity with the result and a status code
-     */
     @GetMapping("/profiles/{profileId}/activities/duration")
     public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
-        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
+        List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(false, profileId);
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
+
+//     This code will be used when we have users subscribing to activities
+//    /**
+//     * Retrieves all of the continuous activities that a user is subscribed to
+//     * @param profileId The ID of the user
+//     * @return A response entity with the result and a status code
+//     */
+//    @GetMapping("/profiles/{profileId}/activities/continuous")
+//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
+//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
+//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+//        return new ResponseEntity(result, HttpStatus.valueOf(200));
+//    }
+//
+//    /**
+//     * Retrieves all of the duration activities that a user is subscribed to
+//     * @param profileId The ID of the user
+//     * @return A response entity with the result and a status code
+//     */
+//    @GetMapping("/profiles/{profileId}/activities/duration")
+//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
+//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
+//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+//        return new ResponseEntity(result, HttpStatus.valueOf(200));
+//    }
 
 }
