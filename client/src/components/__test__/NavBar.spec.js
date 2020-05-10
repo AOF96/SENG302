@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
-import NavBar from '../NavBar.vue'
+import NavBar from '../modules/NavBar.vue'
 import Vuex from 'vuex'
 
 const localVue = createLocalVue()
@@ -8,7 +8,7 @@ localVue.use(VueRouter)
 const router = new VueRouter()
 localVue.use(Vuex)
 
-describe('NavBar.vue', () => {
+describe('NavBar before login or sign up', () => {
     let getters
     let store
     let actions
@@ -17,24 +17,21 @@ describe('NavBar.vue', () => {
         getters = {
             user: () => ({
               isLogin: false
-            })
-        },
-            actions = {
-                user: () => ({
-                    isLogin: true
-                })
+            }),
+            isAdmin: () => {
+                false
             },
+        },
         store = new Vuex.Store({
             getters, actions
         })
     })
 
 
-    it('NavBar should have ', () => {
+    it('NavBar should have before login button and sign up', () => {
         const wrapper = mount(NavBar, { store, localVue, router })
         expect(wrapper.find( ".login").exists()).toBe(true)
         expect(wrapper.find( ".signup").exists()).toBe(true)
 
     })
-
 })

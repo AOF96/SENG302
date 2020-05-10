@@ -1,103 +1,48 @@
 <template>
   <div>
     <NavBar />
-    <div class="credentials-box-wrap">
-      <div id="credentials-box">
+    <div class="signUpContainer">
+      <div class="signUpFormContainer">
         <h1>Sign Up</h1>
         <h2>Create an account</h2>
 
         <form @submit.prevent>
-          <div class="signup-row">
-            <h6 class="signup_error" id="missing_field" hidden="true"></h6>
+          <h6 v-if="submissionError">{{ submissionError }}</h6>
+          <div class="signUpRow">
+            <input id="signup-firstname" class="signUpHalfWidthInput" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required/>
+            <input id="signup-middlename" class="signUpHalfWidthInput" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name"/>
           </div>
-          <div class="signup-row">
-            <input
-              class="fmName"
-              v-model="user.firstname"
-              name="fname"
-              type="text"
-              placeholder="First Name*"
-              required
-            />
-            <input
-              class="fmName"
-              v-model="user.middlename"
-              name="middlename"
-              type="text"
-              placeholder="Middle Name"
-            />
+          <p id="signup-firstname-err" v-if="!validation.firstname" class="errorMessage">{{ this.err_msg.firstname }}</p>
+          <div class="signUpRow">
+            <input id="signup-lastname" class="signUpInput" v-model="user.lastname" name="lname" type="text" placeholder="Last Name*" required/>
           </div>
-
-          <div class="signup-row">
-            <input
-              class="signupInput-lastname"
-              v-model="user.lastname"
-              name="lname"
-              type="text"
-              placeholder="Last Name*"
-              required
-            />
-          </div>
-          <div class="signup-row">
-            <input v-model="user.nickname" name="nickname" type="text" placeholder="Nickname" />
-            <select
-              v-model="user.gender"
-              name="gender"
-              placeholder="Gender"
-              value="Gender"
-              required
-            >
+          <p id="signup-lastname-err" v-if="!validation.lastname" class="errorMessage">{{ this.err_msg.lastname }}</p>
+          <div class="signUpRow">
+            <input id="signup-nickname" v-model="user.nickname" name="nickname" type="text" placeholder="Nickname" />
+            <select id="signup-gender" v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
               <option selected disabled hidden>Gender</option>
               <option>Non-Binary</option>
               <option>Female</option>
               <option>Male</option>
             </select>
           </div>
-
-          <p v-if="warning.bio" class="signup_error">{{ this.bio_warning_msg }}</p>
-          <div class="signup-row">
-            <textarea
-              maxlength="255"
-              v-model="user.bio"
-              class="signupTextarea"
-              name="bio"
-              type="text"
-              placeholder="Bio"
-            ></textarea>
+          <p id="signup-bio-err" v-if="warning.bio" class="errorMessage">{{ this.bio_warning_msg }}</p>
+          <div class="signUpRow">
+            <textarea id="signup-bio" maxlength="255" v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
           </div>
-
-          <div class="signup-row">
-            <input
-              v-model="user.primary_email"
-              class="signupInput-email"
-              name="email"
-              type="email"
-              placeholder="Email*"
-              required
-            />
+          <div class="signUpRow">
+            <input id="signup-primary-email" v-model="user.primary_email" class="signUpInput" name="email" type="email" placeholder="Email*" required/>
           </div>
-          <div class="signup-row">
-            <h3 id="signupText-birthday">Birthday</h3>
-            <input
-              v-model="user.date_of_birth"
-              class="signupInput-birthday"
-              name="birthday"
-              type="date"
-              placeholder="Birthday"
-              required
-            />
+          <p id="signup-primary-email-err" v-if="user.primary_email && !validation.email" class="errorMessage">{{ this.err_msg.email }}</p>
+          <div class="signUpRow">
+            <h3 class="signUpText">Birthday</h3>
+            <input id="signup-dob" v-model="user.date_of_birth" class="signUpInputBirthday" name="birthday" type="date" placeholder="Birthday" required/>
           </div>
-
-          <div class="signup-row">
-            <h3 id="fitnessLevelText">Fitness Level</h3>
-            <select
-              id="levels"
-              v-model="user.fitness"
-              name="fitnesslevel"
-              placeholder="Fitness Level"
-              value="Fitness"
-              required
-            >
+          <p id="signup-dob-err" v-if="!validation.birthday" class="errorMessage">{{ this.err_msg.birthday }}</p>
+          <div class="signUpRow">
+            <h3 class="signUpText">Fitness Level</h3>
+            <select id="signup-fitness-level" class="fitnessLevelSelect" v-model="user.fitness" name="fitnesslevel" placeholder="Fitness Level" value="Fitness" required>
+                <option value="-1" selected disabled hidden>Fitness</option>
               <option value="0">I never exercise</option>
               <option value="1">I can walk a short distance</option>
               <option value="2">I can jog a short distance</option>
@@ -105,38 +50,23 @@
               <option value="4">I can run a marathon</option>
             </select>
           </div>
-
-          <div class="signup-row">
-            <input
-              v-model="password1"
-              class="signupInput-password"
-              name="pass1"
-              type="password"
-              placeholder="Password*"
-              required
-            />
+          <div class="signUpRow">
+            <input id="signup-password-1" v-model="password1" class="signUpInput" name="pass1" type="password" placeholder="Password*" required/>
           </div>
-
-          <div class="signup-row">
-            <input
-              v-model="password2"
-              class="signupInput-password"
-              name="pass2"
-              type="password"
-              placeholder="Password Again*"
-              required
-            />
+          <div class="signUpRow">
+            <input id="signup-password-2" v-model="password2" class="signUpInput" name="pass2" type="password" placeholder="Password Again*" required/>
           </div>
-
-          <ul class="validation-errors">
-            <li v-if="!validation.password.match">{{ this.err_msg.password.match }}</li>
-            <li v-if="!validation.password.length">{{ this.err_msg.password.length }}</li>
-            <li v-if="!validation.password.number">{{ this.err_msg.password.number }}</li>
-            <li v-if="!validation.password.lowercase">{{ this.err_msg.password.lowercase }}</li>
-            <li v-if="!validation.password.uppercase">{{ this.err_msg.password.uppercase }}</li>
+          <ul id="signup-password-err" class="errorMessage">
+            <li v-if="passwordInputIsFilled && !validation.password.match">{{ this.err_msg.password.match }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.length">{{ this.err_msg.password.length }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.number">{{ this.err_msg.password.number }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.lowercase">{{ this.err_msg.password.lowercase }}</li>
+            <li v-if="passwordInputIsFilled && !validation.password.uppercase">{{ this.err_msg.password.uppercase }}</li>
           </ul>
           <hr />
-          <input v-on:click="submitSignUp()" id="signupButton-submit" type="submit" value="Sign Up" />
+          <div class="signUpRow">
+            <button v-on:click="submitSignUp()" class="loginButton" type="submit">Sign Up</button>
+          </div>
         </form>
       </div>
       <h4>
@@ -148,13 +78,12 @@
 </template>
 
 <script>
-import router from "../router";
-import { mapGetters, mapActions } from "vuex";
-import { apiUser } from "../api";
+  import {mapActions, mapGetters} from "vuex";
+  import {apiUser} from "../api";
 
-import NavBar from "@/components/NavBar";
+  import NavBar from "./modules/NavBar";
 
-const ERR_MSG_FNAME = "Please enter your First name";
+  const ERR_MSG_FNAME = "Please enter your First name";
 const ERR_MSG_LNAME = "Please enter your Last name";
 const ERR_MSG_GENDER = "Please select your Gender";
 const ERR_MSG_EMAIL = "Please enter a valid Email";
@@ -174,6 +103,8 @@ export default {
   },
   data() {
     return {
+      errorMessages: [],
+      submissionError: "",
       password1: "",
       password2: "",
       bio_warning_msg: WARNING_MSG_BIO,
@@ -192,7 +123,6 @@ export default {
           uppercase: ERR_MSG_PASS_UPPERCASE
         }
       },
-      failed: false
     };
   },
 
@@ -200,9 +130,9 @@ export default {
     ...mapGetters(["user"]),
 
     warning() {
-      return {
-        bio: this.user.bio && this.user.bio.length == 255
-      };
+        return {
+          bio: this.user.bio && this.user.bio.length >= 255
+        };
     },
 
     /*
@@ -215,7 +145,7 @@ export default {
         gender: this.user.gender !== "Gender",
         email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
         birthday: this.user.date_of_birth !== "" && this.birthday_validation,
-        fitnesslevel: this.user.fitnessLevel !== "FitnessLevel",
+        fitnesslevel: this.user.fitnessLevel != -1,
         password: {
           match: this.password1 === this.password2,
           length: /.{8,}/.test(this.password1),
@@ -241,55 +171,54 @@ export default {
     },
 
     /*
-       Returns an appropriate error message if something goes wrong when signing up.
-    */
-    all_err_msg() {
-      const validation = this.validation;
-      const fields = Object.keys(validation);
-
-      let err_msg = "";
-      for (let i in fields) {
-        const field = fields[i];
-        if (!validation[field]) {
-          err_msg += "\n";
-          err_msg += this.err_msg[field];
-        }
-        const keys = Object.keys(validation[field]);
-        for (let i in keys) {
-          const key = keys[i];
-          if (!validation[field][key]) {
-            err_msg += "\n";
-            err_msg += this.err_msg[field][key];
-          }
-        }
-      }
-      return err_msg;
-    },
-
-    /*
        Returns true if all the provided data is valid.
     */
     valid() {
-      const valid = this.all_err_msg === "";
-      return valid;
+      this.all_err_msg() // Get all the errors on the field and show it on the top of the page
+      return this.errorMessages.length === 0;
+    },
+
+    passwordInputIsFilled() {
+      return this.password1 || this.password2
     }
   },
 
   methods: {
     ...mapActions(["createUserProfile"]),
+
+    /*
+       Returns an appropriate error message if something goes wrong when signing up.
+       Sets the errorMessages variable that is printed on the top of the page
+    */
+    all_err_msg() {
+      const validation = this.validation;
+      const fields = Object.keys(validation);
+
+      this.errorMessages = []
+      for (let i in fields) {
+        const field = fields[i];
+        if (!validation[field]) {
+          this.errorMessages.push(this.err_msg[field]);
+        }
+        const keys = Object.keys(validation[field]);
+        for (let i in keys) {
+          const key = keys[i];
+          if (!validation[field][key]) {
+            this.errorMessages.push(this.err_msg[field][key]);
+          }
+        }
+      }
+
+    },
     /*
       Submits a request to register a new user. Checks if there are missing fields when signing up.
     */
     submitSignUp() {
+      this.submissionError = ""
       if (!this.valid) {
-        document.getElementById("missing_field").hidden = false;
-        document.getElementById("missing_field").innerText = this.all_err_msg;
-        this.failed = true;
         return;
-      } else {
-        document.getElementById("missing_field").hidden = true;
-        document.getElementById("missing_field").innerText = "";
       }
+
 
       apiUser.signUp(
         this.user.firstname,
@@ -308,11 +237,10 @@ export default {
           //Save token to local storage
           localStorage.setItem("s_id", response.data[1]["sessionToken"]);
           apiUser.refreshInstance();
-          router.push('profile?u='+response.data[0].profile_id);
+          this.$router.push('profile?u='+response.data[0].profile_id);
         },
         error => {
-          document.getElementById("missing_field").hidden = false;
-          document.getElementById("missing_field").innerText = error.response.data.Errors;
+          this.submissionError = error.response.data.Errors;
           console.log(error);
         }
       );
@@ -320,3 +248,7 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+  @import '../../public/styles/pages/signUpStyle.css';
+</style>

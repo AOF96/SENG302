@@ -42,7 +42,10 @@ export const apiUser = {
     password: password
   }),
   // Removes session token from local storage and posts server request to remove the token from the database
-  logout: () => instance.post('/logout'),
+  logout: () => instance.post('/logout').then(function () {
+    localStorage.removeItem("s_id");
+    this.refreshInstance();
+  }),
   // Submit user signup information to the server
   editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports, permission_level, activities) => instance.put('/profiles/'+profile_id, {
     firstname: firstname,
@@ -71,7 +74,6 @@ export const apiUser = {
   }),
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
-
   getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
 
   getUserByToken: () => instance.get('validateLogin'),
@@ -90,15 +92,60 @@ export const apiUser = {
     return await searchedUser;
   },
 
+  getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
+  getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
+  /**
+   * Request to get all activity types from the server
+   */
+  getActivityTypes: () => instance.get('/activity-types'),
+
   /**
    * Request to update activity types
    */
   editUserActivityTypes: (profile_id, activities) => instance.put('/profiles/'+ profile_id + '/activity-types', {
     activities: activities
   }),
+};
 
-  /**
-   * Request to get all activity types from the server
-   */
-  getActivityTypes: () => instance.get('/activity-types')
+export const apiActivity = {
+  addActivity: (author_id, name, continuous, start_time, end_time, description, location, activity_types) => instance.post('/profiles/' + author_id + '/activities', {
+    activity_name: name,
+    continuous: continuous,
+    start_time: start_time,
+    end_time: end_time,
+    description: description,
+    location: location,
+    activity_type: activity_types
+  }),
+
+
+  editActivity: (author_id, name, continuous, start_time, end_time, description, location, activity_types, activity_id) => instance.put('/profiles/' + author_id + '/activities/' + activity_id, {
+    activity_name: name,
+    continuous: continuous,
+    start_time: start_time,
+    end_time: end_time,
+    description: description,
+    location: location,
+    activity_type: activity_types,
+    activity_id: activity_id
+
+  }),
+
+  getActivity: (activityId) => instance.get(`/activities/${activityId}`),
+
+  deleteActivity: (authorId, activityId) => instance.delete(`/profiles/${authorId}/activities/${activityId}`),
+
+  async getActivityById(activityId) {
+    let activity = await apiActivity.getActivity(activityId).then(
+      response => {
+        return response.data;
+      },
+      error => {
+        if(error){
+          return "Invalid permissions";
+        }
+      }
+    );
+    return await activity;
+  }
 };

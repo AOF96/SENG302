@@ -1,22 +1,25 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Profile from '@/components/Profile.vue'
-import Signup from '@/components/Signup.vue'
-import Login from '@/components/Login.vue'
-import UserProfileSettings from '@/components/Settings/UserProfileSettings'
-import UserPasswordSettings from '@/components/Settings/UserPasswordSettings'
-import UserEmailSettings from '@/components/Settings/UserEmailSettings'
-import UserPassportCountriesSettings from '@/components/Settings/UserPassportCountriesSettings'
-import UserActivitySettings from "./components/Settings/UserActivitySettings";
-import store from '@/store/index.js';
+import Profile from './components/profile/Profile.vue'
+import Signup from './components/Signup.vue'
+import Login from './components/Login.vue'
+import UserProfileSettings from './components/profile/settings/ProfileInfoSettings'
+import UserPasswordSettings from './components/profile/settings/ProfilePasswordSettings'
+import UserEmailSettings from './components/profile/settings/ProfileEmailSettings'
+import UserPassportCountriesSettings from './components/profile/settings/ProfilePassportCountriesSettings'
+import UserActivitySettings from "./components/profile/settings/ProfileActivityTypeSettings";
+import Activity from './components/activity/Activity.vue'
+import store from './store/index.js';
+import ActivitySettings from "./components/activity/settings/ActivitySettings";
+import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
-import AdminDashboard from "./components/Settings/AdminDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 
 Vue.use(VueRouter);
 
 const routes = [
     {
-        path: '/profile',
+        path: '/profile/:profileId',
         component: Profile
     },
     {
@@ -31,50 +34,61 @@ const routes = [
         path: '/logout',
     },
     {
-        path: '/settings/profile',
+        path: '/settings/profile/:profileId',
         component: UserProfileSettings
     },
     {
-        path: '/settings/password',
+        path: '/settings/password/:profileId',
         component: UserPasswordSettings
     },
     {
-        path: '/settings/email',
+        path: '/settings/email/:profileId',
         component: UserEmailSettings
     },
     {
-        path: '/settings/passport_countries',
+        path: '/settings/passport_countries/:profileId',
         component: UserPassportCountriesSettings
     },
     {
-        path: '/settings/activities',
+        path: '/settings/activities/:profileId',
         component: UserActivitySettings
     },
-  {
-    path: "/settings/admin_dashboard",
-    component: AdminDashboard,
-  },
-  {
-    path: "*",
-    redirect: "/profile",
-  },
+    {
+        path: "/settings/admin_dashboard",
+        component: AdminDashboard,
+    },
+    {
+        path: "/profile*",
+        component: Profile,
+    },
+    {
+        path: "*",
+        redirect: "/profile",
+    },
+    {
+        path: '/activity/:activityId',
+        component: Activity
+    },
+    {
+        path: '/activity_settings/:profileId',
+        component: ActivitySettings
+    },
+    {
+        path: '/activity_editing/:activityId',
+        component: EditActivity
+    }
 ];
 
+
+
 const router = new VueRouter({
-  routes,
-  mode: "history",
+    routes,
+    mode: 'history'
 });
 
 let firstLoad = true;
 
 router.beforeEach((to, from, next) => {
-  // Make sure that the next function is called exactly once in any given pass through the navigation guard.
-  // It can appear more than once, but only if the logical paths have no overlap,
-  // otherwise the hook will never be resolved or produce errors.
-  // https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
-  // console.log("start routering to.path=" + to.path);
-  // console.log("admin user.isLogin=" + store.getters.adminUser.isLogin);
-  // console.log("Is user logged in=" + store.getters.user.isLogin);
   const isAdmin = store ? store.getters.isAdmin : null;
   const isLoggedIn = store ? store.getters.isLoggedIn : null;
   const isAuthPath = to.path === "/signup" || to.path === "/login";
@@ -82,7 +96,7 @@ router.beforeEach((to, from, next) => {
   console.log("isAdmin: " + isAdmin);
   console.log("isLogin: " + isLoggedIn);
 
-  if (firstLoad === true) {
+  if (firstLoad === true && localStorage.getItem("s_id") !== null) {
     firstLoad = false;
     apiUser.getUserByToken().then(
       (response) => {
@@ -97,7 +111,7 @@ router.beforeEach((to, from, next) => {
       }
     );
   } else {
-    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2) {
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2 && isLoggedIn) {
       console.log("login as an admin user");
       next();
     } else if (isAuthPath) {
