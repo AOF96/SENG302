@@ -19,6 +19,20 @@ Feature: Activity
     Then the response status is 201
 
   @U8-activity
+  Scenario: Add a new activity that has a duration start date-time set in the past
+    Given I create an account with name "John", email "john@doe.com" and ID 1
+    And I have the authorization token "Aw3s0m3 T0k3n"
+    When I create the following activity with past start date-time: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'false' '2020-01-20T10:00:00' '2021-02-20T22:00:00' 'Christchurch, NZ' 1
+    Then the response status is 400
+
+  @U8-activity
+  Scenario: Add a new activity that has a duration end date-time set before start date-time
+    Given I create an account with name "John", email "john@doe.com" and ID 1
+    And I have the authorization token "Aw3s0m3 T0k3n"
+    When I create the following activity with end date-time before start: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'false' '2020-01-20T10:00:00' '2021-02-20T22:00:00' 'Christchurch, NZ' 1
+    Then the response status is 400
+
+  @U8-activity
   Scenario: Add a new activity with more than one activity types
     Given I create an account with name "John", email "john@doe.com" and ID 1
     And I have the authorization token "Aw3s0m3 T0k3n"
@@ -31,6 +45,7 @@ Feature: Activity
     And I have the authorization token "Aw3s0m3 T0k3n"
     When I create the following activity with no activity types: 'Hagley Park Marathon' 'Race at the park' 'null' 'true' 'null' 'null' 'Christchurch, NZ' 1
     Then the response status is 400
+
 
 #    Examples:
 #      | activity_name          | description                       | activity_type        | continuous | start_time               | end_time                 | location         | code |
@@ -61,9 +76,6 @@ Feature: Activity
     When I create the following activity: 'Running Marathon' 'Challenge yourself in this race' 'Fun' 'true' 'null' 'null' 'Red pit, Mars' 2
     And I edit the activity with ID 2, token "L0v3 T0k3ns" and new values: 'Running Marathon', 'Challenge yourself in this race', 'Fun', 'true', 'null', 'null', 'Christchurch, NZ'
     Then the response status is 200
-
-
-
 
   @U8-activity
   Scenario: Delete an activity

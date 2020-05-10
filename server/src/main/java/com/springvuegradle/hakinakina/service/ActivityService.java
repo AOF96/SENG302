@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ActivityService {
@@ -42,6 +39,8 @@ public class ActivityService {
      */
     public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
         try {
+
+
             if(userRepository.getUserById(profileId).isEmpty()){
                 return new ResponseEntity("Invalid User ID", HttpStatus.valueOf(403));
             }
@@ -74,6 +73,17 @@ public class ActivityService {
             if (!activity.isContinuous()) {
                 if (activity.getStartTime() == null || activity.getEndTime() == null) {
                     return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
+                }
+
+                Date date = new Date();
+                Timestamp ts=new Timestamp(date.getTime());
+
+                if (!activity.getStartTime().after(ts)) {
+                    return new ResponseEntity("Activity start date and time must be in the future", HttpStatus.valueOf(400));
+                }
+
+                if (activity.getStartTime().after(activity.getEndTime())) {
+                    return new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
                 }
             }
 

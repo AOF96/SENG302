@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,19 +27,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
 import java.util.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(Activity.class)
@@ -82,33 +81,16 @@ public class ActivityTestSteps {
                 .standaloneSetup(activityController).build();
     }
 
-    @Given("I create an account with name {string}, email {string} and ID {int}")
-    public void iCreateAccountWithNameEmailAndID(String name, String email, int ID) throws Exception {
-        user = new User(name, "Doe", email, "1995-12-20", Gender.MALE, 4, "password");
-        user.setUserId((long) ID);
-        userRepository.save(user);
-        assertEquals(email, user.getPrimaryEmail());
-        assertEquals(ID, user.getUserId());
-
-    }
-
-    @And("I have the authorization token {string}")
-    public void iHaveTheToken(String token) {
-        session = new Session(token);
-        session.setUser(user);
-        sessionRepository.insertToken(token, user.getUserId());
-        assertEquals(session.getUser().getPrimaryEmail(), user.getPrimaryEmail());
-    }
-
-    @When("I create the following activity: {string} {string} {string} {string} {string} {string} {string} {int}")
-    public void iCreateTheFollowingActivityWithID(
-            String activity_name, String description, String activity_types, String continuous, String start_time,
-            String end_time, String location, int ID) throws Exception {
-
+    /**
+     * This is a builder for activities to help test scenarios for Activity
+     */
+    public String activityBuilder( String activity_name, String description, String activity_types, String continuous,
+                                 String start_time, String end_time, String location, int ID) throws Exception {
         boolean isContinuous = Boolean.parseBoolean(continuous);
         if (isContinuous) {
             activity = new Activity(activity_name, description, true, null, null,  location);
         } else {
+
             DateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date parsedStartTime = startDateFormat.parse(end_time);
             Timestamp startTimestamp = new java.sql.Timestamp(parsedStartTime.getTime());
@@ -138,14 +120,43 @@ public class ActivityTestSteps {
                 "  \"end_time\": \"" + end_time + "\",\n" +
                 "  \"location\": \"" + location + "\"\n" +
                 "}";
+        return request;
+    }
+
+    @Given("I create an account with name {string}, email {string} and ID {int}")
+    public void iCreateAccountWithNameEmailAndID(String name, String email, int ID) throws Exception {
+        user = new User(name, "Doe", email, "1995-12-20", Gender.MALE, 4, "password");
+        user.setUserId((long) ID);
+        userRepository.save(user);
+        assertEquals(email, user.getPrimaryEmail());
+        assertEquals(ID, user.getUserId());
+    }
+
+    @And("I have the authorization token {string}")
+    public void iHaveTheToken(String token) {
+        session = new Session(token);
+        session.setUser(user);
+        sessionRepository.insertToken(token, user.getUserId());
+        assertEquals(session.getUser().getPrimaryEmail(), user.getPrimaryEmail());
+    }
+
+    @When("I create the following activity: {string} {string} {string} {string} {string} {string} {string} {int}")
+    public void iCreateTheFollowingActivityWithID(
+            String activity_name, String description, String activity_types, String continuous, String start_time,
+            String end_time, String location, int ID) throws Exception {
+
+        String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));;
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
                 .header("token", session)
-                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+                .content(request).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(containsString("Activity has been created")))
+                .andReturn();
         System.out.println(result.getResponse().getStatus());
-        System.out.println(result.getResponse().getErrorMessage());
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     @When("I create the following activity with no activity types: {string} {string} {string} {string} {string} {string} {string} {int}")
@@ -153,39 +164,56 @@ public class ActivityTestSteps {
             String activity_name, String description, String activity_types, String continuous, String start_time,
             String end_time, String location, int ID) throws Exception {
 
-        boolean isContinuous = Boolean.parseBoolean(continuous);
-        if (isContinuous) {
-            activity = new Activity(activity_name, description, true, null, null,  location);
-        } else {
-            activity = new Activity(activity_name, description, false, Timestamp.valueOf(start_time), Timestamp.valueOf(end_time),  location);
-        }
-
-        activity.setId((long)ID);
-        Set<ActivityType> activityTypes = new HashSet<>();
-        activityTypes.add(new ActivityType(activity_types));
-        activity.setActivityTypes(activityTypes);
-        activityRepository.save(activity);
-        activityRepository.insertActivityForUser(user.getUserId(), activity.getId());
-
-        String request = "{\n" +
-                "  \"activity_name\": \"" + activity_name + "\",\n" +
-                "  \"description\": \"" + description + "\",\n" +
-                "  \"activity_type\":[ \n" +
-                "    \"" + activity_types + "\" \n" +
-                "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
-                "  \"start_time\": \"" + start_time + "\", \n" +
-                "  \"end_time\": \"" + end_time + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
-                "}";
+        String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
-        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400)));;
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity must have at least one activity type", HttpStatus.BAD_REQUEST));
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
                 .header("token", session)
-                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+                .content(request).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Activity must have at least one activity type")))
+                .andReturn();
         System.out.println(result.getResponse().getStatus());
-        System.out.println(result.getResponse().getErrorMessage());
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
+    @When("I create the following activity with past start date-time: {string} {string} {string} {string} {string} {string} {string} {int}")
+    public void iCreateTheFollowingActivityWithPastStartTimeID(
+            String activity_name, String description, String activity_types, String continuous, String start_time,
+            String end_time, String location, int ID) throws Exception {
+
+        String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
+
+        System.out.println(request);
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity start date and time must be in the future", HttpStatus.BAD_REQUEST));
+        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
+                .header("token", session)
+                .content(request).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Activity start date and time must be in the future")))
+                .andReturn();
+        System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
+    @When("I create the following activity with end date-time before start: {string} {string} {string} {string} {string} {string} {string} {int}")
+    public void iCreateTheFollowingActivityWithEndDateBeforeStartID(
+            String activity_name, String description, String activity_types, String continuous, String start_time,
+            String end_time, String location, int ID) throws Exception {
+
+        String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
+
+        System.out.println(request);
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.BAD_REQUEST));
+        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
+                .header("token", session)
+                .content(request).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Activity end date and time must be after the start date and time")))
+                .andReturn();
+        System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     @Then("the response status is {int}")
@@ -216,8 +244,7 @@ public class ActivityTestSteps {
         String test = "/profiles/" + user.getUserId() + "/activities";
         System.out.println(test);
         System.out.println(result.getResponse().getStatus());
-        System.out.println(result.getResponse().getErrorMessage());
-
+        System.out.println(result.getResponse().getContentAsString());
     }
 
 
