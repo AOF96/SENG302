@@ -18,7 +18,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)
     void insertActivityForUser(Long userId, Long activityId);
 
-    @Query(value = "SELECT * FROM User_Activities u WHERE u.user_id = ? AND u.activity_id = ?", nativeQuery = true)
+    @Query(value = "SELECT * FROM Activity a WHERE a.author_user_id = ? AND a.activity_id = ?", nativeQuery = true)
     Activity validateAuthor(Long userId, Long activity_id);
 
     @Query(value = "DELETE FROM User_Activities WHERE user_id = ? AND activity_id = ?", nativeQuery = true)

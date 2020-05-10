@@ -17,6 +17,7 @@
                 </span>
             </span>
         </div>
+        <button class="genericDeleteButton" type="button" v-on:click="deleteActivity(user)">Delete Activity</button>
     </div>
 </template>
 
@@ -60,6 +61,27 @@
             this.updateUserContinuousActivities(user.cont_activities);
             this.$router.push("/profile");
         },
+
+      // deleteActivity(user) {
+      //   apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId)
+      //     .then(
+      //       response => {
+      //         console.log(response);
+      //         // apiUser
+      //         //   .getUserContinuousActivities(this.user.profile_id)
+      //         //   .then(response => {
+      //         //     this.updateUserContinuousActivities(response.data);
+      //         //   });
+      //         // apiUser
+      //         //   .getUserDurationActivities(this.user.profile_id)
+      //         //   .then(response => {
+      //         //     this.updateUserDurationActivities(response.data);
+      //         //   });
+      //         this.$router.push("/profile");
+      //       }
+      //     );
+      // },
+
         async loadActivity() {
             if(this.$route.params.activityId == null || this.$route.params.activityId == ""){
                 this.$router.push('/profile');
