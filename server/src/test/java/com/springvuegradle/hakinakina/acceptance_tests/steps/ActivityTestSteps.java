@@ -36,9 +36,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
 @WebMvcTest(Activity.class)
@@ -107,7 +106,7 @@ public class ActivityTestSteps {
         if (isContinuous) {
             activity = new Activity(activity_name, description, true, null, null,  location);
         } else {
-            activity = new Activity(activity_name, description, false, new Timestamp(Date.valueOf(start_time).getTime()), new Timestamp(Date.valueOf(end_time).getTime()),  location);
+            activity = new Activity(activity_name, description, false, Timestamp.valueOf(start_time), Timestamp.valueOf(end_time),  location);
         }
 
         activity.setId((long)ID);
@@ -135,6 +134,7 @@ public class ActivityTestSteps {
                 .header("token", session)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
         System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getErrorMessage());
     }
 
     @Then("the response status is {int}")
@@ -165,6 +165,8 @@ public class ActivityTestSteps {
         String test = "/profiles/" + user.getUserId() + "/activities";
         System.out.println(test);
         System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getErrorMessage());
+
     }
 
 
@@ -193,51 +195,24 @@ public class ActivityTestSteps {
     }
 
 
-//    @When("user {int} activities are retrieved")
-//    public void userActivitiesAreRetrieved(int userId) {
-//        user1.
-//        assertTrue(true);
-//    }
-
-//    @Then("exactly {int} activity should be returned")
-//    public void exactlyActivityShouldBeReturned(int expectedNumOfAcitivities) {
-//        assertTrue(true);
-//    }
-
-
-
-
-    @And("I create an activity with name {string}, description {string} and ID {long}")
-    public void i_create_an_activity(String name, String description, long id) throws Exception {
-        Date startDate = new Date(2021, 10, 10);
-        Date endDate = new Date(2021, 10, 11);
-        activity1 = new Activity(name, description,
-                true, new Timestamp(startDate.getTime()), new Timestamp(endDate.getTime()),
-                "Park");
-
-        activity1.setId(id);
-        Set<ActivityType> activityTypes = new HashSet<ActivityType>();
-        activityTypes.add(new ActivityType("Fun"));
-        activity1.setActivityTypes(activityTypes);
-
-        Activity newActivity = activityRepository.save(activity1);
-        activityRepository.insertActivityForUser((long) 1, id);
-
-        assertEquals(name, activity1.getName());
-    }
-
     @When("I delete the created activity")
     public void i_delete_the_created_activity() {
         activityService.removeActivity(user1.getUserId(), activity1.getId(), "t0k3n");
     }
 
-    @Then("The created activity with ID {long} no longer exists")
+    @And("The created activity with ID {long} no longer exists")
     public void activityNoLongerExists(long ID) {
         assertNull(activityRepository.findActivityById(ID));
     }
 
 
-
-
-
+    @And("I delete the activity with ID {int} and token {string}")
+    public void iDeleteTheActivityWithIDAndToken(int ID, String token) throws Exception {
+        when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity successfully deleted", HttpStatus.OK));
+        System.out.println(user.getUserId());
+        result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + ID)
+                .header("token", token)).andReturn();
+//        System.out.println(result.getResponse().getStatus());
+    }
 }
+

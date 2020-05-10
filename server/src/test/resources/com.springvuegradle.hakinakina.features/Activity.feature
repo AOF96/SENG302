@@ -9,9 +9,8 @@ Feature: Activity
     Given I create an account with name "John", email "john@doe.com" and ID 1
     And I have the authorization token "Aw3s0m3 T0k3n"
     When I create the following activity: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'true' 'null' 'null' 'Christchurch, NZ' 1
-#    When user 1 activities are retrieved
-#    Then exactly 1 activity should be returned
     Then the response status is 201
+    #'2021-02-20 08:00:00' '2020-06-20 09:00:00'
 #    Examples:
 #      | activity_name          | description                       | activity_type        | continuous | start_time               | end_time                 | location         | code |
 #      | Botanic Gardens        | Nature                            | Fun                  | true       | null                     | null                     | Christchurch, NZ | 201  |
@@ -45,9 +44,11 @@ Feature: Activity
 
 
 
-#  @U8-activity
-#  Scenario: Delete an activity
-#    Given I create an account with email "john@doe.com"
-#    And I create an activity with name "Park Race", description "Exciting race at the park" and ID 1
-#    When I delete the created activity
-#    Then The created activity with ID 1 no longer exists
+  @U8-activity
+  Scenario: Delete an activity
+    Given I create an account with name "Jane", email "jane@doe.com" and ID 4
+    And I have the authorization token "T0k3n"
+    When I create the following activity: 'Surf at Sumner' 'Group surfing at Sumner' 'Fun' 'true' 'null' 'null' 'Christchurch, NZ' 3
+    And I delete the activity with ID 3 and token "T0k3n"
+    Then the response status is 200
+    And The created activity with ID 3 no longer exists
