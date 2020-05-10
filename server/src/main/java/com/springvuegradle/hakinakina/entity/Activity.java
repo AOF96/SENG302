@@ -57,8 +57,11 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    @ManyToOne
+    private User author;
 
     protected Activity() {}
 
@@ -141,6 +144,14 @@ public class Activity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     @Override

@@ -1,11 +1,12 @@
 <template>
     <div class="activityContainer">
         <div id="activityPageTitle" class="activityTitle"> {{ activity_name }} </div>
+        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true"><h3> Created by: {{ activity_author_firstname + " " + activity_author_lastname }}</h3></div>
         <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
         <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
-        <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false"><h3> Start date: {{ start_date }}</h3></div>
-        <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false"><h3> End date: {{ end_date }}</h3></div>
-        <div class="activityPageTypeList" id="activityPageTypeListing">
+        <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><h3> Start date: {{ start_date }}</h3></div>
+        <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3> End date: {{ end_date }}</h3></div>
+        <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
             Activity Type:
             <span v-for="a in activity_types" :key="a.type_id">
                 <span v-if="activity_types.indexOf(a) != activity_types.length - 1">
@@ -16,7 +17,6 @@
                 </span>
             </span>
         </div>
-        <button class="deleteActivityButton" type="button" v-on:click="deleteActivity(user)">Delete Activity</button>
     </div>
 </template>
 
@@ -32,12 +32,15 @@
       data() {
         return {
             activity_name: "",
+            activity_author_firstname: "",
+            activity_author_lastname: "",
             continuous: false,
             description: "",
             activity_types: [],
             start_date: null,
             end_date: null,
             location: "",
+            loaded: false,
         }
       },
 
@@ -63,6 +66,7 @@
                 this.$router.push('/profile');
             }else{
                 var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+                console.log(tempActivityData);
                 if(tempActivityData == "Invalid permissions"){
                     this.$router.push('/profile');
                 }else{
@@ -73,6 +77,9 @@
                     this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
                     this.end_date = dateUtil.getFormatDate(new Date(this.activity.end_time));
                     this.location = tempActivityData.location;
+                    this.activity_author_firstname = tempActivityData.author.firstname;
+                    this.activity_author_lastname = tempActivityData.author.lastname;
+                    this.loaded = true;
                 }
             }
         },

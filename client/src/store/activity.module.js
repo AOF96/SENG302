@@ -20,7 +20,7 @@ const getters = {
 
 const mutations = {
     setAuthor(state, data) {
-        state.activity.author_id = data.users[0].profile_id;
+        state.activity.author_id = data.author.profile_id;
     },
     setName(state, data) {
         state.activity.name = data.activity_name;

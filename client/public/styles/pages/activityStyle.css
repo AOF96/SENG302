@@ -134,6 +134,19 @@
     font-size: 17px;
 }
 
+.activityAuthorLabel {
+    display: flex;
+    grid-area: Author;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+    font-size: 15px;
+}
+
 .activityLocationLabel {
     display: flex;
     justify-content: center;
