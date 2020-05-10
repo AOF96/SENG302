@@ -8,11 +8,13 @@ import com.springvuegradle.Hakinakina.entity.*;
 import com.springvuegradle.Hakinakina.util.DatabaseConnection;
 import com.springvuegradle.Hakinakina.util.ResponseHandler;
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -67,6 +70,9 @@ public class UserTestSteps {
     private UserRepository userRepository;
 
     private ResponseHandler responseHandler = new ResponseHandler();
+    private List<User> returnedUsers = new ArrayList<>();
+
+    private User user;
 
     @Before
     public void setup()
@@ -78,50 +84,66 @@ public class UserTestSteps {
 
     @Given("I create a new account with email {string}")
     public void iCreateANewAccountWithEmail(String email) throws Exception {
+        user = new User("name", "Doe", email, "1995-12-20", Gender.MALE, 4, "password");
+       Assert.assertNotNull(user);
 
-        try(Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String sql = "INSERT INTO USER (firstname, lastname, middlename, gender, password, bio, nickname, birthdate, fitnesslevel, salt, primaryemail, permissionlevel) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, "Mayuko");
-            statement.setString(2, "Mayuko");
-            statement.setString(3, "Mayuko");
-            statement.setString(4, "FEMALE");
-            statement.setString(5, "FEMALE123");
-            statement.setString(6, "FEMALE123");
-            statement.setString(7, "FEMALE123");
-            statement.setDate(8, new Date(2000,12,12));
-            statement.setInt(9, 1);
-            statement.setString(10, "asdasd");
-            statement.setString(11, "%" + email + "%");
-            statement.setInt(12, 0);
-
-            statement.executeUpdate();
-        }
-        /*String input = "{\n" +
-                "  \"lastname\": \"Williams\",\n" +
-                "  \"firstname\": \"Mayuko\",\n" +
-                "  \"middlename\": \"007\",\n" +
-                "  \"nickname\": \"MWill\",\n" +
-                "  \"primary_email\": \"" + email + "\",\n" +
-                "  \"password\": \"SuPeRSeCuReP@sSw0rD!!123\",\n" +
-                "  \"bio\": \"bio\",\n" +
-                "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"female\",\n" +
-                "  \"fitness\": 3\n" +
-                "}";
-
-        when(userService.validateCreateProfile(any(User.class))).thenReturn(responseHandler
-                .formatSuccessResponse(200, "User updated"));
-        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON)
-                .content(input)).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("User updated")));*/
     }
 
-    @When("I get all the accounts the have been created")
+    @When("I save the user to the database")
     public void iGetAllTheAccountsTheHaveBeenCreated() throws Exception {
+        userRepository.save(user);
+    }
+
+    @And("I retrieve all users with the email {string} from the database")
+    public void iRetrieveAllUsersFromTheDatabase(String email) {
+        returnedUsers.add(userRepository.findUserByEmail(email));
     }
 
     @Then("Exactly one account is returned")
     public void exactlyOneAccountIsReturned() {
+        Assert.assertEquals(1, returnedUsers.size());
+    }
+
+    @Given("I create a new account with id {long}")
+    public void iCreateANewAccountWithId(long arg0) {
+        user = new User("name", "Doe", "test", "1995-12-20", Gender.MALE, 4, "password");
+        user.setUserId(arg0);
+    }
+
+    @And("I retrieve all users with the id {long} from the database")
+    public void iRetrieveAllUsersWithTheIdFromTheDatabase(long arg0) {
+        returnedUsers.add(userRepository.getOne(arg0));
+    }
+
+    @Given("I create three new users and save all users to the database")
+    public void iCreateNewUsers() {
+        User user1 = new User("u1", "Doe", "test1", "1995-12-20", Gender.MALE, 4, "password");
+        User user2 = new User("u2", "Doe", "test2", "1995-12-20", Gender.MALE, 4, "password");
+        User user3 = new User("u3", "Doe", "test3", "1995-12-20", Gender.MALE, 4, "password");
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
+    }
+
+    @When("I retrieve all users")
+    public void iRetrieveAllUsers() {
+        returnedUsers.add(userRepository.findUserByEmail("test1"));
+        returnedUsers.add(userRepository.findUserByEmail("test1"));
+        returnedUsers.add(userRepository.findUserByEmail("test1"));
+    }
+
+    @Then("Exactly {int} accounts are returned")
+    public void exactlyAccountsAreReturned(int arg0) {
+        Assert.assertEquals(3, returnedUsers.size());
+    }
+
+    @And("I delete the data from the database")
+    public void iDeleteTheDataFromTheDatabase() {
+        userRepository.deleteById((long) 75);
+    }
+
+    @Then("Exactly {int} users are returned")
+    public void exactlyUsersAreReturned(int arg0) {
+        Assert.assertNull(returnedUsers.get(arg0));
     }
 }
