@@ -5,7 +5,7 @@
     </router-link>
 
     <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
-      <button class="myaccount navBarButton" >Profile</button>
+      <button class="myaccount navBarButton">Profile</button>
     </router-link>
 
     <router-link v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">

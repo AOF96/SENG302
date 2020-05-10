@@ -7,6 +7,8 @@ p, h1, h2, h3, h4, h5, h6, span, a, li, button, textarea, input, label{
     font-family: Roboto, sans-serif;
     text-decoration: none;
     font-weight: 400;
+    text-decoration: none;
+    color:rgba(0,0,0,0.85);
 }
 
 /* -- Forms ---- */

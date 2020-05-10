@@ -1,15 +1,15 @@
 <template>
     <div class="activityContainer">
-        <div id="activityPageTitle" class="activityTitleLabel"> {{ activity_name }} </div>
+        <div id="activityPageTitle" class="activityTitle"> {{ activity_name }} </div>
         <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
         <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
         <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false"><h3> Start date: {{ start_date }}</h3></div>
         <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false"><h3> End date: {{ end_date }}</h3></div>
-        <div class="activityPageTypeTitle"><p>Activity Type: </p></div>
-        <div id="activityPageTypeListing" class="activityTypesContainer">
+        <div class="activityPageTypeList" id="activityPageTypeListing">
+            Activity Type:
             <span v-for="a in activity_types" :key="a.type_id">
                 <span v-if="activity_types.indexOf(a) != activity_types.length - 1">
-                        {{a.name}} ,
+                        {{a.name}},
                 </span>
                 <span v-else>
                         {{a.name}}.
