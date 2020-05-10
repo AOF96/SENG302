@@ -48,5 +48,4 @@ np
 <style scoped>
     @import "../../../public/styles/pages/activityStyle.css";
     @import "../../../public/styles/pages/profileStyle.css";
-    @import "../../../public/styles/main.css";
 </style>

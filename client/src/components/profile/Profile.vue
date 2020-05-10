@@ -35,6 +35,7 @@
               {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
               <span
                 id="userNickname"
+                v-if="searchedUser.nickname != null"
               >({{ searchedUser.nickname }})</span>
             </h1>
             <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
@@ -61,12 +62,7 @@
             v-bind:key="activity"
           >
             <div class="activityTextWrapDiv">
-              <router-link to="activity/:activityId">
-                <a
-                  class="profileActivityTitle"
-                  v-on:click="goToActivity(activity.id)"
-                >{{activity.name}}</a>
-              </router-link>
+              <router-link to="activity/:activityId"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
               <h4 class="profileActivityDescription">{{activity.description}}</h4>
             </div>
             <router-link v-bind:to="'/activity_editing/' + activity.id">
@@ -84,12 +80,7 @@
             v-bind:key="activity"
           >
             <div class="activityTextWrapDiv">
-              <router-link to="activity/:activityId">
-                <a
-                  class="profileActivityTitle"
-                  v-on:click="goToActivity(activity.id)"
-                >{{activity.name}}</a>
-              </router-link>
+              <router-link to="activity/:activityId"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
               <h4 class="profileActivityDescription">{{activity.description}}</h4>
             </div>
             <router-link v-bind:to="'/activity_editing/' + activity.id">
@@ -119,8 +110,7 @@ import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
 import axios from "axios";
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import { apiUser, apiActivity } from "../../api";
-import router from "../../router";
+import { apiUser } from "../../api";
 
 export default {
   name: "Profile",
@@ -225,39 +215,6 @@ export default {
           this.countries_option = countries;
         })
         .catch(error => console.log(error));
-    },
-    goToActivity(id) {
-      apiActivity
-        .getActivity(id)
-        .then(response => {
-          this.createActivity(response.data);
-          router.push("/activity/" + id);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    getActivity(id) {
-      apiActivity
-        .getActivity(id)
-        .then(response => {
-          this.createActivity(response.data);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    deleteDurationActivity(activity) {
-      let index = this.dur_activities.indexOf(activity);
-      this.dur_activities.splice(index, 1);
-      apiActivity.deleteActivity(this.searchedUser.profile_id, activity.id);
-      this.updateUserDurationActivities(this.dur_activities);
-    },
-    deleteContinuousActivity(activity) {
-      let index = this.cont_activities.indexOf(activity);
-      this.cont_activities.splice(index, 1);
-      apiActivity.deleteActivity(this.searchedUser.profile_id, activity.id);
-      this.updateUserContinuousActivities(this.cont_activities);
     }
   }
 };
