@@ -78,7 +78,6 @@
                     <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
 
           <div class="confirmButtonContainer">
-            <button class="genericDeleteButton">Delete Activity</button>
             <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
           </div>
         </form>
