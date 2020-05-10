@@ -5,12 +5,33 @@ Feature: Activity
     And there is no data already existing in the database
 
   @U8-activity
-  Scenario: Add a new activity
+  Scenario: Add a new activity that is continuous
     Given I create an account with name "John", email "john@doe.com" and ID 1
     And I have the authorization token "Aw3s0m3 T0k3n"
     When I create the following activity: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'true' 'null' 'null' 'Christchurch, NZ' 1
     Then the response status is 201
-    #'2021-02-20 08:00:00' '2020-06-20 09:00:00'
+
+  @U8-activity
+  Scenario: Add a new activity that has a duration
+    Given I create an account with name "John", email "john@doe.com" and ID 1
+    And I have the authorization token "Aw3s0m3 T0k3n"
+    When I create the following activity: 'Hagley Park Marathon' 'Race at the park' 'Fun' 'false' '2021-01-20T10:00:00' '2021-02-20T22:00:00' 'Christchurch, NZ' 1
+    Then the response status is 201
+
+  @U8-activity
+  Scenario: Add a new activity with more than one activity types
+    Given I create an account with name "John", email "john@doe.com" and ID 1
+    And I have the authorization token "Aw3s0m3 T0k3n"
+    When I create the following activity: 'Hagley Park Marathon' 'Race at the park' 'Fun, Relaxing' 'true' 'null' 'null' 'Christchurch, NZ' 1
+    Then the response status is 201
+
+  @U8-activity
+  Scenario: Add a new activity with no activity types
+    Given I create an account with name "John", email "john@doe.com" and ID 1
+    And I have the authorization token "Aw3s0m3 T0k3n"
+    When I create the following activity with no activity types: 'Hagley Park Marathon' 'Race at the park' 'null' 'true' 'null' 'null' 'Christchurch, NZ' 1
+    Then the response status is 400
+
 #    Examples:
 #      | activity_name          | description                       | activity_type        | continuous | start_time               | end_time                 | location         | code |
 #      | Botanic Gardens        | Nature                            | Fun                  | true       | null                     | null                     | Christchurch, NZ | 201  |

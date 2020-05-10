@@ -27,8 +27,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
-import java.sql.Date;
+import java.util.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,7 +109,15 @@ public class ActivityTestSteps {
         if (isContinuous) {
             activity = new Activity(activity_name, description, true, null, null,  location);
         } else {
-            activity = new Activity(activity_name, description, false, Timestamp.valueOf(start_time), Timestamp.valueOf(end_time),  location);
+            DateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date parsedStartTime = startDateFormat.parse(end_time);
+            Timestamp startTimestamp = new java.sql.Timestamp(parsedStartTime.getTime());
+
+            DateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date parsedEndTime = endDateFormat.parse(end_time);
+            Timestamp endTimestamp = new java.sql.Timestamp(parsedEndTime.getTime());
+
+            activity = new Activity(activity_name, description, false, startTimestamp, endTimestamp,  location);
         }
 
         activity.setId((long)ID);
@@ -130,6 +141,46 @@ public class ActivityTestSteps {
 
         System.out.println(request);
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));;
+        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
+                .header("token", session)
+                .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
+        System.out.println(result.getResponse().getStatus());
+        System.out.println(result.getResponse().getErrorMessage());
+    }
+
+    @When("I create the following activity with no activity types: {string} {string} {string} {string} {string} {string} {string} {int}")
+    public void iCreateTheFollowingActivityWithNoActivityTypesID(
+            String activity_name, String description, String activity_types, String continuous, String start_time,
+            String end_time, String location, int ID) throws Exception {
+
+        boolean isContinuous = Boolean.parseBoolean(continuous);
+        if (isContinuous) {
+            activity = new Activity(activity_name, description, true, null, null,  location);
+        } else {
+            activity = new Activity(activity_name, description, false, Timestamp.valueOf(start_time), Timestamp.valueOf(end_time),  location);
+        }
+
+        activity.setId((long)ID);
+        Set<ActivityType> activityTypes = new HashSet<>();
+        activityTypes.add(new ActivityType(activity_types));
+        activity.setActivityTypes(activityTypes);
+        activityRepository.save(activity);
+        activityRepository.insertActivityForUser(user.getUserId(), activity.getId());
+
+        String request = "{\n" +
+                "  \"activity_name\": \"" + activity_name + "\",\n" +
+                "  \"description\": \"" + description + "\",\n" +
+                "  \"activity_type\":[ \n" +
+                "    \"" + activity_types + "\" \n" +
+                "  ],\n" +
+                "  \"continous\": " + continuous + ",\n" +
+                "  \"start_time\": \"" + start_time + "\", \n" +
+                "  \"end_time\": \"" + end_time + "\",\n" +
+                "  \"location\": \"" + location + "\"\n" +
+                "}";
+
+        System.out.println(request);
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400)));;
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
                 .header("token", session)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
