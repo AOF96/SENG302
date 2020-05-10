@@ -8,6 +8,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -37,7 +38,7 @@ public class StartUpListener {
             updatePermissionsInDatabase();
             createDefaultAdmin();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -75,6 +76,9 @@ public class StartUpListener {
         u.setPrimaryEmail(email);
         u.setPermissionLevel(2); // Default admin permission level
         u.setSalt(salt);
+
+        u.setFirstName("Default");
+        u.setLastName("Admin");
 
         System.out.println("=-=-=-=- GENERATED A NEW ADMIN USER -=-=-=");
         System.out.println(email);
