@@ -23,7 +23,10 @@ describe('Login.vue', () => {
       user: () => ({
         primary_email: "test@gmail.com",
         password: "Welcome1"
-      })
+      }),
+      isAdmin: () => {
+        false
+      },
     }
     store = new Vuex.Store({
       getters
@@ -47,16 +50,6 @@ describe('Login.vue', () => {
     expect(wrapper.text()).toContain('Login')
     expect(wrapper.text()).toContain('Sign in to your account')
 
-  })
-
-  it('When login fails with incorrect email, the error message should show up', done => {
-    const wrapper = shallowMount(Login, {store, localVue, router})
-    wrapper.vm.$nextTick(() => {
-      const submitButton = wrapper.find('.loginButton')
-      submitButton.trigger('click')
-      expect(wrapper.find("#email_exist").attributes()['hidden']).toBe("hidden")
-      done()
-    })
   })
 
 })

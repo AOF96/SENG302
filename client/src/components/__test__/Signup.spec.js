@@ -111,11 +111,4 @@ describe('Signup page display', () => {
     expect(wrapper.find("#signup-dob-err").text()).toContain("Please select a valid date of birth")
   })
 
-  it('should show an error if password is not valid', () => {
-    expect(wrapper.find("#signup-password-err").text()).toContain("Password must be longer than 8 characters")
-    expect(wrapper.find("#signup-password-err").text()).toContain("Password must include at least 1 number")
-    expect(wrapper.find("#signup-password-err").text()).toContain("Password must include lowercase characters")
-    expect(wrapper.find("#signup-password-err").text()).toContain("Password must include uppercases characters")
-  })
-
 })

@@ -25,7 +25,6 @@
     import dateUtil from "@/util/date";
     import {mapActions, mapGetters} from "vuex";
     import {apiActivity} from "../../api";
-    import router from "../../router";
 
   export default {
     name: "ActivityPageInfo",
@@ -59,7 +58,7 @@
             apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId);
             this.updateUserDurationActivities(user.dur_activities);
             this.updateUserContinuousActivities(user.cont_activities);
-            router.push("/profile");
+            this.$router.push("/profile");
         },
         async loadActivity() {
             if(this.$route.params.activityId == null || this.$route.params.activityId == ""){

@@ -15,8 +15,13 @@ describe('NavBar after the login is successful', () => {
   beforeEach(() => {
     getters = {
       user: () => ({
-        isLogin: true
-      })
+        profile_id: 100,
+        isLogin: true,
+        permission_level: 0,
+      }),
+      isAdmin: () => {
+        false
+      },
     }
     store = new Vuex.Store({
       getters
@@ -26,7 +31,6 @@ describe('NavBar after the login is successful', () => {
 
   it('NavBar should not have login button anymore and have myaccount button instead', () => {
     const wrapper = mount(NavBar, {store, localVue, router})
-    console.log(wrapper.html())
     expect(wrapper.find(".login").exists()).toBe(false)
     expect(wrapper.find(".myaccount").exists()).toBe(true)
 
@@ -41,7 +45,7 @@ describe('NavBar after the login is successful', () => {
   it('myaccount button that is on the NavBar should take the user to profile page', () => {
     const wrapper = mount(NavBar, {store, localVue, router})
     wrapper.find(".myaccount").trigger('click')
-    expect(window.location.href).toBe('http://localhost/#/profile')
+    expect(window.location.href).toBe('http://localhost/#/profile/100')
   })
 
 

@@ -69,6 +69,10 @@
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
+        this.topErrorMsg = ""
+        this.passwordErrorMsg = ""
+        this.otherErrorMsg = ""
+
         if (!this.user.primary_email || !this.user.password) {
           this.topErrorMsg = "Please enter email or password"
           return;
