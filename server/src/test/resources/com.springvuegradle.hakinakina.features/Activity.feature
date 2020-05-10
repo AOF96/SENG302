@@ -46,6 +46,13 @@ Feature: Activity
     When I create the following activity with no activity types: 'Hagley Park Marathon' 'Race at the park' 'null' 'true' 'null' 'null' 'Christchurch, NZ' 1
     Then the response status is 400
 
+  @U8-activity
+  Scenario: Add a new activity with wrong credentials
+    Given I create an account with name "Sarah", email "sarah@doe.com" and ID 2
+    And I have the authorization token "N1c3 T0k3n"
+    When I create the activity: 'Drinking competition' 'Drink till you drop' 'Extreme' 'true' 'null' 'null' 'Christchurch, NZ' with token "Aw3s0m3 T0k3n"
+    Then the response status is 403
+
 
 #    Examples:
 #      | activity_name          | description                       | activity_type        | continuous | start_time               | end_time                 | location         | code |
@@ -63,19 +70,28 @@ Feature: Activity
 #    Then the response status is 401
 
   @U8-activity
-  Scenario: Add a new activity with wrong credentials
-    Given I create an account with name "Sarah", email "sarah@doe.com" and ID 2
-    And I have the authorization token "N1c3 T0k3n"
-    When I create the activity: 'Drinking competition' 'Drink till you drop' 'Extreme' 'true' 'null' 'null' 'Christchurch, NZ' with token "Aw3s0m3 T0k3n"
-    Then the response status is 403
-
-  @U8-activity
   Scenario: Edit an activity
     Given I create an account with name "Greg", email "greg@doe.com" and ID 3
     And I have the authorization token "L0v3 T0k3ns"
     When I create the following activity: 'Running Marathon' 'Challenge yourself in this race' 'Fun' 'true' 'null' 'null' 'Red pit, Mars' 2
     And I edit the activity with ID 2, token "L0v3 T0k3ns" and new values: 'Running Marathon', 'Challenge yourself in this race', 'Fun', 'true', 'null', 'null', 'Christchurch, NZ'
     Then the response status is 200
+
+  @U8-activity
+  Scenario: Editing the activity of another user
+    Given I create an account with name "Greg", email "greg@doe.com" and ID 3
+    And I have the authorization token "L0v3 T0k3ns"
+    When I create the following activity: 'Camping at Castle Hill' 'Pass the night at Narnia' 'Adventurous' 'false' '2020-12-10T19:00:00' '2020-12-11T12:00:00' 'Christchurch, NZ' 3
+    And A different user with token "N1c3 T0k3n" tries to edit my activity with values: 'Party at Castle Hill', 'Drink in Narnia', 'Extreme', 'false', '2020-12-10T19:00:00', '2020-12-11T12:00:00', 'Christchurch, NZ'
+    Then the response status is 403
+
+  @U8-activity
+  Scenario: Editing an activity with invalid activity type
+    Given I create an account with name "Greg", email "greg@doe.com" and ID 3
+    And I have the authorization token "L0v3 T0k3ns"
+    When I create the following activity: 'Camping at Castle Hill' 'Pass the night at Narnia' 'Adventurous' 'false' '2020-12-10T19:00:00' '2020-12-11T12:00:00' 'Christchurch, NZ' 3
+    And I edit my activity with token "L0v3 T0k3ns" and new values: 'Camping at Castle Hill', 'Pass the night at Narnia', 'Magical', 'true', '2020-12-10T19:00:00', '2020-12-11T12:00:00', 'Christchurch, NZ'
+    Then the response status is 400
 
   @U8-activity
   Scenario: Delete an activity
