@@ -90,9 +90,9 @@ public class ActivityService {
             }
 
             //TODO Validate activity location in U9
+            activity.setAuthor(userRepository.getUserById(profileId).get());
+            activityRepository.save(activity);
 
-            Activity newActivity = activityRepository.save(activity);
-            activityRepository.insertActivityForUser(profileId, newActivity.getId());
             return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
