@@ -76,6 +76,17 @@ public class ActivityService {
                 if (activity.getStartTime() == null || activity.getEndTime() == null) {
                     return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
                 }
+
+                Date date = new Date();
+                Timestamp ts=new Timestamp(date.getTime());
+
+                if (!activity.getStartTime().after(ts)) {
+                    return new ResponseEntity("Activity start date and time must be in the future", HttpStatus.valueOf(400));
+                }
+
+                if (activity.getStartTime().after(activity.getEndTime())) {
+                    return new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
+                }
             }
 
             //TODO Validate activity location in U9
@@ -111,6 +122,17 @@ public class ActivityService {
             if (!newActivity.isContinuous()) {
                 if (newActivity.getStartTime() == null || newActivity.getEndTime() == null) {
                     return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
+                }
+
+                Date date = new Date();
+                Timestamp ts=new Timestamp(date.getTime());
+
+                if (!newActivity.getStartTime().after(ts)) {
+                    return new ResponseEntity("Activity start date and time must be in the future", HttpStatus.valueOf(400));
+                }
+
+                if (newActivity.getStartTime().after(newActivity.getEndTime())) {
+                    return new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
                 }
             }
 
