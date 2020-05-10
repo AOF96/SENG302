@@ -17,7 +17,13 @@
                 </span>
             </span>
         </div>
-        <button class="genericDeleteButton" type="button" v-on:click="deleteActivity(user)">Delete Activity</button>
+        <router-link v-bind:to="'/activity_editing/' + activityId">
+          <button
+            class="genericConfirmButton"
+            type="button"
+          >Edit Activity</button>
+        </router-link>
+        <button class="genericDeleteButton" type="button" v-on:click="deleteActivity()">Delete Activity</button>
     </div>
 </template>
 
@@ -25,7 +31,7 @@
 
     import dateUtil from "@/util/date";
     import {mapActions, mapGetters} from "vuex";
-    import {apiActivity} from "../../api";
+    import {apiActivity, apiUser} from "../../api";
 
   export default {
     name: "ActivityPageInfo",
@@ -41,6 +47,8 @@
             end_date: null,
             location: "",
             loaded: false,
+            authorId: null,
+            activityId: null
         }
       },
 
@@ -55,12 +63,12 @@
         ...mapActions(['updateUserDurationActivities']),
         ...mapActions(['updateUserContinuousActivities']),
 
-        deleteActivity(user) {
-            apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId);
-            this.updateUserDurationActivities(user.dur_activities);
-            this.updateUserContinuousActivities(user.cont_activities);
-            this.$router.push("/profile");
-        },
+        // deleteActivity(user) {
+        //     apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId);
+        //     this.updateUserDurationActivities(user.dur_activities);
+        //     this.updateUserContinuousActivities(user.cont_activities);
+        //     this.$router.push("/profile");
+        // },
 
       // deleteActivity(user) {
       //   apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId)
@@ -82,6 +90,25 @@
       //     );
       // },
 
+      deleteActivity() {
+        apiActivity
+          .deleteActivity(this.user.profile_id, this.$route.params.activityId)
+          .then(response => {
+            console.log(response);
+            apiUser
+              .getUserContinuousActivities(this.user.profile_id)
+              .then(response => {
+                this.updateUserContinuousActivities(response.data);
+              });
+            apiUser
+              .getUserDurationActivities(this.user.profile_id)
+              .then(response => {
+                this.updateUserDurationActivities(response.data);
+              });
+            this.$router.push("/profile/" + this.authorId);
+          });
+      },
+
         async loadActivity() {
             if(this.$route.params.activityId == null || this.$route.params.activityId == ""){
                 this.$router.push('/profile');
@@ -91,6 +118,7 @@
                 if(tempActivityData == "Invalid permissions"){
                     this.$router.push('/profile');
                 }else{
+                    this.activityId = tempActivityData.id;
                     this.activity_name = tempActivityData.activity_name;
                     this.continuous = tempActivityData.continuous;
                     this.description = tempActivityData.description;
@@ -100,6 +128,7 @@
                     this.location = tempActivityData.location;
                     this.activity_author_firstname = tempActivityData.author.firstname;
                     this.activity_author_lastname = tempActivityData.author.lastname;
+                    this.authorId = tempActivityData.author.profile_id;
                     this.loaded = true;
                 }
             }
