@@ -74,7 +74,7 @@
                     this.description = tempActivityData.description;
                     this.activity_types = tempActivityData.activity_type;
                     this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
-                    this.end_date = dateUtil.getFormatDate(new Date(this.activity.end_time));
+                    this.end_date = dateUtil.getFormatDate(new Date(tempActivityData.end_time));
                     this.location = tempActivityData.location;
                     this.activity_author_firstname = tempActivityData.author.firstname;
                     this.activity_author_lastname = tempActivityData.author.lastname;
