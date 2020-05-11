@@ -42,28 +42,6 @@ const getters = {
 };
 
 const mutations = {
-  resetUser() {
-    state.user.firstname = null;
-    state.user.lastname = null;
-    state.user.middlename = null;
-    state.user.nickname = null;
-    state.user.gender = null;
-    state.user.primary_email = null;
-    state.user.additional_email = [];
-    state.user.date_of_birth = null;
-    state.user.bio = null;
-    state.user.isLogin = false;
-    state.user.fitness = null;
-    state.user.profile_id = null;
-    state.user.password = null;
-    state.user.passports = [];
-    state.user.tmp_passports = [];
-    state.user.permission_level = 0;
-    state.user.activities =  [];
-    state.user.tmp_activities = [];
-    state.user.cont_activities = [];
-    state.user.dur_activities = [];
-  },
   setUser(state, data) {
     state.user = data;
   },
@@ -144,7 +122,26 @@ const mutations = {
     state.user.isLogin = true;
   },
   userLogout() {
+    state.user.firstname = null;
+    state.user.lastname = null;
+    state.user.middlename = null;
+    state.user.nickname = null;
+    state.user.gender = "Gender";
+    state.user.primary_email = null;
+    state.user.additional_email = [];
+    state.user.date_of_birth = null;
+    state.user.bio = null;
     state.user.isLogin = false;
+    state.user.fitness = -1;
+    state.user.profile_id = null;
+    state.user.password = null;
+    state.user.passports = [];
+    state.user.tmp_passports = [];
+    state.user.permission_level = 0;
+    state.user.activities =  [];
+    state.user.tmp_activities = [];
+    state.user.cont_activities = [];
+    state.user.dur_activities = [];
     apiUser.logout();
   },
   setUserPassword(state, data) {
