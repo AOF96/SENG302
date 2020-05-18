@@ -7,14 +7,14 @@
                 <h2>Sign in to your account</h2>
                 <form @submit.prevent>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
+                        <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
                     </div>
                     <div class="loginRow">
                         <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
                                required>
                     </div>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
+                        <h6 class="loginErrorMessages" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
                             }}</h6>
                     </div>
                     <div class="loginRow">
@@ -22,7 +22,7 @@
                                placeholder="Password" required>
                     </div>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
+                        <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
                     </div>
                     <hr>
                     <div class="loginRow">

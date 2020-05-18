@@ -4,7 +4,7 @@
     <div class="settingsContentContainer">
         <h1>Edit Profile Info</h1>
         <hr>
-        <h6 class="errorMessage" id="error" hidden="true"></h6>
+        <h6 class="editProfileInfoErrorMessage" id="error" hidden="true"></h6>
         <h6 class="successMessage" id="success" hidden="true"></h6>
         <form @submit.prevent class="editForm">
             <div id="adminToggle" v-bind:class="{ showadmin: showAdmin }" v-if="user.permission_level == 2 && searchedUser.permission_level != 2 && user.profile_id != searchedUser.profile_id">

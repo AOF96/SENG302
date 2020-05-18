@@ -9,6 +9,7 @@
                 <h4>{{ searchedUser.primary_email }}</h4>
             </div>
             <h3>Secondary emails:</h3>
+<!--            <h6 class="editEmailsErrorMessage" id="error" hidden="true"></h6>-->
             <div class="secondaryEmailContainer" v-for="email in searchedUser.additional_email" v-bind:key="email">
                 <h4 v-on:click="openEmailEditBox(email)">{{email}}</h4>
                 <svg v-on:click="openEmailEditBox(email)" class="editIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -78,6 +79,7 @@
             async addEmail(textInput) {
                 if (this.searchedUser.additional_email.length === LIMIT_NUM_EMAIL) {
                     alert("You already have 5 emails, delete one if you want to add more.");
+                    document.getElementById("error").hidden = false;
                     this.showButton = false;
                     return;
                 }
