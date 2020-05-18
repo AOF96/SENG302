@@ -1,7 +1,7 @@
 <template>
     <div class="activityContainer">
-        <div id="activityPageTitle" class="activityTitle"> {{ activity_name }} </div>
-        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true"><h3> Created by: {{ activity_author_firstname + " " + activity_author_lastname }}</h3></div>
+        <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
+        <hr class="activityPageActivitySeparator">
         <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
         <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
         <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><h3> Start date: {{ start_date }}</h3></div>
@@ -17,6 +17,8 @@
                 </span>
             </span>
         </div>
+        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true"><h3> Created by: {{ activity_author_firstname + " " + activity_author_lastname }}</h3></div>
+
         <router-link v-bind:to="'/activity_editing/' + activityId">
           <button
             class="genericConfirmButton"
