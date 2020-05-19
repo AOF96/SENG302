@@ -223,6 +223,15 @@
     margin: 0 auto;
 }
 
+.addExtraEmailErrorMessage {
+    font-weight: 700;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-bottom: -12px;
+    margin-left: 27px;
+    margin-top: 5px;
+}
+
 /* Password */
 .errorMessageContainer {
     width: 100%;
