@@ -90,6 +90,29 @@
     margin: 10px 0 15px;
 }
 
+.updateInfoSuccessMessage {
+    font-weight: 600;
+    font-size: 15px;
+    color: #19cc92;
+    padding: 12px;
+}
+
+.editSuccessMsg {
+    font-weight: 700;
+    font-size: 15px;
+    color: #19cc92;
+    margin: auto;
+    padding: 11px;
+}
+
+.editErrorMsg {
+    font-weight: 700;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin: auto;
+    padding: 11px;
+}
+
 /* Email settings */
 .primaryEmailContainer {
     width: calc(100% - 40px);
@@ -250,6 +273,22 @@
     padding: 8px 16px;
 }
 
+.updatePasswordSuccessMessage {
+    font-weight: 600;
+    font-size: 15px;
+    color: #19cc92;
+    padding: 5px;
+    margin: auto;
+}
+
+.updatePasswordErrorMessage {
+    font-weight: 700;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin: auto;
+    padding-top: 5px;
+}
+
 /* Passport countries and activity types */
 .itemContainer {
   width: calc(100% - 40px);
@@ -293,6 +332,8 @@
 .formTopSpacing{
   margin-top:20px;
 }
+
+
 
 /* Default admin toggle for creating admins out of other users */
 .togswitch{

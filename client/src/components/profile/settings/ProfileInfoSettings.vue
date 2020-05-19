@@ -5,7 +5,6 @@
         <h1>Edit Profile Info</h1>
         <hr>
         <h6 class="editProfileInfoErrorMessage" id="error" hidden="true"></h6>
-        <h6 class="successMessage" id="success" hidden="true"></h6>
         <form @submit.prevent class="editForm">
             <div id="adminToggle" v-bind:class="{ showadmin: showAdmin }" v-if="user.permission_level == 2 && searchedUser.permission_level != 2 && user.profile_id != searchedUser.profile_id">
                 <h2>Enable Admin Abilities</h2>
@@ -42,6 +41,7 @@
             <input v-model="searchedUser.date_of_birth" name="birthday" type="date" required>
             <h2>Bio</h2>
             <textarea maxlength="255" name="bio" v-model="searchedUser.bio" placeholder="Write about yourself"></textarea>
+            <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
             <button class="genericConfirmButton updateProfileButton" v-on:click="updateProfile()" type="submit">Update Profile</button>
         </form>
     </div>
