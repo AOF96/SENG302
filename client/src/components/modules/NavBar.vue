@@ -33,7 +33,6 @@
         methods: {
             ...mapActions(['logout']),
             ...mapActions(['updateUserProfile']),
-            ...mapActions(['resetUser']),
             ...mapActions(['updateUserContinuousActivities']),
             ...mapActions(['updateUserDurationActivities']),
             /*

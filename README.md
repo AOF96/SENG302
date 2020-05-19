@@ -20,7 +20,7 @@ Please have the server and client running at the same time while using the appli
 ## Page structure
 
 - As a normal user, you can login or signup and then go to our system.
-- As a default admin user with email "passageAdmin@gmail.com" and password "n4sBn9p7H8mPMmb", you can login and search user by id. Then you will go to our system as the normal user you searched.
+- As a default admin user, you can login and search user by id. Then you will go to our system as the normal user you searched. (To generate a new set of default admin credentials, delete the user with permission level 2 from the user table in the database and then re-run the back end server. New credentials will be printed in the console.)
 
 ![page_structure](/uploads/a6b190030d901a8574176e1e64811922/page_structure.png)
 
