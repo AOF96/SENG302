@@ -19,6 +19,9 @@
         </div>
         <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true"><h3> Created by: {{ activity_author_firstname + " " + activity_author_lastname }}</h3></div>
 
+        <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+            <button class="genericConfirmButton">Back to Profile</button>
+        </router-link>
         <router-link v-bind:to="'/activity_editing/' + activityId">
           <button
             class="genericConfirmButton"
