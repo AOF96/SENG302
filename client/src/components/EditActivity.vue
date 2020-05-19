@@ -3,9 +3,11 @@
     <NavBar />
     <div class="createActivityContainer">
       <div class="createActivityContentContainer">
+        <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+          <button class="genericConfirmButton">Back to Profile</button>
+        </router-link>
+        <h1>Edit Activity</h1>
         <form class="CreateActivityFormContainer">
-          <h1>Edit Activity</h1>
-
           <label class="editActivityLabel" for="name">Activity Name</label>
           <input
             class="editActivityInput"

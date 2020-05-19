@@ -2,7 +2,7 @@
     <div class="settingsContainer">
         <UserSettingsMenu/>
         <div class="settingsContentContainer">
-            <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
                 <button class="genericConfirmButton">Back to Profile</button>
             </router-link>
             <h1>Change Password</h1>

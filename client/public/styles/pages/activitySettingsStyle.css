@@ -20,6 +20,12 @@
     font-size: 19px;
 }
 
+.createActivityContentContainer .genericConfirmButton{
+    margin: 15px 20px 0 0;
+    padding: 6px 16px;
+    float: right;
+}
+
 /* -- Form Components ---- */
 .editActivityLabel {
     padding: 0 20px;
