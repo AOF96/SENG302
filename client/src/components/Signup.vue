@@ -19,13 +19,14 @@
           <p id="signup-lastname-err" v-if="!validation.lastname" class="errorMessage">{{ this.err_msg.lastname }}</p>
           <div class="signUpRow">
             <input id="signup-nickname" v-model="user.nickname" name="nickname" type="text" placeholder="Nickname" />
-            <select id="signup-gender" v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
-              <option selected disabled hidden>Gender</option>
+            <select id="signup-gender" v-model="user.gender" name="gender" required @change="genderChange($event)">
+              <option selected disabled hidden value="Gender">Gender</option>
               <option>Non-Binary</option>
               <option>Female</option>
               <option>Male</option>
             </select>
           </div>
+          <p id="genderErr" v-if="!validation.gender" class="errorMessage">{{ this.err_msg.gender }}</p>
           <p id="signup-bio-err" v-if="warning.bio" class="errorMessage">{{ this.bio_warning_msg }}</p>
           <div class="signUpRow">
             <textarea id="signup-bio" maxlength="255" v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
@@ -78,12 +79,12 @@
 </template>
 
 <script>
-  import {mapActions, mapGetters} from "vuex";
-  import {apiUser} from "../api";
+import {mapActions, mapGetters} from "vuex";
+import {apiUser} from "../api";
 
-  import NavBar from "./modules/NavBar";
+import NavBar from "./modules/NavBar";
 
-  const ERR_MSG_FNAME = "Please enter your First name";
+const ERR_MSG_FNAME = "Please enter your First name";
 const ERR_MSG_LNAME = "Please enter your Last name";
 const ERR_MSG_GENDER = "Please select your Gender";
 const ERR_MSG_EMAIL = "Please enter a valid Email";
@@ -103,6 +104,7 @@ export default {
   },
   data() {
     return {
+      firstOccurrence: true,
       errorMessages: [],
       submissionError: "",
       password1: "",
@@ -142,10 +144,11 @@ export default {
       return {
         firstname: this.user.firstname !== "",
         lastname: this.user.lastname !== "",
-        gender: this.user.gender !== "Gender",
+        //Don't display the gender error message if the user has not done anything yet
+        gender: this.user.gender !== "Gender" || this.firstOccurrence,
         email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
         birthday: this.user.date_of_birth !== "" && this.birthday_validation,
-        fitnesslevel: this.user.fitnessLevel != -1,
+        fitnesslevel: this.user.fitnessLevel !== -1,
         password: {
           match: this.password1 === this.password2,
           length: /.{8,}/.test(this.password1),
@@ -174,7 +177,7 @@ export default {
        Returns true if all the provided data is valid.
     */
     valid() {
-      this.all_err_msg() // Get all the errors on the field and show it on the top of the page
+      this.all_err_msg(); // Get all the errors on the field and show it on the top of the page
       return this.errorMessages.length === 0;
     },
 
@@ -194,7 +197,7 @@ export default {
       const validation = this.validation;
       const fields = Object.keys(validation);
 
-      this.errorMessages = []
+      this.errorMessages = [];
       for (let i in fields) {
         const field = fields[i];
         if (!validation[field]) {
@@ -210,11 +213,21 @@ export default {
       }
 
     },
+
+    /**
+     * Toggles firstOccurrence if the gender has been changed or the user has clicked 'Sign Up' to ensure a gender has
+     * been selected
+     */
+    genderChange() {
+      this.firstOccurrence = false;
+    },
+
     /*
       Submits a request to register a new user. Checks if there are missing fields when signing up.
     */
     submitSignUp() {
-      this.submissionError = ""
+      this.firstOccurrence = false;
+      this.submissionError = "";
       if (!this.valid) {
         return;
       }
