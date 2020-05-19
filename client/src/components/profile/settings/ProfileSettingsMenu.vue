@@ -20,7 +20,7 @@
       </router-link>
       <hr />
       <router-link v-bind:to="'/settings/activities/' + this.$route.params.profileId">
-        <div class="settingsNavButton">Activitie Types</div>
+        <div class="settingsNavButton">Activity Types</div>
       </router-link>
     </div>
   </div>

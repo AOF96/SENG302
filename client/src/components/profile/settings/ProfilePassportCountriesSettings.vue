@@ -2,6 +2,9 @@
     <div class="settingsContainer">
         <UserSettingsMenu />
         <div class="settingsContentContainer">
+            <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+                <button class="genericConfirmButton">Back to Profile</button>
+            </router-link>
             <h1>Edit Passport Countries</h1>
             <hr>
             <div class="itemContainer" v-for="country in searchedUser.passports" v-bind:key="country">

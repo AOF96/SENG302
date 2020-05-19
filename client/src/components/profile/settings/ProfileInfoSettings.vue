@@ -2,7 +2,10 @@
 <div class="settingsContainer">
     <UserSettingsMenu />
     <div class="settingsContentContainer">
-        <h1>Edit Profile Info</h1>
+        <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+            <button class="genericConfirmButton">Back to Profile</button>
+        </router-link>
+        <h1 class="settingsTitle">Edit Profile Info</h1>
         <hr>
         <h6 class="errorMessage" id="error" hidden="true"></h6>
         <h6 class="successMessage" id="success" hidden="true"></h6>
