@@ -8,10 +8,13 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
@@ -371,7 +374,7 @@ public class UserService {
      * @param attempt The password attempt
      * @return A ResponseEntity detailing the results
      */
-    public ResponseEntity checkLogin(String email, String attempt) {
+    public ResponseEntity checkLogin(String email, String attempt, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
@@ -387,7 +390,25 @@ public class UserService {
                 Session session_token = new Session(sessionToken);
                 sessionRepository.insertToken(sessionToken, user.getUserId());
 
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+                // create a cookie
+                Cookie cookie = new Cookie("s_id",sessionToken);
+
+                // expires in 7 days
+                cookie.setMaxAge(7 * 24 * 60 * 60);
+
+                // optional properties
+//                cookie.setSecure(true);
+                cookie.setHttpOnly(true);
+//                cookie.setPath("/");
+
+                // add cookie to response
+                response.addCookie(cookie);
+
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.add("Set-Cookie", "s_id=" + sessionToken);
+//                "; Secure; HttpOnly; Max-Age=604800"
+
+                return new ResponseEntity(user.toJson(), HttpStatus.OK);
             } else {
                 return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }
