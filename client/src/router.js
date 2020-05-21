@@ -17,66 +17,66 @@ import AdminDashboard from "./components/AdminDashboard";
 
 Vue.use(VueRouter);
 
-const baseUrl = process.env.VUE_APP_BASE_URL;
+const baseUrl = process.env.BASE_URL;
 
 const routes = [
     {
-        path: baseUrl + 'profile/:profileId',
+        path: '/profile/:profileId',
         component: Profile
     },
     {
-        path: baseUrl + 'signup',
+        path: '/signup',
         component: Signup
     },
     {
-        path: baseUrl + 'login',
+        path: '/login',
         component: Login
     },
     {
-        path: baseUrl + 'logout',
+        path: '/logout',
     },
     {
-        path: baseUrl + 'settings/profile/:profileId',
+        path: '/settings/profile/:profileId',
         component: UserProfileSettings
     },
     {
-        path: baseUrl + 'settings/password/:profileId',
+        path: '/settings/password/:profileId',
         component: UserPasswordSettings
     },
     {
-        path: baseUrl + 'settings/email/:profileId',
+        path: '/settings/email/:profileId',
         component: UserEmailSettings
     },
     {
-        path: baseUrl + 'settings/passport_countries/:profileId',
+        path: '/settings/passport_countries/:profileId',
         component: UserPassportCountriesSettings
     },
     {
-        path: baseUrl + 'settings/activities/:profileId',
+        path: '/settings/activities/:profileId',
         component: UserActivitySettings
     },
     {
-        path: baseUrl + "settings/admin_dashboard",
+        path: "/settings/admin_dashboard",
         component: AdminDashboard,
     },
     {
-        path: baseUrl + "profile*",
+        path: "/profile*",
         component: Profile,
     },
     {
         path: "*",
-        redirect: baseUrl + "profile",
+        redirect: "/profile",
     },
     {
-        path: baseUrl + 'activity/:activityId',
+        path: '/activity/:activityId',
         component: Activity
     },
     {
-        path: baseUrl + 'activity_settings/:profileId',
+        path: '/activity_settings/:profileId',
         component: ActivitySettings
     },
     {
-        path: baseUrl + 'activity_editing/:activityId',
+        path: '/activity_editing/:activityId',
         component: EditActivity
     }
 ];
@@ -85,6 +85,7 @@ const routes = [
 
 const router = new VueRouter({
     routes,
+    base: baseUrl,
     mode: 'history'
 });
 
@@ -95,7 +96,8 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = store ? store.getters.isLoggedIn : null;
   const isAuthPath = to.path === "/signup" || to.path === "/login";
   console.log("start routing to " + to.path);
-  console.log(baseUrl);
+  console.log("isAdmin: " + isAdmin);
+  console.log("isLogin: " + isLoggedIn);
 
   if (firstLoad === true && localStorage.getItem("s_id") !== null) {
     firstLoad = false;
