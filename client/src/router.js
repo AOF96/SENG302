@@ -17,64 +17,66 @@ import AdminDashboard from "./components/AdminDashboard";
 
 Vue.use(VueRouter);
 
+const baseUrl = process.env.BASE_URL;
+
 const routes = [
     {
-        path: '/profile/:profileId',
+        path: baseUrl + 'profile/:profileId',
         component: Profile
     },
     {
-        path: '/signup',
+        path: baseUrl + 'signup',
         component: Signup
     },
     {
-        path: '/login',
+        path: baseUrl + 'login',
         component: Login
     },
     {
-        path: '/logout',
+        path: baseUrl + 'logout',
     },
     {
-        path: '/settings/profile/:profileId',
+        path: baseUrl + 'settings/profile/:profileId',
         component: UserProfileSettings
     },
     {
-        path: '/settings/password/:profileId',
+        path: baseUrl + 'settings/password/:profileId',
         component: UserPasswordSettings
     },
     {
-        path: '/settings/email/:profileId',
+        path: baseUrl + 'settings/email/:profileId',
         component: UserEmailSettings
     },
     {
-        path: '/settings/passport_countries/:profileId',
+        path: baseUrl + 'settings/passport_countries/:profileId',
         component: UserPassportCountriesSettings
     },
     {
-        path: '/settings/activities/:profileId',
+        path: baseUrl + 'settings/activities/:profileId',
         component: UserActivitySettings
     },
     {
-        path: "/settings/admin_dashboard",
+        path: baseUrl + "settings/admin_dashboard",
         component: AdminDashboard,
     },
     {
-        path: "/profile*",
+        path: baseUrl + "profile*",
         component: Profile,
     },
     {
         path: "*",
-        redirect: "/profile",
+        redirect: baseUrl + "profile",
     },
     {
-        path: '/activity/:activityId',
+        path: baseUrl + 'activity/:activityId',
         component: Activity
     },
     {
-        path: '/activity_settings/:profileId',
+        path: baseUrl + 'activity_settings/:profileId',
         component: ActivitySettings
     },
     {
-        path: '/activity_editing/:activityId',
+        path: baseUrl + 'activity_editing/:activityId',
         component: EditActivity
     }
 ];
