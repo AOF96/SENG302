@@ -17,6 +17,8 @@ import AdminDashboard from "./components/AdminDashboard";
 
 Vue.use(VueRouter);
 
+const baseUrl = process.env.BASE_URL;
+
 const routes = [
     {
         path: '/profile/:profileId',
@@ -83,6 +85,7 @@ const routes = [
 
 const router = new VueRouter({
     routes,
+    base: baseUrl,
     mode: 'history'
 });
 
