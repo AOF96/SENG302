@@ -339,7 +339,7 @@ public class UserService {
      * @return A boolean of whether the user is of a valid age
      */
     public static boolean checkAge(Date birthDate, LocalDate currentDate) {
-         boolean result = true;
+        boolean result = true;
         int age = calculateAge(birthDate, currentDate);
         if (birthDate.after(new Date()) || age < 13 || age > 140) {
             result = false;
