@@ -203,10 +203,10 @@
 
 .editErrorMessage {
     font-family: 'Roboto';
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 16px;
     margin: 15px;
-    color: #f06a6a;
+    color: #ec4e4e;
     text-align: center;
 }
 
