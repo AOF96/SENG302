@@ -17,7 +17,7 @@ import AdminDashboard from "./components/AdminDashboard";
 
 Vue.use(VueRouter);
 
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.VUE_APP_BASE_URL;
 
 const routes = [
     {
@@ -95,8 +95,7 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = store ? store.getters.isLoggedIn : null;
   const isAuthPath = to.path === "/signup" || to.path === "/login";
   console.log("start routing to " + to.path);
-  console.log("isAdmin: " + isAdmin);
-  console.log("isLogin: " + isLoggedIn);
+  console.log(baseUrl);
 
   if (firstLoad === true && localStorage.getItem("s_id") !== null) {
     firstLoad = false;
