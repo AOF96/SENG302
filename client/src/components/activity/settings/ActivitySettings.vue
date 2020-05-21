@@ -46,13 +46,14 @@
 
                     <label class="editActivityLabel">Location</label>
                     <div>
-                        <select v-model="adding_country" name="countries" class="editActivitySelect" required>
-                          <option selected disabled hidden>Countries</option>
-                          <option
-                            v-for="addingCountry in countries_option"
-                            v-bind:key="addingCountry"
-                          >{{addingCountry}}</option>
-                        </select>
+<!--                        <select v-model="adding_country" name="countries" class="editActivitySelect" required>-->
+<!--                          <option selected disabled hidden>Countries</option>-->
+<!--                          <option-->
+<!--                            v-for="addingCountry in countries_option"-->
+<!--                            v-bind:key="addingCountry"-->
+<!--                          >{{addingCountry}}</option>-->
+<!--                        </select>-->
+                        <input class="editActivityInput" type="time" v-model="location" v-on:change=""/>
                     </div>
 
                     <label class="editActivityLabel">Activity Types</label>
@@ -107,7 +108,7 @@ export default {
             selected_activity: "Activity Type",
             activities_option: [],
             countries_option: [],
-            adding_country: "Countries",
+            location: "",
             duration: "duration",
             name: "",
             description: "",
@@ -117,7 +118,8 @@ export default {
             start_time: null,
             end_time: null,
             combinedStartTime: null,
-            combinedEndTime: null
+            combinedEndTime: null,
+            suggestedLocations: []
         };
     },
     computed: {
@@ -132,19 +134,6 @@ export default {
             .getActivityTypes()
             .then(response => {
                 this.activities_option = response.data;
-            })
-            .catch(error => console.log(error));
-        // Gets list of countries that can be selected
-        await axios
-            .get(COUNTRIES_URL)
-            .then(response => {
-                const countries = [];
-                const data = response.data;
-                for (let country in data) {
-                    let country_name = data[country].name;
-                    countries.push(country_name);
-                }
-                this.countries_option = countries;
             })
             .catch(error => console.log(error));
     },
@@ -297,7 +286,7 @@ export default {
 
             // Send a create request
             apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
-                this.combinedEndTime, this.description, this.adding_country, this.activity_types_selected)
+                this.combinedEndTime, this.description, this.location, this.activity_types_selected)
                 .then(
                     response => {
                         document.getElementById("activity_success").hidden = false;
