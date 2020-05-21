@@ -14,6 +14,14 @@
           <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
           <hr />
           <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
+          <hr />
+          <div class="profileRow">City: {{ searchedUser.city }}</div>
+          <hr />
+          <div v-if="searchedUser.state">
+          <div class="profileRow">State: {{ searchedUser.state }}</div>
+          <hr />
+          </div>
+          <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
       </div>
       <div class="centreContainer">
