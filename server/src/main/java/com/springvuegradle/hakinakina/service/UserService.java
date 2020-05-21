@@ -384,29 +384,18 @@ public class UserService {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
+
                 //Generate session token
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
                 sessionRepository.insertToken(sessionToken, user.getUserId());
-
                 // create a cookie
                 Cookie cookie = new Cookie("s_id",sessionToken);
-
                 // expires in 7 days
                 cookie.setMaxAge(7 * 24 * 60 * 60);
-
-                // optional properties
-//                cookie.setSecure(true);
                 cookie.setHttpOnly(true);
-//                cookie.setPath("/");
-
                 // add cookie to response
                 response.addCookie(cookie);
-
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.add("Set-Cookie", "s_id=" + sessionToken);
-//                "; Secure; HttpOnly; Max-Age=604800"
 
                 return new ResponseEntity(user.toJson(), HttpStatus.OK);
             } else {
