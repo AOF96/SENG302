@@ -5,11 +5,11 @@ tag_checker:
   only:
     - tags
 
-junit:
-  stage: test
-  script:
-    - cd server
-    - ./gradlew test
+#junit:
+#  stage: test
+#  script:
+#    - cd server
+#    - ./gradlew test
 
 dev-build:
   stage: deploy
