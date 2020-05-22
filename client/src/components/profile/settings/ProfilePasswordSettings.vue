@@ -1,60 +1,52 @@
 <template>
-  <div class="settingsContainer">
-    <UserSettingsMenu />
-    <div class="settingsContentContainer">
-      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton">Back to Profile</button>
-      </router-link>
-      <h1>Change Password</h1>
-      <hr />
-      <div>
-        <form @submit.prevent>
-          <input
-            v-if="user.permission_level === 0"
-            class="changePasswordInput"
-            type="password"
-            name="password"
-            placeholder="Current Password"
-            v-model="oldPassword"
-          />
-          <div class="errorMessageContainer">
-            <h6 class="errorMessage" id="password_incorrect" hidden="true">Incorrect password</h6>
-          </div>
-          <input
-            class="changePasswordInput"
-            type="password"
-            name="newPassword"
-            placeholder="New Password"
-            v-model="newPassword"
-          />
-          <div class="errorMessageContainer">
-            <h6
-              class="errorMessage"
-              id="passwords_dont_match"
-              hidden="true"
-            >Passwords must be matching</h6>
-          </div>
-          <input
-            class="changePasswordInput"
-            type="password"
-            name="confirmPassword"
-            placeholder="Re-enter Password"
-            v-model="confirmPassword"
-          />
-          <div class="errorMessageContainer">
-            <h6 class="errorMessage" id="other_error" hidden="true" />
-            <h6 class="successMessage" id="success" hidden="true">Password successfully updated</h6>
-          </div>
-          <button
-            class="genericConfirmButton updatePasswordButton"
-            v-on:click="submitPasswordChange()"
-            type="submit"
-          >Change Password</button>
-        </form>
-      </div>
+    <div class="settingsContainer">
+        <UserSettingsMenu/>
+        <div class="settingsContentContainer">
+            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+                <button class="genericConfirmButton">Back to Profile</button>
+            </router-link>
+            <h1>Change Password</h1>
+            <hr>
+            <div>
+                <form @submit.prevent>
+                    <input
+                            v-if="user.permission_level === 0"
+                            class="changePasswordInput"
+                            type="password"
+                            name="password"
+                            placeholder="Current Password"
+                            v-model="oldPassword"
+                    />
+                    <div class="errorMessageContainer">
+                        <h6 class="updatePasswordErrorMessage" id="password_incorrect" hidden="true">Incorrect password</h6>
+                    </div>
+                    <input
+                            class="changePasswordInput"
+                            type="password"
+                            name="newPassword"
+                            placeholder="New Password"
+                            v-model="newPassword"
+                    />
+                    <div class="errorMessageContainer">
+                        <h6 class="updatePasswordErrorMessage" id="passwords_dont_match" hidden="true">Passwords must be matching</h6>
+                    </div>
+                    <input
+                            class="changePasswordInput"
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Re-enter Password"
+                            v-model="confirmPassword"
+                    />
+                    <div class="errorMessageContainer">
+                        <h6 class="updatePasswordErrorMessage" id="other_error" hidden="true"/>
+                        <h6 class="updatePasswordSuccessMessage" id="success" hidden="true">Password successfully updated</h6>
+                    </div>
+                    <button class="genericConfirmButton updatePasswordButton" v-on:click="submitPasswordChange()" type="submit">Change Password</button>
+                </form>
+            </div>
+        </div>
+        <div class="floatClear"></div>
     </div>
-    <div class="floatClear"></div>
-  </div>
 </template>
 
 <script>
@@ -128,7 +120,7 @@ export default {
       the password change was unsuccessful.
     */
     submitPasswordChange() {
-      console.log("submit password change");
+        document.getElementById("success").hidden = true;
       if (!this.isValid()) return;
       apiUser
         .changePassword(

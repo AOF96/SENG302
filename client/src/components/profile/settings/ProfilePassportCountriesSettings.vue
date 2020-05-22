@@ -30,8 +30,11 @@
                     <div class="floatClear"></div>
                 </form>
             </div>
-            <h6 class="successMessage" id="passport_success" hidden="false">Saved successfully</h6>
-            <h6 class="errorMessage" id="passport_error" hidden="false">An error has occurred</h6>
+            <div class="errorMessageContainer">
+                <h6 class="editSuccessMsg" id="passport_success" hidden="false">Passport saved successfully</h6>
+                <h6 class="editErrorMsg" id="passport_error" hidden="false">An error has occurred</h6>
+            </div>
+
         </div>
         <div class="floatClear"></div>
     </div>

@@ -27,13 +27,31 @@ input, select, textarea {
     color: #1dca92;
 }
 .errorMessage {
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 15px;
     color: #f06a6a;
     margin-bottom: 19px;
+    margin-left: 10px;
 }
 .errorMessage li{
   margin: 3px 15px;
+}
+
+.loginErrorMessages {
+    font-weight: 600;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-bottom: 12px;
+    margin-left: 14px;
+}
+
+.editProfileInfoErrorMessage {
+    font-weight: 700;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-bottom: -12px;
+    margin-left: 27px;
+    margin-top: 5px;
 }
 
 /* -- Default Containers ---- */
