@@ -5,18 +5,10 @@ const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
 var instance = axios.create({
   baseURL: SERVER_URL,
   timeout: 5000,
-  headers: {'token': localStorage.s_id}
+  withCredentials: true
 });
 
 export const apiUser = {
-  // Reload token from local storage
-  refreshInstance: () => {
-    instance = axios.create({
-      baseURL: SERVER_URL,
-      timeout: 5000,
-      headers: {'token': localStorage.s_id}
-    });
-  },
   // Update the user's password
   changePassword: (profile_id, old_password, new_password, repeat_password) => instance.put('/profiles/'+profile_id+'/password', {
     old_password: old_password,
@@ -42,10 +34,7 @@ export const apiUser = {
     password: password
   }),
   // Removes session token from local storage and posts server request to remove the token from the database
-  logout: () => instance.post('/logout').then(function () {
-    localStorage.removeItem("s_id");
-    apiUser.refreshInstance();
-  }),
+  logout: () => instance.post('/logout'),
   // Submit user signup information to the server
   editProfile: (profile_id, firstname, lastname, middlename, nickname, primary_email, bio, date_of_birth, gender, fitness, additional_email, passports, permission_level, activities) => instance.put('/profiles/'+profile_id, {
     firstname: firstname,
