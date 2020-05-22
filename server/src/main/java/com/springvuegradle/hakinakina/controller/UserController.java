@@ -261,15 +261,16 @@ public class UserController {
     @ResponseBody
     public ResponseEntity checkLogout(@CookieValue(value = "s_id") String sessionToken, HttpServletResponse response) {
         try {
+            sessionRepository.removeToken(sessionToken);
+
             // create a cookie
             Cookie cookie = new Cookie("s_id", null);
             cookie.setMaxAge(0);
-            cookie.setSecure(true);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             //add cookie to response
             response.addCookie(cookie);
-            sessionRepository.removeToken(sessionToken);
+
             return new ResponseEntity("User logged out", HttpStatus.OK);
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "couldn't log out");
