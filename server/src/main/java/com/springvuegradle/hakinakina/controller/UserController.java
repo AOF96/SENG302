@@ -33,21 +33,26 @@ public class UserController {
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
     public ActivityTypeRepository activityTypeRepository;
-    private ResponseHandler responseHandler = new ResponseHandler();
-
     private UserService userService;
 
+    private ResponseHandler responseHandler = new ResponseHandler();
+
+
     /**
-     * Contructs a UserController, passing in the repositories so that they can be accessed.
+     * Contructs a UserController, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository    The repository containing Users
      * @param countryRepository The repository containing PassportCountries
      * @param emailRepository   The repository containing Emails
      * @param sessionRepository The repository containing Sessions
+     * @param userService       The service for Users
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository,
-                          EmailRepository emailRepository, SessionRepository sessionRepository,
-                          ActivityTypeRepository activityTypeRepository, UserService userService) {
+    public UserController(UserRepository userRepository,
+                          PassportCountryRepository countryRepository,
+                          EmailRepository emailRepository,
+                          SessionRepository sessionRepository,
+                          ActivityTypeRepository activityTypeRepository,
+                          UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
@@ -60,45 +65,45 @@ public class UserController {
      * Processes create user request and puts user into repository if email is unique and all required fields have
      * been provided
      *
-     * @param user
-     * @return success or error message
+     * @param user The user received from the request
+     * @return response entity to inform user if registering a new account was successful or not
      */
     @PostMapping("/profiles")
     public ResponseEntity createProfile(@RequestBody User user) {
         return userService.validateCreateProfile(user);
     }
 
-    /**edits email
+    /**
+     * Handles requests for editing a user's email
      *
-     * PUT /profiles/{profileId}/emails
-     * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
-     * }
-     *
-     * @return*/
+     * @param request      the request that contains the updated emails
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if editing their email was successful or not
+     */
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
+    public ResponseEntity<String> editEmail(@RequestBody String request,
+                                            @PathVariable("profileId") long profileId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
-    /***
+    /**
      * Endpoint for handling the editing of a user's profile information. Returns appropriate error codes if something
      * is wrong with the request. Checks if the request comes from an admin so it can edit someone else profile.
-     * @param user the JSON object containing the values the user wants to edit.
-     * @param profileId the ID of the given user.
-     * @param sessionToken authentication token to validate the user sending the request.
-     * @return a 400 response if the provided ID and token don't match or is not an admin. 200 if it's a valid request.
+     *
+     * @param user         the JSON object containing the values the user wants to edit.
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return ResponseEntity with a 400 response if the provided ID and token don't match or is not an admin or
+     * 200 if it's a valid request.
      */
     @PutMapping("/profiles/{profileId}")
     public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
-          return responseHandler.formatErrorResponse(400, "Invalid Session");
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
         }
 
         // only a user and an admin can edit the user profile
@@ -111,8 +116,8 @@ public class UserController {
             }
 
             // only the default admin can edit permission level
-           boolean isEditPermission = !oldUser.getPermissionLevel().equals(user.getPermissionLevel());
-            if(isEditPermission && !isDefaultAdmin) {
+            boolean isEditPermission = !oldUser.getPermissionLevel().equals(user.getPermissionLevel());
+            if (isEditPermission && !isDefaultAdmin) {
                 return responseHandler.formatErrorResponse(401, "Unauthorized: Only the default admin can edit the user permission level");
             }
 
@@ -128,27 +133,26 @@ public class UserController {
         }
     }
 
-    /** adds email
-     * POST /profiles/{profileId}/emails
-     * {
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *     ]
-     * }
+    /**
+     * Handles requests for adding emails to a profile
      *
-     *
-     * @return*/
+     * @param request
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if adding a new email was successful or not
+     */
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue(value = "s_id") String sessionToken) {
+    public ResponseEntity addEmails(@RequestBody String request,
+                                    @PathVariable long profileId,
+                                    @CookieValue(value = "s_id") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
     }
 
     /**
-     * Processes get users request
+     * Handles requests for retrieving all profiles
      *
-     * @return List of profiles
+     * @return response entity containing a list of profiles
      */
     @GetMapping("/profiles")
     public ResponseEntity getAllUsers() {
@@ -160,7 +164,8 @@ public class UserController {
     /**
      * Validates user login by checking their sessionToken and returns user info
      *
-     * @return User json object for user with matching sessionToken
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity containing a user json object for user with the matching sessionToken
      */
     @GetMapping("/validateLogin")
     public ResponseEntity validateLogin(@CookieValue(value = "s_id") String sessionToken) {
@@ -173,13 +178,14 @@ public class UserController {
     }
 
     /**
-     * Processes request to retrieve certain user and returns
+     * Handles requests for retrieving a user
      *
-     * @param profileId
-     * @return Specific user
+     * @param profileId the user's id to be retrieved
+     * @return response entity containing the specific user
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @CookieValue(value = "s_id") String sessionToken) {
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId,
+                                     @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
             return responseHandler.formatErrorResponse(400, "Invalid Session");
@@ -210,21 +216,22 @@ public class UserController {
         return countryRepository.findAll().toString();
     }
 
-    /***
-     * Endpoint for retrieving all the primary emails that are stored in the database.
+    /**
+     * Handles requests for retrieving emails
+     *
      * @return a list with all the primary emails.
      */
     @GetMapping("/emails")
     public String getAllEmails() {
         //ToDO use the commented out return statement rather than the current one once the email table has been fixed
-        /*
-//        return emailRepository.getAllEmails();
-         */
+        //return emailRepository.getAllEmails();
+
         return userRepository.getAllPrimaryEmails().toString();
     }
 
-    /***
+    /**
      * Retrieves the session token of an user. Based on the profile ID that is provided.
+     *
      * @param profileId the user's ID
      * @return a list containing all the tokens that belong to the given user.
      */
@@ -239,11 +246,13 @@ public class UserController {
      * actual password, then checking for equality.
      *
      * @param jsonString The JSON body passed as a string.
-     * @return isLogin Whether the attempt was correct or not.
+     * @param response   the response servlet
+     * @return response entity to inform user if credentials for logging in was successful or not
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity checkLogin(@RequestBody String jsonString, HttpServletResponse response) {
+    public ResponseEntity checkLogin(@RequestBody String jsonString,
+                                     HttpServletResponse response) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
@@ -255,11 +264,13 @@ public class UserController {
      * Logs out the current user and deletes the entry in the Session table
      *
      * @param sessionToken token stored in the cookie to identify the user
-     * @return message and status to notify if log out was successful
-     * */
+     * @param response     the response servlet
+     * @return response entity to inform user if logging out was successful or not
+     */
     @PostMapping("/logout")
     @ResponseBody
-    public ResponseEntity checkLogout(@CookieValue(value = "s_id") String sessionToken, HttpServletResponse response) {
+    public ResponseEntity checkLogout(@CookieValue(value = "s_id") String sessionToken,
+                                      HttpServletResponse response) {
         try {
             sessionRepository.removeToken(sessionToken);
 
@@ -279,12 +290,17 @@ public class UserController {
     }
 
     /**
-     *  Processes to edit user password
+     * Handles request to edit user password
      *
-     * @param sessionToken token stored in the cookie to identify the user
-     * */
+     * @param jsonString   the json as string. Request contains the updated passwords
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if editing a password was successful or not
+     */
     @PutMapping("/profiles/{profileId}/password")
-    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue(value = "s_id") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString,
+                                       @PathVariable Long profileId,
+                                       @CookieValue(value = "s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
@@ -299,13 +315,15 @@ public class UserController {
     /**
      * Handles the editing of a user's activity types. Parses the list of activities and calls the service method,
      * returning the result as a ResponseEntity
-     * @param jsonString The json as a string
-     * @param profileId The ID of the user to update
+     *
+     * @param jsonString The json as a string. Request contains activity types
+     * @param profileId  the user's id that needs updating
      * @return A ResponseEntity stating the result
      * @throws JsonProcessingException If there is an issue while parsing the JSON
      */
     @PutMapping("/profiles/{profileId}/activity-types")
-    public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
+    public ResponseEntity editActivityTypes(@RequestBody String jsonString,
+                                            @PathVariable Long profileId) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -321,6 +339,7 @@ public class UserController {
 
     /**
      * Retrieve the names of all the Activity Types in the database
+     *
      * @return A JSON list of names of activity types
      */
     @GetMapping("/activity-types")
@@ -336,8 +355,9 @@ public class UserController {
 
     /**
      * Parses a list of activity types
+     *
      * @param activitiesNode A JsonNode of the activities key extracted from the JSON
-     * @return A List of Strings of the activity types
+     * @return A JSON list of strings of the activity types
      */
     public static List<String> parseActivityList(JsonNode activitiesNode) {
         List<String> activities = new ArrayList<>();
