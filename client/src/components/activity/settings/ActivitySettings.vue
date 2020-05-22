@@ -53,7 +53,7 @@
 <!--                            v-bind:key="addingCountry"-->
 <!--                          >{{addingCountry}}</option>-->
 <!--                        </select>-->
-                        <input class="editActivityInput" type="time" v-model="location" v-on:change=""/>
+                        <input id="locationInput" class="editActivityInput" type="text" v-model="location" v-on:change="getLocationSuggestions()"/>
                     </div>
 
                     <label class="editActivityLabel">Activity Types</label>
@@ -96,8 +96,6 @@ import { apiUser, apiActivity } from "../../../api";
 import router from "../../../router";
 import axios from "axios";
 import NavBar from "../../modules/NavBar";
-
-const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
 export default {
     components: {
@@ -316,6 +314,22 @@ export default {
             document.getElementById("activity_error").hidden = false;
             document.getElementById("activity_error").innerText = error;
             document.getElementById("activity_success").hidden = true;
+        },
+
+        getLocationSuggestions() {
+            const searchTerm = document.getElementById("locationInput").value;
+            const url = "https://photon.komoot.de/api/?q=" + searchTerm;
+            axios.get(url)
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch(error => console.log(error));
+        }
+    },
+
+    watch: {
+        location() {
+            this.getLocationSuggestions();
         }
     }
 };
