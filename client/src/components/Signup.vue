@@ -233,11 +233,8 @@ export default {
         Number(this.user.fitness)
       ).then(
         response => {
-          this.createUserProfile(response.data[0]);
-          //Save token to local storage
-          localStorage.setItem("s_id", response.data[1]["sessionToken"]);
-          apiUser.refreshInstance();
-          this.$router.push('profile?u='+response.data[0].profile_id);
+          this.createUserProfile(response.data);
+          this.$router.push('profile?u='+response.data.profile_id);
         },
         error => {
           this.submissionError = error.response.data.Errors;

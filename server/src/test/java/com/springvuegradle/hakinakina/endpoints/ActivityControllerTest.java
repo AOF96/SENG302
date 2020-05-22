@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.servlet.http.Cookie;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
@@ -132,6 +133,7 @@ public class ActivityControllerTest {
 
     @Test
     public void addActivityTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         Session testSession = new Session("t0k3n");
         User testUser = new User("John", "Smith", "john@gmail.com", null,
                 Gender.MALE, 2, "Password1");
@@ -142,7 +144,7 @@ public class ActivityControllerTest {
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));
-        this.mockMvc.perform(post("/profiles/1/activities").header("token", "t0k3n")
+        this.mockMvc.perform(post("/profiles/1/activities").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(INPUT))
                 .andExpect(status().isCreated())
@@ -151,6 +153,7 @@ public class ActivityControllerTest {
 
     @Test
     public void editActivityTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         Session testSession = new Session("t0k3n");
 
         // add test user
@@ -166,7 +169,7 @@ public class ActivityControllerTest {
         when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
         when(service.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been updated", HttpStatus.OK));
 
-        this.mockMvc.perform(put("/profiles/1/activities/1").header("token", "t0k3n")
+        this.mockMvc.perform(put("/profiles/1/activities/1").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EDIT_ACTIVITY_JSON))
                 .andExpect(status().is(200))
@@ -223,6 +226,7 @@ public class ActivityControllerTest {
 
     @Test
     public void deleteActivityErrorHandlingTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         Session session1 = new Session("t0k3n");
 
         User user1 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
@@ -247,7 +251,7 @@ public class ActivityControllerTest {
         when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
         when(service.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity successfully deleted", HttpStatus.OK));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/profiles/1/activities/1").header("token", "t0k3n1"))
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/profiles/1/activities/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Activity successfully deleted")));
 

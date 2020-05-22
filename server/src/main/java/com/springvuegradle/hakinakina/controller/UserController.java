@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class UserController {
      * @return*/
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
@@ -94,7 +95,7 @@ public class UserController {
      * @return a 400 response if the provided ID and token don't match or is not an admin. 200 if it's a valid request.
      */
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
           return responseHandler.formatErrorResponse(400, "Invalid Session");
@@ -140,7 +141,7 @@ public class UserController {
      * @return*/
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @CookieValue(value = "s_id") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
     }
 
@@ -162,7 +163,7 @@ public class UserController {
      * @return User json object for user with matching sessionToken
      */
     @GetMapping("/validateLogin")
-    public ResponseEntity validateLogin(@RequestHeader("token") String sessionToken) {
+    public ResponseEntity validateLogin(@CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
             return responseHandler.formatErrorResponse(401, "User not currently logged in");
@@ -178,7 +179,7 @@ public class UserController {
      * @return Specific user
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
             return responseHandler.formatErrorResponse(400, "Invalid Session");
@@ -257,8 +258,17 @@ public class UserController {
      * @return message and status to notify if log out was successful
      * */
     @PostMapping("/logout")
-    public ResponseEntity checkLogout(@RequestHeader("token") String sessionToken) {
+    @ResponseBody
+    public ResponseEntity checkLogout(@CookieValue(value = "s_id") String sessionToken, HttpServletResponse response) {
         try {
+            // create a cookie
+            Cookie cookie = new Cookie("s_id", null);
+            cookie.setMaxAge(0);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            //add cookie to response
+            response.addCookie(cookie);
             sessionRepository.removeToken(sessionToken);
             return new ResponseEntity("User logged out", HttpStatus.OK);
         } catch (Exception e) {
@@ -273,7 +283,7 @@ public class UserController {
      * @param sessionToken token stored in the cookie to identify the user
      * */
     @PutMapping("/profiles/{profileId}/password")
-    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @CookieValue(value = "s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");

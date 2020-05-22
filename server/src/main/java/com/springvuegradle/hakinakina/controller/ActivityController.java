@@ -55,7 +55,7 @@ public class ActivityController {
      * @return response entity to inform user if adding an activity was successful or not
      */
     @PostMapping("/profiles/{profileId}/activities")
-    public ResponseEntity addActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity addActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
         return activityService.addActivity(activity, profileId, sessionToken);
     }
 
@@ -63,7 +63,7 @@ public class ActivityController {
      * Handles requests for editing an activity
      */
     @PutMapping("/profiles/{profileId}/activities/{activityId}")
-    public ResponseEntity editActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @PathVariable("activityId") long activityId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity editActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @PathVariable("activityId") long activityId, @CookieValue(value = "s_id") String sessionToken) {
         return activityService.editActivity(activity, profileId, activityId, sessionToken);
     }
 
@@ -76,7 +76,7 @@ public class ActivityController {
      */
     @DeleteMapping("/profiles/{profileId}/activities/{activityId}")
     public ResponseEntity deleteActivity(@PathVariable("profileId") long profileId, @PathVariable("activityId") long activityId,
-                                         @RequestHeader("token") String sessionToken) {
+                                         @CookieValue(value = "s_id") String sessionToken) {
 
         return activityService.removeActivity(profileId, activityId, sessionToken);
     }
