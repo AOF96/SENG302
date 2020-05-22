@@ -53,7 +53,7 @@
 <!--                            v-bind:key="addingCountry"-->
 <!--                          >{{addingCountry}}</option>-->
 <!--                        </select>-->
-                        <input id="locationInput" class="editActivityInput" type="text" v-model="location" v-on:change="getLocationSuggestions()"/>
+                        <input id="locationInput" class="editActivityInput" type="text" v-model="location"/>
                     </div>
 
                     <label class="editActivityLabel">Activity Types</label>
@@ -120,6 +120,27 @@ export default {
             suggestedLocations: []
         };
     },
+
+    /**
+     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
+     * after 1 second
+     */
+    mounted: function () {
+        let input = document.querySelector('#locationInput');
+        let timeout = null;
+        input.addEventListener('keyup', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                const url = "https://photon.komoot.de/api/?q=" + input.value;
+                axios.get(url)
+                    .then((response) => {
+                        console.log(response.data);
+                    })
+                    .catch(error => console.log(error));
+            }, 1000);
+        });
+    },
+
     computed: {
         ...mapGetters(["user"])
     },
@@ -135,6 +156,7 @@ export default {
             })
             .catch(error => console.log(error));
     },
+
     methods: {
         ...mapActions(["createActivity"]),
         ...mapActions(["updateUserContinuousActivities"]),
@@ -314,22 +336,6 @@ export default {
             document.getElementById("activity_error").hidden = false;
             document.getElementById("activity_error").innerText = error;
             document.getElementById("activity_success").hidden = true;
-        },
-
-        getLocationSuggestions() {
-            const searchTerm = document.getElementById("locationInput").value;
-            const url = "https://photon.komoot.de/api/?q=" + searchTerm;
-            axios.get(url)
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch(error => console.log(error));
-        }
-    },
-
-    watch: {
-        location() {
-            this.getLocationSuggestions();
         }
     }
 };
