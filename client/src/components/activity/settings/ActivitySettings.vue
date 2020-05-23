@@ -126,6 +126,7 @@ export default {
      * after 1 second
      */
     mounted: function () {
+        let outer = this;
         let input = document.querySelector('#locationInput');
         let timeout = null;
         input.addEventListener('keyup', function () {
@@ -134,7 +135,7 @@ export default {
                 const url = "https://photon.komoot.de/api/?q=" + input.value;
                 axios.get(url)
                     .then((response) => {
-                        console.log(response.data);
+                        outer.suggestedLocations = response.data.features;
                     })
                     .catch(error => console.log(error));
             }, 1000);
