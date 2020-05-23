@@ -99,7 +99,7 @@ router.beforeEach((to, from, next) => {
   console.log("isAdmin: " + isAdmin);
   console.log("isLogin: " + isLoggedIn);
 
-  if (firstLoad === true && localStorage.getItem("s_id") !== null) {
+  if (firstLoad === true) {
     firstLoad = false;
     apiUser.getUserByToken().then(
       (response) => {
@@ -122,7 +122,6 @@ router.beforeEach((to, from, next) => {
     } else if (to.path !== "/logout" && isLoggedIn) {
       next();
     } else {
-      localStorage.removeItem("s_id");
       next("/login");
     }
   }
