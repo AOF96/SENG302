@@ -29,9 +29,11 @@
           </h1>
           <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
         </div>
-        <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
-          <button class="genericConfirmButton">Edit Profile</button>
-        </router-link>
+        <div v-if="user.permission_level > 0 || user.profile_id == searchedUser.profile_id">
+            <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
+              <button class="genericConfirmButton">Edit Profile</button>
+            </router-link>
+        </div>
         <div class="floatClear"></div>
       </div>
       <div class="profileActivitiesContainer">
