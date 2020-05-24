@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @click="showLocations = false">
         <NavBar/>
         <div class="createActivityContainer">
             <div class="createActivityContentContainer">
@@ -46,14 +46,12 @@
 
                     <label class="editActivityLabel">Location</label>
                     <div>
-<!--                        <select v-model="adding_country" name="countries" class="editActivitySelect" required>-->
-<!--                          <option selected disabled hidden>Countries</option>-->
-<!--                          <option-->
-<!--                            v-for="addingCountry in countries_option"-->
-<!--                            v-bind:key="addingCountry"-->
-<!--                          >{{addingCountry}}</option>-->
-<!--                        </select>-->
-                        <input id="locationInput" class="editActivityInput" type="text" v-model="location"/>
+                        <input id="locationInput" class="editActivityInput" type="text" onfocus="showLocations = true" v-model="location"/>
+                        <div v-if="showLocations" class="dropdown" >
+                            <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">
+                                <p v-on:click="location = item.summary">{{item.summary}}</p>
+                            </div>
+                        </div>
                     </div>
 
                     <label class="editActivityLabel">Activity Types</label>
@@ -117,15 +115,16 @@ export default {
             end_time: null,
             combinedStartTime: null,
             combinedEndTime: null,
-            suggestedLocations: []
+            suggestedLocations: [],
+            showLocations: false
         };
     },
 
     /**
      * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-     * after 1 second
+     * after 1 second. Calls a support function to add a summary key for each of the location objects.
      */
-    mounted: function () {
+    mounted: function() {
         let outer = this;
         let input = document.querySelector('#locationInput');
         let timeout = null;
@@ -135,7 +134,12 @@ export default {
                 const url = "https://photon.komoot.de/api/?q=" + input.value;
                 axios.get(url)
                     .then((response) => {
+                        console.log(response.data.features)
                         outer.suggestedLocations = response.data.features;
+                        for(let location in outer.suggestedLocations) {
+                            outer.suggestedLocations[location]["summary"] = outer.getLocationSummary(outer.suggestedLocations[location]);
+                        }
+                        outer.showLocations = true;
                     })
                     .catch(error => console.log(error));
             }, 1000);
@@ -162,6 +166,28 @@ export default {
         ...mapActions(["createActivity"]),
         ...mapActions(["updateUserContinuousActivities"]),
         ...mapActions(["updateUserDurationActivities"]),
+
+
+        /**
+         * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
+         * function.
+         */
+        getLocationSummary(location) {
+            let result = "";
+            if ("street" in location.properties) {
+                result += location.properties.street + ", ";
+            }
+
+            if ("city" in location.properties) {
+                result += location.properties.city + ", ";
+            }
+
+            result += location.properties.name + ", ";
+            result += location.properties.state + ", ";
+            result += location.properties.country;
+
+            return result;
+        },
 
         /**
          * Shows/hides date and time selection if duration is duration/continuous
@@ -344,4 +370,5 @@ export default {
 
 <style scoped>
     @import "../../../../public/styles/pages/activitySettingsStyle.css";
+
 </style>
