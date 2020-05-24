@@ -122,7 +122,8 @@ export default {
 
     /**
      * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-     * after 1 second. Calls a support function to add a summary key for each of the location objects.
+     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
+     * duplicate summaries are removed.
      */
     mounted: function() {
         let outer = this;
@@ -134,11 +135,20 @@ export default {
                 const url = "https://photon.komoot.de/api/?q=" + input.value;
                 axios.get(url)
                     .then((response) => {
-                        console.log(response.data.features)
-                        outer.suggestedLocations = response.data.features;
-                        for(let location in outer.suggestedLocations) {
-                            outer.suggestedLocations[location]["summary"] = outer.getLocationSummary(outer.suggestedLocations[location]);
+                        //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                        //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                        //middle of the list instead of the top
+                        let temp = [];
+                        let locationSummaries = [];
+                        for(let location in response.data.features) {
+                            let locationSummary = outer.getLocationSummary(response.data.features[location]);
+                            if (!locationSummaries.includes(locationSummary)) {
+                                temp.push(response.data.features[location]);
+                                temp[temp.length - 1]["summary"] = locationSummary;
+                                locationSummaries.push(locationSummary);
+                            }
                         }
+                        outer.suggestedLocations = temp;
                         outer.showLocations = true;
                     })
                     .catch(error => console.log(error));
@@ -174,16 +184,17 @@ export default {
          */
         getLocationSummary(location) {
             let result = "";
+
+            result += location.properties.name + ", ";
             if ("street" in location.properties) {
                 result += location.properties.street + ", ";
             }
-
             if ("city" in location.properties) {
                 result += location.properties.city + ", ";
             }
-
-            result += location.properties.name + ", ";
-            result += location.properties.state + ", ";
+            if ("state" in location.properties) {
+                result += location.properties.state + ", ";
+            }
             result += location.properties.country;
 
             return result;
