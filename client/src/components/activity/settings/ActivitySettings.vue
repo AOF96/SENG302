@@ -47,7 +47,7 @@
                     <label class="editActivityLabel">Location</label>
                     <div>
                         <input id="locationInput" class="editActivityInput" type="text" onfocus="showLocations = true" v-model="location"/>
-                        <div v-if="showLocations" class="dropdown" >
+                        <div v-if="location !== '' && showLocations && suggestedLocations.length > 0" class="dropdown" >
                             <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">
                                 <p v-on:click="location = item.summary">{{item.summary}}</p>
                             </div>
@@ -185,17 +185,19 @@ export default {
         getLocationSummary(location) {
             let result = "";
 
-            result += location.properties.name + ", ";
+            result += location.properties.name;
             if ("street" in location.properties) {
-                result += location.properties.street + ", ";
+                result += ", " + location.properties.street;
             }
             if ("city" in location.properties) {
-                result += location.properties.city + ", ";
+                result += ", " + location.properties.city;
             }
             if ("state" in location.properties) {
-                result += location.properties.state + ", ";
+                result += ", " + location.properties.state;
             }
-            result += location.properties.country;
+            if ("country" in location.properties) {
+                result += ", " + location.properties.country;
+            }
 
             return result;
         },
