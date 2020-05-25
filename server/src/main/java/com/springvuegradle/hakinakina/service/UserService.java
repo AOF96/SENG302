@@ -8,10 +8,13 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
@@ -336,7 +339,7 @@ public class UserService {
      * @return A boolean of whether the user is of a valid age
      */
     public static boolean checkAge(Date birthDate, LocalDate currentDate) {
-         boolean result = true;
+        boolean result = true;
         int age = calculateAge(birthDate, currentDate);
         if (birthDate.after(new Date()) || age < 13 || age > 140) {
             result = false;
@@ -371,7 +374,7 @@ public class UserService {
      * @param attempt The password attempt
      * @return A ResponseEntity detailing the results
      */
-    public ResponseEntity checkLogin(String email, String attempt) {
+    public ResponseEntity checkLogin(String email, String attempt, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
@@ -381,13 +384,20 @@ public class UserService {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
+
                 //Generate session token
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
                 sessionRepository.insertToken(sessionToken, user.getUserId());
+                // create a cookie
+                Cookie cookie = new Cookie("s_id",sessionToken);
+                // expires in 7 days
+                cookie.setMaxAge(7 * 24 * 60 * 60);
+                cookie.setHttpOnly(true);
+                // add cookie to response
+                response.addCookie(cookie);
 
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+                return new ResponseEntity(user.toJson(), HttpStatus.OK);
             } else {
                 return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }

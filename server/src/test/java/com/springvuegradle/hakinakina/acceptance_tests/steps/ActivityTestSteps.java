@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
+import javax.servlet.http.Cookie;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -144,13 +145,13 @@ public class ActivityTestSteps {
     public void iCreateTheFollowingActivityWithID(
             String activity_name, String description, String activity_types, String continuous, String start_time,
             String end_time, String location, int ID) throws Exception {
-
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));;
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
-                .header("token", session)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("Activity has been created")))
@@ -164,12 +165,13 @@ public class ActivityTestSteps {
             String activity_name, String description, String activity_types, String continuous, String start_time,
             String end_time, String location, int ID) throws Exception {
 
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity must have at least one activity type", HttpStatus.BAD_REQUEST));
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
-                .header("token", session)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("Activity must have at least one activity type")))
@@ -183,12 +185,13 @@ public class ActivityTestSteps {
             String activity_name, String description, String activity_types, String continuous, String start_time,
             String end_time, String location, int ID) throws Exception {
 
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity start date and time must be in the future", HttpStatus.BAD_REQUEST));
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
-                .header("token", session)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("Activity start date and time must be in the future")))
@@ -202,12 +205,13 @@ public class ActivityTestSteps {
             String activity_name, String description, String activity_types, String continuous, String start_time,
             String end_time, String location, int ID) throws Exception {
 
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.BAD_REQUEST));
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
-                .header("token", session)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("Activity end date and time must be after the start date and time")))
@@ -226,6 +230,7 @@ public class ActivityTestSteps {
             String activity_name, String description, String activity_types, String continuous, String start_time,
             String end_time, String location, String token) throws Exception {
 
+        final Cookie tokenCookie = new Cookie("s_id", token);
         String request = "{\n" +
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -239,7 +244,7 @@ public class ActivityTestSteps {
                 "}";
 
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN));
-        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities").header("token", token)
+        result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities").cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
         String test = "/profiles/" + user.getUserId() + "/activities";
         System.out.println(test);
@@ -251,6 +256,8 @@ public class ActivityTestSteps {
     @And("I edit the activity with ID {int}, token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}, {string}")
     public void iEditTheActivityWithNewValues(int activityID, String token, String name, String description, String activityTypes, String continuous,  String startTime, String endTime,
                                               String location) throws Exception {
+
+        final Cookie tokenCookie = new Cookie("s_id", token);
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -265,7 +272,7 @@ public class ActivityTestSteps {
         System.out.println(request);
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been updated", HttpStatus.OK));
         result = mockMvc.perform(put("/profiles/" + user.getUserId() + "/activities/" + activityID)
-                .header("token", session)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
 //        System.out.println(user.getActivities());
 //        assertTrue(true);
@@ -286,10 +293,11 @@ public class ActivityTestSteps {
 
     @And("I delete the activity with ID {int} and token {string}")
     public void iDeleteTheActivityWithIDAndToken(int ID, String token) throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", token);
         when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity successfully deleted", HttpStatus.OK));
         System.out.println(user.getUserId());
         result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + ID)
-                .header("token", token)).andReturn();
+                .cookie(tokenCookie)).andReturn();
 //        System.out.println(result.getResponse().getStatus());
     }
 
@@ -297,6 +305,8 @@ public class ActivityTestSteps {
     public void aDifferentUserTriesToEditMyActivity(String token, String name, String description, String activityTypes,
                                                              String continuous,  String startTime, String endTime,
                                                              String location) throws Exception {
+
+        final Cookie tokenCookie = new Cookie("s_id", token);
 
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
@@ -312,7 +322,7 @@ public class ActivityTestSteps {
 
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid User", HttpStatus.FORBIDDEN));
         result = mockMvc.perform(put("/profiles/" + user.getUserId() + "/activities/" + activity.getId())
-                .header("token", token)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
 
         System.out.println(result.getResponse().getStatus());
@@ -323,6 +333,8 @@ public class ActivityTestSteps {
     public void iEditMyActivityWithTokenAndNewValues(String token,  String name, String description, String activityTypes,
                                                      String continuous,  String startTime, String endTime,
                                                      String location) throws Exception {
+
+        final Cookie tokenCookie = new Cookie("s_id", token);
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -337,7 +349,7 @@ public class ActivityTestSteps {
 
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Selected activity type \" + activityType.getName() + \" does not exist", HttpStatus.BAD_REQUEST));
         result = mockMvc.perform(put("/profiles/" + user.getUserId() + "/activities/" + activity.getId())
-                .header("token", token)
+                .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON)).andReturn();
 
         System.out.println(result.getResponse().getStatus());
@@ -346,16 +358,18 @@ public class ActivityTestSteps {
 
     @And("I attempt to delete an activity that doesn't exists with ID {int} and token {string}")
     public void iAttemptToDeleteAnActivityThatDoesnTExistsWithIDAndToken(int ID, String token) throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", token);
         when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity not found", HttpStatus.NOT_FOUND));
         result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + ID)
-                .header("token", token)).andReturn();
+                .cookie(tokenCookie)).andReturn();
     }
 
     @And("Someone else attempts to delete my activity with token {string}")
     public void someoneElseAttemptsToDeleteMyActivityWithToken(String token) throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", token);
         when(activityService.removeActivity(any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid user", HttpStatus.FORBIDDEN));
         result = mockMvc.perform(delete("/profiles/" + user.getUserId() + "/activities/" + activity.getId())
-                .header("token", token)).andReturn();
+                .cookie(tokenCookie)).andReturn();
     }
 }
 

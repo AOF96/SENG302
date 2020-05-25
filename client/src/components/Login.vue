@@ -7,14 +7,14 @@
                 <h2>Sign in to your account</h2>
                 <form @submit.prevent>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
+                        <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
                     </div>
                     <div class="loginRow">
                         <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
                                required>
                     </div>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
+                        <h6 class="loginErrorMessages" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
                             }}</h6>
                     </div>
                     <div class="loginRow">
@@ -22,7 +22,7 @@
                                placeholder="Password" required>
                     </div>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
+                        <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
                     </div>
                     <hr>
                     <div class="loginRow">
@@ -81,21 +81,18 @@
           apiUser.login(this.user.primary_email, this.user.password)
             .then((response) => {
               const responseData = response.data;
-              //Save token to local storage
-              localStorage.setItem("s_id", responseData[1]["sessionToken"]);
-              apiUser.refreshInstance();
-              this.updateUserProfile(responseData[0]);
+              this.updateUserProfile(responseData);
               this.$router.push('Profile');
-              apiUser.getUserContinuousActivities(responseData[0].profile_id).then((response) => {
+              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
                 this.updateUserContinuousActivities(response.data);
               }).catch(err => console.log(err));
-              apiUser.getUserDurationActivities(responseData[0].profile_id).then((response) => {
+              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
                 this.updateUserDurationActivities(response.data);
               }).catch(err => console.log(err));
-              if (responseData[0].permission_level == 2) {
+              if (responseData.permission_level == 2) {
                 this.$router.push("/settings/admin_dashboard");
               } else {
-                this.$router.push("profile?u=" + responseData[0].profile_id);
+                this.$router.push("profile?u=" + responseData.profile_id);
               }
             })
             .catch(error => {
