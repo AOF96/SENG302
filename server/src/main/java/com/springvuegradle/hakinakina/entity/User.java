@@ -278,7 +278,7 @@ public class User {
         return country;
     }
 
-    public String getSate() {
+    public String getState() {
         return state;
     }
 

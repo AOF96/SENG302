@@ -2,13 +2,15 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Email;
+import com.springvuegradle.hakinakina.entity.Session;
+import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -487,6 +489,34 @@ public class UserService {
 
         if (result) {
             return new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
+        }
+    }
+
+    /**
+     * Updates a uses city, state, and country.
+     * @param city String city name
+     * @param state String state name
+     * @param country String country name
+     * @param userId Long id of user to update
+     * @return ResponseEntity of result
+     */
+    public ResponseEntity editLocation(String city, String state, String country, Long userId) {
+        boolean result = false;
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setCity(city);
+            user.setState(state);
+            user.setCountry(country);
+            userRepository.save(user);
+            result = true;
+        }
+
+        if (result) {
+            return new ResponseEntity("Successfully updated location", HttpStatus.valueOf(200));
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
