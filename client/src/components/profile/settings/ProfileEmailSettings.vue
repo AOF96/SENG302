@@ -22,6 +22,7 @@
                     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                     <path d="M0 0h24v24H0z" fill="none" /></svg>
             </div>
+            <h6 class="addExtraEmailErrorMessage" v-if="errorMsg">{{errorMsg}}</h6>
             <form class="addEmailForm" @submit.prevent v-if="searchedUser.additional_email.length < 4">
                 <input class="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
                 <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
@@ -33,6 +34,7 @@
         <transition name="fadeup">
             <div class="editEmailContainer" v-if="showEditBox">
                 <h1>Edit Email</h1>
+                <h6 class="addExtraEmailErrorMessage" v-if="editErrorMsg">{{editErrorMsg}}</h6>
                 <form class="addEmailForm" @submit.prevent>
                     <input class="addEmailInput" v-model="editEmailInput" type="email" placeholder="Secondary Email" required>
                     <button class="genericConfirmButton addEmailButton" v-on:click="editEmail()">Update</button>
@@ -64,7 +66,9 @@
                 tempOldEmail: '',
                 editEmailInput: '',
                 searchedUser: {primary_email: "", additional_email: []},
-                showEditBox: false
+                showEditBox: false,
+                errorMsg: "",
+                editErrorMsg: ""
             }
         },
         computed: {
@@ -79,14 +83,19 @@
                than 5 emails or from trying to enter an existing email.
             */
             async addEmail(textInput) {
+                this.errorMsg = "";
                 if (this.searchedUser.additional_email.length === LIMIT_NUM_EMAIL) {
-                    alert("You already have 5 emails, delete one if you want to add more.");
                     this.showButton = false;
                     return;
                 }
                 const emails = await apiUser.getAllEmails();
+                if (textInput === "") {
+                    this.errorMsg = "Please enter an email.";
+                    return;
+                }
+
                 if (this.searchedUser.additional_email.includes(textInput) || textInput == this.searchedUser.primary_email || emails.data.includes(textInput)) {
-                    alert("Email already in use.");
+                    this.errorMsg = "Email already in use.";
                 } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
                     try {
                         await apiUser.addEmails(this.searchedUser.profile_id, [this.textInput]);
@@ -97,7 +106,7 @@
                             tempThis.textInput = "";
                         }, 10);
                     } catch (err) {
-                        alert("Email already in use.");
+                        this.errorMsg = "Email already in use.";
                         this.textInput = "";
                     }
                 }
@@ -114,7 +123,6 @@
                 }
                 this.searchedUser.additional_email.push(this.searchedUser.primary_email);
                 this.searchedUser.primary_email = additional_email;
-                console.log(this.searchedUser.primary_email, this.searchedUser.additional_email);
                 this.updateUserEmail(this.searchedUser);
                 apiUser.editEmail(this.searchedUser.profile_id, this.searchedUser.primary_email, this.searchedUser.additional_email);
             },
@@ -129,18 +137,21 @@
             },
 
             /*
-              Function to edit a secondary email.
+              Function to edit a secondary email. Shows an error message if the entered email is already in use.
             */
             async editEmail() {
+                this.editErrorMsg = "";
                 const emails = await apiUser.getAllEmails();
                 if (this.searchedUser.additional_email.includes(this.editEmailInput) || this.editEmailInput == this.searchedUser.primary_email || emails.data.includes(this.editEmailInput)) {
-                    alert("Email already in use.");
+                    this.editErrorMsg = "Email already in use.";
+                    // alert("Email already in use.");
                 } else if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
                     const index = this.searchedUser.additional_email.indexOf(this.tempOldEmail);
                     this.searchedUser.additional_email[index] = this.editEmailInput;
                     this.showEditBox = false;
                     this.updateUserEmail(this.searchedUser);
                     apiUser.editEmail(this.searchedUser.profile_id, this.searchedUser.primary_email, this.searchedUser.additional_email);
+                    this.editErrorMsg = "";
                 }
             },
 
