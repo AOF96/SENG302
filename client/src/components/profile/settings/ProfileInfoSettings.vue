@@ -25,6 +25,17 @@
             <input type="text" name="lname" v-model="searchedUser.lastname" placeholder="Last Name*" required>
             <h2>Nickname</h2>
             <input type="text" name="nickname" v-model="searchedUser.nickname" placeholder="Nickname">
+
+            <h2>Location</h2>
+            <div>
+                <input id="locationInput" type="text" onfocus="showLocations = true"/>
+                <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown" >
+                    <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">
+                        <p>{{item.summary}}</p>
+                    </div>
+                </div>
+            </div>
+
             <h2>Gender</h2>
             <select v-model="searchedUser.gender" name="gender" placeholder="Gender" value="Gender" required>
                 <option selected disabled hidden>Gender</option>
@@ -57,23 +68,45 @@
 import { mapGetters, mapActions } from 'vuex'
 import UserSettingsMenu from './ProfileSettingsMenu';
 import {apiUser} from "../../../api";
+import axios from "axios";
 
 export default {
     components: {
         UserSettingsMenu
     },
+
     computed: {
         ...mapGetters(['user']),
     },
     data: function() {
       return {
         searchedUser: {},
-        showAdmin: false
+        showAdmin: false,
+        suggestedLocations: [],
+        showLocations: false
       }
     },
     methods: {
         ...mapActions(['logout']),
         ...mapActions(['updateUserProfile']),
+
+        /**
+         * Creates a summary for a location. This is done by appending the name (which should be a name of a city), the
+         * state, and the country.
+         */
+        getLocationSummary(location) {
+            let result = "";
+
+            result += location.properties.name;
+            if ("state" in location.properties) {
+                result += ", " + location.properties.state;
+            } else {
+                result += ", (No State)";
+            }
+            result += ", " + location.properties.country;
+
+            return result;
+        },
 
         /*
             Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
@@ -124,8 +157,45 @@ export default {
           this.showAdmin = true;
         }
     },
+
+    /**
+     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
+     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
+     * duplicate summaries are removed.
+     */
     mounted() {
       this.loadSearchedUser();
+
+        let outer = this;
+        let input = document.querySelector('#locationInput');
+        let timeout = null;
+        input.addEventListener('keyup', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                const url = "https://photon.komoot.de/api/?q=" + input.value;
+                axios.get(url)
+                    .then((response) => {
+                        //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                        //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                        //middle of the list instead of the top
+                        let temp = [];
+                        let locationSummaries = [];
+                        for(let location in response.data.features) {
+                            if (response.data.features[location].properties.osm_value === "city") {
+                                let locationSummary = outer.getLocationSummary(response.data.features[location]);
+                                if (!locationSummaries.includes(locationSummary)) {
+                                    temp.push(response.data.features[location]);
+                                    temp[temp.length - 1]["summary"] = locationSummary;
+                                    locationSummaries.push(locationSummary);
+                                }
+                            }
+                        }
+                        outer.suggestedLocations = temp;
+                        outer.showLocations = true;
+                    })
+                    .catch(error => console.log(error));
+            }, 1000);
+        });
     }
 };
 </script>

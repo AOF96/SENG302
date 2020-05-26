@@ -410,3 +410,10 @@
     padding: 6px 16px;
     float: right;
 }
+.locationDropdown {
+    position: absolute;
+    overflow: scroll;
+    max-height: 200px;
+    width: 587px;
+    font-size: 14px;
+}
