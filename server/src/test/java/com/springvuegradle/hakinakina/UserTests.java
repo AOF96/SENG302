@@ -106,7 +106,7 @@ public class UserTests {
         testUser.setState("Texas");
         testUser.setCountry("U.S.A");
         assertEquals("Houston", testUser.getCity());
-        assertEquals("Texas", testUser.getSate());
+        assertEquals("Texas", testUser.getState());
         assertEquals("U.S.A", testUser.getCountry());
     }
 
