@@ -4,7 +4,7 @@
         <div class="createActivityContainer">
             <div class="createActivityContentContainer">
                 <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-                    <button class="genericConfirmButton">Back to Profile</button>
+                    <button class="genericConfirmButton backButton">Back to Profile</button>
                 </router-link>
                 <h1>Create a new Activity</h1>
                 <form class="CreateActivityFormContainer">
