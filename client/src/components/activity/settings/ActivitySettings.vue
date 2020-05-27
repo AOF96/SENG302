@@ -44,12 +44,13 @@
                         placeholder="Activity Description">
                     </textarea>
 
-                    <label class="editActivityLabel">Location</label>
+                    <label class="editActivityLabel">Location: <b>{{ location }}</b></label>
+                    <button v-if="location !== null" class="removeLocationButton" v-on:click="location = null"><b>x</b></button>
                     <div>
-                        <input id="locationInput" class="editActivityInput" type="text" onfocus="showLocations = true" v-model="location"/>
-                        <div v-if="location !== '' && showLocations && suggestedLocations.length > 0" class="dropdown" >
+                        <input id="locationInput" class="editActivityInput" type="text" placeholder="Search here..." onfocus="showLocations = true"/>
+                        <div v-if="showLocations && suggestedLocations.length > 0" class="dropdown" >
                             <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">
-                                <p v-on:click="location = item.summary">{{item.summary}}</p>
+                                <p v-on:click="setLocation(item.summary)">{{item.summary}}</p>
                             </div>
                         </div>
                     </div>
@@ -104,7 +105,7 @@ export default {
             selected_activity: "Activity Type",
             activities_option: [],
             countries_option: [],
-            location: "",
+            location: null,
             duration: "duration",
             name: "",
             description: "",
@@ -200,6 +201,15 @@ export default {
             }
 
             return result;
+        },
+
+        /**
+         * Sets the location and resets the location input after the user has selected a location from the dropdown
+         * box.
+         */
+        setLocation(locationSummary) {
+          this.location = locationSummary;
+          document.getElementById("locationInput").value = "";
         },
 
         /**
