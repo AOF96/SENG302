@@ -30,13 +30,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Retrieves users based on the following query parameters
      * This returns the users' primary email, full name (first, middle and last name) and nickname
+     * Provides the startIndex and size of the result set
      */
     @Query(value = "SELECT u.primary_email, u.first_name, u.last_name, u.middle_name, u.nick_name " +
             "FROM User u " +
             "WHERE (:email is null or u.primary_email = :email) " +
-            "AND (:nickname is null or u.nick_name = :nickname)" +
-            "AND (:fullname is null or u.first_name LIKE %:fullname% or u.middle_name LIKE %:fullname% or u.last_name LIKE %:fullname%)", nativeQuery = true)
+            "AND (:nickname is null or u.nick_name = :nickname) " +
+            "AND (:fullname is null or u.first_name LIKE %:fullname% or u.middle_name LIKE %:fullname% or u.last_name LIKE %:fullname%) " +
+            "LIMIT :startIndex, :size", nativeQuery = true)
     List<String> searchForUser(@Param("email") String email,
                                @Param("nickname") String nickname,
-                               @Param("fullname") String fullname);
+                               @Param("fullname") String fullname,
+                               int startIndex,
+                               @Param("size") int size);
 }

@@ -152,14 +152,18 @@ public class UserController {
      * @param email searching for a user with the given email
      * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
      * @param nickname searching for a user with the given nickname
+     * @param page current page number that the user is viewing
+     * @param size how many results we want to return
      * @return response entity containing a list of profiles
      */
     @GetMapping("/profiles")
     public ResponseEntity getAllUsers(@RequestParam(required = false) String email,
                                       @RequestParam(required = false) String fullname,
-                                      @RequestParam(required = false) String nickname) {
-        System.out.println(fullname);
-        List<String> searchUserResult = userRepository.searchForUser(email, nickname, fullname);
+                                      @RequestParam(required = false) String nickname,
+                                      @RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        int startIndex = (page - 1) * size;
+        List<String> searchUserResult = userRepository.searchForUser(email, nickname, fullname, startIndex, size);
         return new ResponseEntity(searchUserResult, HttpStatus.OK);
     }
 
