@@ -3,6 +3,7 @@ package com.springvuegradle.hakinakina.repository;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
@@ -25,4 +26,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select * from User where user_id = ?", nativeQuery = true)
     Optional<User> getUserById(long profileId);
+
+    /**
+     * Retrieves users based on the following query parameters
+     * This returns the users' primary email, full name (first, middle and last name) and nickname
+     */
+    @Query(value = "SELECT u.primary_email, u.first_name, u.last_name, u.middle_name, u.nick_name " +
+            "FROM User u " +
+            "WHERE (:email is null or u.primary_email = :email) " +
+            "AND (:nickname is null or u.nick_name = :nickname)" +
+            "AND (:fullname is null or u.first_name LIKE %:fullname% or u.middle_name LIKE %:fullname% or u.last_name LIKE %:fullname%)", nativeQuery = true)
+    List<String> searchForUser(@Param("email") String email,
+                               @Param("nickname") String nickname,
+                               @Param("fullname") String fullname);
 }

@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -150,14 +147,20 @@ public class UserController {
     }
 
     /**
-     * Handles requests for retrieving all profiles
+     * Handles requests for retrieving profiles when searching for a user with the given query parameters
      *
+     * @param email searching for a user with the given email
+     * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
+     * @param nickname searching for a user with the given nickname
      * @return response entity containing a list of profiles
      */
     @GetMapping("/profiles")
-    public ResponseEntity getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return responseHandler.formatGetUsers(users);
+    public ResponseEntity getAllUsers(@RequestParam(required = false) String email,
+                                      @RequestParam(required = false) String fullname,
+                                      @RequestParam(required = false) String nickname) {
+        System.out.println(fullname);
+        List<String> searchUserResult = userRepository.searchForUser(email, nickname, fullname);
+        return new ResponseEntity(searchUserResult, HttpStatus.OK);
     }
 
 
