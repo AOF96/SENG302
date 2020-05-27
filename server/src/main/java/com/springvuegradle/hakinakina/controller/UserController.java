@@ -3,12 +3,14 @@ package com.springvuegradle.hakinakina.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.SearchUserResponse;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -157,16 +159,46 @@ public class UserController {
      * @return response entity containing a list of profiles
      */
     @GetMapping("/profiles")
-    public ResponseEntity getAllUsers(@RequestParam(required = false) String email,
+    public ResponseEntity getAllUsers(
+            @RequestParam(required = false) String email,
                                       @RequestParam(required = false) String fullname,
                                       @RequestParam(required = false) String nickname,
                                       @RequestParam(defaultValue = "1") int page,
                                       @RequestParam(defaultValue = "10") int size) {
         int startIndex = (page - 1) * size;
-        List<String> searchUserResult = userRepository.searchForUser(email, nickname, fullname, startIndex, size);
+        List<Object> searchUserResult = userRepository.searchForUser(email, nickname, fullname, startIndex, size);
         return new ResponseEntity(searchUserResult, HttpStatus.OK);
     }
 
+
+    /**
+     * Handle request for retrieving users with email or full name or surname
+     * @param email searching for a user with the given email
+     * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
+     * @param lastname searching for a user with the given nickname
+     * @param page current page number that the user is viewing
+     * @param size how many results we want to return
+     * @return response entity containing a list of profiles
+     */
+    @GetMapping("/profiles2")
+    public Page<SearchUserResponse> findPaginated(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String fullname,
+            @RequestParam(required = false) String lastname,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+
+        Page<SearchUserResponse> resultPage;
+        if (email != null || fullname != null || lastname != null) {
+            resultPage = userService.findPaginatedByQuery(page, size, email, fullname, lastname);
+        } else {
+           resultPage = userService.findPaginated(page, size);
+        }
+        if(page > resultPage.getTotalPages()) {
+            throw new RuntimeException();
+        }
+        return resultPage;
+    }
 
     /**
      * Validates user login by checking their sessionToken and returns user info
