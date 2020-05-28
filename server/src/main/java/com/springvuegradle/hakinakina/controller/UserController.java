@@ -182,6 +182,7 @@ public class UserController {
      *
      * @param profileId the user's id to be retrieved
      * @return response entity containing the specific user
+     * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
      */
     @GetMapping("/profiles/{profile_id}")
     public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {

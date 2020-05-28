@@ -29,7 +29,7 @@
           </h1>
           <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
         </div>
-        <div v-if="user.permission_level > 0 || user.profile_id == searchedUser.profile_id">
+        <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
               <button class="genericConfirmButton">Edit Profile</button>
             </router-link>
@@ -37,7 +37,7 @@
         <div class="floatClear"></div>
       </div>
       <div class="profileActivitiesContainer">
-        <div v-if="user.permission_level > 0 || user.profile_id == searchedUser.profile_id">
+        <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
           <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
             <button class="genericConfirmButton" type="button" onclick>Add Activity</button>
           </router-link>
@@ -54,7 +54,7 @@
             <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
             <h4 class="profileActivityDescription">{{activity.description}}</h4>
           </div>
-          <div v-if="user.permission_level > 0 || user.profile_id == searchedUser.profile_id">
+          <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/activity_editing/' + activity.id">
               <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
             </router-link>
@@ -67,7 +67,7 @@
             <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
             <h4 class="profileActivityDescription">{{activity.description}}</h4>
           </div>
-          <div v-if="user.permission_level > 0 || user.profile_id == searchedUser.profile_id">
+          <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/activity_editing/' + activity.id">
               <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
             </router-link>
@@ -77,7 +77,7 @@
     </div>
     <div class="rightSidebarContainer">
       <template v-if="searchedUser.passports">
-        <PassportCountries :passports="searchedUser.passports" :key="componentKey"></PassportCountries>
+        <PassportCountries :passports="searchedUser.passports" :key="componentKey"/>
       </template>
     </div>
     <div class="floatClear"></div>
@@ -155,8 +155,8 @@ export default {
        */
     async loadSearchedUser() {
       if (
-        this.$route.params.profileId == null ||
-        this.$route.params.profileId == ""
+        this.$route.params.profileId === null ||
+        this.$route.params.profileId === ""
       ) {
         this.$router.push("/profile/" + this.user.profile_id);
         this.searchedUser = this.user;
@@ -164,7 +164,7 @@ export default {
         var tempUserData = await apiUser.getUserById(
           this.$route.params.profileId
         );
-        if (tempUserData == "Invalid permissions") {
+        if (tempUserData === "Invalid permissions") {
           this.$router.push("/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
