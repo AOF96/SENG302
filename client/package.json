@@ -8,7 +8,8 @@
     "build-prod": "vue-cli-service build --mode prod",
     "kill-all": "fuser -k 9500/tcp 9499/tcp",
     "lint": "vue-cli-service lint",
-    "test": "jest"
+    "test": "jest --coverage",
+    "sonarqube": "node sonarqube-analysis.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -29,8 +30,10 @@
     "babel-jest": "^25.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
-    "jest": "^25.1.0",
     "vue-jest": "^3.0.5",
+    "jest": "^25.1.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "sonarqube-scanner": "^2.6.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -52,6 +55,10 @@
     "last 2 versions"
   ],
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter",
     "moduleFileExtensions": [
       "js",
       "json",
@@ -63,6 +70,12 @@
     },
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    "setupTestFrameworkScriptFile":"<rootDir>/src/components/__test__/localStorageMock.js"
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
   }
 }
