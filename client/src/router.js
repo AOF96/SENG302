@@ -14,6 +14,7 @@ import ActivitySettings from "./components/activity/settings/ActivitySettings";
 import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
+import searchUser from "./components/modules/searchUser";
 
 Vue.use(VueRouter);
 
@@ -78,6 +79,10 @@ const routes = [
     {
         path: '/activity_editing/:activityId',
         component: EditActivity
+    },
+    {
+        path: '/search',
+        component: searchUser
     }
 ];
 
