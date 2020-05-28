@@ -203,10 +203,10 @@
 
 .editErrorMessage {
     font-family: 'Roboto';
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 16px;
     margin: 15px;
-    color: #f06a6a;
+    color: #ec4e4e;
     text-align: center;
 }
 
@@ -339,4 +339,36 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     margin-left: -120px;
     margin-right: -120px;
+}
+
+.activityPageBottomButtons {
+    overflow: hidden;
+    text-align: center;
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+}
+
+
+.activityPageBackToProfileButton {
+    padding: 8px 15px 8px 15px;
+}
+
+.activityPageBackToProfileButtonSpacing {
+    margin-right: 20px;
+}
+
+.activityPageEditActivityButton {
+    padding: 8px 15px 8px 15px;
+}
+
+.activityPageEditActivityButtonSpacing {
+    margin:0 auto;
+}
+
+.activityPageDeleteActivityButton {
+    padding: 8px 15px 8px 15px;
+}
+
+.activityPageDeleteActivityButtonSpacing {
+    margin-left: 20px;
 }

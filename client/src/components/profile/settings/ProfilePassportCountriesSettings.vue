@@ -3,7 +3,7 @@
         <UserSettingsMenu />
         <div class="settingsContentContainer">
             <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-                <button class="genericConfirmButton">Back to Profile</button>
+                <button class="genericConfirmButton backButton">Back to Profile</button>
             </router-link>
             <h1>Edit Passport Countries</h1>
             <hr>
@@ -30,8 +30,11 @@
                     <div class="floatClear"></div>
                 </form>
             </div>
-            <h6 class="successMessage" id="passport_success" hidden="false">Saved successfully</h6>
-            <h6 class="errorMessage" id="passport_error" hidden="false">An error has occurred</h6>
+            <div class="errorMessageContainer">
+                <h6 class="editSuccessMsg" id="passport_success" hidden="false">Passport saved successfully</h6>
+                <h6 class="editErrorMsg" id="passport_error" hidden="false">An error has occurred</h6>
+            </div>
+
         </div>
         <div class="floatClear"></div>
     </div>
