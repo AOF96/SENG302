@@ -182,27 +182,16 @@ public class UserController {
      *
      * @param profileId the user's id to be retrieved
      * @return response entity containing the specific user
+     * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId,
-                                     @CookieValue(value = "s_id") String sessionToken) {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return responseHandler.formatErrorResponse(400, "Invalid Session");
-        }
-        // only a user and an admin can edit the user profile
-        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
-        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
-        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
-            Optional<User> optional = userRepository.getUserById(profileId);
-            if (optional.isPresent()) {
-                User user = optional.get();
-                return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
-            } else {
-                return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
-            }
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
+        Optional<User> optional = userRepository.getUserById(profileId);
+        if (optional.isPresent() && optional.get().getPermissionLevel() != 2) {
+            User user = optional.get();
+            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return responseHandler.formatErrorResponse(400, "Session mismatch");
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
         }
     }
 
