@@ -46,9 +46,12 @@
         <h2>Nickname</h2>
         <input type="text" name="nickname" v-model="searchedUser.nickname" placeholder="Nickname" />
 
-        <h2>Location</h2>
+        <h2 id="locationHeader">Location: <b>{{ location }}</b></h2>
+        <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"
+                v-on:click="deleteLocation()"><b>x</b></button>
         <div>
-          <input id="locationInput" type="text" v-model="location" onfocus="showLocations = true" />
+          <input id="locationInput" autocomplete="off" type="text" placeholder="Search here..."
+                 onfocus="showLocations = true" />
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
             <div
               v-for="(item, index) in suggestedLocations"
@@ -128,14 +131,17 @@ export default {
       showAdmin: false,
       suggestedLocations: [],
       showLocations: false,
-      location: ""
+      location: null
     };
   },
   methods: {
     ...mapActions(["logout"]),
     ...mapActions(["updateUserProfile"]),
 
-    // location will be set whenever user select location
+    /**
+     * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
+     * the location input.
+     */
     setLocation(location) {
       this.location = location;
       const l = location.split(", ");
@@ -143,6 +149,19 @@ export default {
         city: l[0],
         state: l[1],
         country: l[2]
+      };
+      document.getElementById("locationInput").value = "";
+    },
+
+    /**
+     * Sets the location and each of its individual components to be null.
+     */
+    deleteLocation() {
+      this.location = null;
+      this.searchedUser.location = {
+        city: null,
+        state: null,
+        country: null
       };
     },
 
@@ -272,9 +291,8 @@ export default {
             let temp = [];
             let locationSummaries = [];
             for (let location in response.data.features) {
-              if (
-                response.data.features[location].properties.osm_value === "city"
-              ) {
+              if (response.data.features[location].properties.osm_value === "city" ||
+                      response.data.features[location].properties.osm_value === "town") {
                 let locationSummary = outer.getLocationSummary(
                   response.data.features[location]
                 );
