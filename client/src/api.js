@@ -56,6 +56,10 @@ export const apiUser = {
   addEmails: (profile_id, additional_email) => instance.post('/profiles/'+profile_id+'/emails', {
     additional_email: additional_email
   }),
+  searchUsers: (filter) => instance.get('/profiles/',
+      {params: filter}),
+
+
   // Edit the user's emails
   editEmail: (profile_id, primary_email, additional_email) => instance.put('/profiles/'+profile_id+'/emails', {
     primary_email: primary_email,
@@ -79,6 +83,26 @@ export const apiUser = {
       }
     );
     return await searchedUser;
+  },
+
+   searchedUser(searchedTerm, searchFilter) {
+    let filter = {};
+    filter[searchFilter] = searchedTerm;
+    filter['page'] = 0;
+    filter['size'] = 3;
+
+
+    let searchedUserTerm =  apiUser.searchUsers(filter).then(
+        response => {
+          return response.data;
+        },
+        error => {
+          if(error){
+            return "Invalid permissions";
+          }
+        }
+    );
+    return  searchedUserTerm;
   },
 
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
