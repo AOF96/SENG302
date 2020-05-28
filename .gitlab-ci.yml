@@ -13,6 +13,8 @@ junit:
 
 dev-build:
   stage: deploy
+  only:
+    - development
   script:
     - fuser -k 9499/tcp 9500/tcp || true
     - cd client
