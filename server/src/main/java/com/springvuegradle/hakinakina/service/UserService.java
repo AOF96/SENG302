@@ -2,7 +2,7 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.dto.SearchUserResponse;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.Session;
@@ -501,25 +501,27 @@ public class UserService {
 
     /**
      * Deals with pagination with no conditions like email, surname, full name etc
+     *
      * @param page number of a page you want to be at
      * @param size how many results you want on a page
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserResponse> findPaginated(int page, int size) {
+    public Page<SearchUserDto> findPaginated(int page, int size) {
         Page<User> userPage = userRepository.findAll(PageRequest.of(page, size));
         return userPageToSearchResponsePage(userPage);
     }
 
     /**
      * Deals with pagination where you can search users with email, full name and last name
-     * @param page number of a page you want to be at
-     * @param size how many results you want on a page
-     * @param email email of the user you want to search
+     *
+     * @param page     number of a page you want to be at
+     * @param size     how many results you want on a page
+     * @param email    email of the user you want to search
      * @param fullname full name of the user you want to search
      * @param lastname last name of the user you want to search
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserResponse> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname) {
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname) {
         Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
         return userPageToSearchResponsePage(userPage);
     }
@@ -528,17 +530,20 @@ public class UserService {
      * Helper function used in findPaginated and findPaginatedByQuery,
      * creates SearchUserResponse object which has user email, full name and nickname details
      * from the list of users in page object returned by the query
+     *
      * @param users Page object that contains list of users found by the query
      * @return Page object with list of SearchUserResponse object
      */
-    private Page<SearchUserResponse> userPageToSearchResponsePage(Page<User> users) {
-        List<SearchUserResponse> userResponses = new ArrayList<>();
+    private Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+        List<SearchUserDto> userResponses = new ArrayList<>();
         for (User user : users) {
-            SearchUserResponse searchUserResponse = new SearchUserResponse();
-            searchUserResponse.setEmail(user.getPrimaryEmail());
-            searchUserResponse.setFullName(user.getFirstName() + " " + user.getLastName());
-            searchUserResponse.setNickname(user.getNickName());
-            userResponses.add(searchUserResponse);
+            SearchUserDto searchUserDto = new SearchUserDto();
+            searchUserDto.setEmail(user.getPrimaryEmail());
+            searchUserDto.setFirstname(user.getFirstName());
+            searchUserDto.setLastname(user.getLastName());
+            searchUserDto.setMiddlename(user.getMiddleName());
+            searchUserDto.setNickname(user.getNickName());
+            userResponses.add(searchUserDto);
         }
         return new PageImpl<>(userResponses);
     }
