@@ -24,7 +24,6 @@
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
       </div>
-    </div>
     <div class="centreContainer">
       <div class="profileHeaderContainer">
         <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -91,6 +90,7 @@
     </div>
     <div class="floatClear"></div>
   </div>
+</div>
   </template>
 
 <script>
