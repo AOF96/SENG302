@@ -91,8 +91,7 @@
     </div>
     <div class="floatClear"></div>
   </div>
-</div>
-</template>
+  </template>
 
 <script>
 import {
