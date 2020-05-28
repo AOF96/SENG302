@@ -340,3 +340,35 @@
     margin-left: -120px;
     margin-right: -120px;
 }
+
+.activityPageBottomButtons {
+    overflow: hidden;
+    text-align: center;
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+}
+
+
+.activityPageBackToProfileButton {
+    padding: 8px 15px 8px 15px;
+}
+
+.activityPageBackToProfileButtonSpacing {
+    margin-right: 20px;
+}
+
+.activityPageEditActivityButton {
+    padding: 8px 15px 8px 15px;
+}
+
+.activityPageEditActivityButtonSpacing {
+    margin:0 auto;
+}
+
+.activityPageDeleteActivityButton {
+    padding: 8px 15px 8px 15px;
+}
+
+.activityPageDeleteActivityButtonSpacing {
+    margin-left: 20px;
+}

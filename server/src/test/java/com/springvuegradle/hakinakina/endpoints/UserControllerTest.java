@@ -176,9 +176,10 @@ public class UserControllerTest {
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
         this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
-                .andExpect(content().string(containsString("{\"bio\":null,\"authoredActivities\":[],\"profile_id\":1,\"firstname\":" +
-                        "\"John\",\"lastname\":\"Smith\",\"middlename\":null,\"gender\":\"Male\",\"nickname\":null," + "" +
-                        "\"date_of_birth\":null,\"fitness\":2,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
+                .andExpect(content().string(containsString("{\"bio\":null,\"authoredActivities\":[],\"sate\":null," +
+                        "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
+                        "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
+                        "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
                         "\"additional_email\":[],\"permission_level\":0}")));
     }
 

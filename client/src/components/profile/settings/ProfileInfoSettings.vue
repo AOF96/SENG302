@@ -3,7 +3,7 @@
     <UserSettingsMenu />
     <div class="settingsContentContainer">
         <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-            <button class="genericConfirmButton">Back to Profile</button>
+            <button class="genericConfirmButton backButton">Back to Profile</button>
         </router-link>
         <h1 class="settingsTitle">Edit Profile Info</h1>
         <hr>
