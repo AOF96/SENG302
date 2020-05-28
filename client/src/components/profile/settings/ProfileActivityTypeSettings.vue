@@ -2,6 +2,9 @@
   <div class="settingsContainer">
     <UserSettingsMenu />
     <div class="settingsContentContainer">
+      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+        <button class="genericConfirmButton backButton">Back to Profile</button>
+      </router-link>
       <h1>Edit Activity Type</h1>
       <hr />
       <div class="itemContainer" v-for="activity in searchedUser.activities" v-bind:key="activity">
@@ -29,8 +32,11 @@
           <button class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
         </form>
       </div>
-      <h6 class="successMessage" id="activity_type_success" hidden="false">Saved successfully</h6>
-      <h6 class="errorMessage" id="activity_type_error" hidden="false">An error has occurred</h6>
+      <div class="errorMessageContainer">
+        <h6 class="editSuccessMsg" id="activity_type_success" hidden="false">Saved successfully</h6>
+        <h6 class="editErrorMsg" id="activity_type_error" hidden="false">An error has occurred</h6>
+      </div>
+
     </div>
     <div class="floatClear"></div>
   </div>

@@ -3,7 +3,6 @@ package com.springvuegradle.hakinakina.controller;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
-import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,21 +19,19 @@ import java.util.Optional;
 public class ActivityController {
 
     public UserRepository userRepository;
-    public ActivityTypeRepository activityTypeRepository;
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
     public ActivityRepository activityRepository;
-    private ResponseHandler responseHandler = new ResponseHandler();
-
     private ActivityService activityService;
 
-
     /**
-     * Contructs an Activity Controller, passing in the repositories so that they can be accessed.
+     * Contructs an Activity Controller, passing in the repositories and service so that they can be accessed.
      *
-     * @param userRepository    The repository containing Users
-     * @param countryRepository The repository containing PassportCountries
-     * @param sessionRepository The repository containing Sessions
+     * @param userRepository     The repository containing Users
+     * @param countryRepository  The repository containing PassportCountries
+     * @param sessionRepository  The repository containing Sessions
+     * @param activityRepository The repository containing Activities
+     * @param activityService    The service for Activities
      */
     public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
                               SessionRepository sessionRepository, ActivityService activityService,
@@ -51,40 +48,53 @@ public class ActivityController {
      *
      * @param activity     the activity the user wants to add
      * @param profileId    the user's id
-     * @param sessionToken the user's token from their current session
+     * @param sessionToken the user's token from the cookie for their current session.
      * @return response entity to inform user if adding an activity was successful or not
      */
     @PostMapping("/profiles/{profileId}/activities")
-    public ResponseEntity addActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity addActivity(@Valid @RequestBody Activity activity,
+                                      @PathVariable("profileId") long profileId,
+                                      @CookieValue(value = "s_id") String sessionToken) {
         return activityService.addActivity(activity, profileId, sessionToken);
     }
 
     /**
      * Handles requests for editing an activity
+     *
+     * @param activity     the activity the user wants to add
+     * @param profileId    the user's id
+     * @param activityId   the activity id.
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if editing an activity was successful or not
      */
     @PutMapping("/profiles/{profileId}/activities/{activityId}")
-    public ResponseEntity editActivity(@Valid @RequestBody Activity activity, @PathVariable("profileId") long profileId, @PathVariable("activityId") long activityId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity editActivity(@Valid @RequestBody Activity activity,
+                                       @PathVariable("profileId") long profileId,
+                                       @PathVariable("activityId") long activityId,
+                                       @CookieValue(value = "s_id") String sessionToken) {
         return activityService.editActivity(activity, profileId, activityId, sessionToken);
     }
 
-    /***
+    /**
      * Handles requests for deleting an activity.
-     * @param profileId the user's id.
-     * @param activityId the activity id.
-     * @param sessionToken the user's token from their current session.
+     *
+     * @param profileId    the user's id.
+     * @param activityId   the activity id.
+     * @param sessionToken the user's token from the cookie for their current session.
      * @return a response entity that informs the user if deleting the given activity was successful or not.
      */
     @DeleteMapping("/profiles/{profileId}/activities/{activityId}")
-    public ResponseEntity deleteActivity(@PathVariable("profileId") long profileId, @PathVariable("activityId") long activityId,
-                                         @RequestHeader("token") String sessionToken) {
-
+    public ResponseEntity deleteActivity(@PathVariable("profileId") long profileId,
+                                         @PathVariable("activityId") long activityId,
+                                         @CookieValue(value = "s_id") String sessionToken) {
         return activityService.removeActivity(profileId, activityId, sessionToken);
     }
 
     /**
-     * Retrieves the details of activity
+     * Handles requests for retrieving the details of an activity
      *
      * @param activityId the activity id.
+     * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
     @GetMapping("/activities/{activityId}")
     public ResponseEntity getOneActivity(@PathVariable("activityId") long activityId) {
@@ -97,6 +107,12 @@ public class ActivityController {
         }
     }
 
+    /**
+     * Handles requests for retrieving the continuous activities of a user
+     *
+     * @param profileId the user's id
+     * @return a response entity that informs the user if retrieving a user's continuous activities was successful or not
+     */
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
@@ -104,6 +120,12 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Handles requests for retrieving the duration activities of a user
+     *
+     * @param profileId the user's id
+     * @return a response entity that informs the user if retrieving a user's duration activities was successful or not
+     */
     @GetMapping("/profiles/{profileId}/activities/duration")
     public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(false, profileId);
