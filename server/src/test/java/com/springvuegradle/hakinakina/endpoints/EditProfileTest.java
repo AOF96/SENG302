@@ -35,6 +35,7 @@ public class EditProfileTest {
     SessionRepository sessionRepository;
     @Autowired
     private MockMvc mockMvc;
+    private User u;
 
     @BeforeEach
     void createUser() {
