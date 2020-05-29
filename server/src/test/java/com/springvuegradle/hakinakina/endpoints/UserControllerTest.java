@@ -519,4 +519,5 @@ public class UserControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(content().json("[Fun, Relaxing, Extreme]"));
     }
+
 }

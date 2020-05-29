@@ -17,8 +17,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -356,8 +358,8 @@ public class UserService {
      * @return Their age as an int
      */
     public static int calculateAge(Date date, LocalDate currentDate) {
-        LocalDate birthDate = LocalDate.of(date.getYear() + 1900, date.getMonth(), date.getDate());
-        if ((birthDate != null) && (currentDate != null)) {
+        LocalDate birthDate = Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+        if (currentDate != null) {
             return Period.between(birthDate, currentDate).getYears();
         } else {
             return 0;
