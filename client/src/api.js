@@ -67,6 +67,9 @@ export const apiUser = {
   }),
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
+  getIdByEmail: (email) => instance.get('/email/id/', {params:
+        {email:email}
+  }),
   getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
 
   getUserByToken: () => instance.get('validateLogin'),

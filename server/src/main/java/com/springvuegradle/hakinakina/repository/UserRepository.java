@@ -29,6 +29,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "select * from User where user_id = ?", nativeQuery = true)
     Optional<User> getUserById(long profileId);
 
+    @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
+    String getIdByEmail(String email);
+
 
     /**
      * Retrieves users based on the following query parameters

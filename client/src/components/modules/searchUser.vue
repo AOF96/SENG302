@@ -18,27 +18,6 @@
                 </select>
                 <button type="submit" v-on:click="searchUsers()">Submit</button>
 
-                <div>
-                <v-simple-table>
-                    <template v-slot:default>
-                        <thead>
-                        <tr>
-                            <th class="text-left">Name</th>
-                            <th class="text-left">Nickname</th>
-                            <th class="text-left">Email</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="user in allUsers" :key="user.email">
-                            <td>{{ user.firstname + " " + user.middlename + " " + user.lastname}}</td>
-                            <td>{{ user.nickname }}</td>
-                            <td>{{ user.email }}</td>
-                        </tr>
-                        </tbody>
-                    </template>
-                </v-simple-table>
-                </div>
-
 <!--                <img class="searchIcon" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4-->
 <!--           NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvb-->
 <!--           jogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3-->
@@ -53,6 +32,19 @@
 <!--           9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />-->
             </div>
        </div>
+       <v-card
+               class="mx-auto"
+               max-width="800"
+               tile
+       >
+
+           <v-list-item two-line v-for="user in allUsers" :key="user.email">
+               <v-list-item-content>
+                   <v-list-item-title v-on:click="getUser(user.email)">{{ user.firstname + " " + user.middlename + " " + user.lastname}}</v-list-item-title>
+                   <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+               </v-list-item-content>
+           </v-list-item>
+       </v-card>
    </div>
 </template>
 
@@ -83,9 +75,11 @@
                     this.allUsers = response.content;
                     console.log(this.allUsers);
                 })
-                // console.log(this.allUsers.data);
-
-
+            },
+            getUser(email){
+                apiUser.getIdByEmail(email).then((response) =>
+                    this.$router.push({path:"/profile/" + response.data.id})
+                )
             }
         }
     }

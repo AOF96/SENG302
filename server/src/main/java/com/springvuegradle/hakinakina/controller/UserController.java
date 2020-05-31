@@ -153,7 +153,6 @@ public class UserController {
     }
 
 
-
     /**
      * Handles requests for adding emails to a profile
      *
@@ -217,6 +216,24 @@ public class UserController {
     }
 
     /**
+     * Retrieves searched user id by their email
+     * @param sessionToken  the user's token from the cookie for their current session.
+     * @param email searched user email
+     * @return searched user id
+     */
+    @GetMapping("/email/id/")
+    public ResponseEntity getUserByEmail(@CookieValue(value = "s_id") String sessionToken,
+                                         @RequestParam String email) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponse(401, "User not currently logged in");
+        }
+        String userId = userRepository.getIdByEmail(email);
+        return new ResponseEntity("{\"id\": \"" + userId + "\"}", HttpStatus.valueOf(200));
+    }
+
+
+    /**
      * Handles requests for retrieving a user
      *
      * @param profileId the user's id to be retrieved
@@ -229,19 +246,13 @@ public class UserController {
         if (session == null) {
             return responseHandler.formatErrorResponse(400, "Invalid Session");
         }
-        // only a user and an admin can edit the user profile
-        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
-        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
-        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
-            Optional<User> optional = userRepository.getUserById(profileId);
-            if (optional.isPresent()) {
-                User user = optional.get();
-                return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
-            } else {
-                return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
-            }
+
+        Optional<User> optional = userRepository.getUserById(profileId);
+        if (optional.isPresent()) {
+            User user = optional.get();
+            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return responseHandler.formatErrorResponse(400, "Session mismatch");
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
         }
     }
 
