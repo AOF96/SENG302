@@ -14,7 +14,7 @@ import ActivitySettings from "./components/activity/settings/ActivitySettings";
 import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
-import searchUser from "./components/modules/searchUser";
+import Search from "./components/Search";
 
 Vue.use(VueRouter);
 
@@ -82,7 +82,7 @@ const routes = [
     },
     {
         path: '/search',
-        component: searchUser
+        component: Search
     }
 ];
 

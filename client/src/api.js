@@ -56,10 +56,6 @@ export const apiUser = {
   addEmails: (profile_id, additional_email) => instance.post('/profiles/'+profile_id+'/emails', {
     additional_email: additional_email
   }),
-  searchUsers: (filter) => instance.get('/profiles/',
-      {params: filter}),
-
-
   // Edit the user's emails
   editEmail: (profile_id, primary_email, additional_email) => instance.put('/profiles/'+profile_id+'/emails', {
     primary_email: primary_email,
@@ -71,9 +67,7 @@ export const apiUser = {
         {email:email}
   }),
   getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
-
   getUserByToken: () => instance.get('validateLogin'),
-
   async getUserById(profile_id) {
     let searchedUser = await apiUser.refreshUserData(profile_id).then(
       response => {
@@ -85,15 +79,20 @@ export const apiUser = {
         }
       }
     );
-    return await searchedUser;
+    return searchedUser;
   },
-
-   searchedUser(searchedTerm, searchFilter) {
+  searchUsers: (searchTerm, searchType, page, size) => instance.get('/profiles/',
+      {params: {
+          [searchType]: searchTerm,
+          page: page,
+          size: size,
+        }
+      }),
+  searchedUser(searchedTerm, searchFilter) {
     let filter = {};
     filter[searchFilter] = searchedTerm;
     filter['page'] = 0;
     filter['size'] = 3;
-
 
     let searchedUserTerm =  apiUser.searchUsers(filter).then(
         response => {
@@ -107,14 +106,12 @@ export const apiUser = {
     );
     return  searchedUserTerm;
   },
-
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
   /**
    * Request to get all activity types from the server
    */
   getActivityTypes: () => instance.get('/activity-types'),
-
   /**
    * Request to update activity types
    */

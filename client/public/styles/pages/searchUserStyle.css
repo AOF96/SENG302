@@ -1,39 +1,43 @@
 /* -- General ---- */
 .searchUserWrapper {
-    text-align: center;
-    margin-top: 9px;
+    width: calc(100% - 30px);
+    margin: 50px auto;
+    max-width: 900px;
 }
 
 .searchUserContainer {
-    display: inline-block;
+    margin: 0 auto;
+    border-radius: 14px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
 }
-
+.searchRow {
+}
 
 /* -- Input fields ---- */
 .inputSearchBox {
-    border: 1px solid grey;
-    height: 25px;
-    width: 46%;
-    padding: 2px 23px 2px 30px;
-    outline: 0;
-    background-color: #f5f5f5;
-    float: left;
-    margin-left: 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    padding: 10px 15px;
+    resize: none;
 }
 
 .searchDropdownMenu {
-    height: 36px;
-    float: left;
-    margin-left: 6px;
-    font-size: 12px;
-    width: 107px;
+    border-radius: 20px;
+    font-size: 14px;
+    background: #ffffff;
+    outline: none;
+    border: 1px solid #d8d8d8;
+    padding: 10px 15px;
+    resize: none;
 }
 
 .inputSearchBox:hover, .inputSearchBox:focus {
     border: 1px solid #009688;
     background-color: white;
 }
-
 
 /* -- Icon's styling ---- */
 .searchIcon {
