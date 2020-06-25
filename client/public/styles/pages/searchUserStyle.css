@@ -34,8 +34,12 @@
     resize: none;
 }
 
+.searchDropdownMenu:hover, .searchDropdownMenu:focus {
+    border: 1px solid #1cca92;
+}
+
 .inputSearchBox:hover, .inputSearchBox:focus {
-    border: 1px solid #009688;
+    border: 1px solid #1cca92;
     background-color: white;
 }
 

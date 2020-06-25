@@ -27,8 +27,6 @@
            <v-col>
              <v-btn
                  v-on:click="searchUsers(defaultPage, defaultSize)"
-                 :loading="loading"
-                 :disabled="loading"
                  color="#1cca92"
                  outlined
                  rounded
@@ -62,53 +60,103 @@
 </template>
 
 <script>
-    import { mapGetters, mapState } from "vuex";
+    import { mapGetters, mapState, mapActions } from "vuex";
     import NavBar from "./modules/NavBar";
     import {apiUser} from "../api";
+
     export default {
-        name: "searchUser",
-        components: {NavBar},
-        computed: {
-            ...mapState(["user"]),
-            ...mapGetters(["user"])
-        },
-        data: function() {
-          return {
-            searchedTerm: "",
-            searchBy: "fullname",
-            allUsers: [],
-            defaultPage: 1,
-            currentPage: 1,
-            defaultSize: 3,
-            currentSize: 3,
-            loading: false,
-            moreHidden: true,
+      name: "searchUser",
+      components: {NavBar},
+      computed: {
+        ...mapState(["user", "userSearch"]),
+        ...mapGetters(["user", "userSearch"]),
+      },
+      data: function() {
+        return {
+          searchedTerm: "",
+          searchBy: "fullname",
+          allUsers: [],
+          defaultPage: 1,
+          currentPage: 1,
+          defaultSize: 3,
+          currentSize: 3,
+          loading: false,
+          moreHidden: true,
+        }
+      },
+      mounted() {
+        this.loadPreviousSearch();
+      },
+      methods:{
+        ...mapActions(["setUserSearch"]),
+        /**
+         * Search for size amount of users on given page and append to list
+         *
+         * @param page Current page in results
+         * @param size Size of results to retrieve
+         */
+        searchUsers(page, size){
+          if (page === this.defaultPage) {
+            this.allUsers = [];
+          }
+          if(this.searchedTerm.trim() === ""){
+              alert("Input or search box cannot be empty.")
+          } else {
+            /* Adjust search position */
+            this.currentSize = size;
+            this.currentPage = page;
+
+            /* Update search history */
+            this.setUserSearch({
+              searchTerm: this.searchedTerm,
+              searchType: this.searchBy,
+              page: page,
+              size: size
+            });
+
+            /* Change button animation */
+            this.moreHidden = false;
+            this.loading = true;
+
+            /* Search for users */
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, page - 1, size).then((response) => {
+              this.allUsers = this.allUsers.concat(response.data.content);
+              this.loading = false;
+            })
           }
         },
-        methods:{
-            searchUsers(page, size){
-              if (page === this.defaultPage) {
-                this.allUsers = [];
-              }
-              this.currentSize = size;
-              this.currentPage = page;
-              if(this.searchedTerm.trim() === ""){
-                  alert("Input or search box cannot be empty.")
-              } else {
-                this.moreHidden = false;
-                this.loading = true;
-                apiUser.searchUsers(this.searchedTerm, this.searchBy, page - 1, size).then((response) => {
-                  this.allUsers = this.allUsers.concat(response.data.content);
-                  this.loading = false;
-                })
-              }
-            },
-            getUser(email){
-                apiUser.getIdByEmail(email).then((response) =>
-                    this.$router.push({path:"/profile/" + response.data.id})
-                )
-            }
+        /**
+         * Gets a users information from their email.
+         *
+         * @param email A users email
+         */
+        getUser(email){
+            apiUser.getIdByEmail(email).then((response) =>
+                this.$router.push({path:"/profile/" + response.data.id})
+            )
+        },
+        /**
+         * Researches the last search done if one exists and updates the search parameters.
+         */
+        loadPreviousSearch() {
+          if (this.userSearch.searchTerm !== null) {
+            /* Adjust search position */
+            this.searchedTerm = this.userSearch.searchTerm;
+            this.searchBy = this.userSearch.searchType;
+            this.currentSize = this.userSearch.size;
+            this.currentPage = this.userSearch.page;
+
+            /* Change button animation */
+            this.moreHidden = false;
+            this.loading = true;
+
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, 0, this.userSearch.size * this.userSearch.page).then((response) => {
+              this.allUsers = this.allUsers.concat(response.data.content);
+              this.loading = false;
+            })
+          }
         }
+      }
     }
 </script>
 
