@@ -4,13 +4,10 @@
     margin: 50px auto;
     max-width: 900px;
 }
-
 .searchUserContainer {
     margin: 0 auto;
     border-radius: 14px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-}
-.searchRow {
 }
 
 /* -- Input fields ---- */
@@ -23,7 +20,6 @@
     padding: 10px 15px;
     resize: none;
 }
-
 .searchDropdownMenu {
     border-radius: 20px;
     font-size: 14px;
@@ -33,14 +29,15 @@
     padding: 10px 15px;
     resize: none;
 }
-
 .searchDropdownMenu:hover, .searchDropdownMenu:focus {
     border: 1px solid #1cca92;
 }
-
 .inputSearchBox:hover, .inputSearchBox:focus {
     border: 1px solid #1cca92;
     background-color: white;
+}
+.searchMoreButton {
+    margin-top: 10px;
 }
 
 /* -- Icon's styling ---- */

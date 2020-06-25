@@ -2,6 +2,15 @@
    <div>
      <nav-bar></nav-bar>
      <div class="searchUserWrapper">
+       <v-snackbar
+           outlined
+           color="error"
+           :timeout="timeout"
+           v-model="snackbar"
+           top
+       >
+         {{errorMessage}}
+       </v-snackbar>
        <v-container fluid class="searchUserContainer">
          <v-row class="searchRow">
            <v-spacer/>
@@ -34,9 +43,9 @@
            </v-col>
          </v-row>
          <v-row class="searchRow">
-           <v-list-item two-line v-for="user in allUsers" :key="user.email">
+           <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers" :key="user.email" link>
              <v-list-item-content>
-               <v-list-item-title v-on:click="getUser(user.email)">{{ user.firstname + " " + user.middlename + " " + user.lastname}}</v-list-item-title>
+               <v-list-item-title>{{ user.firstname + " " + user.middlename + " " + user.lastname}}</v-list-item-title>
                <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
              </v-list-item-content>
            </v-list-item>
@@ -47,10 +56,11 @@
                v-on:click="searchUsers(currentPage + 1, currentSize)"
                :hidden="moreHidden"
                :loading="loading"
-               :disabled="loading"
+               :disabled="disabled"
                color="#1cca92"
                outlined
                rounded
+               class="searchMoreButton"
            >More Results</v-btn>
            <v-spacer/>
          </v-row>
@@ -81,7 +91,11 @@
           defaultSize: 3,
           currentSize: 3,
           loading: false,
+          disabled: false,
           moreHidden: true,
+          errorMessage: null,
+          snackbar: false,
+          timeout: 2000,
         }
       },
       mounted() {
@@ -106,23 +120,39 @@
             this.currentSize = size;
             this.currentPage = page;
 
-            /* Update search history */
-            this.setUserSearch({
-              searchTerm: this.searchedTerm,
-              searchType: this.searchBy,
-              page: page,
-              size: size
-            });
-
             /* Change button animation */
             this.moreHidden = false;
             this.loading = true;
+            this.disabled = true;
 
             /* Search for users */
-            apiUser.searchUsers(this.searchedTerm, this.searchBy, page - 1, size).then((response) => {
-              this.allUsers = this.allUsers.concat(response.data.content);
-              this.loading = false;
-            })
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, page - 1, size).then(
+                (response) => {
+                  if (response.data.content.length === 0) {
+                    this.disabled = true;
+                    this.loading = false;
+                    this.errorMessage = "No more results";
+                    this.snackbar = true;
+                  } else {
+                    this.allUsers = this.allUsers.concat(response.data.content);
+                    this.loading = false;
+                    this.disabled = false;
+                    /* Update search history */
+                    this.setUserSearch({
+                      searchTerm: this.searchedTerm,
+                      searchType: this.searchBy,
+                      page: page,
+                      size: size
+                    });
+                  }
+                }).catch(
+                (error) => {
+                  this.disabled = true;
+                  this.loading = false;
+                  this.errorMessage = error.response.data;
+                  this.snackbar = true;
+                }
+            )
           }
         },
         /**
@@ -150,10 +180,25 @@
             this.moreHidden = false;
             this.loading = true;
 
-            apiUser.searchUsers(this.searchedTerm, this.searchBy, 0, this.userSearch.size * this.userSearch.page).then((response) => {
-              this.allUsers = this.allUsers.concat(response.data.content);
-              this.loading = false;
-            })
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, 0, this.userSearch.size * this.userSearch.page).then(
+                (response) => {
+                  if (response.data.content.size === 0) {
+                    this.disabled = true;
+                    this.loading = false;
+                    this.errorMessage = "No more results";
+                    this.snackbar = true;
+                  } else {
+                    this.allUsers = this.allUsers.concat(response.data.content);
+                    this.loading = false;
+                    this.disabled = false;
+                  }
+              }).catch(
+                (error) => {
+                  this.disabled = true;
+                  this.loading = false;
+                  this.errorMessage = error.response.data;
+                  this.snackbar = true;
+                })
           }
         }
       }

@@ -180,7 +180,7 @@ public class UserController {
      * @return response entity containing a list of profiles
      */
     @GetMapping("/profiles")
-    public Page<SearchUserDto> findPaginated(
+    public ResponseEntity findPaginated(
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String fullname,
             @RequestParam(required = false) String lastname,
@@ -194,9 +194,10 @@ public class UserController {
             resultPage = userService.findPaginated(page, size);
         }
         if (page > resultPage.getTotalPages()) {
-            throw new RuntimeException();
+            return new ResponseEntity("No more results", HttpStatus.valueOf(404));
+        } else {
+            return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
         }
-        return resultPage;
     }
 
     /**
