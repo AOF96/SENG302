@@ -14,103 +14,100 @@
           <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
           <hr />
           <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
+          <hr />
+          <div class="profileRow">City: {{ searchedUser.city }}</div>
+          <hr />
+          <div v-if="searchedUser.state">
+          <div class="profileRow">State: {{ searchedUser.state }}</div>
+          <hr />
+          </div>
+          <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
       </div>
-      <div class="centreContainer">
-        <div class="profileHeaderContainer">
-          <svg
-            class="profileMainInfoIcon"
-            xmlns="http://www.w3.org/2000/svg"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-          >
-            <path d="M0 0h24v24H0V0z" fill="none" />
-            <path
-              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"
-            />
-          </svg>
-          <div class="profileMainInfoContainer">
-            <h1>
-              {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
-              <span
-                id="userNickname"
-                v-if="searchedUser.nickname != null"
-              >({{ searchedUser.nickname }})</span>
-            </h1>
-            <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
-          </div>
-          <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
-            <button class="genericConfirmButton">Edit Profile</button>
-          </router-link>
-          <div class="floatClear"></div>
+    <div class="centreContainer">
+      <div class="profileHeaderContainer">
+        <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z" />
+        </svg>
+        <div class="profileMainInfoContainer">
+          <h1>
+            {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
+            <span id="userNickname" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
+          </h1>
+          <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
         </div>
-        <div class="profileActivitiesContainer">
+        <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
+            <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
+              <button class="genericConfirmButton">Edit Profile</button>
+            </router-link>
+        </div>
+        <div class="floatClear"></div>
+      </div>
+      <div class="profileActivitiesContainer">
+        <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
           <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
             <button class="genericConfirmButton" type="button" onclick>Add Activity</button>
           </router-link>
-          <h2>Activities</h2>
-          <h3>Activity Types</h3>
-          <ul class="activityTypesList">
-            <li v-for="type in searchedUser.activities" v-bind:key="type">{{type}}</li>
-          </ul>
-          <hr class="profileActivitySeparator" />
-          <h3>Duration Activities</h3>
-          <div
-            class="activitySummaryContainer"
-            v-for="activity in dur_activities"
-            v-bind:key="activity"
-          >
-            <div class="activityTextWrapDiv">
-              <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
-              <h4 class="profileActivityDescription">{{activity.description}}</h4>
-            </div>
+        </div>
+        <h2>Activities</h2>
+        <h3>Activity Types</h3>
+        <ul class="activityTypesList">
+          <li v-for="type in searchedUser.activities" v-bind:key="type">{{type}}</li>
+        </ul>
+        <hr class="profileActivitySeparator" />
+        <h3>Duration Activities</h3>
+        <div class="activitySummaryContainer" v-for="activity in dur_activities" v-bind:key="activity">
+          <div class="activityTextWrapDiv">
+            <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
+            <h4 class="profileActivityDescription">{{activity.description}}</h4>
+          </div>
+          <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/activity_editing/' + activity.id">
-              <button
-                class="genericConfirmButton profileActivityConfirmButton"
-                type="button"
-              >Edit Activity</button>
+              <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
             </router-link>
           </div>
-          <hr class="profileActivitySeparator" />
-          <h3>Continuous Activities</h3>
-          <div
-            class="activitySummaryContainer"
-            v-for="activity in cont_activities"
-            v-bind:key="activity"
-          >
-            <div class="activityTextWrapDiv">
-              <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
-              <h4 class="profileActivityDescription">{{activity.description}}</h4>
-            </div>
+        </div>
+        <hr class="profileActivitySeparator" />
+        <h3>Continuous Activities</h3>
+        <div class="activitySummaryContainer" v-for="activity in cont_activities" v-bind:key="activity">
+          <div class="activityTextWrapDiv">
+            <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
+            <h4 class="profileActivityDescription">{{activity.description}}</h4>
+          </div>
+          <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/activity_editing/' + activity.id">
-              <button
-                class="genericConfirmButton profileActivityConfirmButton"
-                type="button"
-              >Edit Activity</button>
+              <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
             </router-link>
           </div>
         </div>
       </div>
-      <div class="rightSidebarContainer">
-        <template v-if="searchedUser.passports">
-          <PassportCountries :passports="searchedUser.passports" :key="componentKey"></PassportCountries>
-        </template>
-      </div>
-      <div class="floatClear"></div>
     </div>
+    <div class="rightSidebarContainer">
+      <template v-if="searchedUser.passports">
+        <PassportCountries :passports="searchedUser.passports" :key="componentKey"/>
+      </template>
+    </div>
+    <div class="floatClear"></div>
   </div>
-</template>
+</div>
+  </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex";
+import {
+  mapActions,
+  mapGetters,
+  mapState
+} from "vuex";
 
 import NavBar from "../modules/NavBar";
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
 import axios from "axios";
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import { apiUser } from "../../api";
+import {
+  apiUser
+} from "../../api";
 
 export default {
   name: "Profile",
@@ -146,7 +143,11 @@ export default {
   },
 
   mounted() {
-    this.loadSearchedUser();
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.loadSearchedUser();
+      }
   },
   watch: {
     "$route.params": {
@@ -166,8 +167,8 @@ export default {
        */
     async loadSearchedUser() {
       if (
-        this.$route.params.profileId == null ||
-        this.$route.params.profileId == ""
+        this.$route.params.profileId === null ||
+        this.$route.params.profileId === ""
       ) {
         this.$router.push("/profile/" + this.user.profile_id);
         this.searchedUser = this.user;
@@ -175,7 +176,7 @@ export default {
         var tempUserData = await apiUser.getUserById(
           this.$route.params.profileId
         );
-        if (tempUserData == "Invalid permissions") {
+        if (tempUserData === "Invalid permissions") {
           this.$router.push("/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {

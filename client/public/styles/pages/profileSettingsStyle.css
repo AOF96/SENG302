@@ -405,7 +405,7 @@
 .showadmin{
   display:block !important;
 }
-.settingsContentContainer .genericConfirmButton {
+.backButton {
     margin: 10px 20px 0 0;
     padding: 6px 16px;
     float: right;

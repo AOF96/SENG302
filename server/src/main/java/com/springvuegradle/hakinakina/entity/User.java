@@ -62,6 +62,21 @@ public class User {
     @Column(name = "fitness_level")
     private int fitnessLevel;
 
+    @JsonProperty("city")
+    @Column(name = "city")
+    private String city;
+
+
+    @JsonProperty("state")
+    @Column(name = "state")
+    private String state;
+
+
+    @JsonProperty("country")
+    @Column(name = "country")
+
+    private String country;
+
     @JsonProperty("passports")
     @JsonSerialize(using= PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
@@ -249,6 +264,30 @@ public class User {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getSate() {
+        return state;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getPassword() {

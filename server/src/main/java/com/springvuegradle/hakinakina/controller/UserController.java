@@ -239,17 +239,12 @@ public class UserController {
      *
      * @param profileId the user's id to be retrieved
      * @return response entity containing the specific user
+     * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId,
-                                     @CookieValue(value = "s_id") String sessionToken) {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return responseHandler.formatErrorResponse(400, "Invalid Session");
-        }
-
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
         Optional<User> optional = userRepository.getUserById(profileId);
-        if (optional.isPresent()) {
+        if (optional.isPresent() && optional.get().getPermissionLevel() != 2) {
             User user = optional.get();
             return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {

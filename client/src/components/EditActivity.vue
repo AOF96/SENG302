@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div @click="showLocations = false">
     <NavBar />
     <div class="createActivityContainer">
       <div class="createActivityContentContainer">
         <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-          <button class="genericConfirmButton">Back to Profile</button>
+          <button class="genericConfirmButton backButton">Back to Profile</button>
         </router-link>
         <h1>Edit Activity</h1>
         <form class="CreateActivityFormContainer">
@@ -50,13 +50,12 @@
 
           <label class="editActivityLabel">Location</label>
           <div>
-            <select v-model="adding_country" name="countries" class="editActivitySelect" required>
-              <option selected disabled hidden>Countries</option>
-              <option
-                v-for="addingCountry in countries_option"
-                v-bind:key="addingCountry"
-              >{{addingCountry}}</option>
-            </select>
+            <input id="locationInput" class="editActivityInput" type="text" onfocus="showLocations = true" v-model="location"/>
+            <div v-if="location !== '' && showLocations && suggestedLocations.length > 0" class="dropdown" >
+              <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">
+                <p v-on:click="location = item.summary">{{item.summary}}</p>
+              </div>
+            </div>
           </div>
 
           <label class="editActivityLabel">Activity Types</label>
@@ -116,8 +115,6 @@ import router from "../router";
 import axios from "axios";
 import NavBar from "./modules/NavBar";
 
-const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-
 export default {
   components: {
     NavBar
@@ -126,8 +123,7 @@ export default {
     return {
       selected_activity: "Activity Type",
       activities_option: [],
-      countries_option: [],
-      adding_country: "Countries",
+      location: "",
       duration: "duration",
       activity_types_selected: [],
       start_date: null,
@@ -139,9 +135,48 @@ export default {
       combinedStartTime: null,
       continuous: false,
       description: "",
-      author_id: null
+      author_id: null,
+      suggestedLocations: [],
+      showLocations: false
     };
   },
+
+  /**
+   * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
+   * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
+   * duplicate summaries are removed.
+   */
+  mounted: function() {
+    let outer = this;
+    let input = document.querySelector('#locationInput');
+    let timeout = null;
+    input.addEventListener('keyup', function () {
+      clearTimeout(timeout);
+      timeout = setTimeout(function () {
+        const url = "https://photon.komoot.de/api/?q=" + input.value;
+        axios.get(url)
+                .then((response) => {
+                  //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                  //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                  //middle of the list instead of the top
+                  let temp = [];
+                  let locationSummaries = [];
+                  for(let location in response.data.features) {
+                    let locationSummary = outer.getLocationSummary(response.data.features[location]);
+                    if (!locationSummaries.includes(locationSummary)) {
+                      temp.push(response.data.features[location]);
+                      temp[temp.length - 1]["summary"] = locationSummary;
+                      locationSummaries.push(locationSummary);
+                    }
+                  }
+                  outer.suggestedLocations = temp;
+                  outer.showLocations = true;
+                })
+                .catch(error => console.log(error));
+      }, 1000);
+    });
+  },
+
   computed: {
     ...mapGetters(["user"]),
     isDuration() {
@@ -162,25 +197,35 @@ export default {
         });
       })
       .catch(error => console.log(error));
-
-    // Gets list of countries that can be selected
-    await axios
-      .get(COUNTRIES_URL)
-      .then(response => {
-        const countries = [];
-        const data = response.data;
-        for (let country in data) {
-          let country_name = data[country].name;
-          countries.push(country_name);
-        }
-        this.countries_option = countries;
-      })
-      .catch(error => console.log(error));
   },
   methods: {
     ...mapActions(["createActivity"]),
     ...mapActions(["updateUserContinuousActivities"]),
     ...mapActions(["updateUserDurationActivities"]),
+
+    /**
+     * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
+     * function.
+     */
+    getLocationSummary(location) {
+      let result = "";
+
+      result += location.properties.name;
+      if ("street" in location.properties) {
+        result += ", " + location.properties.street;
+      }
+      if ("city" in location.properties) {
+        result += ", " + location.properties.city;
+      }
+      if ("state" in location.properties) {
+        result += ", " + location.properties.state;
+      }
+      if ("country" in location.properties) {
+        result += ", " + location.properties.country;
+      }
+
+      return result;
+    },
 
     /*
       Uses activity id from url to request activity data.
@@ -212,7 +257,7 @@ export default {
           this.author_id = tempActivityData.author.profile_id;
           this.description = tempActivityData.description;
           this.activity_type = tempActivityData.activity_type.slice();
-          this.adding_country = tempActivityData.location;
+          this.location = tempActivityData.location;
           this.activity_types_selected = tempActivityData.activity_type.map(
             e => e.name
           );
@@ -397,7 +442,7 @@ export default {
           this.combinedStartTime,
           this.combinedEndTime,
           this.description,
-          this.adding_country,
+          this.location,
           this.activity_types_selected,
           this.$route.params.activityId
         )
