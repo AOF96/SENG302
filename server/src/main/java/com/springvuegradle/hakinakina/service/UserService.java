@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.Session;
@@ -11,6 +12,9 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,7 +51,40 @@ public class UserService {
     }
 
     /**
+     * Checks that someone is between 13 and 140 years of age inclusive
+     *
+     * @param birthDate   The user's date of birth
+     * @param currentDate Today's date
+     * @return A boolean of whether the user is of a valid age
+     */
+    public static boolean checkAge(Date birthDate, LocalDate currentDate) {
+        boolean result = true;
+        int age = calculateAge(birthDate, currentDate);
+        if (birthDate.after(new Date()) || age < 13 || age > 140) {
+            result = false;
+        }
+        return result;
+    }
+
+    /**
+     * Calculates someone's age. Most of the code taken from
+     * https://stackoverflow.com/questions/1116123/how-do-i-calculate-someones-age-in-java
+     *
+     * @param date The person's birthdate
+     * @return Their age as an int
+     */
+    public static int calculateAge(Date date, LocalDate currentDate) {
+        LocalDate birthDate = LocalDate.of(date.getYear() + 1900, date.getMonth(), date.getDate());
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * Checks whether an email has the correct format
+     *
      * @param email Email String in question
      * @return True if correct, False otherwise
      */
@@ -71,18 +108,18 @@ public class UserService {
      *
      * @param request
      * @return reply to client
-     *
-     *edits email
-     *
+     * <p>
+     * edits email
+     * <p>
      * PUT /profiles/{profileId}/emails
      * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
+     * "primary_email": "triplej@google.com",
+     * "additional_email": [
+     * "triplej@xtra.co.nz",
+     * "triplej@msn.com"
+     * ]
      * }
-     * */
+     */
     public ResponseEntity<String> editEmail(String request, long profileId, String sessionToken) {
         ResponseEntity<String> response = null;
 
@@ -117,8 +154,6 @@ public class UserService {
         return response;
     }
 
-
-
     /**
      * Switches primary email with secondary email
      *
@@ -143,7 +178,6 @@ public class UserService {
             return responseHandler.formatSuccessResponse(400, "Could not switch email");
         }
     }
-
 
     /**
      * Updates the users secondary emails to match the new set
@@ -179,21 +213,19 @@ public class UserService {
         userRepository.save(user);
 
         if (emailsAdded.equals("")) {
-            if(emailsRemoved.equals("")){
+            if (emailsRemoved.equals("")) {
                 return responseHandler.formatErrorResponse(400, "No emails added.");
-            }else {
+            } else {
                 return responseHandler.formatSuccessResponse(200, "Secondary emails successfully removed: " + emailsRemoved);
             }
         } else {
-            if(emailsRemoved.equals("")){
+            if (emailsRemoved.equals("")) {
                 return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
-            }else {
+            } else {
                 return responseHandler.formatSuccessResponse(200, "Secondary emails added: " + emailsAdded + " - Secondary emails removed: " + emailsRemoved);
             }
         }
     }
-
-
 
     /***
      * Handles adding emails for the given user. Returns appropriate error messages if the request format is invalid or
@@ -259,7 +291,7 @@ public class UserService {
             messages.add("Please provide a valid email.");
         } else if (user.getPrimaryEmail().isBlank()) {
             messages.add("Please provide a valid email.");
-        } else if (isEmailProperlyFormatted(user.getPrimaryEmail()) != true){
+        } else if (isEmailProperlyFormatted(user.getPrimaryEmail()) != true) {
             messages.add("Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {
@@ -268,7 +300,7 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4){
+        if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
             messages.add("Please select the fitness level in the range 0 and 5");
         }
         if (user.getBirthDate().after(new Date())) {
@@ -322,7 +354,7 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4){
+        if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
         }
         if (!checkAge(user.getBirthDate(), LocalDate.now())) {
@@ -374,7 +406,8 @@ public class UserService {
      * Checks whether a login attempt was successful. First checks if there exists a user with that primary email.
      * Then checks that the password is correct. If it is, a token is created for that user and is stored for future
      * actions.
-     * @param email A string of what could be an existing email
+     *
+     * @param email   A string of what could be an existing email
      * @param attempt The password attempt
      * @return A ResponseEntity detailing the results
      */
@@ -394,7 +427,7 @@ public class UserService {
                 String sessionToken = randomToken.getToken(40);
                 sessionRepository.insertToken(sessionToken, user.getUserId());
                 // create a cookie
-                Cookie cookie = new Cookie("s_id",sessionToken);
+                Cookie cookie = new Cookie("s_id", sessionToken);
                 // expires in 7 days
                 cookie.setMaxAge(7 * 24 * 60 * 60);
                 cookie.setHttpOnly(true);
@@ -415,10 +448,11 @@ public class UserService {
     /**
      * Firstly checks that the user is authenticated and the old password matches the Users current password. Then
      * updates the users password and salt if successful
-     * @param profileId The id of the user to be changed
+     *
+     * @param profileId    The id of the user to be changed
      * @param sessionToken The authentication token
-     * @param oldPassword The attempt for Users original password
-     * @param newPassword The password to set to
+     * @param oldPassword  The attempt for Users original password
+     * @param newPassword  The password to set to
      * @return
      */
     public ResponseEntity changePassword(long profileId, String sessionToken, String oldPassword, String newPassword) {
@@ -430,7 +464,7 @@ public class UserService {
             if (session != null) {
 
                 //If the user associated with the session matches the user to be edited, or if the user is an admin
-                if(session.getUser().getUserId() == profileId || session.getUser().getPermissionLevel() > 0) {
+                if (session.getUser().getUserId() == profileId || session.getUser().getPermissionLevel() > 0) {
                     if (session.getUser().getPermissionLevel() == 0) {
                         try {
                             String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
@@ -464,8 +498,9 @@ public class UserService {
 
     /**
      * Updates a user's activity types. If a supplied activity type doesn't actually exist, it is skipped.
+     *
      * @param activityTypes An ArrayList of activity type Strings
-     * @param id The Long ID of the User to modify
+     * @param id            The Long ID of the User to modify
      * @return ResponseEntity of result
      */
     public ResponseEntity editActivityTypes(List<String> activityTypes, long id) {
@@ -522,5 +557,54 @@ public class UserService {
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
+    }
+
+    /**
+     * Deals with pagination with no conditions like email, surname, full name etc
+     *
+     * @param page number of a page you want to be at
+     * @param size how many results you want on a page
+     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
+     */
+    public Page<SearchUserDto> findPaginated(int page, int size) {
+        Page<User> userPage = userRepository.findAll(PageRequest.of(page, size));
+        return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Deals with pagination where you can search users with email, full name and last name
+     *
+     * @param page     number of a page you want to be at
+     * @param size     how many results you want on a page
+     * @param email    email of the user you want to search
+     * @param fullname full name of the user you want to search
+     * @param lastname last name of the user you want to search
+     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
+     */
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname) {
+        Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+        return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Helper function used in findPaginated and findPaginatedByQuery,
+     * creates SearchUserResponse object which has user email, full name and nickname details
+     * from the list of users in page object returned by the query
+     *
+     * @param users Page object that contains list of users found by the query
+     * @return Page object with list of SearchUserResponse object
+     */
+    private Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+        List<SearchUserDto> userResponses = new ArrayList<>();
+        for (User user : users) {
+            SearchUserDto searchUserDto = new SearchUserDto();
+            searchUserDto.setEmail(user.getPrimaryEmail());
+            searchUserDto.setFirstname(user.getFirstName());
+            searchUserDto.setLastname(user.getLastName());
+            searchUserDto.setMiddlename(user.getMiddleName());
+            searchUserDto.setNickname(user.getNickName());
+            userResponses.add(searchUserDto);
+        }
+        return new PageImpl<>(userResponses);
     }
 }

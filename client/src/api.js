@@ -96,11 +96,12 @@ export const apiUser = {
       additional_email: additional_email,
     }),
   //Get all emails
-  getAllEmails: () => instance.get("/emails"),
-  getUserSessionToken: (profile_id) => instance.get("/token/" + profile_id),
-
-  getUserByToken: () => instance.get("validateLogin"),
-
+  getAllEmails: () => instance.get('/emails'),
+  getIdByEmail: (email) => instance.get('/email/id/', {params:
+        {email:email}
+  }),
+  getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
+  getUserByToken: () => instance.get('validateLogin'),
   async getUserById(profile_id) {
     let searchedUser = await apiUser.refreshUserData(profile_id).then(
       (response) => {
@@ -112,18 +113,39 @@ export const apiUser = {
         }
       }
     );
-    return await searchedUser;
+    return searchedUser;
   },
+  searchUsers: (searchTerm, searchType, page, size) => instance.get('/profiles/',
+      {params: {
+          [searchType]: searchTerm,
+          page: page,
+          size: size,
+        }
+      }),
+  searchedUser(searchedTerm, searchFilter) {
+    let filter = {};
+    filter[searchFilter] = searchedTerm;
+    filter['page'] = 0;
+    filter['size'] = 3;
 
-  getUserContinuousActivities: (profile_id) =>
-    instance.get("/profiles/" + profile_id + "/activities/continuous"),
-  getUserDurationActivities: (profile_id) =>
-    instance.get("/profiles/" + profile_id + "/activities/duration"),
+    let searchedUserTerm =  apiUser.searchUsers(filter).then(
+        response => {
+          return response.data;
+        },
+        error => {
+          if(error){
+            return "Invalid permissions";
+          }
+        }
+    );
+    return  searchedUserTerm;
+  },
+  getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
+  getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
   /**
    * Request to get all activity types from the server
    */
-  getActivityTypes: () => instance.get("/activity-types"),
-
+  getActivityTypes: () => instance.get('/activity-types'),
   /**
    * Request to update activity types
    */

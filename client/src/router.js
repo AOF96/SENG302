@@ -14,6 +14,7 @@ import ActivitySettings from "./components/activity/settings/ActivitySettings";
 import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
+import Search from "./components/Search";
 
 Vue.use(VueRouter);
 
@@ -78,6 +79,10 @@ const routes = [
     {
         path: '/activity_editing/:activityId',
         component: EditActivity
+    },
+    {
+        path: '/search',
+        component: Search
     }
 ];
 
@@ -95,15 +100,11 @@ router.beforeEach((to, from, next) => {
   const isAdmin = store ? store.getters.isAdmin : null;
   const isLoggedIn = store ? store.getters.isLoggedIn : null;
   const isAuthPath = to.path === "/signup" || to.path === "/login";
-  console.log("start routing to " + to.path);
-  console.log("isAdmin: " + isAdmin);
-  console.log("isLogin: " + isLoggedIn);
 
   if (firstLoad === true) {
     firstLoad = false;
     apiUser.getUserByToken().then(
       (response) => {
-        console.log("Token is matched");
         const responseData = response.data;
         store._actions.updateUserProfile[0](responseData);
         isAuthPath ? next("/profile") : next();
@@ -114,8 +115,7 @@ router.beforeEach((to, from, next) => {
       }
     );
   } else {
-    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2 && isLoggedIn) {
-      console.log("login as an admin user");
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level === 2 && isLoggedIn) {
       next();
     } else if (isAuthPath) {
       isLoggedIn ? next("/profile") : next();

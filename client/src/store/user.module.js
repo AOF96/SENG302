@@ -41,8 +41,11 @@ const getters = {
     return state.user.isLogin;
   },
   isAdmin(state) {
-    return state.user.permission_level > 0;
+    return (state.user.permission_level > 0);
   },
+  getProfileId(state) {
+    return (state.user.profile_id);
+  }
 };
 
 const mutations = {

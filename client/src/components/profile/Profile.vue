@@ -1,6 +1,11 @@
 <template>
   <div>
     <NavBar />
+    <router-link v-if="userSearch.searchTerm!==null" v-bind:to="'/search'">
+      <button class="genericConfirmButton profileBackToSearchButton">
+        Back to Search
+      </button>
+    </router-link>
     <div class="profileBanner"></div>
     <div class="profileContainer">
       <div class="leftSidebarContainer">
@@ -24,7 +29,6 @@
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
       </div>
-    </div>
     <div class="centreContainer">
       <div class="profileHeaderContainer">
         <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -39,16 +43,16 @@
           <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
         </div>
         <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
-            <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
-              <button class="genericConfirmButton">Edit Profile</button>
-            </router-link>
+          <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
+            <button class="genericConfirmButton">Edit Profile</button>
+          </router-link>
         </div>
         <div class="floatClear"></div>
       </div>
       <div class="profileActivitiesContainer">
         <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
           <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
-            <button class="genericConfirmButton" type="button" onclick>Add Activity</button>
+            <button class="genericConfirmButton">Add Activity</button>
           </router-link>
         </div>
         <h2>Activities</h2>
@@ -91,6 +95,7 @@
     </div>
     <div class="floatClear"></div>
   </div>
+</div>
   </template>
 
 <script>
@@ -116,8 +121,8 @@ export default {
     PassportCountries
   },
   computed: {
-    ...mapState(["user"]),
-    ...mapGetters(["user"])
+    ...mapState(["user", "userSearch"]),
+    ...mapGetters(["user", "userSearch"])
   },
   data: function() {
     return {
@@ -141,7 +146,6 @@ export default {
       }
     };
   },
-
   mounted() {
       if (!this.user.isLogin) {
           this.$router.push('/login');

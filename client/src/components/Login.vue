@@ -69,12 +69,12 @@
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
-        this.topErrorMsg = ""
-        this.passwordErrorMsg = ""
-        this.otherErrorMsg = ""
+        this.topErrorMsg = "";
+        this.passwordErrorMsg = "";
+        this.otherErrorMsg = "";
 
         if (!this.user.primary_email || !this.user.password) {
-          this.topErrorMsg = "Please enter email or password"
+          this.topErrorMsg = "Please enter email or password";
           return;
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
@@ -89,7 +89,7 @@
               apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
                 this.updateUserDurationActivities(response.data);
               }).catch(err => console.log(err));
-              if (responseData.permission_level == 2) {
+              if (responseData.permission_level === 2) {
                 this.$router.push("/settings/admin_dashboard");
               } else {
                 this.$router.push("profile?u=" + responseData.profile_id);

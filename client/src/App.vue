@@ -1,24 +1,23 @@
 <template>
-  <div id="appContainer">
-    <div id="pageContent">
-        <router-view/>
-    </div>
-  </div>
+  <v-app>
+    <v-content>
+<!--      <router-view/>-->
+      <div id="appContainer">
+        <div id="pageContent">
+          <router-view/>
+        </div>
+      </div>
+    </v-content>
+  </v-app>
 </template>
 
-
 <script>
-  const app = {
-    name: 'app',
-    data: () => {
-      return {
-      }
-    }
-  };
 
-  export default app
+export default {
+  name: 'App',
+
+  data: () => ({
+    //
+  }),
+};
 </script>
-
-<style>
-  [v-cloak] { display: none; }
-</style>
