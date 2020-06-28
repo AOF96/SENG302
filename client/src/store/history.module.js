@@ -29,6 +29,13 @@ const mutations = {
   },
   setScrollPos(state, data) {
     state.userSearch.scrollPos = data.scrollPos;
+  },
+  clearSearch() {
+    state.userSearch.searchTerm = null;
+    state.userSearch.searchType = null;
+    state.userSearch.page = null;
+    state.userSearch.size = null;
+    state.userSearch.scrollPos = 0;
   }
 };
 
@@ -42,7 +49,10 @@ const actions = {
   },
   setScrollPosition({commit}, data) {
     commit('setScrollPos', data);
-  }
+  },
+  resetSearch({ commit }) {
+    commit('clearSearch')
+  },
 };
 
 export default {

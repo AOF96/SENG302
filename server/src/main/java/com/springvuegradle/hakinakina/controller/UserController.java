@@ -193,11 +193,7 @@ public class UserController {
         } else {
             resultPage = userService.findPaginated(page, size);
         }
-        if (page > resultPage.getTotalPages()) {
-            return new ResponseEntity("No more results", HttpStatus.valueOf(404));
-        } else {
-            return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
-        }
+        return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
     }
 
     /**

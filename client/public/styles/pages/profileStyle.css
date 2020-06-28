@@ -39,6 +39,15 @@
     padding: 20px;
     color: rgba(0,0,0,0.85);
 }
+.profileBackToSearchButton {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    padding: 6px 16px;
+}
+.profileAddActivityButton {
+    padding: 6px 16px;
+}
 
 /* -- Content containers ---- */
 /* Left Sidebar */
@@ -119,7 +128,7 @@
     font-size: 17px;
 }
 .profileActivitiesContainer .genericConfirmButton {
-    padding: 6px 16px;
+    padding: 2px 12px;
     float: right;
 }
 .activityTypesList {
