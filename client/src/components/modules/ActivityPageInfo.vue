@@ -11,7 +11,7 @@
         <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
             Activity Type:
             <span v-for="a in activity_types" :key="a.type_id">
-                <span v-if="activity_types.indexOf(a) != activity_types.length - 1">
+                <span v-if="activity_types.indexOf(a) !== activity_types.length - 1">
                         {{a.name}},
                 </span>
                 <span v-else>
@@ -19,30 +19,26 @@
                 </span>
             </span>
         </div>
-        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true"><h3> Created by: {{
-            activity_author_firstname + " " + activity_author_lastname }}</h3></div>
-
-
+        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
+            <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
+        </div>
         <div class="activityPageBottomButtons">
-            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+            <router-link v-bind:to="'/profile/'+authorId">
                 <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
                     Back to Profile
                 </button>
             </router-link>
-
-            <router-link v-bind:to="'/activity_editing/' + activityId">
+            <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
                 <button
                         class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
                         type="button"
                 >Edit Activity
                 </button>
             </router-link>
-
-
-            <button class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+            <button v-if="authorId===user.profile_id || user.permission_level > 0"
+                    class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
                     type="button" v-on:click="deleteActivity()">Delete Activity
             </button>
-
         </div>
     </div>
 </template>
@@ -82,34 +78,9 @@
         methods: {
             ...mapActions(['updateUserDurationActivities']),
             ...mapActions(['updateUserContinuousActivities']),
-
-            // deleteActivity(user) {
-            //     apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId);
-            //     this.updateUserDurationActivities(user.dur_activities);
-            //     this.updateUserContinuousActivities(user.cont_activities);
-            //     this.$router.push("/profile");
-            // },
-
-            // deleteActivity(user) {
-            //   apiActivity.deleteActivity(user.profile_id, this.$route.params.activityId)
-            //     .then(
-            //       response => {
-            //         console.log(response);
-            //         // apiUser
-            //         //   .getUserContinuousActivities(this.user.profile_id)
-            //         //   .then(response => {
-            //         //     this.updateUserContinuousActivities(response.data);
-            //         //   });
-            //         // apiUser
-            //         //   .getUserDurationActivities(this.user.profile_id)
-            //         //   .then(response => {
-            //         //     this.updateUserDurationActivities(response.data);
-            //         //   });
-            //         this.$router.push("/profile");
-            //       }
-            //     );
-            // },
-
+            /**
+             * Deletes the current activity
+             */
             deleteActivity() {
                 apiActivity
                     .deleteActivity(this.user.profile_id, this.$route.params.activityId)
@@ -128,14 +99,17 @@
                         this.$router.push("/profile/" + this.authorId);
                     });
             },
-
+            /**
+             * Requests the activity and loads its information
+             * @returns {Promise<void>}
+             */
             async loadActivity() {
-                if (this.$route.params.activityId == null || this.$route.params.activityId == "") {
+                if (this.$route.params.activityId == null || this.$route.params.activityId === "") {
                     this.$router.push('/profile');
                 } else {
                     var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
                     console.log(tempActivityData);
-                    if (tempActivityData == "Invalid permissions") {
+                    if (tempActivityData === "Invalid permissions") {
                         this.$router.push('/profile');
                     } else {
                         this.activityId = tempActivityData.id;
