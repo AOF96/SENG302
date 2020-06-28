@@ -395,6 +395,26 @@ public class UserController {
         return activityTypeStrings;
     }
 
+    /**
+     * Handles the updating of user location with city, state and country.
+     * @param jsonString JSON request as string
+     * @param profileId id of user to update
+     * @return ResponseEntity of the result
+     * @throws JsonProcessingException If there is an issue parsing JSON
+     */
+    @PutMapping("/profiles/{profileId}/location")
+    public ResponseEntity editLocation(@RequestBody String jsonString,
+                                       @PathVariable Long profileId)
+            throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode locationNode = mapper.readTree(jsonString).get("location");
+        String city = locationNode.get("city").asText();
+        String state = locationNode.get("state").asText();
+        String country = locationNode.get("country").asText();
+
+        return userService.editLocation(city, state, country, profileId);
+    }
+
     // Create Exception Handle
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
     @ExceptionHandler(IllegalArgumentException.class)

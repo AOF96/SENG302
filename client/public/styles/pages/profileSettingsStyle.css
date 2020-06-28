@@ -50,7 +50,7 @@
     font-size:19px;
 }
 .settingsContentContainer h2 {
-  padding: 0px 7px;
+  padding: 0px 20px 0 7px;
   margin-top: 17px;
   margin-bottom: 7px;
   font-size: 15px;
@@ -409,4 +409,19 @@
     margin: 10px 20px 0 0;
     padding: 6px 16px;
     float: right;
+}
+.locationDropdown {
+    position: absolute;
+    overflow: scroll;
+    max-height: 200px;
+    width: 587px;
+    font-size: 14px;
+}
+
+#locationHeader {
+    float: left;
+}
+
+.profileRemoveLocationButton {
+    margin-top: 11px;
 }

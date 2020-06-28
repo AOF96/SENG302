@@ -21,8 +21,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -494,6 +496,34 @@ public class UserService {
 
         if (result) {
             return new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
+        }
+    }
+
+    /**
+     * Updates a uses city, state, and country.
+     * @param city String city name
+     * @param state String state name
+     * @param country String country name
+     * @param userId Long id of user to update
+     * @return ResponseEntity of result
+     */
+    public ResponseEntity editLocation(String city, String state, String country, Long userId) {
+        boolean result = false;
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setCity(city);
+            user.setState(state);
+            user.setCountry(country);
+            userRepository.save(user);
+            result = true;
+        }
+
+        if (result) {
+            return new ResponseEntity("Successfully updated location", HttpStatus.valueOf(200));
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
