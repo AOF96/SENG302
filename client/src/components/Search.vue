@@ -102,7 +102,7 @@
         this.loadPreviousSearch();
       },
       methods:{
-        ...mapActions(["setUserSearch"]),
+        ...mapActions(["setUserSearch", "setScrollPosition"]),
         /**
          * Search for size amount of users on given page and append to list
          *
@@ -142,7 +142,8 @@
                       searchTerm: this.searchedTerm,
                       searchType: this.searchBy,
                       page: page,
-                      size: size
+                      size: size,
+                      scrollPos: window.scrollY,
                     });
                   }
                 }).catch(
@@ -161,9 +162,11 @@
          * @param email A users email
          */
         getUser(email){
-            apiUser.getIdByEmail(email).then((response) =>
-                this.$router.push({path:"/profile/" + response.data.id})
-            )
+            apiUser.getIdByEmail(email).then(
+                (response) => {
+                  this.setScrollPosition({scrollPos: window.scrollY});
+                  this.$router.push({path:"/profile/" + response.data.id})
+            })
         },
         /**
          * Researches the last search done if one exists and updates the search parameters.
@@ -191,6 +194,7 @@
                     this.allUsers = this.allUsers.concat(response.data.content);
                     this.loading = false;
                     this.disabled = false;
+                    window.scrollTo(0, this.userSearch.scrollPos);
                   }
               }).catch(
                 (error) => {

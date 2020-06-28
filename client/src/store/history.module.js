@@ -4,6 +4,7 @@ const state = {
     searchType: null,
     page: null,
     size: null,
+    scrollPos: 0,
   }
 };
 
@@ -26,6 +27,9 @@ const mutations = {
   setSize(state, data) {
     state.userSearch.size = data.size;
   },
+  setScrollPos(state, data) {
+    state.userSearch.scrollPos = data.scrollPos;
+  }
 };
 
 const actions = {
@@ -34,6 +38,10 @@ const actions = {
     commit('setSearchType', data);
     commit('setPage', data);
     commit('setSize', data);
+    commit('setScrollPos', data);
+  },
+  setScrollPosition({commit}, data) {
+    commit('setScrollPos', data);
   }
 };
 
