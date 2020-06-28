@@ -415,21 +415,6 @@ public class UserController {
         return userService.editLocation(city, state, country, profileId);
     }
 
-    /**
-     * Parses a list of activity types
-     *
-     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
-     * @return A JSON list of strings of the activity types
-     */
-    public static List<String> parseActivityList(JsonNode activitiesNode) {
-        List<String> activities = new ArrayList<>();
-        for (JsonNode activity : activitiesNode) {
-            activities.add(activity.textValue());
-        }
-
-        return activities;
-    }
-
     // Create Exception Handle
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
     @ExceptionHandler(IllegalArgumentException.class)
