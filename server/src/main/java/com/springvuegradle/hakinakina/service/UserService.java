@@ -51,38 +51,6 @@ public class UserService {
     }
 
     /**
-     * Checks that someone is between 13 and 140 years of age inclusive
-     *
-     * @param birthDate   The user's date of birth
-     * @param currentDate Today's date
-     * @return A boolean of whether the user is of a valid age
-     */
-    public static boolean checkAge(Date birthDate, LocalDate currentDate) {
-        boolean result = true;
-        int age = calculateAge(birthDate, currentDate);
-        if (birthDate.after(new Date()) || age < 13 || age > 140) {
-            result = false;
-        }
-        return result;
-    }
-
-    /**
-     * Calculates someone's age. Most of the code taken from
-     * https://stackoverflow.com/questions/1116123/how-do-i-calculate-someones-age-in-java
-     *
-     * @param date The person's birthdate
-     * @return Their age as an int
-     */
-    public static int calculateAge(Date date, LocalDate currentDate) {
-        LocalDate birthDate = LocalDate.of(date.getYear() + 1900, date.getMonth(), date.getDate());
-        if ((birthDate != null) && (currentDate != null)) {
-            return Period.between(birthDate, currentDate).getYears();
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * Checks whether an email has the correct format
      *
      * @param email Email String in question
@@ -365,6 +333,36 @@ public class UserService {
         } else {
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(200, "User updated");
+        }
+    }
+
+    /**
+     * Checks that someone is between 13 and 140 years of age inclusive
+     * @param birthDate The user's date of birth
+     * @param currentDate Today's date
+     * @return A boolean of whether the user is of a valid age
+     */
+    public static boolean checkAge(Date birthDate, LocalDate currentDate) {
+        boolean result = true;
+        int age = calculateAge(birthDate, currentDate);
+        if (birthDate.after(new Date()) || age < 13 || age > 140) {
+            result = false;
+        }
+        return result;
+    }
+
+    /**
+     * Calculates someone's age. Most of the code taken from
+     * https://stackoverflow.com/questions/1116123/how-do-i-calculate-someones-age-in-java
+     * @param date The person's birthdate
+     * @return Their age as an int
+     */
+    public static int calculateAge(Date date, LocalDate currentDate) {
+        LocalDate birthDate = Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+        if (currentDate != null) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
         }
     }
 
