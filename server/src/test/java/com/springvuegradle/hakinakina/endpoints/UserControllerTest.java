@@ -86,27 +86,6 @@ public class UserControllerTest {
             "  \"permission_level\": 1\n" +
             "}";
 
-    @Test
-    public void userCreationSuccess() throws Exception {
-        String input = "{\n" +
-                "  \"lastname\": \"Qiu\",\n" +
-                "  \"firstname\": \"Jackie\",\n" +
-                "  \"middlename\": \"Danger\",\n" +
-                "  \"nickname\": \"J\",\n" +
-                "  \"primary_email\": \"jqi26@uclive.ac.nz\",\n" +
-                "  \"password\": \"Password1\",\n" +
-                "  \"bio\": \"bio\",\n" +
-                "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"male\",\n" +
-                "  \"fitness\": 2\n" +
-                "}";
-
-        when(service.validateCreateProfile(any(User.class))).thenReturn(responseHandler
-                .formatSuccessResponse(200, "User updated"));
-        this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON)
-                .content(input)).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("User updated")));
-    }
 
     @Test
     public void loginSuccess() throws Exception {

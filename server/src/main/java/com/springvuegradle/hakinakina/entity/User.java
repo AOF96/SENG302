@@ -123,7 +123,7 @@ public class User {
 
     @JsonProperty("permission_level")
     @Column(name = "permission_level")
-    private Integer permissionLevel;
+    private Integer permissionLevel = 0;
 
     public User() {}
 
@@ -213,6 +213,10 @@ public class User {
 
     public Set<Email> getEmails() {
         return emails;
+    }
+
+    public void setEmails(Set<Email> emails) {
+        this.emails = emails;
     }
 
     public String getPrimaryEmail() {

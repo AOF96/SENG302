@@ -27,4 +27,8 @@ public class Session {
         return user;
     }
 
+    public String getToken() {
+        return token;
+    }
+
 }

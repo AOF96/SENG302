@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.dto.request.CreateProfileRequest;
+import com.springvuegradle.hakinakina.dto.request.LoginRequest;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.PassportCountry;
 import com.springvuegradle.hakinakina.entity.Session;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,8 +91,8 @@ public class UserController {
      * @return response entity to inform user if registering a new account was successful or not
      */
     @PostMapping("/profiles")
-    public ResponseEntity createProfile(@RequestBody User user) {
-        return userService.validateCreateProfile(user);
+    public ResponseEntity createProfile(@RequestBody @Valid CreateProfileRequest createProfileRequest) {
+        return userService.validateCreateProfile(createProfileRequest);
     }
 
     /**
@@ -209,7 +212,7 @@ public class UserController {
             return responseHandler.formatErrorResponse(401, "User not currently logged in");
         }
         User user = session.getUser();
-        return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
+        return new ResponseEntity(user, HttpStatus.valueOf(200));
     }
 
     /**
@@ -287,19 +290,18 @@ public class UserController {
      * entered password matches the actual password. This is done by encrypting the attempt using the same salt as the
      * actual password, then checking for equality.
      *
-     * @param jsonString The JSON body passed as a string.
+     * @param loginRequest class that contains data for login request.
      * @param response   the response servlet
      * @return response entity to inform user if credentials for logging in was successful or not
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity checkLogin(@RequestBody String jsonString,
+    public ResponseEntity checkLogin(@RequestBody LoginRequest loginRequest,
                                      HttpServletResponse response) {
-        Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-        String attempt = (String) json.get("password");
-        String email = (String) json.get("email");
+        String password = loginRequest.getPassword();
+        String email = loginRequest.getEmail();
 
-        return userService.checkLogin(email, attempt, response);
+        return userService.checkLogin(email, password, response);
     }
 
     /**

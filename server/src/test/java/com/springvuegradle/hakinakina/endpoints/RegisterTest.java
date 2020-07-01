@@ -1,5 +1,7 @@
 package com.springvuegradle.hakinakina.endpoints;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.request.CreateProfileRequest;
 import com.springvuegradle.hakinakina.entity.Gender;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.entity.User;
@@ -35,13 +37,34 @@ public class RegisterTest {
     @Autowired
     SessionRepository sessionRepo;
 
-    private User u;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private CreateProfileRequest cpr;
 
     @BeforeEach
-    void createUser() {
-        u = new User("Mayuko", "Williams",
-                "mwi@williams.com", "1970-01-01", Gender.FEMALE,
-                3, "P@ssw0rd!123");
+    void createUserDTO() {
+
+        // create DTO
+        cpr = new CreateProfileRequest();
+        cpr.setLastName("Williams");
+        cpr.setFirstName("Mayuko");
+        cpr.setMiddleName("007");
+        cpr.setNickname("Bond");
+        cpr.setPrimaryEmail("mwi@williams.com");
+        cpr.setPassword("Super123");
+        cpr.setBio("ryu ga gotoku");
+
+        String str="2000-03-31";
+        java.sql.Date date = java.sql.Date.valueOf(str);
+        cpr.setBirthDate(date);
+
+        Gender g = Gender.FEMALE;
+        cpr.setGender(g);
+
+        cpr.setFitness(1);
+
+        // delete any user that has same email primary email as DTO above
         User temp = userRepo.findUserByEmail("mwi@williams.com");
         if (temp != null) {
             sessionRepo.removeTokenByUserId(String.valueOf(temp.getUserId()));
@@ -53,76 +76,65 @@ public class RegisterTest {
 
     @Test
     void testRegistrationOk() throws Exception {
-        String input = "{\n" +
-                "  \"lastname\": \"Williams\",\n" +
-                "  \"firstname\": \"Mayuko\",\n" +
-                "  \"middlename\": \"007\",\n" +
-                "  \"nickname\": \"MWill\",\n" +
-                "  \"primary_email\": \"mwi@williams.com\",\n" +
-                "  \"password\": \"SuPeRSeCuReP@sSw0rD!!123\",\n" +
-                "  \"bio\": \"bio\",\n" +
-                "  \"date_of_birth\": \"1985-12-20\",\n" +
-                "  \"gender\": \"female\",\n" +
-                "  \"fitness\": 3\n" +
-                "}";
 
         mockMvc.perform(post("/profiles")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(input))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isCreated());
     }
 
+
     @Test
     void testRegistrationWithoutFirstnameShouldFail() throws Exception {
-        u.setFirstName("");
+        cpr.setFirstName("");
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testRegistrationWithoutLastnameShouldFail() throws Exception {
-        u.setLastName("");
+        cpr.setLastName("");
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testRegistrationWithoutPasswordShouldFail() throws Exception {
-        u.setEncryptedPassword("");
+        cpr.setPassword("");
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testRegistrationEmptyEmailShouldFail() throws Exception {
-        u.setPrimaryEmail("");
+        cpr.setPrimaryEmail("");
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testRegistrationInvalidEmailDomainShouldFail() throws Exception {
-        u.setPrimaryEmail("me@you");
+        cpr.setPrimaryEmail("mememe");
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testRegistrationWithInvalidEmailFormatShouldFail() throws Exception {
-        u.setPrimaryEmail("meow.com");
+        cpr.setPrimaryEmail("meow.com");
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -130,10 +142,10 @@ public class RegisterTest {
     void testRegistrationWithInvalidDateOfBirth() throws Exception {
         Date now = new Date();
         java.sql.Date dateOfBirth = new java.sql.Date(now.getTime());
-        u.setBirthDate((java.sql.Date) dateOfBirth);
+        cpr.setBirthDate((java.sql.Date) dateOfBirth);
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(u.toJson()))
+                .content(objectMapper.writeValueAsString(cpr)))
                 .andExpect(status().isBadRequest());
     }
 

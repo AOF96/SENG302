@@ -3,15 +3,16 @@ package com.springvuegradle.hakinakina.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
-import com.springvuegradle.hakinakina.entity.ActivityType;
-import com.springvuegradle.hakinakina.entity.Email;
-import com.springvuegradle.hakinakina.entity.Session;
-import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.dto.SessionTokenDTO;
+import com.springvuegradle.hakinakina.dto.request.CreateProfileRequest;
+import com.springvuegradle.hakinakina.dto.response.CreateProfileResponse;
+import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -243,57 +244,32 @@ public class UserService {
     /***
      * Validates the data provided when creating a new profile. Provides error messages if any of the required inputs are
      * invalid or the given email already exits in the database.
-     * @param user the user to be created.
+     * @param createProfileRequest the user to be created.
      * @return An error response 400 if the provided data is invalid. 403 response if the given email already exists.
      * 201 created response if the request was succesful, with the JSON object of the created user and a session token.
      */
-    public ResponseEntity validateCreateProfile(User user) {
-        ArrayList<String> messages = new ArrayList<String>();
+    public ResponseEntity validateCreateProfile(CreateProfileRequest createProfileRequest) {
 
-        if (user.getLastName() == null || user.getFirstName() == null) {
-            messages.add("Please provide your full name. First and last names are required.");
-        } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
-            messages.add("Please provide your full name. First and last names are required.");
-        }
-        if (user.getPrimaryEmail() == null) {
-            messages.add("Please provide a valid email.");
-        } else if (user.getPrimaryEmail().isBlank()) {
-            messages.add("Please provide a valid email.");
-        } else if (isEmailProperlyFormatted(user.getPrimaryEmail()) != true) {
-            messages.add("Please provide a valid email.");
-        }
-        if (user.getBirthDate() == null) {
-            messages.add("Please provide a valid date of birth, yyyy-mm-dd.");
-        }
-        if (user.getGender() == null) {
-            messages.add("Please provide a valid gender. male, female or non-binary.");
-        }
-        if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
-            messages.add("Please select the fitness level in the range 0 and 5");
-        }
-        if (user.getBirthDate().after(new Date())) {
-            messages.add("Birth date must be in the past");
-        }
-
-        if (user.getPassword() == null) {
-            messages.add("Password cannot be empty");
-        }
-
-        if (messages.isEmpty()) {
-            if (emailExists(user.getPrimaryEmail())) {
-                return responseHandler.formatErrorResponse(403, "Email already exists");
-            } else {
-                //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                userRepository.save(user);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
-
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
-            }
+        if (emailExists(createProfileRequest.getPrimaryEmail())) {
+            return responseHandler.formatErrorResponse(403, "Email already exists");
         } else {
-            return responseHandler.formatErrorResponse(400, messages);
+            //Generate session token
+            RandomToken randomToken = new RandomToken();
+            String token = randomToken.getToken(40);
+            Session sessionToken = new Session(token);
+
+            User user = new User();
+            BeanUtils.copyProperties(createProfileRequest, user);
+            userRepository.save(user);
+            sessionRepository.insertToken(token, user.getUserId());
+
+            SessionTokenDTO sessionTokenDTO = new SessionTokenDTO();
+            sessionTokenDTO.setSessionToken(sessionToken.getToken());
+
+            List<Object> response = new ArrayList<>();
+            response.add(user);
+            response.add(sessionTokenDTO);
+            return new ResponseEntity(response, HttpStatus.valueOf(201));
         }
     }
 
@@ -376,10 +352,10 @@ public class UserService {
      * actions.
      *
      * @param email   A string of what could be an existing email
-     * @param attempt The password attempt
+     * @param password The password attempt
      * @return A ResponseEntity detailing the results
      */
-    public ResponseEntity checkLogin(String email, String attempt, HttpServletResponse response) {
+    public ResponseEntity checkLogin(String email, String password, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
@@ -387,7 +363,7 @@ public class UserService {
         }
 
         try {
-            String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
+            String encryptedPassword = EncryptionUtil.getEncryptedPassword(password, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
 
                 //Generate session token
@@ -402,7 +378,7 @@ public class UserService {
                 // add cookie to response
                 response.addCookie(cookie);
 
-                return new ResponseEntity(user.toJson(), HttpStatus.OK);
+                return new ResponseEntity(user, HttpStatus.OK);
             } else {
                 return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }
