@@ -212,17 +212,20 @@
 
 /* -- Buttons ---- */
 .deleteActivityTypeButton {
-    padding: 3px 8px;
+    padding: 3px 12px;
     border-radius: 25px;
     color: #ee5e5e;
     background: #ffffff;
     border: 2px solid #ee5e5e;
     cursor: pointer;
+    -webkit-transition: all 0.2s ease;
     transition: all 0.2s ease;
     text-decoration: none;
     float: right;
     margin-right: 10px;
     margin-top: 6px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .deleteActivityTypeButton:hover {
