@@ -89,10 +89,11 @@
     float: left;
     margin:20px;
     text-align: center;
+    box-sizing: content-box;
 }
 .profileMainInfoContainer {
     float: left;
-    margin-top: 36px;
+    margin-top: 33px;
 }
 .profileMainInfoContainer h1 {
     font-size: 18px;
@@ -101,11 +102,11 @@
     color: #7f7f7f;
     font-size: 13px;
     font-weight: 500;
-    padding-top: 3px;
+    padding-top: 0px;
 }
 .profileHeaderContainer .genericConfirmButton {
     position: absolute;
-    padding: 6px 16px;
+    padding: 5px 20px;
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
@@ -117,7 +118,6 @@
     position: relative;
     margin-top: 10px;
     padding: 20px;
-    line-height: 30px;
     margin-bottom: 50px;
 }
 .profileActivitiesContainer h2 {
@@ -128,7 +128,7 @@
     font-size: 17px;
 }
 .profileActivitiesContainer .genericConfirmButton {
-    padding: 2px 12px;
+    padding: 5px 14px;
     float: right;
 }
 .activityTypesList {
@@ -139,7 +139,6 @@
     font-size: 14px;
 }
 .activitySummaryContainer {
-    line-height: 20px;
     margin-top: 13px;
     position: relative;
     height: 50px;
@@ -169,7 +168,7 @@
     right: 0px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 12px;
+    font-size: 13px;
     padding: 5px 12px;
 }
 .profileActivityDescription {
@@ -206,8 +205,8 @@
 }
 .passportCountryContainer h2 {
     font-size: 16px;
-    padding-top: 6px;
-    padding-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     font-weight: 500;
     color: rgba(0,0,0,0.85);
     float: left;
