@@ -12,36 +12,41 @@
          {{errorMessage}}
        </v-snackbar>
        <v-container fluid class="searchUserContainer">
+
          <v-row class="searchRow">
            <v-spacer/>
            <h1>Search for a user</h1>
            <v-spacer/>
          </v-row>
-         <v-row class="searchRow" align="center" justify="center">
-           <v-col>
-             <input placeholder="Search"
-                         type="text"
-                         class="inputSearchBox"
-                         v-model="searchedTerm"
-              >
-           </v-col>
-           <v-col>
-             <select v-model="searchBy" name="searchValue" class="searchDropdownMenu" required>
-               <option value="Search by" selected disabled hidden>Search by</option>
-               <option value="fullname">Full Name</option>
-               <option value="lastname">Last Name</option>
-               <option value="email">E-mail</option>
-             </select>
-           </v-col>
-           <v-col>
-             <v-btn
-                 v-on:click="searchUsers(defaultPage, defaultSize)"
-                 color="#1cca92"
+         <form>
+               <v-col>
+                 <v-text-field label="Search"
+                    v-model="searchedTerm"
+                    outlined
+                    rounded
+                    clearable
+                    hide-details
+                  ></v-text-field>
+               </v-col>
+               <v-col>
+                 <v-select v-model="searchBy" :items="searchMethods" name="searchValue" required
+                 label="Search By"
                  outlined
-                 rounded
-             >Submit</v-btn>
-           </v-col>
-         </v-row>
+                 hide-details
+                 rounded>
+                 </v-select>
+               </v-col>
+               <v-col>
+                 <v-btn
+                     v-on:click="searchUsers(defaultPage, defaultSize)"
+                     color="#1cca92"
+                     outlined
+                     block
+                     rounded
+                     large
+                 >Submit</v-btn>
+               </v-col>
+         </form>
          <v-row class="searchRow">
            <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers" :key="user.email" link>
              <v-list-item-content>
@@ -96,6 +101,7 @@
           errorMessage: null,
           snackbar: false,
           timeout: 2000,
+          searchMethods: ["fullname", "lastname", "email"]
         }
       },
       mounted() {

@@ -1,4 +1,9 @@
 /* -- General ---- */
+input, select, textarea{
+    border: initial !important;
+    border-radius: 0 !important; 
+
+}
 .searchUserWrapper {
     width: calc(100% - 30px);
     margin: 50px auto;
