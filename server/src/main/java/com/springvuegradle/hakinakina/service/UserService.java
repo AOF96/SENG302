@@ -283,12 +283,14 @@ public class UserService {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
+                userRepository.save(user);
+
                 //Generate session token
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                userRepository.save(user);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
+                Session session = new Session(sessionToken);
+                session.setUser(user);
+                sessionRepository.save(session);
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }

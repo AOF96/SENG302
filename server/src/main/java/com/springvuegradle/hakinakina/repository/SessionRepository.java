@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.repository;
 
 import com.springvuegradle.hakinakina.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @RepositoryRestResource
 public interface SessionRepository extends JpaRepository<Session, String>{
+        @Modifying
         @Query(value = "Insert INTO Session (token, user_user_id) VALUES (?, ?)", nativeQuery = true)
         Session insertToken(String token, Long user_id);
 
@@ -18,8 +20,7 @@ public interface SessionRepository extends JpaRepository<Session, String>{
         @Query(value = "DELETE FROM Session WHERE token = ?", nativeQuery = true)
         void removeToken(String token);
 
-        @Query(value = "DELETE FROM Session WHERE user_user_id = ?", nativeQuery = true)
-        Session removeTokenByUserId(String token);
+        Session deleteByUser_UserId(Long userId);
 
         @Query(value = "SELECT token FROM Session WHERE user_user_id = ?", nativeQuery = true)
         List<String> getUserSessionToken(Long profile_id);
