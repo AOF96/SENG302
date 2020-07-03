@@ -34,7 +34,7 @@ backButton {
     font-weight: 400;
 }
 .editActivityInput {
-    width: calc(100% - 70px);
+    width: calc(100% - 40px);
     display:block;
     margin: 5px auto 20px;
 }
@@ -44,7 +44,7 @@ backButton {
     width: calc(100% - 40px);
 }
 .editActivityTextarea {
-    width: calc(100% - 70px);
+    width: calc(100% - 40px);
     display: block;
     margin: 5px auto 20px;
     height: 100px;

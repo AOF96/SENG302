@@ -5,7 +5,7 @@
 }
 .settingsNavContainer h1 {
     font-size: 20px;
-    padding:10px 20px;
+    padding:15px 20px;
     font-weight: 500;
     color:rgba(0,0,0,0.8);
 }
@@ -75,7 +75,7 @@
     padding: 0 20px;
 }
 .editForm input, textarea {
-    width: calc(100% - 35px);
+    width: 100%;
 }
 .editForm textarea {
     height: 100px;
@@ -85,9 +85,9 @@
     width: 100%;
 }
 .updateProfileButton {
-    padding: 8px 16px;
+    padding: 6px 18px;
     float: right;
-    margin: 10px 0 15px;
+    margin: 20px 0;
 }
 
 .updateInfoSuccessMessage {
@@ -122,7 +122,7 @@
     background: #1cca92;
 }
 .primaryEmailContainer h4 {
-    padding: 13px 0;
+    padding: 10px 0;
     color: white;
     font-weight: 500;
     font-size: 15px;
@@ -139,7 +139,7 @@
     position: relative;
 }
 .secondaryEmailContainer h4 {
-  padding: 10px 25px;
+  padding: 8px 25px;
   font-weight: 500;
   font-size: 15px;
   color:rgba(0,0,0,0.75);
@@ -155,7 +155,7 @@
     fill: #717171;
     width: 20px;
     height: 20px;
-    transform: translate(2px,5px);
+    transform: translate(4px,4px);
     cursor: pointer;
     opacity: 0;
     transition: all .15s ease;
@@ -171,13 +171,14 @@
   padding-right: 17px;
   cursor: pointer;
   transition:all .2s ease;
+  box-sizing: content-box;
 }
 .secondaryEmailContainer .genericButton {
   position: absolute;
   top: 50%;
   right: 70px;
   transform: translateY(-50%);
-  padding: 5px 9px;
+  padding: 2px 10px;
   border: 2px solid #7a7a7a;
   color: #575757;
   background: none;
@@ -193,7 +194,7 @@
 }
 .addEmailInput {
     display: inline;
-    width: calc(100% - 110px);
+    width: calc(100% - 78px);
 }
 .addEmailButton {
     display: inline;
@@ -262,7 +263,7 @@
     justify-content: space-between;
 }
 .changePasswordInput {
-    width: calc(100% - 70px);
+    width: calc(100% - 40px);
     display:block;
     margin: 20px auto 0;
 }
@@ -320,7 +321,7 @@
     display: inline;
 }
 .addItemButton {
-    padding: 8px 16px;
+    padding: 6px 16px;
     float: right;
     margin: 0 20px 20px 0;
 }
@@ -406,8 +407,8 @@
   display:block !important;
 }
 .backButton {
-    margin: 10px 20px 0 0;
-    padding: 6px 16px;
+    margin: 11px 20px 0 0;
+    padding: 5px 16px;
     float: right;
 }
 .locationDropdown {
