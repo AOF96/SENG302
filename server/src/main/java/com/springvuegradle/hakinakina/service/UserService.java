@@ -577,4 +577,33 @@ public class UserService {
         }
         return new PageImpl<>(userResponses);
     }
+
+    /***
+     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
+     * @param jsonString the request body.
+     * @param profileID the id of the user being promoted to admin.
+     * @param sessionToken the authentication token of the admin performing the request.
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    public ResponseEntity promoteUser(String jsonString, Long profileID, String sessionToken) {
+        ResponseEntity result;
+
+        try {
+            System.out.println(sessionToken);
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+//            User user = userRepository.getUserById();
+            System.out.println(session);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else {
+                result = responseHandler.formatSuccessResponse(200, "All good bro");
+            }
+
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not promote user");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
+    }
 }
