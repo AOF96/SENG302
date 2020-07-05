@@ -108,11 +108,11 @@ import {
 import NavBar from "../modules/NavBar";
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
-import axios from "axios";
+/*import {
+    apiUser
+} from "../../api";*/
+
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import {
-  apiUser
-} from "../../api";
 
 export default {
   name: "Profile",
@@ -153,78 +153,77 @@ export default {
           this.loadSearchedUser();
       }
   },
-  watch: {
-    "$route.params": {
-      handler() {
-        this.loadSearchedUser();
-      }
-    }
-  },
-  methods: {
-    ...mapActions(["updatePassports"]),
-    ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserDurationActivities"]),
-    ...mapActions(["updateUserContinuousActivities"]),
-
-    /*
-          Uses user id from url to request user data.
-       */
-    async loadSearchedUser() {
-      if (
-        this.$route.params.profileId === null ||
-        this.$route.params.profileId === ""
-      ) {
-        this.$router.push("/profile/" + this.user.profile_id);
-        this.searchedUser = this.user;
-      } else {
-        var tempUserData = await apiUser.getUserById(
-          this.$route.params.profileId
-        );
-        if (tempUserData === "Invalid permissions") {
-          this.$router.push("/profile/" + this.user.profile_id);
-          this.searchedUser = this.user;
-        } else {
-          this.searchedUser = tempUserData;
+    watch: {
+        "$route.params": {
+            handler() {
+                this.loadSearchedUser();
+            }
         }
-        apiUser
-          .getUserContinuousActivities(this.$route.params.profileId)
-          .then(response => {
-            this.cont_activities = response.data;
-          });
-        apiUser
-          .getUserDurationActivities(this.$route.params.profileId)
-          .then(response => {
-            this.dur_activities = response.data;
-          });
-      }
-      this.startUp();
-      this.componentKey++;
     },
-    startUp() {
-      this.searchedUser.passports = this.searchedUser.passports.slice();
-      axios
-        .get(COUNTRIES_URL)
-        .then(response => {
-          const countries = [];
-          const data = response.data;
-          for (let country in data) {
-            let country_name = data[country].name;
-            countries.push(country_name);
-          }
+    methods: {
+        ...mapActions(["updatePassports"]),
+        ...mapActions(["createActivity"]),
+        ...mapActions(["updateUserDurationActivities"]),
+        ...mapActions(["updateUserContinuousActivities"]),
+        ...mapActions(["getUserById"]),
+        ...mapActions(["getUserContinuousActivities"]),
+        ...mapActions(["getUserDurationActivities"]),
+        ...mapActions(["getCountriesFromApi"]),
 
-          for (let country of this.searchedUser.passports) {
-            const index = countries.indexOf(country);
-            if (index === -1) continue;
-            countries.splice(index, 1);
-          }
-          this.countries_option = countries;
-        })
-        .catch(error => console.log(error));
+        /*
+              Uses user id from url to request user data.
+           */
+        async loadSearchedUser() {
+            if (
+                this.$route.params.profileId === null ||
+                this.$route.params.profileId === ""
+            ) {
+                this.$router.push("/profile/" + this.user.profile_id);
+                this.searchedUser = this.user;
+            } else {
+                var tempUserData = await this.getUserById(this.$route.params.profileId);
+                if (tempUserData === "Invalid permissions") {
+                    this.$router.push("/profile/" + this.user.profile_id);
+                    this.searchedUser = this.user;
+                } else {
+                    this.searchedUser = tempUserData;
+                }
+                await this.getUserContinuousActivities(this.$route.params.profileId)
+                    .then(response => {
+                      this.cont_activities = response.data;
+                });
+                await this.getUserDurationActivities(this.$route.params.profileId)
+                    .then(response => {
+                        this.dur_activities = response.data;
+                    });
+            }
+            this.startUp();
+            this.componentKey++;
+        },
+        startUp() {
+            this.searchedUser.passports = this.searchedUser.passports.slice();
+            this.getCountriesFromApi(COUNTRIES_URL)
+                .then(response => {
+                    const countries = [];
+                    const data = response.data;
+                    for (let country in data) {
+                        let country_name = data[country].name;
+                        countries.push(country_name);
+                    }
+
+                    for (let country of this.searchedUser.passports) {
+                        const index = countries.indexOf(country);
+                        if (index === -1) continue;
+                        countries.splice(index, 1);
+                    }
+                    this.countries_option = countries;
+                })
+                .catch(error => console.log(error));
+        }
     }
-  }
 };
 </script>
 
 <style scoped>
-@import "../../../public/styles/pages/profileStyle.css";
+  @import "../../../public/styles/pages/profileStyle.css";
 </style>

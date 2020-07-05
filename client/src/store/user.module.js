@@ -1,4 +1,6 @@
 import { apiUser } from "../api";
+import axios from "axios";
+
 
 const state = {
   user: {
@@ -45,7 +47,7 @@ const getters = {
   },
   getProfileId(state) {
     return (state.user.profile_id);
-  }
+  },
 };
 
 const mutations = {
@@ -224,6 +226,18 @@ const actions = {
   updateTmpActivities({ commit }, data) {
     commit("setUserTmpActivity", data);
   },
+  async getUserById(data, id) {
+    return await apiUser.getUserById(id);
+  },
+  async getUserContinuousActivities(data, id) {
+    return await apiUser.getUserContinuousActivities(id);
+  },
+  async getUserDurationActivities(data, id) {
+    return await apiUser.getUserDurationActivities(id);
+  },
+  async getCountriesFromApi(data, url) {
+    return await axios.get(url);
+  }
 };
 
 export default {
