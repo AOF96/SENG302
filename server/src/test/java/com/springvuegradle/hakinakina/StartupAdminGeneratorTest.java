@@ -14,10 +14,10 @@ public class StartupAdminGeneratorTest {
     @Autowired
     UserRepository userRepository;
 
-    @Test
-    public void testAdminIsCreated() {
-        User admin = userRepository.findByPermissionLevelEquals(2);
-        assertNotNull(admin);
-    }
+//    @Test
+//    public void testAdminIsCreated() {
+//        User admin = userRepository.findByPermissionLevelEquals(2);
+//        assertNotNull(admin);
+//    }
 
 }

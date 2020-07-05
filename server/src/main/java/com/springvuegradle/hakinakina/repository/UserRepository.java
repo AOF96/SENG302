@@ -66,4 +66,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                @Param("fullname") String fullname,
                                int startIndex,
                                @Param("size") int size);
+
+    /***
+     * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
+     * @param userID the id of the user being promoted
+     */
+    @Query(value = "UPDATE User SET permission_level = 1 WHERE user_id = ?", nativeQuery = true)
+    User grantAdminRights(Long userID);
 }

@@ -591,12 +591,16 @@ public class UserService {
         try {
             System.out.println(sessionToken);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
-//            User user = userRepository.getUserById();
+            int userPermissionLevel = session.getUser().getPermissionLevel();
             System.out.println(session);
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            } else {
-                result = responseHandler.formatSuccessResponse(200, "All good bro");
+            } else if (userPermissionLevel == 0) {
+                result = responseHandler.formatErrorResponse(403, "Unauthorized user");
+            }
+            else {
+                userRepository.grantAdminRights(profileID);
+                result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
             }
 
         } catch (Exception e) {
