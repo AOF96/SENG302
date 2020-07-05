@@ -235,8 +235,29 @@ const actions = {
   async getUserDurationActivities(data, id) {
     return await apiUser.getUserDurationActivities(id);
   },
-  async getCountriesFromApi(data, url) {
+  async getDataFromUrl(data, url) {
     return await axios.get(url);
+  },
+  async editUserActivityTypes(data, {'id': id, 'activities': activities}) {
+    return await apiUser.editUserActivityTypes(id, activities);
+  },
+  async getActivityTypes() {
+    return await apiUser.getActivityTypes();
+  },
+  async getAllEmails() {
+    return await apiUser.getAllEmails();
+  },
+  async addEmail(data, {'id': id, 'newEmail': additionalEmails}) {
+    await apiUser.addEmails(id, additionalEmails);
+  },
+  async editEmail(data, {'id': id, 'primaryEmail': primaryEmail, 'secondaryEmails': secondaryEmails}) {
+    await apiUser.editEmail(id, primaryEmail, secondaryEmails);
+  },
+  async editProfile(data, user) {
+    return await apiUser.editProfile(user.profile_id, user.firstname, user.lastname, user.middlename, user.nickname, user.primary_email, user.bio, user.date_of_birth, user.gender, user.fitness, user.additional_email, user.passports, user.permission_level, user.activities, user.location);
+  },
+  async changePassword(data, {'id': id, 'oldPassword': oldPassword, 'newPassword': newPassword, 'confirmPassword': confirmPassword }) {
+    return await apiUser.changePassword(id, oldPassword, newPassword, confirmPassword);
   }
 };
 

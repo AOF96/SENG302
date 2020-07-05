@@ -168,7 +168,7 @@ export default {
         ...mapActions(["getUserById"]),
         ...mapActions(["getUserContinuousActivities"]),
         ...mapActions(["getUserDurationActivities"]),
-        ...mapActions(["getCountriesFromApi"]),
+        ...mapActions(["getDataFromUrl"]),
 
         /*
               Uses user id from url to request user data.
@@ -202,7 +202,7 @@ export default {
         },
         startUp() {
             this.searchedUser.passports = this.searchedUser.passports.slice();
-            this.getCountriesFromApi(COUNTRIES_URL)
+            this.getDataFromUrl(COUNTRIES_URL)
                 .then(response => {
                     const countries = [];
                     const data = response.data;
