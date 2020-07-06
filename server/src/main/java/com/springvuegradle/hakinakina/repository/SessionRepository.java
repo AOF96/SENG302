@@ -6,13 +6,15 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RepositoryRestResource
 public interface SessionRepository extends JpaRepository<Session, String>{
+        @Transactional
         @Modifying
         @Query(value = "Insert INTO Session (token, user_user_id) VALUES (?, ?)", nativeQuery = true)
-        Session insertToken(String token, Long user_id);
+        void insertToken(String token, Long user_id);
 
         @Query(value = "SELECT * FROM Session WHERE token = ?", nativeQuery = true)
         Session findUserIdByToken(String token);

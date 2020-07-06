@@ -393,11 +393,8 @@ public class UserService {
             if (user.getPassword().equals(encryptedPassword)) {
 
                 //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session = new Session(sessionToken);
-                session.setUser(user);
-                sessionRepository.save(session);
+                String sessionToken = RandomToken.getToken(40);
+                sessionRepository.insertToken(sessionToken, user.getUserId());
                 // create a cookie
                 Cookie cookie = new Cookie("s_id", sessionToken);
                 // expires in 7 days
