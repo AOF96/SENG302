@@ -431,7 +431,7 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/role")
     public ResponseEntity promoteUser(@RequestBody String jsonString,
-                                      @PathVariable Long profileId, @CookieValue(value = "s_id", defaultValue = "defaultCookieValue") String sessionToken) {
+                                      @PathVariable Long profileId, @CookieValue(value = "s_id", required = false) String sessionToken) {
         return userService.promoteUser(jsonString, profileId, sessionToken);
     }
 

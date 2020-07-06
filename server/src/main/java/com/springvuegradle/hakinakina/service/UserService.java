@@ -589,19 +589,21 @@ public class UserService {
         ResponseEntity result;
 
         try {
-            System.out.println(sessionToken);
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            int userPermissionLevel = session.getUser().getPermissionLevel();
-            System.out.println(session);
+
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            } else if (userPermissionLevel == 0) {
-                result = responseHandler.formatErrorResponse(403, "Unauthorized user");
+            } else {
+                Session session = sessionRepository.findUserIdByToken(sessionToken);
+                int userPermissionLevel = session.getUser().getPermissionLevel();
+                if (userPermissionLevel == 0) {
+                    result = responseHandler.formatErrorResponse(403, "Unauthorized user");
+                } else {
+                    userRepository.grantAdminRights(profileID);
+                    result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
+
+                }
             }
-            else {
-                userRepository.grantAdminRights(profileID);
-                result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
-            }
+
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Could not promote user");
             result = responseHandler.formatErrorResponse(500, "An error occurred");
