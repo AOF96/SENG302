@@ -602,7 +602,6 @@ public class UserService {
                 userRepository.grantAdminRights(profileID);
                 result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
             }
-
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Could not promote user");
             result = responseHandler.formatErrorResponse(500, "An error occurred");
