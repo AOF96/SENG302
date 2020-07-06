@@ -92,10 +92,9 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { apiUser, apiActivity } from "../../../api";
-import router from "../../../router";
+const router = () => import("../../../router");
+const NavBar = () => import("../../modules/NavBar");
 import axios from "axios";
-import NavBar from "../../modules/NavBar";
 
 export default {
     components: {
@@ -120,6 +119,22 @@ export default {
             suggestedLocations: [],
             showLocations: false
         };
+    },
+
+    computed: {
+        ...mapGetters(["user"])
+    },
+    created: async function () {
+        if(this.$route.params.profileId != this.user.profile_id && this.user.permission_level == 0){
+            this.$router.push('/profile');
+        }
+        // Ensures only activity types from the database can be selected and cannot select ones already selected
+        await this
+            .getActivityTypes()
+            .then(response => {
+                this.activities_option = response.data;
+            })
+            .catch(error => console.log(error));
     },
 
     /**
@@ -158,26 +173,16 @@ export default {
         });
     },
 
-    computed: {
-        ...mapGetters(["user"])
-    },
-    created: async function () {
-        if(this.$route.params.profileId != this.user.profile_id && this.user.permission_level == 0){
-            this.$router.push('/profile');
-        }
-        // Ensures only activity types from the database can be selected and cannot select ones already selected
-        await apiUser
-            .getActivityTypes()
-            .then(response => {
-                this.activities_option = response.data;
-            })
-            .catch(error => console.log(error));
-    },
-
     methods: {
         ...mapActions(["createActivity"]),
         ...mapActions(["updateUserContinuousActivities"]),
         ...mapActions(["updateUserDurationActivities"]),
+        ...mapActions(["getActivityTypes"]),
+        ...mapActions(["getUserContinuousActivities"]),
+        ...mapActions(["getUserDurationActivities"]),
+        ...mapActions(["addActivity"]),
+        ...mapActions(["getDataFromUrl"]),
+
 
 
         /**
@@ -356,18 +361,18 @@ export default {
             var tempIsDuration = this.duration !== "duration";
 
             // Send a create request
-            apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
-                this.combinedEndTime, this.description, this.location, this.activity_types_selected)
+            this.addActivity({'id': this.$route.params.profileId, 'name': this.name, 'duration': tempIsDuration, 'startTime': this.combinedStartTime,
+                'endTime': this.combinedEndTime, 'description': this.description, 'location': this.location, 'activityTypes': this.activity_types_selected})
                 .then(
                     response => {
                         document.getElementById("activity_success").hidden = false;
                         document.getElementById("activity_error").hidden = true;
                         console.log(response);
-                        apiUser.getUserContinuousActivities(this.user.profile_id)
+                        this.getUserContinuousActivities(this.user.profile_id)
                             .then(response => {
                                 this.updateUserContinuousActivities(response.data);
                             });
-                        apiUser.getUserDurationActivities(this.user.profile_id)
+                        this.getUserDurationActivities(this.user.profile_id)
                             .then(response => {
                                 this.updateUserDurationActivities(response.data);
                             });
@@ -387,9 +392,10 @@ export default {
             document.getElementById("activity_error").hidden = false;
             document.getElementById("activity_error").innerText = error;
             document.getElementById("activity_success").hidden = true;
-        }
-    }
+        },
+    },
 };
+
 </script>
 
 <style scoped>

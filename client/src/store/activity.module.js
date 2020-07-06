@@ -1,3 +1,5 @@
+import {apiActivity} from "../api";
+
 const state = {
     activity: {
         author_id: null,
@@ -59,6 +61,9 @@ const actions = {
         commit('setDescription', data);
         commit('setLocation', data);
         commit('setActivityTypes', data);
+    },
+    async addActivity(data, {'id': id, 'name': name, 'duration': duration, 'startTime': startTime, 'endTime': endTime, 'description': description, 'location': location, 'activityTypes': activityTypes}) {
+        await apiActivity.addActivity(id, name, duration, startTime, endTime, description, location, activityTypes);
     }
 };
 
