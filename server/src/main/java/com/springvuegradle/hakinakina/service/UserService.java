@@ -395,7 +395,9 @@ public class UserService {
                 //Generate session token
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
+                Session session = new Session(sessionToken);
+                session.setUser(user);
+                sessionRepository.save(session);
                 // create a cookie
                 Cookie cookie = new Cookie("s_id", sessionToken);
                 // expires in 7 days
