@@ -1,4 +1,4 @@
-import { apiUser } from "../api";
+import {apiActivity, apiUser} from "../api";
 import axios from "axios";
 
 
@@ -264,7 +264,7 @@ const actions = {
   },
   async signUp({'firstName': firstName, 'lastName': lastName, 'middleName': middleName, 'nickName': nickName, 'email': email, 'password': password, 'bio': bio, 'dateOfBirth': dateOfBirth, 'gender': gender, 'fitnessLevel': fitnessLevel}) {
     return await apiUser.signUp(firstName, lastName, middleName, nickName, email, password, bio, dateOfBirth, gender, fitnessLevel);
-  }
+  },
 };
 
 export default {

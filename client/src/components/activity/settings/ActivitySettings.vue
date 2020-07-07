@@ -94,8 +94,6 @@
 import { mapGetters, mapActions } from "vuex";
 const router = () => import("../../../router");
 const NavBar = () => import("../../modules/NavBar");
-import axios from "axios";
-
 export default {
     components: {
         NavBar
@@ -125,7 +123,7 @@ export default {
         ...mapGetters(["user"])
     },
     created: async function () {
-        if(this.$route.params.profileId != this.user.profile_id && this.user.permission_level == 0){
+        if (this.$route.params.profileId != this.user.profile_id && this.user.permission_level == 0) {
             this.$router.push('/profile');
         }
         // Ensures only activity types from the database can be selected and cannot select ones already selected
@@ -142,35 +140,39 @@ export default {
      * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
      * duplicate summaries are removed.
      */
-    mounted: function() {
-        let outer = this;
-        let input = document.querySelector('#locationInput');
-        let timeout = null;
-        input.addEventListener('keyup', function () {
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
-                const url = "https://photon.komoot.de/api/?q=" + input.value;
-                axios.get(url)
-                    .then((response) => {
-                        //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-                        //is only displayed when it is finished, avoiding the problem of the user being taken to the
-                        //middle of the list instead of the top
-                        let temp = [];
-                        let locationSummaries = [];
-                        for(let location in response.data.features) {
-                            let locationSummary = outer.getLocationSummary(response.data.features[location]);
-                            if (!locationSummaries.includes(locationSummary)) {
-                                temp.push(response.data.features[location]);
-                                temp[temp.length - 1]["summary"] = locationSummary;
-                                locationSummaries.push(locationSummary);
+    mounted: {
+        ...mapActions(["getDataFromUrl"]),
+
+        function() {
+            let outer = this;
+            let input = document.querySelector('#locationInput');
+            let timeout = null;
+            input.addEventListener('keyup', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    const url = "https://photon.komoot.de/api/?q=" + input.value;
+                    this.getDataFromUrl(url)
+                        .then((response) => {
+                            //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                            //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                            //middle of the list instead of the top
+                            let temp = [];
+                            let locationSummaries = [];
+                            for (let location in response.data.features) {
+                                let locationSummary = outer.getLocationSummary(response.data.features[location]);
+                                if (!locationSummaries.includes(locationSummary)) {
+                                    temp.push(response.data.features[location]);
+                                    temp[temp.length - 1]["summary"] = locationSummary;
+                                    locationSummaries.push(locationSummary);
+                                }
                             }
-                        }
-                        outer.suggestedLocations = temp;
-                        outer.showLocations = true;
-                    })
-                    .catch(error => console.log(error));
-            }, 1000);
-        });
+                            outer.suggestedLocations = temp;
+                            outer.showLocations = true;
+                        })
+                        .catch(error => console.log(error));
+                }, 1000);
+            });
+        }
     },
 
     methods: {
