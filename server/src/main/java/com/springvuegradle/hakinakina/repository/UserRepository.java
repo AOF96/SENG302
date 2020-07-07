@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -72,6 +74,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
      * @param userID the id of the user being promoted
      */
+    @Transactional
     @Modifying
     @Query(value = "UPDATE User SET permission_level = 1 WHERE user_id = ?", nativeQuery = true)
     void grantAdminRights(Long userID);
