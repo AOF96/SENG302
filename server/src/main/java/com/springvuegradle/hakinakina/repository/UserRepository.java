@@ -4,6 +4,7 @@ import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -71,6 +72,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
      * @param userID the id of the user being promoted
      */
+    @Modifying
     @Query(value = "UPDATE User SET permission_level = 1 WHERE user_id = ?", nativeQuery = true)
-    User grantAdminRights(Long userID);
+    void grantAdminRights(Long userID);
 }
