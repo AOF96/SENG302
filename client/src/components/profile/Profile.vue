@@ -28,6 +28,8 @@
           </div>
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
+        <button v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
+        <h6>{{adminRightsResult}}</h6>
       </div>
     <div class="centreContainer">
       <div class="profileHeaderContainer">
@@ -143,7 +145,8 @@ export default {
         2: "I can jog a short distance",
         3: "I can run a medium distance",
         4: "I can run a marathon"
-      }
+      },
+      adminRightsResult: ""
     };
   },
   mounted() {
@@ -220,6 +223,20 @@ export default {
           this.countries_option = countries;
         })
         .catch(error => console.log(error));
+    },
+    /***
+     * Makes a request to the server to give the searched user admin rights given the user is not already an admin and
+     * the requesting user is already an admin.
+      */
+    grantAdminRights() {
+      if (this.user.permission_level === 0 || this.searchedUser.permission_level > 0) {
+        this.adminRightsResult = "This user is already an admin or you don't have the rights to perform this.";
+      } else {
+          apiUser.promoteToAdmin(this.searchedUser.profile_id)
+          .then(response => {
+            this.adminRightsResult = response.data;
+          })
+      }
     }
   }
 };
