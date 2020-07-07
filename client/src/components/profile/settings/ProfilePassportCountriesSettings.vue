@@ -65,10 +65,7 @@
             this.loadSearchedUser();
         },
         methods: {
-            ...mapActions(['updatePassports']),
-            ...mapActions(["getUserById"]),
-            ...mapActions(["editProfile"]),
-            ...mapActions(["getDataFromUrl"]),
+            ...mapActions(['updatePassports', "getDataFromUrl", "getUserById","editProfile"]),
             /*
               Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
               from selecting the same country twice.

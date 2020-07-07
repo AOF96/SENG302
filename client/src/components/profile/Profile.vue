@@ -158,14 +158,7 @@
             }
         },
         methods: {
-            ...mapActions(["updatePassports"]),
-            ...mapActions(["createActivity"]),
-            ...mapActions(["updateUserDurationActivities"]),
-            ...mapActions(["updateUserContinuousActivities"]),
-            ...mapActions(["getUserById"]),
-            ...mapActions(["getUserContinuousActivities"]),
-            ...mapActions(["getUserDurationActivities"]),
-            ...mapActions(["getDataFromUrl"]),
+            ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById","getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
 
             /*
                   Uses user id from url to request user data.

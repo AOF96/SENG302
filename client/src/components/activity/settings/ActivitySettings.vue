@@ -176,16 +176,7 @@ export default {
     },
 
     methods: {
-        ...mapActions(["createActivity"]),
-        ...mapActions(["updateUserContinuousActivities"]),
-        ...mapActions(["updateUserDurationActivities"]),
-        ...mapActions(["getActivityTypes"]),
-        ...mapActions(["getUserContinuousActivities"]),
-        ...mapActions(["getUserDurationActivities"]),
-        ...mapActions(["addActivity"]),
-        ...mapActions(["getDataFromUrl"]),
-
-
+        ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities", "getActivityTypes", "getUserContinuousActivities", "getUserDurationActivities", "addActivity", "getDataFromUrl"]),
 
         /**
          * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted

@@ -37,7 +37,7 @@
             </router-link>
             <button v-if="authorId===user.profile_id || user.permission_level > 0"
                     class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-                    type="button" v-on:click="deleteActivity()">Delete Activity
+                    type="button" v-on:click="deleteCurrentActivity()">Delete Activity
             </button>
         </div>
     </div>
@@ -47,7 +47,6 @@
 
     import dateUtil from "@/util/date";
     import {mapActions, mapGetters} from "vuex";
-    import {apiActivity, apiUser} from "../../api";
 
     export default {
         name: "ActivityPageInfo",
@@ -76,22 +75,21 @@
             this.loadActivity();
         },
         methods: {
-            ...mapActions(['updateUserDurationActivities']),
-            ...mapActions(['updateUserContinuousActivities']),
+            ...mapActions(['updateUserDurationActivities', "getUserContinuousActivities", "getUserDurationActivities", "deleteActivity", "getActivityById", 'updateUserContinuousActivities']),
             /**
              * Deletes the current activity
              */
-            deleteActivity() {
-                apiActivity
-                    .deleteActivity(this.user.profile_id, this.$route.params.activityId)
+            deleteCurrentActivity() {
+                this
+                    .deleteActivity({'userId': this.user.profile_id, 'activityId':this.$route.params.activityId})
                     .then(response => {
                         console.log(response);
-                        apiUser
+                        this
                             .getUserContinuousActivities(this.user.profile_id)
                             .then(response => {
                                 this.updateUserContinuousActivities(response.data);
                             });
-                        apiUser
+                        this
                             .getUserDurationActivities(this.user.profile_id)
                             .then(response => {
                                 this.updateUserDurationActivities(response.data);
@@ -107,7 +105,7 @@
                 if (this.$route.params.activityId == null || this.$route.params.activityId === "") {
                     this.$router.push('/profile');
                 } else {
-                    var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+                    var tempActivityData = await this.getActivityById(this.$route.params.activityId);
                     console.log(tempActivityData);
                     if (tempActivityData === "Invalid permissions") {
                         this.$router.push('/profile');

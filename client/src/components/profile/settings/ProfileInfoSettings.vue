@@ -133,12 +133,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["logout"]),
-    ...mapActions(["updateUserProfile"]),
-      ...mapActions(["getUserById"]),
-      ...mapActions(["editProfile"]),
-      ...mapActions(["getDataFromUrl"]),
-
+    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl"]),
 
       /**
      * Sets the location and each of the individual components by splitting the comma-separated location. Also resets

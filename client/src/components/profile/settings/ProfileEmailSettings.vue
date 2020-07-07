@@ -75,11 +75,7 @@
             ...mapGetters(['user']),
         },
         methods: {
-            ...mapActions(['updateUserEmail']),
-            ...mapActions(["getAllEmails"]),
-            ...mapActions(["getUserById"]),
-            ...mapActions(["addEmail"]),
-            ...mapActions(["editEmail"]),
+            ...mapActions(['updateUserEmail',"getAllEmails", "getUserById", "addEmail", "editEmail"]),
 
             /*
                Adds a new email into the secondary emails lists. Prevents the user from entering empty text, adding more

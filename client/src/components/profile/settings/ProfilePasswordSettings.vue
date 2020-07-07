@@ -81,8 +81,7 @@ export default {
     }
   },
   methods: {
-      ...mapActions(["getUserById"]),
-      ...mapActions(["changePassword"]),
+      ...mapActions(["getUserById", "changePassword"]),
     /*
       Uses user id from url to request user data.
     */

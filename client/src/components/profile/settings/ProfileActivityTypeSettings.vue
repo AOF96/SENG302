@@ -81,10 +81,7 @@ export default {
     this.loadSearchedUser();
   },
   methods: {
-      ...mapActions(["updateActivities"]),
-      ...mapActions(["getUserById"]),
-      ...mapActions(["editUserActivityTypes"]),
-      ...mapActions(["getActivityTypes"]),
+      ...mapActions(["updateActivities", "getUserById", "editUserActivityTypes", "getActivityTypes"]),
 
     startUp() {
       console.log("init");

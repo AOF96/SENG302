@@ -270,6 +270,9 @@ const actions = {
   },
   async getIdByEmail(email) {
     return await apiUser.getIdByEmail(email);
+  },
+  async refreshUserData(data, userId) {
+    return await apiUser.refreshUserData(userId);
   }
 };
 
