@@ -283,12 +283,14 @@ public class UserService {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
+                userRepository.save(user);
+
                 //Generate session token
                 RandomToken randomToken = new RandomToken();
                 String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                userRepository.save(user);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
+                Session session = new Session(sessionToken);
+                session.setUser(user);
+                sessionRepository.save(session);
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
@@ -391,8 +393,7 @@ public class UserService {
             if (user.getPassword().equals(encryptedPassword)) {
 
                 //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
+                String sessionToken = RandomToken.getToken(40);
                 sessionRepository.insertToken(sessionToken, user.getUserId());
                 // create a cookie
                 Cookie cookie = new Cookie("s_id", sessionToken);
