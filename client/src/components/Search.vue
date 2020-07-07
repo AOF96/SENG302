@@ -71,6 +71,47 @@
          </v-row>
        </v-container>
      </div>
+       <div>
+           <v-container fluid class="rightSidebarContainer">
+
+               <v-row class="searchRow">
+                   <v-spacer/>
+                   <h1>Search for a activity type</h1>
+                   <v-spacer/>
+               </v-row>
+               <div>
+                   <select
+                           v-on:change="selectActivityType"
+                           v-model="selected_activity"
+                           name="activityType"
+                           class="editActivitySelect"
+                           required
+                   >
+                       <option selected disabled hidden>Activity Type</option>
+                       <option v-for="addingActivity in activities_option" v-bind:key="addingActivity">
+                           {{addingActivity}}
+                       </option>
+
+                   </select>
+               </div>
+               <div class="addedActivityTypeContainer">
+                   <div class="addedActivityContainer" v-for="addedActivity in activity_types_selected" v-bind:key="addedActivity">
+<!--                       <button class="deleteActivityTypeButton" v-on:click="removeActivityType(addedActivity)">{{addedActivity}}</button>-->
+                       <v-chip
+                               v-bind="addedActivity"
+                               :input-value="activity_types_selected"
+                               close
+                               @click="activity_types_selected"
+                               @click:close="removeActivityType(addedActivity)"
+                       >
+                           {{addedActivity}}
+                       </v-chip>
+                       <div class="floatClear"></div>
+                   </div>
+               </div>
+               <v-switch class="v-size--x-large" v-model="switch1" id="filter" v-on:click="updateSwitch()"></v-switch>
+           </v-container>
+       </div>
    </div>
 </template>
 
@@ -101,6 +142,11 @@
           errorMessage: null,
           snackbar: false,
           timeout: 2000,
+          activities_option:[],
+          activity_types_selected: [],
+          searchInput: "" ,
+          selected_activity: "Activity Type",
+          switch1: false,
           searchMethods: ["fullname", "lastname", "email"]
         }
       },
@@ -174,6 +220,41 @@
                   this.$router.push({path:"/profile/" + response.data.id})
             })
         },
+
+          /**
+           * Adds activity type to selected options
+           */
+          selectActivityType() {
+              if (this.selected_activity !== undefined) {
+                  this.activity_types_selected.push(this.selected_activity);
+                  let index = this.activities_option.indexOf(this.selected_activity);
+                  if (index !== -1) {
+                      this.activities_option.splice(index, 1);
+                  }
+              }
+          },
+
+          /**
+           * Removes activity type from selection
+           */
+          removeActivityType(addedActivity) {
+              this.activities_option.push(addedActivity);
+              let index = this.activity_types_selected.indexOf(addedActivity);
+              if (index !== -1) {
+                  this.activity_types_selected.splice(index, 1);
+              }
+          },
+          updateSwitch(){
+              // const  l =   document.getElementById("filter")
+              // console.log(l);
+              console.log(this.switch1)
+              // if(this.switch1 === "OR") {
+              //     this.switch1 = "AND"
+              // }
+              // else{
+              //     this.switch1 = "OR"
+              // }
+          },
         /**
          * Researches the last search done if one exists and updates the search parameters.
          */
@@ -211,10 +292,23 @@
                 })
           }
         }
-      }
+      },
+        created: async function () {
+            /**
+             * The function below gets all the activity types saved in the database
+             */
+            await apiUser
+                .getActivityTypes()
+                .then(response => {
+                    this.activities_option = response.data;
+                    console.log(this.activities_option);
+                })
+                .catch(error => console.log(error));
+        },
     }
 </script>
 
 <style scoped>
     @import "../../public/styles/pages/searchUserStyle.css";
+    @import "../../public/styles/pages/profileStyle.css";
 </style>
