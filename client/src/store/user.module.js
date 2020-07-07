@@ -258,6 +258,12 @@ const actions = {
   },
   async changePassword(data, {'id': id, 'oldPassword': oldPassword, 'newPassword': newPassword, 'confirmPassword': confirmPassword }) {
     return await apiUser.changePassword(id, oldPassword, newPassword, confirmPassword);
+  },
+  async login(data, {'email': email, 'password':password}) {
+      return await apiUser.login(email, password);
+  },
+  async signUp({'firstName': firstName, 'lastName': lastName, 'middleName': middleName, 'nickName': nickName, 'email': email, 'password': password, 'bio': bio, 'dateOfBirth': dateOfBirth, 'gender': gender, 'fitnessLevel': fitnessLevel}) {
+    return await apiUser.signUp(firstName, lastName, middleName, nickName, email, password, bio, dateOfBirth, gender, fitnessLevel);
   }
 };
 
