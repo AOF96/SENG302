@@ -548,10 +548,11 @@ public class UserService {
      * @param email    email of the user you want to search
      * @param fullname full name of the user you want to search
      * @param lastname last name of the user you want to search
+     * @param activityTypes activityTypes of the user you want to search
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname) {
-        Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes) {
+        Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
         return userPageToSearchResponsePage(userPage);
     }
 
@@ -572,6 +573,7 @@ public class UserService {
             searchUserDto.setLastname(user.getLastName());
             searchUserDto.setMiddlename(user.getMiddleName());
             searchUserDto.setNickname(user.getNickName());
+            searchUserDto.setActivityTypes(user.getActivityTypes());
             userResponses.add(searchUserDto);
         }
         return new PageImpl<>(userResponses);

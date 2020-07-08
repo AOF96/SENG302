@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository for storing users
@@ -40,13 +42,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email email of the user you are searching for
      * @param fullname full name of the user you are searching for
      * @param lastname last name of the user you are searching for
+     * @param activityTypes set of activities of user you are searching for
      * @return Page object with list of users with the query search
      */
     @Query(value = "FROM User u " +
             "WHERE u.primaryEmail like ?1% " +
             "OR concat(u.firstName, ' ', u.lastName) like ?2% " +
-            "OR u.lastName like ?3%")
-    Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
+            "OR u.lastName like ?3%" +
+            "OR u.activityTypes IN :ActivityTypes"
+            )
+    Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname, @Param("ActivityTypes") Set<ActivityType> activityTypes);
 
     /**
      * Retrieves users based on the following query parameters
