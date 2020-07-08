@@ -1,13 +1,24 @@
+/* eslint-env jest*/
 import {createLocalVue, shallowMount} from '@vue/test-utils'
-import VueRouter from 'vue-router'
 import Signup from '@/components/Signup.vue'
 import Vuex from 'vuex'
 import user from '@/store/user.module'
 
+//mock api
+jest.mock("@/api")
+
+//mock router
+const mocks = {
+  $router: {
+    push: jest.fn()
+  }
+}
+
+//make the test igonre router-link when found
+const stubs = ['router-link']
+
 
 const localVue = createLocalVue()
-localVue.use(VueRouter)
-const router = new VueRouter()
 localVue.use(Vuex)
 
 const state = {
@@ -38,8 +49,9 @@ describe('Signup page display', () => {
 
     wrapper = shallowMount(Signup, {
       localVue,
-      router,
-      store
+      store,
+      mocks,
+      stubs
     })
   })
 
@@ -110,5 +122,5 @@ describe('Signup page display', () => {
   it('should show an error if dob is not within #common-sense', () => {
     expect(wrapper.find("#signup-dob-err").text()).toContain("Please select a valid date of birth")
   })
-
 })
+

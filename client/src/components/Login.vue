@@ -10,7 +10,7 @@
                         <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
                     </div>
                     <div class="loginRow">
-                        <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
+                        <input id="loginEmailForm" type="email" v-model="user.primary_email" name="email" placeholder="Email"
                                required>
                     </div>
                     <div class="loginRow">
@@ -18,7 +18,7 @@
                             }}</h6>
                     </div>
                     <div class="loginRow">
-                        <input type="password" v-model="user.password" name="password"
+                        <input id="loginPasswordForm" type="password" v-model="user.password" name="password"
                                placeholder="Password" required>
                     </div>
                     <div class="loginRow">

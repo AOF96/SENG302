@@ -1,4 +1,6 @@
-import {createLocalVue, mount, shallowMount} from '@vue/test-utils'
+/* eslint-env jest*/
+
+import {createLocalVue, mount} from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import NavBar from '../modules/NavBar.vue'
 import Vuex from 'vuex'
