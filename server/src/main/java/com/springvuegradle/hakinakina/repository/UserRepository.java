@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -17,7 +18,7 @@ import java.util.Set;
  * Repository for storing users
  */
 @RepositoryRestResource
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     @Query(value = "Select * from User u where u.primary_email = ?1", nativeQuery = true)
     User findUserByEmail(String email);
 
@@ -43,6 +44,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param fullname full name of the user you are searching for
      * @param lastname last name of the user you are searching for
      * @param userActivityTypes set of activities of user you are searching for
+     * @param method method of search for acivityTypes either and or or
      * @return Page object with list of users with the query search
      */
     @Query(value = "FROM User u " +

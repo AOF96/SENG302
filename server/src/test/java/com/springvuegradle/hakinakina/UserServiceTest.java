@@ -1,5 +1,8 @@
 package com.springvuegradle.hakinakina;
 
+import com.springvuegradle.hakinakina.repository.SearchCriteria;
+import com.springvuegradle.hakinakina.repository.SearchOperation;
+import com.springvuegradle.hakinakina.repository.UserSearchSpecification;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.UserRepository;
@@ -12,8 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;

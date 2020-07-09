@@ -183,12 +183,13 @@ public class UserController {
             @RequestParam(required = false) String fullname,
             @RequestParam(required = false) String lastname,
             @RequestParam(required = false) Set<ActivityType> activityTypes,
+            @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size) {
 
         Page<SearchUserDto> resultPage;
         if (email != null || fullname != null || lastname != null || activityTypes != null) {
-            resultPage = userService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes);
+            resultPage = userService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
         } else {
             resultPage = userService.findPaginated(page, size);
         }

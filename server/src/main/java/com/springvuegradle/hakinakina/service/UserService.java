@@ -549,9 +549,10 @@ public class UserService {
      * @param fullname full name of the user you want to search
      * @param lastname last name of the user you want to search
      * @param activityTypes activityTypes of the user you want to search
+     * @param method
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes) {
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
         Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
         return userPageToSearchResponsePage(userPage);
     }
