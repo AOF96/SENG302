@@ -32,6 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
     String getIdByEmail(String email);
 
+    @Query(value = "delete from User where user_id = ?", nativeQuery = true)
+    void deleteUserById(Long profileId);
 
     /**
      * Retrieves users based on the following query parameters

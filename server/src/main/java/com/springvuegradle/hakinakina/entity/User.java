@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -346,6 +347,14 @@ public class User {
     public void setPermissionLevel(Integer permissionLevel) {
         if(permissionLevel == null) return;
         this.permissionLevel = permissionLevel;
+    }
+
+    public boolean isAdmin() {
+        return Objects.equals(permissionLevel, 1) || Objects.equals(permissionLevel, 2);
+    }
+
+    public boolean isDefaultAdmin() {
+        return Objects.equals(permissionLevel, 2);
     }
 
     public Set<Activity> getAuthoredActivities() {

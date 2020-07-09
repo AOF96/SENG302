@@ -415,6 +415,38 @@ public class UserController {
         return userService.editLocation(city, state, country, profileId);
     }
 
+    /**
+     * Allows admins to delete a registered user's account
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform admin if deleting the registered user was successful or not
+     */
+    @DeleteMapping("/profiles/{profileId}")
+    public ResponseEntity deleteUser(@PathVariable Long profileId,
+                                     @CookieValue(value = "s_id") String sessionToken) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
+            }
+
+            if (session.getUser().isAdmin()) {
+                if (userRepository.findById(profileId).isPresent()) {
+//                    userRepository.deleteById(profileId);
+                    userRepository.deleteUserById(profileId);
+                } else {
+                    return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity("Unauthorised User", HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity("Successful", HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not delete user");
+            return new ResponseEntity("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // Create Exception Handle
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
     @ExceptionHandler(IllegalArgumentException.class)
