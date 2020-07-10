@@ -66,7 +66,7 @@
           </ul>
           <hr />
           <div class="signUpRow">
-            <button v-on:click="submitSignUp()" class="loginButton" type="submit">Sign Up</button>
+            <button id="signUpButton" v-on:click="submitSignUp()" class="loginButton" type="submit">Sign Up</button>
           </div>
         </form>
       </div>
