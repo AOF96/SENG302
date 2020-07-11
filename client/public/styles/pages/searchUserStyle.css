@@ -45,6 +45,10 @@ input, select, textarea{
     margin-top: 10px;
 }
 
+.activeFilter{
+    color:#1cca92;
+}
+
 /* -- Icon's styling ---- */
 .searchIcon {
     top: 8px;
