@@ -43,17 +43,32 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @param email email of the user you are searching for
      * @param fullname full name of the user you are searching for
      * @param lastname last name of the user you are searching for
+     * @return Page object with list of users with the query search
+     */
+    @Query(value = "FROM User u " +
+            "WHERE u.primaryEmail like :email " +
+            "OR concat(u.firstName, ' ', u.lastName) like :fullname " +
+            "OR u.lastName like :lastname "
+            )
+    Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
+
+    /**
+     * Retrieves users based on the following query parameters
+     * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
+     * @param pageable abstract interface for pagination information, if provided page object is sent back
+     * @param email email of the user you are searching for
+     * @param fullname full name of the user you are searching for
+     * @param lastname last name of the user you are searching for
      * @param userActivityTypes set of activities of user you are searching for
-     * @param method method of search for acivityTypes either and or or
      * @return Page object with list of users with the query search
      */
     @Query(value = "FROM User u " +
             "WHERE u.primaryEmail like :email " +
             "OR concat(u.firstName, ' ', u.lastName) like :fullname " +
             "OR u.lastName like :lastname " +
-            "OR u.activityTypes IN :UserActivityTypes"
-            )
-    Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname, @Param("UserActivityTypes") Set<ActivityType> userActivityTypes);
+            "OR u.activityTypes IN :userActivityTypes"
+    )
+    Page<User> findAllByActivityTypes(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
 
     /**
      * Retrieves users based on the following query parameters

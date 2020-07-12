@@ -189,7 +189,7 @@
             this.disabled = true;
 
             /* Search for users */
-            apiUser.searchUsers(this.searchedTerm, this.searchBy, page - 1, size).then(
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, "OR", page - 1, size).then(
                 (response) => {
                   if (response.data.content.length === 0) {
                     this.disabled = true;
@@ -278,7 +278,7 @@
             this.moreHidden = false;
             this.loading = true;
 
-            apiUser.searchUsers(this.searchedTerm, this.searchBy, 0, this.userSearch.size * this.userSearch.page).then(
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, "OR", 0, this.userSearch.size * this.userSearch.page).then(
                 (response) => {
                   if (response.data.content.size === 0) {
                     this.disabled = true;

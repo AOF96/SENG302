@@ -553,7 +553,12 @@ public class UserService {
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
     public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
-        Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+        Page<User> userPage;
+        if (activityTypes != null) {
+            userPage = userRepository.findAllByActivityTypes(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+        } else {
+            userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+        }
         return userPageToSearchResponsePage(userPage);
     }
 
