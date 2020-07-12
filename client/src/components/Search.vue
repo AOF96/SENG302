@@ -190,6 +190,7 @@
             this.disabled = true;
 
             /* Search for users */
+            console.log(this.activity_types_selected);
             apiUser.searchUsers(this.searchedTerm, this.searchBy, "OR", page - 1, size).then(
                 (response) => {
                   if (response.data.content.length === 0) {
@@ -261,8 +262,9 @@
           },
 
           remove (item) {
-              const index = this.activity_types_selected.indexOf(item)
-              if (index >= 0) this.activity_types_selected.splice(index, 1)
+            const index = this.activity_types_selected.indexOf(item);
+            if (index >= 0) this.activity_types_selected.splice(index, 1);
+            this.searchUsers(this.defaultPage, this.defaultSize);
           },
         /**
          * Researches the last search done if one exists and updates the search parameters.
