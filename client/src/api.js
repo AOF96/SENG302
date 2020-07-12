@@ -115,10 +115,11 @@ export const apiUser = {
     );
     return searchedUser;
   },
-  searchUsers: (searchTerm, searchType, method, page, size) => instance.get('/profiles/',
+  searchUsers: (searchTerm, searchType, activityTypes,  method, page, size) => instance.get('/profiles/',
       {params: {
           [searchType]: searchTerm,
           method: method,
+          activity: activityTypes,
           page: page,
           size: size,
         }

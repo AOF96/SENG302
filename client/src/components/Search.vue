@@ -176,51 +176,50 @@
          */
         searchUsers(page, size){
           if (page === this.defaultPage) {
-            this.allUsers = [];
-          }
-          if(this.searchedTerm.trim() === ""){
-              alert("Input or search box cannot be empty.")
-          } else {
-            /* Adjust search position */
-            this.currentSize = size;
-            this.currentPage = page;
+              this.allUsers = [];
+              /* Adjust search position */
+              this.currentSize = size;
+              this.currentPage = page;
 
-            /* Change button animation */
-            this.moreHidden = false;
-            this.loading = true;
-            this.disabled = true;
+              /* Change button animation */
+              this.moreHidden = false;
+              this.loading = true;
+              this.disabled = true;
 
-            /* Search for users */
-            console.log(this.activity_types_selected);
-            apiUser.searchUsers(this.searchedTerm, this.searchBy, "OR", page - 1, size).then(
-                (response) => {
-                  if (response.data.content.length === 0) {
-                    this.disabled = true;
-                    this.loading = false;
-                    this.errorMessage = "No more results";
-                    this.snackbar = true;
-                  } else {
-                    this.allUsers = this.allUsers.concat(response.data.content);
-                    this.loading = false;
-                    this.disabled = false;
-                    /* Update search history */
-                    this.setUserSearch({
-                      searchTerm: this.searchedTerm,
-                      searchType: this.searchBy,
-                      page: page,
-                      size: size,
-                      scrollPos: window.scrollY,
-                    });
+              /* Search for users */
+              console.log(this.activity_types_selected);
+              let searchTermInt = this.searchedTerm;
+              if(this.searchedTerm.trim().length === 0){searchTermInt = null}
+              apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), "OR", page - 1, size).then(
+                  (response) => {
+                      if (response.data.content.length === 0) {
+                          this.disabled = true;
+                          this.loading = false;
+                          this.errorMessage = "No more results";
+                          this.snackbar = true;
+                      } else {
+                          this.allUsers = this.allUsers.concat(response.data.content);
+                          this.loading = false;
+                          this.disabled = false;
+                          /* Update search history */
+                          this.setUserSearch({
+                              searchTerm: this.searchedTerm,
+                              searchType: this.searchBy,
+                              page: page,
+                              size: size,
+                              scrollPos: window.scrollY,
+                          });
+                      }
+                  }).catch(
+                  (error) => {
+                      this.disabled = true;
+                      this.loading = false;
+                      this.errorMessage = error.response.data;
+                      this.snackbar = true;
                   }
-                }).catch(
-                (error) => {
-                  this.disabled = true;
-                  this.loading = false;
-                  this.errorMessage = error.response.data;
-                  this.snackbar = true;
-                }
-            )
+              )
           }
+
         },
         /**
          * Gets a users information from their email.
@@ -234,6 +233,18 @@
                   this.$router.push({path:"/profile/" + response.data.id})
             })
         },
+
+          /**
+           * The method changes a list of activity type to a string, which is appended to the URL for searching users
+           */
+          activityListToString(){
+              let activityString = "";
+              for(let activity of this.activity_types_selected){
+                  activityString += activity + "%20";
+              }
+              return activityString.slice(0, activityString.length - 3);
+
+          },
 
           /**
            * Adds activity type to selected options
