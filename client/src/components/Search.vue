@@ -116,6 +116,7 @@
                    <label v-bind:class="{ activeFilter: !switch1}"> OR </label>
                    <v-switch dense
                              v-model="switch1"
+                             v-on:change="searchUsers(defaultPage, defaultSize)"
                    ></v-switch>
                    <label v-bind:class="{ activeFilter: switch1}">AND</label>
                </div>
