@@ -90,6 +90,7 @@
                            color="blue-grey lighten-2"
                            label="Activity Type Select"
                            multiple
+                           v-on:change="searchUsers(defaultPage, defaultSize)"
                    >
                        <template v-slot:selection="data">
                            <v-chip
