@@ -1,7 +1,4 @@
 /* -- General ---- */
-html, body{
-    overflow: auto !important;
-}
 *{
     margin:0;
     padding:0;
@@ -82,7 +79,7 @@ input, select, textarea {
     -webkit-transition: all .2s ease;
     transition: all .2s ease;
     border-radius: 100px;
-    padding: 8px 18px;
+    padding: 6px 18px;
     float: right;
     margin-right: 10px;
 }
@@ -167,9 +164,11 @@ input, select, textarea {
     background:rgba(0,0,0,0.08);
 }
 #navBarSearchBtn svg{
-  float: left;
-  width: 18px;
-  height: 18px;
-  fill: rgba(0, 0, 0, 0.8);
-  margin-right: 4px;
+    float: left;
+    width: 18px;
+    height: 18px;
+    fill: rgba(0, 0, 0, 0.8);
+    margin-right: 4px;
+    box-sizing: content-box;
+    padding: 1px;
 }
