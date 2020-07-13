@@ -1,4 +1,7 @@
 /* -- General ---- */
+html, body{
+    overflow: auto !important;
+}
 *{
     margin:0;
     padding:0;
@@ -12,11 +15,9 @@ p, h1, h2, h3, h4, h5, h6, span, a, li, button, textarea, input, label{
 
 /* -- Forms ---- */
 input, select, textarea {
-    border-radius: 21px !important;
     font-size: 14px !important;
     background: #ffffff;
     outline: none;
-    border: 1px solid #d8d8d8 !important;
     padding: 10px 15px;
     resize: none !important;
 }

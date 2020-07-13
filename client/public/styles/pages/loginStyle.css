@@ -42,6 +42,8 @@
 .loginFormContainer input, .loginFormContainer select {
     margin-bottom: 15px;
     width: 100%;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
 }
 .loginFormContainer hr {
     border: 0;
