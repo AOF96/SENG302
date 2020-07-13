@@ -101,6 +101,39 @@
         ></textarea>
         <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
         <button
+          class="genericDeleteButton deleteProfileButton"
+          @click.stop="dialog = true"
+        >
+          Delete Account
+        </button>
+        <v-dialog
+          v-model="dialog"
+          max-width="290"
+        >
+          <v-card>
+            <v-card-title class="headline">Delete Account</v-card-title>
+            <v-card-text>
+              Are you sure you want to delete this account?
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <button
+                @click="dialog = false"
+                class="genericConfirmButton updateProfileButton"
+              >
+                Yes
+              </button>
+
+              <button
+                class="genericDeleteButton deleteProfileButton"
+                @click="dialog = false"
+              >
+                No
+              </button>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <button
           class="genericConfirmButton updateProfileButton"
           v-on:click="updateProfile()"
           type="submit"
@@ -131,7 +164,8 @@ export default {
       showAdmin: false,
       suggestedLocations: [],
       showLocations: false,
-      location: null
+      location: null,
+      dialog: false,
     };
   },
   methods: {

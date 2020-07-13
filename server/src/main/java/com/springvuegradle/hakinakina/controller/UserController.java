@@ -430,10 +430,11 @@ public class UserController {
                 return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
             }
 
-            if (session.getUser().isAdmin()) {
+            //If the session matches the user or the user has admin privileges
+            if (session.getUser().isAdmin() || session.getUser().getUserId().equals(profileId)) {
                 if (userRepository.findById(profileId).isPresent()) {
-//                    userRepository.deleteById(profileId);
-                    userRepository.deleteUserById(profileId);
+                    userRepository.deleteById(profileId);
+//                    userRepository.deleteUserById(profileId);
                 } else {
                     return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
                 }
