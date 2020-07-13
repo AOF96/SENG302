@@ -588,13 +588,16 @@ public class UserService {
         ResponseEntity result;
 
         try {
-
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
             } else {
                 Session session = sessionRepository.findUserIdByToken(sessionToken);
                 int userPermissionLevel = session.getUser().getPermissionLevel();
-                if (userPermissionLevel == 0) {
+                Optional<User> userToPromote = userRepository.getUserById(profileID);
+                if (userToPromote.get().getPermissionLevel() > 0) {
+                    result = responseHandler.formatErrorResponse(400, "User to promote is already an admin");
+                }
+                else if (userPermissionLevel == 0) {
                     result = responseHandler.formatErrorResponse(403, "Unauthorized user");
                 } else {
                     userRepository.grantAdminRights(profileID);
