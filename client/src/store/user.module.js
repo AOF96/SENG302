@@ -262,7 +262,8 @@ const actions = {
   async login(data, {'email': email, 'password':password}) {
       return await apiUser.login(email, password);
   },
-  async signUp({'firstName': firstName, 'lastName': lastName, 'middleName': middleName, 'nickName': nickName, 'email': email, 'password': password, 'bio': bio, 'dateOfBirth': dateOfBirth, 'gender': gender, 'fitnessLevel': fitnessLevel}) {
+  async signUp(data, {'firstName': firstName, 'lastName': lastName, 'middleName': middleName, 'nickName': nickName, 'email': email, 'password': password, 'bio': bio, 'dateOfBirth': dateOfBirth, 'gender': gender, 'fitnessLevel': fitnessLevel}) {
+    console.log(gender);
     return await apiUser.signUp(firstName, lastName, middleName, nickName, email, password, bio, dateOfBirth, gender, fitnessLevel);
   },
   async searchForUsers(data, {'searchTerm': searchTerm, 'searchBy': searchBy, 'page': page, 'size': size}) {
