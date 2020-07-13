@@ -112,6 +112,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import axios from 'axios';
 import router from "../router";
 import NavBar from "./modules/NavBar";
 
@@ -146,10 +147,7 @@ export default {
      * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
      * duplicate summaries are removed.
      */
-    mounted: {
-        ...mapActions(["getDataFromUrl"]),
-
-        function() {
+    mounted: function() {
             let outer = this;
             let input = document.querySelector('#locationInput');
             let timeout = null;
@@ -157,7 +155,7 @@ export default {
                 clearTimeout(timeout);
                 timeout = setTimeout(function () {
                     const url = "https://photon.komoot.de/api/?q=" + input.value;
-                    this.getDataFromUrl(url)
+                    axios.get(url)
                         .then((response) => {
                             //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
                             //is only displayed when it is finished, avoiding the problem of the user being taken to the
@@ -178,7 +176,6 @@ export default {
                         .catch(error => console.log(error));
                 }, 1000);
             });
-        },
     },
 
     computed: {
@@ -187,10 +184,7 @@ export default {
             return this.duration == "duration";
         }
     },
-    created: {
-        ...mapActions(["getActivityTypes"]),
-
-        async function () {
+    created: async function () {
         this.loadActivity();
         // Ensures only activity types from the database can be selected and cannot select ones already selected
         await this
@@ -204,10 +198,9 @@ export default {
                 });
             })
             .catch(error => console.log(error));
-      },
   },
   methods: {
-    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities", "getActivityById", 'editActivity',"getUserContinuousActivities", "getUserDurationActivities", "deleteActivity"]),
+    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities", "getActivityById", 'editActivity',"getUserContinuousActivities", "getUserDurationActivities", "deleteActivity", "getActivityTypes"]),
 
     /**
      * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
