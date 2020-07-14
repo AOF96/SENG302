@@ -286,11 +286,10 @@ public class UserService {
                 userRepository.save(user);
 
                 //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
+                String sessionToken = RandomToken.getToken(40);
                 Session session = new Session(sessionToken);
-                session.setUser(user);
-                sessionRepository.save(session);
+                user.addSession(session);
+                userRepository.save(user);
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
@@ -394,7 +393,10 @@ public class UserService {
 
                 //Generate session token
                 String sessionToken = RandomToken.getToken(40);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
+                Session session = new Session(sessionToken);
+                user.addSession(session);
+                userRepository.save(user);
+
                 // create a cookie
                 Cookie cookie = new Cookie("s_id", sessionToken);
                 // expires in 7 days

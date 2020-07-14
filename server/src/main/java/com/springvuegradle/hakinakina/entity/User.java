@@ -126,6 +126,13 @@ public class User {
     @Column(name = "permission_level")
     private Integer permissionLevel;
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Session> sessions = new HashSet<>();
+
     public User() {}
 
     public User(String firstName,
@@ -172,6 +179,16 @@ public class User {
     public void removeEmail(Email email) {
         email.removeUser();
         emails.remove(email);
+    }
+
+    public void addSession(Session session) {
+        sessions.add(session);
+        session.setUser(this);
+    }
+
+    public void removeSession(Session session) {
+        sessions.remove(session);
+        session.setUser(null);
     }
 
     public Set<PassportCountry> getPassportCountries() {
