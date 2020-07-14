@@ -1,4 +1,7 @@
 /* -- General ---- */
+@import "https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css";
+@import "https://fonts.googleapis.com/css?family=Material+Icons";
+
 input, select, textarea {
     border: initial !important;
     border-radius: 0 !important;
@@ -69,4 +72,14 @@ input, select, textarea {
     font-size: 20px;
     margin: 10px 0;
     text-align: center;
+}
+#headerNavToggle{
+  fill: rgba(0, 0, 0, 0.85) !important;
+  width: 28px;
+  height: 28px;
+  box-sizing: content-box;
+  padding: 0px 20px;
+  padding-top: 4px;
+  position: absolute;
+  cursor: pointer;
 }
