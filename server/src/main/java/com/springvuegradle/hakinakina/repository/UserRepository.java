@@ -53,7 +53,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
 
     /**
-     * Retrieves users based on the following query parameters
+     * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match any
+     * of those in the userActivityTypes set (OR).
      * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
      * @param pageable abstract interface for pagination information, if provided page object is sent back
      * @param email email of the user you are searching for
@@ -62,13 +63,23 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @param userActivityTypes set of activities of user you are searching for
      * @return Page object with list of users with the query search
      */
-    @Query(value = "FROM User u " +
-            "WHERE u.primaryEmail like :email " +
-            "OR concat(u.firstName, ' ', u.lastName) like :fullname " +
-            "OR u.lastName like :lastname " +
-            "OR u.activityTypes IN :userActivityTypes"
+    @Query(nativeQuery = true, value = "SELECT u.* FROM User u " +
+            "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
+            "WHERE u.primary_email like :email " +
+            "OR concat(u.first_name, ' ', u.last_name) like :fullname " +
+            "OR u.last_name like :lastname " +
+            "OR a.type_id IN :userActivityTypes"
     )
-    Page<User> findAllByActivityTypes(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
+    Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
+
+    @Query(nativeQuery = true, value = "SELECT u.* FROM User u " +
+            "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
+            "WHERE u.primary_email like :email " +
+            "OR concat(u.first_name, ' ', u.last_name) like :fullname " +
+            "OR u.last_name like :lastname " +
+            "OR a.type_id IN :userActivityTypes"
+    )
+    Page<User> findAllByActivityTypesAND(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
 
     /**
      * Retrieves users based on the following query parameters
