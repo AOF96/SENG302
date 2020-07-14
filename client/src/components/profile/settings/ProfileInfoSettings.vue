@@ -119,6 +119,7 @@
               <v-spacer></v-spacer>
               <button
                 @click="dialog = false"
+                v-on:click="deleteAccount"
                 class="genericConfirmButton updateProfileButton"
               >
                 Yes
@@ -149,6 +150,7 @@ import { mapGetters, mapActions } from "vuex";
 import UserSettingsMenu from "./ProfileSettingsMenu";
 import { apiUser } from "../../../api";
 import axios from "axios";
+import router from "../../../router";
 
 export default {
   components: {
@@ -268,9 +270,23 @@ export default {
       }
     },
 
-    /*
-            Uses user id from url to request user data.
-         */
+    /**
+     * Allows user or admin to delete the account
+     */
+    deleteAccount() {
+      apiUser.deleteUserAccount(this.searchedUser.profile_id)
+      .then(() => {
+        if (this.user.permission_level > 0) {
+          router.push("settings/admin_dashboard");
+        } else {
+          router.push("/login");
+        }
+      })
+    },
+
+    /**
+     * Uses user id from url to request user data.
+     */
     async loadSearchedUser() {
       if (
         this.$route.params.profileId == null ||

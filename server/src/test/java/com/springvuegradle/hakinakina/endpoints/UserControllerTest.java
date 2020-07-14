@@ -176,7 +176,7 @@ public class UserControllerTest {
         this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("{\"bio\":null,\"authoredActivities\":[]," +
-                        "\"admin\":false,\"defaultAdmin\":false," +
+                        "\"defaultAdmin\":false,\"admin\":false," +
                         "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
                         "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
                         "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +

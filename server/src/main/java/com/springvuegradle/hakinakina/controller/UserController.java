@@ -434,7 +434,6 @@ public class UserController {
             if (session.getUser().isAdmin() || session.getUser().getUserId().equals(profileId)) {
                 if (userRepository.findById(profileId).isPresent()) {
                     userRepository.deleteById(profileId);
-//                    userRepository.deleteUserById(profileId);
                 } else {
                     return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
                 }
