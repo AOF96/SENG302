@@ -12,21 +12,26 @@
         <div class="profileInfoContainer">
           <h3>Profile Info</h3>
           <hr />
-          <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
-          <hr />
-          <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
-          <hr />
-          <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
-          <hr />
-          <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
-          <hr />
-          <div class="profileRow">City: {{ searchedUser.city }}</div>
-          <hr />
-          <div v-if="searchedUser.state">
-          <div class="profileRow">State: {{ searchedUser.state }}</div>
-          <hr />
+          <div v-if="!loadingProfileInfo">
+            <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
+            <hr />
+            <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
+            <hr />
+            <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
+            <hr />
+            <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
+            <hr />
+            <div class="profileRow">City: {{ searchedUser.city }}</div>
+            <hr />
+            <div v-if="searchedUser.state">
+              <div class="profileRow">State: {{ searchedUser.state }}</div>
+              <hr />
+            </div>
+            <div class="profileRow">Country: {{ searchedUser.country }}</div>
           </div>
-          <div class="profileRow">Country: {{ searchedUser.country }}</div>
+          <v-row justify="center">
+            <v-progress-circular v-if="loadingProfileInfo" indeterminate></v-progress-circular>
+          </v-row>
         </div>
       </div>
     <div class="centreContainer">
@@ -62,6 +67,9 @@
         </ul>
         <hr class="profileActivitySeparator" />
         <h3>Duration Activities</h3>
+        <v-row justify="center">
+          <v-progress-circular v-if="loadingDurationActivities" indeterminate></v-progress-circular>
+        </v-row>
         <div class="activitySummaryContainer" v-for="activity in dur_activities" v-bind:key="activity">
           <div class="activityTextWrapDiv">
             <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
@@ -73,8 +81,12 @@
             </router-link>
           </div>
         </div>
+        <h4 v-if="dur_activities.length === 0 && !loadingDurationActivities">None</h4>
         <hr class="profileActivitySeparator" />
         <h3>Continuous Activities</h3>
+        <v-row justify="center">
+          <v-progress-circular v-if="loadingContinuousActivities" indeterminate></v-progress-circular>
+        </v-row>
         <div class="activitySummaryContainer" v-for="activity in cont_activities" v-bind:key="activity">
           <div class="activityTextWrapDiv">
             <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
@@ -86,6 +98,7 @@
             </router-link>
           </div>
         </div>
+        <h4 v-if="cont_activities.length === 0 && !loadingContinuousActivities">None</h4>
       </div>
     </div>
     <div class="rightSidebarContainer">
@@ -143,7 +156,10 @@ export default {
         2: "I can jog a short distance",
         3: "I can run a medium distance",
         4: "I can run a marathon"
-      }
+      },
+      loadingProfileInfo: true,
+      loadingDurationActivities: true,
+      loadingContinuousActivities: true,
     };
   },
   mounted() {
@@ -186,15 +202,18 @@ export default {
         } else {
           this.searchedUser = tempUserData;
         }
+        this.loadingProfileInfo = false;
         apiUser
           .getUserContinuousActivities(this.$route.params.profileId)
           .then(response => {
             this.cont_activities = response.data;
+            this.loadingContinuousActivities = false;
           });
         apiUser
           .getUserDurationActivities(this.$route.params.profileId)
           .then(response => {
             this.dur_activities = response.data;
+            this.loadingDurationActivities = false;
           });
       }
       this.startUp();
