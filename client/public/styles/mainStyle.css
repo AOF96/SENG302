@@ -34,6 +34,7 @@ input, select, textarea {
 }
 .errorMessage li{
   margin: 3px 15px;
+  color: #f06a6a;
 }
 
 .loginErrorMessages {

@@ -11,6 +11,13 @@ junit:
     - cd server
     - ./gradlew test
 
+jest:
+  stage: test
+  script:
+    - cd client
+    - npm install
+    - npm run test
+
 dev-build:
   stage: deploy
   only:

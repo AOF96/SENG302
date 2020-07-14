@@ -76,7 +76,9 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
-    "setupTestFrameworkScriptFile": "<rootDir>/src/components/__test__/localStorageMock.js"
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/components/__test__/localStorageMock.js"
+    ]
   },
   "jestSonar": {
     "reportPath": "coverage",

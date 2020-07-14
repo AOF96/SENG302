@@ -1,7 +1,7 @@
 <template>
   <header class="navBarContainer">
     <router-link to="/logout" v-if="user.isLogin">
-      <button class="navBarButton" v-on:click="logoutUser">Logout</button>
+      <button id = "navBarLogoutButton" class="navBarButton" v-on:click="logoutUser">Logout</button>
     </router-link>
 
     <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
