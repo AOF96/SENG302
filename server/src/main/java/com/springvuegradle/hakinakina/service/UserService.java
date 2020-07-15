@@ -12,6 +12,8 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import net.minidev.json.JSONObject;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -588,13 +590,20 @@ public class UserService {
         ResponseEntity result;
 
         try {
+            System.out.println(sessionToken);
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
             } else {
                 Session session = sessionRepository.findUserIdByToken(sessionToken);
                 int userPermissionLevel = session.getUser().getPermissionLevel();
                 Optional<User> userToPromote = userRepository.getUserById(profileID);
-                if (userToPromote.get().getPermissionLevel() > 0) {
+                Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
+                String role = (String) json.get("role");
+                if (!role.equals("admin")) {
+                    result = responseHandler.formatErrorResponse(400, "Bad request");
+
+                }
+                else if (userToPromote.get().getPermissionLevel() > 0) {
                     result = responseHandler.formatErrorResponse(400, "User to promote is already an admin");
                 }
                 else if (userPermissionLevel == 0) {

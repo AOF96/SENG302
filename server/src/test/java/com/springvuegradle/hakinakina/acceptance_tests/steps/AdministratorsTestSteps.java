@@ -13,6 +13,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import net.minidev.json.JSONObject;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -158,5 +159,22 @@ public class AdministratorsTestSteps {
     public void responseCodeAndStatusMessageAre(int code, String message) throws UnsupportedEncodingException {
         assertEquals(code, result.getResponse().getStatus());
         assertEquals(message, result.getResponse().getContentAsString());
+    }
+
+    @And("I attempt to promote that account to a different role using token {string}")
+    public void promoteAccountToADifferentRole(String token) throws Exception {
+        String request = "{\n" +
+                "  \"role\": \"" + "follower" + "\",\n" +
+                "}";
+
+
+        final Cookie tokenCookie = new Cookie("s_id", token);
+        when(userService.promoteUser(any(String.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Bad request", HttpStatus.BAD_REQUEST));
+        result = mockMvc.perform(put("/profiles/" + userToPromote.getUserId() + "/role")
+                .cookie(tokenCookie)
+                .content(request).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Bad request")))
+                .andReturn();
     }
 }
