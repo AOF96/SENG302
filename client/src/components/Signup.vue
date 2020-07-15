@@ -80,7 +80,6 @@
 
 <script>
 import {mapActions, mapGetters} from "vuex";
-import {apiUser} from "../api";
 
 import NavBar from "./modules/NavBar";
 
@@ -187,7 +186,8 @@ export default {
   },
 
   methods: {
-    ...mapActions(["createUserProfile"]),
+    ...mapActions(["createUserProfile", "signUp"]),
+
 
     /*
        Returns an appropriate error message if something goes wrong when signing up.
@@ -231,19 +231,18 @@ export default {
       if (!this.valid) {
         return;
       }
-
-
-      apiUser.signUp(
-        this.user.firstname,
-        this.user.lastname,
-        this.user.middlename,
-        this.user.nickname,
-        this.user.primary_email,
-        this.password1,
-        this.user.bio,
-        this.user.date_of_birth,
-        this.user.gender,
-        Number(this.user.fitness)
+      console.log(this.user);
+      this.signUp(
+          {'firstName': this.user.firstname,
+        'lastName': this.user.lastname,
+        'middleName': this.user.middlename,
+        'nickName': this.user.nickname,
+        'email': this.user.primary_email,
+        'password': this.password1,
+        'bio': this.user.bio,
+        'dateOfBirth': this.user.date_of_birth,
+        'gender': this.user.gender,
+        'fitnessLevel': Number(this.user.fitness)}
       ).then(
         response => {
           this.createUserProfile(response.data);
