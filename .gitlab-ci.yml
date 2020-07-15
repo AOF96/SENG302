@@ -55,7 +55,7 @@ deploy-test-server:
     #Remove the old sh file
     - rm -f /home/gitlab-runner/runTestServer.sh || true
     #Copy new sh file
-    - cp ../deployment-scripts/tunTestServer.sh /home/gitlab-runner/runTestServer.sh
+    - cp ../deployment-scripts/runTestServer.sh /home/gitlab-runner/runTestServer.sh
     #Run testServer
     - sudo systemctl restart testServer
 
@@ -77,7 +77,7 @@ deploy-test-client:
     #Remove old sh file
     - rm -f /home/gitlab-runner/runTestClient.sh || true
     #Copy new sh file
-    - cp ../development-scripts/runTestClient.sh /home/gitlab-runner/runTestClient.sh
+    - cp ../deployment-scripts/runTestClient.sh /home/gitlab-runner/runTestClient.sh
     #Run testClient
     - sudo systemctl restart testClient
 
