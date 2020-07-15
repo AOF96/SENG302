@@ -1,6 +1,5 @@
 <template>
   <div>
-    <NavBar />
     <router-link v-if="userSearch.searchTerm!==null" v-bind:to="'/search'">
       <button class="genericConfirmButton profileBackToSearchButton">
         Back to Search
@@ -105,7 +104,6 @@ import {
   mapState
 } from "vuex";
 
-import NavBar from "../modules/NavBar";
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
 import axios from "axios";
@@ -117,7 +115,6 @@ import {
 export default {
   name: "Profile",
   components: {
-    NavBar,
     PassportCountries
   },
   computed: {

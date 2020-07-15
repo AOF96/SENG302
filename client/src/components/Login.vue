@@ -1,6 +1,5 @@
 <template>
     <div>
-        <NavBar/>
         <div class="loginContainer">
             <div class="loginFormContainer">
                 <h1>Login</h1>
@@ -41,8 +40,6 @@
   import {mapActions, mapGetters} from 'vuex';
   import {apiUser} from '../api'
 
-  import NavBar from "./modules/NavBar";
-
   export default {
     name: 'Login',
     data: function () {
@@ -52,9 +49,6 @@
         otherErrorMsg: "",
 
       }
-    },
-    components: {
-      NavBar
     },
     computed: {
       ...mapGetters(['user']),

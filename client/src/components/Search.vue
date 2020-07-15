@@ -1,6 +1,5 @@
 <template>
 <div>
-  <nav-bar></nav-bar>
   <div class="searchUserWrapper">
     <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
     <v-container lighten-5>
@@ -74,16 +73,12 @@ import {
   mapState,
   mapActions
 } from "vuex";
-import NavBar from "./modules/NavBar";
 import {
   apiUser
 } from "../api";
 
 export default {
   name: "searchUser",
-  components: {
-    NavBar
-  },
   computed: {
     ...mapState(["user", "userSearch"]),
     ...mapGetters(["user", "userSearch"]),

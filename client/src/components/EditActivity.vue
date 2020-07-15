@@ -1,6 +1,5 @@
 <template>
   <div @click="showLocations = false">
-    <NavBar />
     <div class="createActivityContainer">
       <div class="createActivityContentContainer">
         <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
@@ -115,12 +114,8 @@ import { mapGetters, mapActions } from "vuex";
 import { apiUser, apiActivity } from "../api";
 import router from "../router";
 import axios from "axios";
-import NavBar from "./modules/NavBar";
 
 export default {
-  components: {
-    NavBar
-  },
   data() {
     return {
       selected_activity: "Activity Type",

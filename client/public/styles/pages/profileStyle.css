@@ -85,7 +85,7 @@
     height: 40px;
     border-radius: 100%;
     background: #1cca92;
-    fill: white;
+    fill: white !important;
     float: left;
     margin:20px;
     text-align: center;
