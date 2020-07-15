@@ -555,7 +555,12 @@ public class UserService {
     public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
         Page<User> userPage;
         if (activityTypes != null) {
-            userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+            if (method.equals("OR")) {
+                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+            }
+            else {
+                userPage = userRepository.findAllByActivityTypesAND(PageRequest.of(page, size), email, fullname, lastname, null);
+            }
         } else {
             userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
         }
