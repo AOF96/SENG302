@@ -187,11 +187,14 @@ export default {
      * The method changes a list of activity type to a string, which is appended to the URL for searching users
      */
     activityListToString() {
+      if(this.activity_types_selected.length === 0){
+        return null;
+      }
       let activityString = "";
       for (let activity of this.activity_types_selected) {
-        activityString += activity + "%20";
+        activityString += activity + ' ';
       }
-      return activityString.slice(0, activityString.length - 3);
+      return activityString.slice(0, activityString.length - 1);
 
     },
 

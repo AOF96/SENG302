@@ -172,7 +172,7 @@ public class UserController {
      * @param email    searching for a user with the given email
      * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
      * @param lastname searching for a user with the given nickname
-     * @param activityTypes searching for users with given activity types
+//     * @param activityTypes searching for users with given activity types
      * @param page     current page number that the user is viewing
      * @param size     how many results we want to return
      * @return response entity containing a list of profiles
@@ -182,12 +182,23 @@ public class UserController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String fullname,
             @RequestParam(required = false) String lastname,
-            @RequestParam(required = false) Set<ActivityType> activityTypes,
+            @RequestParam(required = false) String activity,
             @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size) {
 
+        Set<ActivityType> activityTypes = new HashSet<>();
+        if(activity != null) {
+            String[] arrOfActivities = activity.split(" ");
+            for (String activityType : arrOfActivities) {
+                activityTypes.add(activityTypeRepository.findActivityTypeByName(activityType));
+            }
+        }
+        System.out.println(activityTypes);
         Page<SearchUserDto> resultPage;
+        if(activityTypes.size() == 0){
+            activityTypes = null;
+        }
         if (email != null || fullname != null || lastname != null || activityTypes != null) {
             resultPage = userService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
         } else {
