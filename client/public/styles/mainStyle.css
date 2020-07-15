@@ -172,3 +172,10 @@ input, select, textarea {
     box-sizing: content-box;
     padding: 1px;
 }
+#appNavLogo{
+  width: 35px;
+  position: absolute;
+  left: 66px;
+  top: 11px;
+  cursor:pointer;
+}
