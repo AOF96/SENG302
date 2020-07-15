@@ -28,7 +28,7 @@
           </div>
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
-        <button class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
+        <button id = "profileAdminRightsButton" class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
         <h6 class="adminRightsResult">{{adminRightsResult}}</h6>
       </div>
     <div class="centreContainer">
