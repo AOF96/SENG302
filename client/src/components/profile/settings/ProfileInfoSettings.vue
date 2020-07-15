@@ -150,7 +150,6 @@ import { mapGetters, mapActions } from "vuex";
 import UserSettingsMenu from "./ProfileSettingsMenu";
 import { apiUser } from "../../../api";
 import axios from "axios";
-import router from "../../../router";
 
 export default {
   components: {
@@ -277,10 +276,11 @@ export default {
       apiUser.deleteUserAccount(this.searchedUser.profile_id)
       .then(() => {
         if (this.user.permission_level > 0) {
-          router.push("settings/admin_dashboard");
-        } else {
-          router.push("/login");
+          this.$router.push("/settings/admin_dashboard");
         }
+        // else {
+        //   this.$router.push("/login");
+        // }
       })
     },
 
