@@ -28,7 +28,7 @@
           </div>
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
-        <button class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
+        <button id = "profileAdminRightsButton" class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
         <h6 class="adminRightsResult">{{adminRightsResult}}</h6>
       </div>
     <div class="centreContainer">
@@ -173,6 +173,7 @@ export default {
           Uses user id from url to request user data.
        */
     async loadSearchedUser() {
+
       if (
         this.$route.params.profileId === null ||
         this.$route.params.profileId === ""
@@ -184,6 +185,7 @@ export default {
           this.$route.params.profileId
         );
         if (tempUserData === "Invalid permissions") {
+
           this.$router.push("/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
