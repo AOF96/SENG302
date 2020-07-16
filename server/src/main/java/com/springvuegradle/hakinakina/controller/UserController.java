@@ -416,45 +416,16 @@ public class UserController {
     }
 
     /**
-     * Allows admins to delete a registered user's account
+     * Allows the user to delete their account and admins to delete another registered user's account
      * @param profileId    the user's id
      * @param sessionToken the user's token from the cookie for their current session.
-     * @return response entity to inform admin if deleting the registered user was successful or not
+     * @return response entity to inform user or admin if deleting the user was successful or not
      */
     @DeleteMapping("/profiles/{profileId}")
     public ResponseEntity deleteUser(@PathVariable Long profileId,
                                      @CookieValue(value = "s_id") String sessionToken,
                                      HttpServletResponse response) {
-        try {
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if (session == null) {
-                return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
-            }
-
-            //If the session matches the user or the user has admin privileges
-            if (session.getUser().isAdmin() || session.getUser().getUserId().equals(profileId)) {
-                if (userRepository.findById(profileId).isPresent()) {
-
-                    // create a cookie
-                    Cookie cookie = new Cookie("s_id", null);
-                    cookie.setMaxAge(0);
-                    cookie.setHttpOnly(true);
-                    cookie.setPath("/");
-                    //add cookie to response
-                    response.addCookie(cookie);
-
-                    userRepository.deleteById(profileId);
-                } else {
-                    return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
-                }
-            } else {
-                return new ResponseEntity("Unauthorised User", HttpStatus.FORBIDDEN);
-            }
-            return new ResponseEntity("Successful", HttpStatus.OK);
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not delete user");
-            return new ResponseEntity("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return userService.deleteUser(profileId, sessionToken, response);
     }
 
     // Create Exception Handle

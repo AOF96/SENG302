@@ -531,6 +531,50 @@ public class UserService {
     }
 
     /**
+     * Allows the user to delete their account and admins to delete another registered user's account
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user or admin if deleting the user was successful or not
+     */
+    public ResponseEntity deleteUser(Long profileId,
+                                     String sessionToken,
+                                     HttpServletResponse response) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
+            }
+
+            //If the session matches the user or the user has admin privileges
+            boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
+            boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
+            if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
+                if (userRepository.findById(profileId).isPresent()) {
+
+                    // create a cookie
+                    Cookie cookie = new Cookie("s_id", null);
+                    cookie.setMaxAge(0);
+                    cookie.setHttpOnly(true);
+                    cookie.setPath("/");
+                    //add cookie to response
+                    response.addCookie(cookie);
+
+                    userRepository.deleteById(profileId);
+                } else {
+                    return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity("Unauthorised User", HttpStatus.FORBIDDEN);
+            }
+
+            return new ResponseEntity("Successfully Deleted User", HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not delete user");
+            return new ResponseEntity("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Deals with pagination with no conditions like email, surname, full name etc
      *
      * @param page number of a page you want to be at
