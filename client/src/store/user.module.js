@@ -1,4 +1,6 @@
-import { apiUser } from "../api";
+import {apiUser} from "../api";
+import axios from "axios";
+
 
 const state = {
   user: {
@@ -45,7 +47,7 @@ const getters = {
   },
   getProfileId(state) {
     return (state.user.profile_id);
-  }
+  },
 };
 
 const mutations = {
@@ -224,6 +226,55 @@ const actions = {
   updateTmpActivities({ commit }, data) {
     commit("setUserTmpActivity", data);
   },
+  async getUserById(data, id) {
+    return await apiUser.getUserById(id);
+  },
+  async getUserContinuousActivities(data, id) {
+    return await apiUser.getUserContinuousActivities(id);
+  },
+  async getUserDurationActivities(data, id) {
+    return await apiUser.getUserDurationActivities(id);
+  },
+  async getDataFromUrl(data, url) {
+    return await axios.get(url);
+  },
+  async editUserActivityTypes(data, {'id': id, 'activities': activities}) {
+    return await apiUser.editUserActivityTypes(id, activities);
+  },
+  async getActivityTypes() {
+    return await apiUser.getActivityTypes();
+  },
+  async getAllEmails() {
+    return await apiUser.getAllEmails();
+  },
+  async addEmail(data, {'id': id, 'newEmail': additionalEmails}) {
+    await apiUser.addEmails(id, additionalEmails);
+  },
+  async editEmail(data, {'id': id, 'primaryEmail': primaryEmail, 'secondaryEmails': secondaryEmails}) {
+    await apiUser.editEmail(id, primaryEmail, secondaryEmails);
+  },
+  async editProfile(data, user) {
+    return await apiUser.editProfile(user.profile_id, user.firstname, user.lastname, user.middlename, user.nickname, user.primary_email, user.bio, user.date_of_birth, user.gender, user.fitness, user.additional_email, user.passports, user.permission_level, user.activities, user.location);
+  },
+  async changePassword(data, {'id': id, 'oldPassword': oldPassword, 'newPassword': newPassword, 'confirmPassword': confirmPassword }) {
+    return await apiUser.changePassword(id, oldPassword, newPassword, confirmPassword);
+  },
+  async login(data, {'email': email, 'password':password}) {
+      return await apiUser.login(email, password);
+  },
+  async signUp(data, {'firstName': firstName, 'lastName': lastName, 'middleName': middleName, 'nickName': nickName, 'email': email, 'password': password, 'bio': bio, 'dateOfBirth': dateOfBirth, 'gender': gender, 'fitnessLevel': fitnessLevel}) {
+    console.log(gender);
+    return await apiUser.signUp(firstName, lastName, middleName, nickName, email, password, bio, dateOfBirth, gender, fitnessLevel);
+  },
+  async searchForUsers(data, {'searchTerm': searchTerm, 'searchBy': searchBy, 'page': page, 'size': size}) {
+    return await apiUser.searchUsers(searchTerm, searchBy, page, size);
+  },
+  async getIdByEmail(email) {
+    return await apiUser.getIdByEmail(email);
+  },
+  async refreshUserData(data, userId) {
+    return await apiUser.refreshUserData(userId);
+  }
 };
 
 export default {
