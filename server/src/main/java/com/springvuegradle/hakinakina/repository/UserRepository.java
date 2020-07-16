@@ -61,9 +61,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "LIMIT :startIndex, :size " +
             "FOR JSON AUTO;", nativeQuery = true)
 
-    List<Object> searchForUser(@Param("email") String email,
-                               @Param("nickname") String nickname,
-                               @Param("fullname") String fullname,
+    List<Object> searchForUser(String email,
+                               String nickname,
+                               String fullname,
                                int startIndex,
-                               @Param("size") int size);
+                               int size);
 }

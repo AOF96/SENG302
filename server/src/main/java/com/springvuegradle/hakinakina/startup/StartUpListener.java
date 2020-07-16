@@ -31,12 +31,12 @@ public class StartUpListener {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         User defaultAdmin = userRepository.findByPermissionLevelEquals(2);
-        if (defaultAdmin != null) {
-            return;
+        if (defaultAdmin == null) {
+            defaultAdmin = new User();
         }
         try {
             updatePermissionsInDatabase();
-            createDefaultAdmin();
+            createDefaultAdmin(defaultAdmin);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,8 +68,7 @@ public class StartUpListener {
     /**
      * Generates a default admin
      */
-    private void createDefaultAdmin() throws Exception {
-        User u = new User();
+    private void createDefaultAdmin(User u) throws Exception {
         String salt = EncryptionUtil.getNewSalt();
         String password = createDefaultAdminPassword();
         u.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(password, salt));
