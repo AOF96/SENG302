@@ -186,15 +186,10 @@ public class UserController {
             @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size) {
-
-        Set<ActivityType> activityTypes = new HashSet<>();
-        if(activity != null) {
-            String[] arrOfActivities = activity.split(" ");
-            for (String activityType : arrOfActivities) {
-                activityTypes.add(activityTypeRepository.findActivityTypeByName(activityType));
-            }
+        if (!method.equals("or") && !method.equals("and")) {
+            return new ResponseEntity("Method must either be 'or' or 'and'", HttpStatus.valueOf(400));
         }
-        System.out.println(activityTypes);
+        Set<ActivityType> activityTypes = getActivityTypesSet(activity);
         Page<SearchUserDto> resultPage;
         if(activityTypes.size() == 0){
             activityTypes = null;
@@ -205,6 +200,26 @@ public class UserController {
             resultPage = userService.findPaginated(page, size);
         }
         return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
+    }
+
+    /**
+     * Takes a string of activity types from the URL and matches each to an Activity Type object, which is added to a
+     * set and returned.
+     * @param activity The string of activities from the url
+     * @return A set of ActivityType objects matching those in the URL
+     */
+    public Set<ActivityType> getActivityTypesSet(String activity) {
+        Set<ActivityType> activityTypes = new HashSet<>();
+        if(activity != null) {
+            String[] arrOfActivities = activity.split(" ");
+            for (String activityType : arrOfActivities) {
+                ActivityType retrievedType = activityTypeRepository.findActivityTypeByName(activityType);
+                if (retrievedType != null) {
+                    activityTypes.add(retrievedType);
+                }
+            }
+        }
+        return activityTypes;
     }
 
     /**
