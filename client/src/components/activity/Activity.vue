@@ -5,10 +5,7 @@ np
         <div class="profileBanner">
         </div>
         <div class="activityWrap">
-            <div class="activityWhiteBoxContainer">
-                <ActivityPageInfo/>
-                <div class="floatClear"></div>
-            </div>
+            <ActivityPageInfo/>
         </div>
     </div>
 </template>

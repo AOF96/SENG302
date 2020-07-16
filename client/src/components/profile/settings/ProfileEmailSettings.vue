@@ -10,6 +10,9 @@
             <h3>Primary email</h3>
             <div class="primaryEmailContainer">
                 <h4>{{ searchedUser.primary_email }}</h4>
+                <v-row justify="center">
+                    <v-progress-circular v-if="loadingEmails" indeterminate></v-progress-circular>
+                </v-row>
             </div>
             <h3>Secondary emails:</h3>
             <div class="secondaryEmailContainer" v-for="email in searchedUser.additional_email" v-bind:key="email">
@@ -68,7 +71,8 @@
                 searchedUser: {primary_email: "", additional_email: []},
                 showEditBox: false,
                 errorMsg: "",
-                editErrorMsg: ""
+                editErrorMsg: "",
+                loadingEmails: true,
             }
         },
         computed: {
@@ -190,6 +194,7 @@
                         this.searchedUser = tempUserData;
                     }
                 }
+                this.loadingEmails = false;
             }
         },
         mounted() {
