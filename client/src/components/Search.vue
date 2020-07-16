@@ -135,7 +135,7 @@ export default {
         if (this.searchedTerm.trim().length === 0) {
           searchTermInt = null
         }
-        apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), "OR", page - 1, size).then(
+        apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
           (response) => {
             if (response.data.content.length === 0) {
               this.disabled = true;
@@ -231,7 +231,7 @@ export default {
         this.moreHidden = false;
         this.loading = true;
 
-        apiUser.searchUsers(this.searchedTerm, this.searchBy, "OR", 0, this.userSearch.size * this.userSearch.page).then(
+        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
           (response) => {
             if (response.data.content.size === 0) {
               this.disabled = true;
