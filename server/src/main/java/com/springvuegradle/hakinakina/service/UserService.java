@@ -559,12 +559,38 @@ public class UserService {
                 userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
             }
             else {
-                userPage = userRepository.findAllByActivityTypesAND(PageRequest.of(page, size), email, fullname, lastname, null);
+                List<Set<User>> listOfUserSets = new ArrayList<>();
+                for (ActivityType type : activityTypes) {
+                    Set<User> users = userRepository.getUsersWithActivityType(type);
+                    listOfUserSets.add(users);
+                }
+                List<User> userIntersection = getIntersectionOfListOfSetsOfUsers(listOfUserSets);
+                userPage = new PageImpl<User>(userIntersection, PageRequest.of(page, size), userIntersection.size());
             }
         } else {
             userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
         }
         return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Finds the intersection of a List of Sets of Users. Much of this code was adapted from
+     * https://stackoverflow.com/questions/37749559/conversion-of-list-to-page-in-spring
+     * @param listOfUserSets A List of Sets of User objects
+     * @return The intersection of these Sets as a List
+     */
+    public List<User> getIntersectionOfListOfSetsOfUsers(List<Set<User>> listOfUserSets) {
+        List<User> result = new ArrayList<>();
+        if (!listOfUserSets.isEmpty()) {
+            Set<User> userCross = listOfUserSets.get(0);
+            for (int i = 1; i < listOfUserSets.size(); i++) {
+                userCross.retainAll(listOfUserSets.get(i));
+            }
+            for (User user : userCross) {
+                result.add(user);
+            }
+        }
+        return result;
     }
 
     /**

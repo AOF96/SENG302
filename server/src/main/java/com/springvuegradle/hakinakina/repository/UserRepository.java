@@ -63,7 +63,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @param userActivityTypes set of activities of user you are searching for
      * @return Page object with list of users with the query search
      */
-    @Query(nativeQuery = true, value = "SELECT u.* FROM User u " +
+    @Query(nativeQuery = true, value = "SELECT DISTINCT u.* FROM User u " +
             "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
             "WHERE u.primary_email like :email " +
             "OR concat(u.first_name, ' ', u.last_name) like :fullname " +
@@ -99,4 +99,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                                @Param("fullname") String fullname,
                                int startIndex,
                                @Param("size") int size);
+
+    @Query(nativeQuery = true, value = "SELECT u.* FROM User u " +
+            "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
+            "WHERE a.type_id = :type")
+    Set<User> getUsersWithActivityType(ActivityType type);
 }
