@@ -276,11 +276,15 @@ export default {
       apiUser.deleteUserAccount(this.searchedUser.profile_id)
       .then(() => {
         if (this.user.permission_level > 0) {
-          this.$router.push("/settings/admin_dashboard");
+          if (this.searchedUser.profile_id == this.user.profile_id) {
+            location.reload();
+          } else {
+            this.$router.push("/settings/admin_dashboard");
+          }
         }
-        // else {
-        //   this.$router.push("/login");
-        // }
+        else {
+          location.reload();
+        }
       })
     },
 

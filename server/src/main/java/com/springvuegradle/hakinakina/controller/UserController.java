@@ -423,7 +423,8 @@ public class UserController {
      */
     @DeleteMapping("/profiles/{profileId}")
     public ResponseEntity deleteUser(@PathVariable Long profileId,
-                                     @CookieValue(value = "s_id") String sessionToken) {
+                                     @CookieValue(value = "s_id") String sessionToken,
+                                     HttpServletResponse response) {
         try {
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
@@ -433,6 +434,15 @@ public class UserController {
             //If the session matches the user or the user has admin privileges
             if (session.getUser().isAdmin() || session.getUser().getUserId().equals(profileId)) {
                 if (userRepository.findById(profileId).isPresent()) {
+
+                    // create a cookie
+                    Cookie cookie = new Cookie("s_id", null);
+                    cookie.setMaxAge(0);
+                    cookie.setHttpOnly(true);
+                    cookie.setPath("/");
+                    //add cookie to response
+                    response.addCookie(cookie);
+
                     userRepository.deleteById(profileId);
                 } else {
                     return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
