@@ -48,6 +48,7 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { apiUser } from "../../../api";
 
 export default {
+  name: "AddUserActivity",
   components: {
     UserSettingsMenu
   },

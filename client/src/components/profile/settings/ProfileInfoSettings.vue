@@ -118,6 +118,7 @@ import { apiUser } from "../../../api";
 import axios from "axios";
 
 export default {
+  name: "EditUserInfo",
   components: {
     UserSettingsMenu
   },
