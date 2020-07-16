@@ -1,7 +1,7 @@
 <template>
   <header class="navBarContainer">
     <router-link to="/logout" v-if="user.isLogin">
-      <button class="navBarButton" v-on:click="logoutUser">Logout</button>
+      <button id = "navBarLogoutButton" class="navBarButton" v-on:click="logoutUser">Logout</button>
     </router-link>
 
     <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
@@ -28,7 +28,6 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex';
-    import {apiUser} from "../../api";
 
     export default {
         name: "NavBar",
@@ -36,21 +35,18 @@
             ...mapGetters(["user", "isAdmin"]),
         },
         methods: {
-            ...mapActions(['logout']),
-            ...mapActions(['updateUserProfile']),
-            ...mapActions(['updateUserContinuousActivities']),
-            ...mapActions(['updateUserDurationActivities']),
+            ...mapActions(['logout', 'updateUserProfile','updateUserContinuousActivities', 'updateUserDurationActivities', "getUserContinuousActivities", "getUserDurationActivities", "refreshUserData"]),
             /*
                 Redirects the user into the profile page. Refreshes the data by making a request to the server side.
             */
             goToProfile() {
-                apiUser.refreshUserData(this.user.profile_id).then((response) => {
+                this.refreshUserData(this.user.profile_id).then((response) => {
                     this.updateUserProfile(response.data);
                 });
-                apiUser.getUserContinuousActivities(this.user.profile_id).then((response) => {
+                this.getUserContinuousActivities(this.user.profile_id).then((response) => {
                     this.updateUserContinuousActivities(response.data);
                 });
-                apiUser.getUserDurationActivities(this.user.profile_id).then((response) => {
+                this.getUserDurationActivities(this.user.profile_id).then((response) => {
                     this.updateUserDurationActivities(response.data);
                 });
             },
