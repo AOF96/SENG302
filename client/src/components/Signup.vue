@@ -20,7 +20,7 @@
           <div class="signUpRow">
             <input id="signup-nickname" v-model="user.nickname" name="nickname" type="text" placeholder="Nickname" />
             <select id="signup-gender" v-model="user.gender" name="gender" required @change="genderChange($event)">
-              <option selected disabled hidden value="Gender">Gender</option>
+              <option selected disabled hidden value="Gender">Gender*</option>
               <option>Non-Binary</option>
               <option>Female</option>
               <option>Male</option>
@@ -36,12 +36,12 @@
           </div>
           <p id="signup-primary-email-err" v-if="user.primary_email && !validation.email" class="errorMessage">{{ this.err_msg.email }}</p>
           <div class="signUpRow">
-            <h3 class="signUpText">Birthday</h3>
+            <h3 class="signUpText">Birthday*</h3>
             <input id="signup-dob" v-model="user.date_of_birth" class="signUpInputBirthday" name="birthday" type="date" placeholder="Birthday" required/>
           </div>
           <p id="signup-dob-err" v-if="!validation.birthday" class="errorMessage">{{ this.err_msg.birthday }}</p>
           <div class="signUpRow">
-            <h3 class="signUpText">Fitness Level</h3>
+            <h3 class="signUpText">Fitness level*</h3>
             <select id="signup-fitness-level" class="fitnessLevelSelect" v-model="user.fitness" name="fitnesslevel" placeholder="Fitness Level" value="Fitness" required>
                 <option value="-1" selected disabled hidden>Fitness</option>
               <option value="0">I never exercise</option>
@@ -244,8 +244,8 @@ export default {
         'fitnessLevel': Number(this.user.fitness)}
       ).then(
         response => {
-          this.createUserProfile(response.data);
-          this.$router.push('profile?u='+response.data.profile_id);
+            this.createUserProfile(response.data[0]);
+            this.$router.push('profile?u='+response.data[0].profile_id);
         },
         error => {
           this.submissionError = error.response.data.Errors;
