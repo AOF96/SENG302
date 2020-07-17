@@ -231,8 +231,7 @@ export default {
       if (!this.valid) {
         return;
       }
-      console.log(this.user);
-      this.signUp(
+        this.signUp(
           {'firstName': this.user.firstname,
         'lastName': this.user.lastname,
         'middleName': this.user.middlename,
