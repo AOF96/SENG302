@@ -65,21 +65,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(nativeQuery = true, value = "SELECT DISTINCT u.* FROM User u " +
             "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
-            "WHERE u.primary_email like :email " +
-            "OR concat(u.first_name, ' ', u.last_name) like :fullname " +
-            "OR u.last_name like :lastname " +
+            "WHERE u.primary_email like :email% " +
+            "OR concat(u.first_name, ' ', u.last_name) like :fullname% " +
+            "OR u.last_name like :lastname% " +
             "OR a.type_id IN :userActivityTypes"
     )
     Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
-
-    @Query(nativeQuery = true, value = "SELECT u.* FROM User u " +
-            "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
-            "WHERE u.primary_email like :email " +
-            "OR concat(u.first_name, ' ', u.last_name) like :fullname " +
-            "OR u.last_name like :lastname " +
-            "OR a.type_id IN :userActivityTypes"
-    )
-    Page<User> findAllByActivityTypesAND(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
 
     /**
      * Retrieves users based on the following query parameters
@@ -88,9 +79,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(value = "SELECT u.primary_email as primary_email, u.first_name as firstname, u.last_name as lastname, u.middle_name as middlename, u.nick_name as nickname " +
             "FROM User u " +
-            "WHERE (:email is null or u.primary_email = :email) " +
-            "AND (:nickname is null or u.nick_name = :nickname) " +
-            "AND (:fullname is null or u.first_name LIKE %:fullname% or u.middle_name LIKE %:fullname% or u.last_name LIKE %:fullname%) " +
+            "WHERE (:email is null or u.primary_email = :email%) " +
+            "AND (:nickname is null or u.nick_name = :nickname%) " +
+            "AND (:fullname is null or u.first_name LIKE :fullname% or u.middle_name LIKE :fullname% or u.last_name LIKE :fullname%) " +
             "LIMIT :startIndex, :size " +
             "FOR JSON AUTO;", nativeQuery = true)
 

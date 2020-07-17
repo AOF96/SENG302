@@ -142,7 +142,7 @@ export default {
 
       /* Search for users */
       let searchTermInt = this.searchedTerm;
-      if (this.searchedTerm.trim().length === 0) {
+      if (this.searchedTerm === null || this.searchedTerm.trim().length === 0) {
         searchTermInt = null
       }
       apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
@@ -163,6 +163,8 @@ export default {
               page: page,
               size: size,
               scrollPos: window.scrollY,
+              activityTypesSelected: this.activity_types_selected,
+              filterMethod: this.filterMethod
             });
           }
         }).catch(
@@ -255,10 +257,10 @@ export default {
               this.errorMessage = "No more results";
               this.snackbar = true;
             } else {
-              this.allUsers = this.allUsers.concat(response.data.content);
+              this.allUsers = response.data.content;
               this.loading = false;
               this.disabled = false;
-              window.scrollTo(0, this.userSearch.scrollPos);
+              setTimeout(this.scrollWindow, 10)
             }
           }).catch(
           (error) => {
@@ -268,6 +270,9 @@ export default {
             this.snackbar = true;
           })
       }
+    },
+    scrollWindow() {
+      window.scrollTo(0, this.userSearch.scrollPos);
     }
   },
   created: async function() {
@@ -278,7 +283,6 @@ export default {
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
-        console.log(this.activities_option);
       })
       .catch(error => console.log(error));
   },
