@@ -559,10 +559,8 @@ public class UserService {
                 userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
             } else {
                 List<Set<User>> listOfUserSets = new ArrayList<>();
-                for (ActivityType type : activityTypes) {
-                    Set<User> users = userRepository.getUsersWithActivityType(type);
-                    listOfUserSets.add(users);
-                }
+                Set<User> users = userRepository.getUsersWithActivityType(activityTypes);
+                listOfUserSets.add(users);
                 List<User> userIntersection = getIntersectionOfListOfSetsOfUsers(listOfUserSets);
                 userPage = new PageImpl<User>(userIntersection, PageRequest.of(page, size), userIntersection.size());
             }

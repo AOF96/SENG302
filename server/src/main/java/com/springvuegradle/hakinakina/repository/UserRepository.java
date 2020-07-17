@@ -91,8 +91,14 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                                int startIndex,
                                @Param("size") int size);
 
-    @Query(nativeQuery = true, value = "SELECT u.* FROM User u " +
-            "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
-            "WHERE a.type_id = :type")
-    Set<User> getUsersWithActivityType(ActivityType type);
+    @Query(value = "SELECT DISTINCT(user_id) FROM User_ActivityTypes "
+                 + "WHERE user_id NOT IN (SELECT user_id "
+                 +  "FROM ( "
+                 + " (SELECT user_id, type_id FROM "
+                 + " (SELECT type_id FROM Activity_Type WHERE type_id IN :activityTypes) AS all_activity_types "
+                 + "CROSS JOIN "
+                 + " (SELECT DISTINCT user_id FROM User_ActivityTypes) AS all_users_linked_to_activities) "
+                 + "EXCEPT "
+                 + "(SELECT user_id, type_id FROM User_ActivityTypes) ) AS all_users_we_dont_need )", nativeQuery = true)
+    Set<User> getUsersWithActivityType(Set<ActivityType> activityTypes);
 }
