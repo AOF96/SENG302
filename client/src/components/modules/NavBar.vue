@@ -7,9 +7,15 @@
         <button class="navBarButton" v-on:click="logoutUser">Logout</button>
       </router-link>
 
-      <router-link v-bind:to="'/search'" v-if="user.isLogin">
+      <!-- <router-link v-bind:to="'/search'" v-if="user.isLogin">
         <button class="myaccount navBarButton" id="navBarSearchBtn"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>Search</button>
-      </router-link>
+      </router-link> -->
+
+      <div id="globalSearchBarContainer">
+        <svg id="globalSearchBarIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input id="globalSearchBarInput" v-model="searchQuery" v-on:keyup="submitSearch" type="text" placeholder="Search" autocomplete="false">
+        <div class="floatClear"></div>
+      </div>
 
       <router-link to="/signup" v-if="!user.isLogin">
         <button class="signup navBarButton" name="Sign Up">Sign Up</button>
@@ -126,6 +132,7 @@
         data: function () {
           return {
             navDrawer: false,
+            searchQuery: ""
           }
         },
         computed: {
@@ -149,6 +156,13 @@
                 apiUser.getUserDurationActivities(this.user.profile_id).then((response) => {
                     this.updateUserDurationActivities(response.data);
                 });
+            },
+            // Submit search query and redirect to the search results page.
+            submitSearch: function(e) {
+              if (e.keyCode === 13) {
+                this.$router.push('/search/'+encodeURIComponent(this.searchQuery));
+                this.searchQuery = "";
+              }
             },
             /*
                Sends a request to the server side when to log a user out when the log out button is pressed.

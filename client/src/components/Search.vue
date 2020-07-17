@@ -9,7 +9,7 @@
             <h1 class="searchHeading">Search for a User</h1>
             <form>
               <v-col>
-                <v-text-field label="Search" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
+                <v-text-field id="searchQueryInput" v-on:keyup="submitSearch" label="Search" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
               </v-col>
               <v-col>
                 <v-select v-model="searchBy" :items="searchMethods" name="searchValue" required label="Search By" outlined hide-details dense rounded>
@@ -117,7 +117,16 @@ export default {
     }
   },
   mounted() {
-    this.loadPreviousSearch();
+    this.initialiser();
+    const element = this.$el.querySelector('#searchQueryInput');
+    if (element) this.$nextTick(() => { element.focus() });
+  },
+  watch: {
+    "$route.params": {
+      handler() {
+        this.loadUrlQuery();
+      }
+    }
   },
   methods: {
     ...mapActions(["setUserSearch", "setScrollPosition"]),
@@ -227,48 +236,78 @@ export default {
       if (index >= 0) this.activity_types_selected.splice(index, 1);
       this.searchUsers(this.defaultPage, this.defaultSize);
     },
+
+    /**
+     * Initialises search query either by url or history
+     */
+    initialiser(){
+      if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != ""){
+        this.loadUrlQuery();
+      }else if(this.userSearch.searchTerm !== null){
+        this.loadPreviousSearch();
+      }
+    },
+
+    // Submit search query on enter pressed.
+    submitSearch: function(e) {
+      if (e.keyCode === 13) {
+        this.searchUsers(this.defaultPage, this.defaultSize);
+      }
+    },
+
     /**
      * Researches the last search done if one exists and updates the search parameters.
      */
     loadPreviousSearch() {
-      if (this.userSearch.searchTerm !== null) {
-        /* Adjust search position */
-        this.searchedTerm = this.userSearch.searchTerm;
-        this.searchBy = this.userSearch.searchType;
-        this.currentSize = this.userSearch.size;
-        this.currentPage = this.userSearch.page;
-        this.activity_types_selected = this.userSearch.activityTypesSelected;
-        this.filterMethod = this.userSearch.filterMethod;
+      /* Adjust search position */
+      this.searchedTerm = this.userSearch.searchTerm;
+      this.searchBy = this.userSearch.searchType;
+      this.currentSize = this.userSearch.size;
+      this.currentPage = this.userSearch.page;
+      this.activity_types_selected = this.userSearch.activityTypesSelected;
+      this.filterMethod = this.userSearch.filterMethod;
 
-        /* Change button animation */
-        this.moreHidden = false;
-        this.loading = true;
+      /* Change button animation */
+      this.moreHidden = false;
+      this.loading = true;
 
-        let searchTermInt = this.searchedTerm;
-        if (this.searchedTerm.trim().length === 0) {
-          searchTermInt = null
-        }
-
-        apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
-          (response) => {
-            if (response.data.content.size === 0) {
-              this.disabled = true;
-              this.loading = false;
-              this.errorMessage = "No more results";
-              this.snackbar = true;
-            } else {
-              this.allUsers = response.data.content;
-              this.loading = false;
-              this.disabled = false;
-              setTimeout(this.scrollWindow, 10)
-            }
-          }).catch(
-          (error) => {
+      let searchTermInt = this.searchedTerm;
+      if (this.searchedTerm.trim().length === 0) {
+        searchTermInt = null
+      }
+      apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+        (response) => {
+          if (response.data.content.size === 0) {
             this.disabled = true;
             this.loading = false;
-            this.errorMessage = error.response.data;
+            this.errorMessage = "No more results";
             this.snackbar = true;
-          })
+          } else {
+            this.allUsers = response.data.content;
+            this.loading = false;
+            this.disabled = false;
+            setTimeout(this.scrollWindow, 10)
+          }
+        }).catch(
+        (error) => {
+          this.disabled = true;
+          this.loading = false;
+          this.errorMessage = error.response.data;
+          this.snackbar = true;
+        })
+    },
+
+    /**
+     * Load query from url
+     */
+    loadUrlQuery() {
+      if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != ""){
+        this.searchedTerm = this.$route.params.query;
+        this.$router.replace('/search');
+        this.activity_types_selected = [];
+        this.searchUsers(1, this.currentSize);
+        const element = this.$el.querySelector('#searchQueryInput')
+        if (element) this.$nextTick(() => { element.focus() })
       }
     },
     scrollWindow() {
