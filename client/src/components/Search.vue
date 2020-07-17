@@ -235,6 +235,8 @@ export default {
         this.searchBy = this.userSearch.searchType;
         this.currentSize = this.userSearch.size;
         this.currentPage = this.userSearch.page;
+        this.activity_types_selected = this.userSearch.activityTypesSelected;
+        this.filterMethod = this.userSearch.filterMethod;
 
         /* Change button animation */
         this.moreHidden = false;
