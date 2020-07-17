@@ -29,7 +29,17 @@
             </v-row>
             <v-row class="searchRow">
               <v-spacer />
-              <v-btn v-on:click="searchUsers(currentPage + 1, currentSize)" :hidden="moreHidden" :loading="loading" :disabled="disabled" color="#1cca92" outlined rounded class="searchMoreButton">More Results</v-btn>
+              <v-btn
+                      v-on:click="searchUsers(currentPage + 1, currentSize)"
+                      :hidden="moreHidden"
+                      :loading="loading"
+                      :disabled="disabled"
+                      color="#1cca92"
+                      outlined
+                      rounded
+                      class="searchMoreButton"
+              >
+                More Results</v-btn>
               <v-spacer />
             </v-row>
           </v-card>
@@ -120,50 +130,49 @@ export default {
     searchUsers(page, size) {
       if (page === this.defaultPage) {
         this.allUsers = [];
-        /* Adjust search position */
-        this.currentSize = size;
-        this.currentPage = page;
+      }
+      /* Adjust search position */
+      this.currentSize = size;
+      this.currentPage = page;
 
-        /* Change button animation */
-        this.moreHidden = false;
-        this.loading = true;
-        this.disabled = true;
+      /* Change button animation */
+      this.moreHidden = false;
+      this.loading = true;
+      this.disabled = true;
 
-        /* Search for users */
-        console.log(this.activity_types_selected);
-        let searchTermInt = this.searchedTerm;
-        if (this.searchedTerm.trim().length === 0) {
-          searchTermInt = null
-        }
-        apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
-          (response) => {
-            if (response.data.content.length === 0) {
-              this.disabled = true;
-              this.loading = false;
-              this.errorMessage = "No more results";
-              this.snackbar = true;
-            } else {
-              this.allUsers = this.allUsers.concat(response.data.content);
-              this.loading = false;
-              this.disabled = false;
-              /* Update search history */
-              this.setUserSearch({
-                searchTerm: this.searchedTerm,
-                searchType: this.searchBy,
-                page: page,
-                size: size,
-                scrollPos: window.scrollY,
-              });
-            }
-          }).catch(
-          (error) => {
+      /* Search for users */
+      let searchTermInt = this.searchedTerm;
+      if (this.searchedTerm.trim().length === 0) {
+        searchTermInt = null
+      }
+      apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
+        (response) => {
+          if (response.data.content.length === 0) {
             this.disabled = true;
             this.loading = false;
-            this.errorMessage = error.response.data;
+            this.errorMessage = "No more results";
             this.snackbar = true;
+          } else {
+            this.allUsers = this.allUsers.concat(response.data.content);
+            this.loading = false;
+            this.disabled = false;
+            /* Update search history */
+            this.setUserSearch({
+              searchTerm: this.searchedTerm,
+              searchType: this.searchBy,
+              page: page,
+              size: size,
+              scrollPos: window.scrollY,
+            });
           }
-        )
-      }
+        }).catch(
+        (error) => {
+          this.disabled = true;
+          this.loading = false;
+          this.errorMessage = error.response.data;
+          this.snackbar = true;
+        }
+      )
 
     },
     /**
@@ -231,7 +240,12 @@ export default {
         this.moreHidden = false;
         this.loading = true;
 
-        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+        let searchTermInt = this.searchedTerm;
+        if (this.searchedTerm.trim().length === 0) {
+          searchTermInt = null
+        }
+
+        apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
           (response) => {
             if (response.data.content.size === 0) {
               this.disabled = true;

@@ -46,9 +46,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @return Page object with list of users with the query search
      */
     @Query(value = "FROM User u " +
-            "WHERE u.primaryEmail like :email " +
-            "OR concat(u.firstName, ' ', u.lastName) like :fullname " +
-            "OR u.lastName like :lastname "
+            "WHERE u.primaryEmail like :email% " +
+            "OR concat(u.firstName, ' ', u.lastName) like :fullname% " +
+            "OR u.lastName like :lastname% "
             )
     Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
 

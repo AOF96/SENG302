@@ -557,8 +557,7 @@ public class UserService {
         if (activityTypes != null) {
             if (method.equals("or")) {
                 userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
-            }
-            else {
+            } else {
                 List<Set<User>> listOfUserSets = new ArrayList<>();
                 for (ActivityType type : activityTypes) {
                     Set<User> users = userRepository.getUsersWithActivityType(type);
