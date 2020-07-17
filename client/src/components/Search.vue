@@ -153,6 +153,8 @@ export default {
                 page: page,
                 size: size,
                 scrollPos: window.scrollY,
+                activityTypesSelected: this.activity_types_selected,
+                filterMethod: this.filterMethod
               });
             }
           }).catch(
@@ -226,12 +228,14 @@ export default {
         this.searchBy = this.userSearch.searchType;
         this.currentSize = this.userSearch.size;
         this.currentPage = this.userSearch.page;
+        this.activity_types_selected = this.userSearch.activityTypesSelected;
+        this.filterMethod = this.userSearch.filterMethod;
 
         /* Change button animation */
         this.moreHidden = false;
         this.loading = true;
 
-        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activityListToString(), this.filterMethod, this.userSearch.size * this.userSearch.page).then(
           (response) => {
             if (response.data.content.size === 0) {
               this.disabled = true;
