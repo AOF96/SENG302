@@ -558,12 +558,8 @@ public class UserService {
             if (method.equals("or")) {
                 userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
             } else {
-                //List<Set<User>> listOfUserSets = new ArrayList<>();
                  userPage = userRepository.getUsersWithActivityType(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
-                //listOfUserSets.add(users);
-                //List<User> userIntersection = getIntersectionOfListOfSetsOfUsers(listOfUserSets);
-                //userPage = new PageImpl<User>(userIntersection, PageRequest.of(page, size), userIntersection.size());
-            }
+                }
         } else {
             userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
         }
