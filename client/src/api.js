@@ -153,10 +153,8 @@ export const apiUser = {
     instance.put("/profiles/" + profile_id + "/activity-types", {
       activities: activities,
     }),
-  /**
-   * Request to delete a user account
-   */
-  deleteUserAccount: (profile_id) => instance.delete("/profiles/" + profile_id),
+  // Request to delete a user account
+  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
 };
 
 export const apiActivity = {

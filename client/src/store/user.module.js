@@ -263,7 +263,6 @@ const actions = {
       return await apiUser.login(email, password);
   },
   async signUp(data, {'firstName': firstName, 'lastName': lastName, 'middleName': middleName, 'nickName': nickName, 'email': email, 'password': password, 'bio': bio, 'dateOfBirth': dateOfBirth, 'gender': gender, 'fitnessLevel': fitnessLevel}) {
-    console.log(gender);
     return await apiUser.signUp(firstName, lastName, middleName, nickName, email, password, bio, dateOfBirth, gender, fitnessLevel);
   },
   async searchForUsers(data, {'searchTerm': searchTerm, 'searchBy': searchBy, 'page': page, 'size': size}) {
@@ -274,6 +273,9 @@ const actions = {
   },
   async refreshUserData(data, userId) {
     return await apiUser.refreshUserData(userId);
+  },
+  async deleteUserAccount(data, {'id': id}) {
+    return await apiUser.deleteUserAccount(id);
   }
 };
 

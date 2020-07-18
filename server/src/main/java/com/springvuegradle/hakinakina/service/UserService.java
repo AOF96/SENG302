@@ -545,10 +545,12 @@ public class UserService {
                 return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
             }
 
+            System.out.println(session.getUser().getUserId());
+
             //If the session matches the user or the user has admin privileges
             boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
             boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
-            if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
+            if (isAdmin || isDefaultAdmin || session.getUser().getUserId().equals(profileId)) {
                 if (userRepository.findById(profileId).isPresent()) {
 
                     // create a cookie
@@ -566,7 +568,6 @@ public class UserService {
             } else {
                 return new ResponseEntity("Unauthorised User", HttpStatus.FORBIDDEN);
             }
-
             return new ResponseEntity("Successfully Deleted User", HttpStatus.OK);
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Could not delete user");
