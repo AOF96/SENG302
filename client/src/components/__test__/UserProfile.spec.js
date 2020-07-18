@@ -100,12 +100,11 @@ describe("Check user profile page", () => {
         expect(wrapper.find("#editProfileButton").exists()).toBe(true);
     });
     //
-    it("There Should be an Add activity button on click redirects to the Add activity page", async () => {
+    it("There Should be an Add activity button to the Add activity page", async () => {
         const wrapper = mount(Profile, { store, localVue, mocks, stubs });
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#addActivityButton").exists()).toBe(true);
         wrapper.find("#addActivityButton").trigger('click')
-        expect(wrapper.findComponent({name: 'AddUserActivity'}))
     });
 
     it('should display the Logged in user details in the panel on profile page', () => {

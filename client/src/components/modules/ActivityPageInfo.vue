@@ -86,7 +86,6 @@
       async deleteActivity() {
         try {
           let response = await apiActivity.deleteActivity(this.user.profile_id, this.$route.params.activityId)
-          console.log(response);
           response = await apiUser.getUserContinuousActivities(this.user.profile_id)
           this.updateUserContinuousActivities(response.data);
           response = await apiUser.getUserDurationActivities(this.user.profile_id)
@@ -105,7 +104,6 @@
           this.$router.push('/profile');
         } else {
           var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
-          console.log(tempActivityData);
           if (tempActivityData === "Invalid permissions") {
             this.$router.push('/profile');
           } else {

@@ -5,7 +5,7 @@
             <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
                 <button class="genericConfirmButton backButton">Back to Profile</button>
             </router-link>
-            <h1>Edit Email Settings</h1>
+            <h1 id="editEmailPage">Edit Email Settings</h1>
             <hr>
             <h3>Primary email</h3>
             <div class="primaryEmailContainer">
@@ -51,6 +51,7 @@
     const LIMIT_NUM_EMAIL = 4;
 
     export default {
+        name: "EmailSettings",
         components: {
             UserSettingsMenu
         },

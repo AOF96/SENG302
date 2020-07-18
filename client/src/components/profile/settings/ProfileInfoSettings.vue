@@ -3,7 +3,7 @@
     <UserSettingsMenu />
     <div class="settingsContentContainer">
       <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton">Back to Profile</button>
+        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
       </router-link>
       <h1 class="settingsTitle">Edit Profile Info</h1>
       <hr />
@@ -29,22 +29,24 @@
         <input
           type="text"
           name="fname"
+          id="firstName"
           v-model="searchedUser.firstname"
           placeholder="First Name*"
           required
         />
         <h2>Middle Name</h2>
-        <input type="text" name="lname" v-model="searchedUser.middlename" placeholder="Middle Name" />
+        <input type="text" name="lname" id="middleName" v-model="searchedUser.middlename" placeholder="Middle Name" />
         <h2>Last Name</h2>
         <input
           type="text"
           name="lname"
+          id="lastName"
           v-model="searchedUser.lastname"
           placeholder="Last Name*"
           required
         />
         <h2>Nickname</h2>
-        <input type="text" name="nickname" v-model="searchedUser.nickname" placeholder="Nickname" />
+        <input type="text" name="nickname" id="nickName" v-model="searchedUser.nickname" placeholder="Nickname" />
 
         <h2 id="locationHeader">Location: <b>{{ location }}</b></h2>
         <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"
@@ -67,6 +69,7 @@
         <select
           v-model="searchedUser.gender"
           name="gender"
+          id="userGender"
           placeholder="Gender"
           value="Gender"
           required
@@ -82,6 +85,7 @@
           name="fitnesslevel"
           placeholder="fitness"
           value="fitness"
+          id="userFitnessLevel"
           required
         >
           <option value="0">I never exercise</option>
@@ -91,17 +95,18 @@
           <option value="4">I can run a marathon</option>
         </select>
         <h2>Birthday</h2>
-        <input v-model="searchedUser.date_of_birth" name="birthday" type="date" required />
+        <input v-model="searchedUser.date_of_birth" name="birthday" id="userBirthday" type="date" required />
         <h2>Bio</h2>
         <textarea
           maxlength="255"
           name="bio"
+          id="userBio"
           v-model="searchedUser.bio"
           placeholder="Write about yourself"
         ></textarea>
         <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
         <button
-          class="genericConfirmButton updateProfileButton"
+          class="genericConfirmButton updateProfileButton" id="profileUpdateButton"
           v-on:click="updateProfile()"
           type="submit"
         >Update Profile</button>
@@ -259,6 +264,9 @@ export default {
     let outer = this;
     let input = document.querySelector("#locationInput");
     let timeout = null;
+    if(input == null){
+      return;
+    }
     input.addEventListener("keyup", function() {
       clearTimeout(timeout);
       timeout = setTimeout(function() {
