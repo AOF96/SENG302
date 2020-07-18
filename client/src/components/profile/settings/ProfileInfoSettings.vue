@@ -150,6 +150,7 @@ import { mapGetters, mapActions } from "vuex";
 import UserSettingsMenu from "./ProfileSettingsMenu";
 
 export default {
+  name: "EditUserInfo",
   components: {
     UserSettingsMenu
   },

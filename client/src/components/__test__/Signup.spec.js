@@ -18,7 +18,6 @@ const mocks = {
 //make the test igonre router-link when found
 const stubs = ['router-link']
 
-
 const localVue = createLocalVue()
 localVue.use(Vuex)
 

@@ -44,7 +44,7 @@
           </div>
           <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
-              <button class="genericConfirmButton">Edit Profile</button>
+              <button class="genericConfirmButton" id="editProfileButton">Edit Profile</button>
             </router-link>
           </div>
           <div class="floatClear"></div>
@@ -52,7 +52,7 @@
         <div class="profileActivitiesContainer">
           <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
             <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
-              <button class="genericConfirmButton">Add Activity</button>
+              <button class="genericConfirmButton" id="addActivityButton">Add Activity</button>
             </router-link>
           </div>
           <h2>Activities</h2>

@@ -22,9 +22,9 @@ describe('NavBar after the login is successful as a normal user', () => {
         isLogin: true,
         permission_level: 0,
       }),
-      isAdmin: () => {
-        false
-      },
+      isAdmin: () => ({
+        isAdmin: false
+      }),
     }
     actions = {logout: jest.fn()}
     store = new Vuex.Store({

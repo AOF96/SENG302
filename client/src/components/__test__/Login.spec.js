@@ -36,9 +36,9 @@ describe('All the titles and subtitles are shown on the page', () => {
         primary_email: "test@gmail.com", //this is not registered
         password: "Welcome1"
       }),
-      isAdmin: () => {
-        false
-      },
+      isAdmin: () => ({
+        isAdmin: false
+      }),
     }
     store = new Vuex.Store({
       getters
@@ -69,9 +69,9 @@ describe('Successful login', () => {
         primary_email: "test@gmail.com",
         password: "Welcome1"
       }),
-      isAdmin: () => {
-        false
-      },
+      isAdmin: () => ({
+        isAdmin: false
+      }),
     }
     store = new Vuex.Store({
       getters,

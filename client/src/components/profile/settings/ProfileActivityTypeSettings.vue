@@ -47,6 +47,7 @@ import UserSettingsMenu from "./ProfileSettingsMenu";
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
+  name: "AddUserActivity",
   components: {
     UserSettingsMenu
   },

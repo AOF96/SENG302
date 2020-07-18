@@ -16,6 +16,7 @@ import { mapGetters, mapActions } from "vuex";
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
 export default {
+  name: "PassportCountries",
   props: {
     passports: Array
   },
