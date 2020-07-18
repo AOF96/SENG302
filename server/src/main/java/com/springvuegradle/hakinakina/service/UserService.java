@@ -551,7 +551,26 @@ public class UserService {
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
     public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname) {
-        Page<User> userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+
+        Page<User> userPage = null;
+        boolean withQuotation = false;
+
+        if(isWithinQuotation(email)) {
+            email = email.substring(1, email.length() - 1);
+            withQuotation = true;
+        } else if (isWithinQuotation(fullname)) {
+            fullname = fullname.substring(1, fullname.length() - 1);
+            withQuotation = true;
+        } else if(isWithinQuotation(lastname)) {
+            lastname = lastname.substring(1, lastname.length() - 1);
+            withQuotation = true;
+        }
+
+        if (withQuotation) {
+            userPage = userRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
+        } else {
+            userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+        }
         return userPageToSearchResponsePage(userPage);
     }
 
@@ -575,5 +594,19 @@ public class UserService {
             userResponses.add(searchUserDto);
         }
         return new PageImpl<>(userResponses);
+    }
+
+    /**
+     * Helper function used in findPaginatedByQuery,
+     * checks whether the strings given has quotation marks (" or ') around the search term string.
+     *
+     * @param searchText text you are using to search users
+     * @return true if quotation wraps the search term, false otherwise
+     */
+    private boolean isWithinQuotation(String searchText) {
+        if(searchText != null && searchText.length() > 1) {
+            return searchText.startsWith("\"") && searchText.endsWith("\"") || searchText.startsWith("'") && searchText.endsWith("'");
+        }
+        return false;
     }
 }
