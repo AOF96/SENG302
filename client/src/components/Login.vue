@@ -10,7 +10,7 @@
                         <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
                     </div>
                     <div class="loginRow">
-                        <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
+                        <input id="loginEmailForm" type="email" v-model="user.primary_email" name="email" placeholder="Email"
                                required>
                     </div>
                     <div class="loginRow">
@@ -18,7 +18,7 @@
                             }}</h6>
                     </div>
                     <div class="loginRow">
-                        <input type="password" v-model="user.password" name="password"
+                        <input id="loginPasswordForm" type="password" v-model="user.password" name="password"
                                placeholder="Password" required>
                     </div>
                     <div class="loginRow">
@@ -39,8 +39,6 @@
 
 <script>
   import {mapActions, mapGetters} from 'vuex';
-  import {apiUser} from '../api'
-
   import NavBar from "./modules/NavBar";
 
   export default {
@@ -60,9 +58,7 @@
       ...mapGetters(['user']),
     },
     methods: {
-      ...mapActions(['updateUserProfile']),
-      ...mapActions(['updateUserContinuousActivities']),
-      ...mapActions(['updateUserDurationActivities']),
+      ...mapActions(['updateUserProfile', 'updateUserContinuousActivities', 'updateUserDurationActivities', 'login', 'getUserContinuousActivities', 'getUserDurationActivities']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
@@ -78,15 +74,15 @@
           return;
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
-          apiUser.login(this.user.primary_email, this.user.password)
+          this.login({'email': this.user.primary_email, 'password': this.user.password})
             .then((response) => {
               const responseData = response.data;
               this.updateUserProfile(responseData);
               this.$router.push('Profile');
-              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
+              this.getUserContinuousActivities(responseData.profile_id).then((response) => {
                 this.updateUserContinuousActivities(response.data);
               }).catch(err => console.log(err));
-              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
+              this.getUserDurationActivities(responseData.profile_id).then((response) => {
                 this.updateUserDurationActivities(response.data);
               }).catch(err => console.log(err));
               if (responseData.permission_level === 2) {
