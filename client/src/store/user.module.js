@@ -268,7 +268,7 @@ const actions = {
   async searchForUsers(data, {'searchTerm': searchTerm, 'searchBy': searchBy, 'page': page, 'size': size}) {
     return await apiUser.searchUsers(searchTerm, searchBy, page, size);
   },
-  async getIdByEmail(email) {
+  async getIdByEmail(data, {'email': email}) {
     return await apiUser.getIdByEmail(email);
   },
   async refreshUserData(data, userId) {
