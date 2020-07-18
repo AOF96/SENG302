@@ -118,6 +118,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import axios from 'axios';
 import UserSettingsMenu from "./ProfileSettingsMenu";
 
 export default {
@@ -139,7 +140,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl"]),
+    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile"]),
 
       /**
      * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
@@ -271,7 +272,7 @@ export default {
       clearTimeout(timeout);
       timeout = setTimeout(function() {
         const url = "https://photon.komoot.de/api/?q=" + input.value;
-        this.getDataFromUrl(url)
+        axios.get(url)
           .then(response => {
             //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
             //is only displayed when it is finished, avoiding the problem of the user being taken to the
