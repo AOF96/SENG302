@@ -28,7 +28,7 @@
           </div>
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
-        <button id = "profileAdminRightsButton" class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
+        <button id ="profileAdminRightsButton" class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0 && showAdminButton" v-on:click="grantAdminRights">Make admin</button>
         <h6 v-show="showResult" class="adminRightsResult">{{adminRightsResult}}</h6>
       </div>
       <div class="centreContainer">
@@ -110,7 +110,6 @@
 import NavBar from "../modules/NavBar";
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
-import axios from "axios";
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 import {
   apiUser
@@ -147,7 +146,8 @@ import {
                     4: "I can run a marathon"
                 },
               adminRightsResult: "",
-              showResult: false
+              showResult: false,
+              showAdminButton: true
             };
         },
         mounted() {
@@ -228,9 +228,10 @@ import {
               apiUser.promoteToAdmin(this.searchedUser.profile_id)
                       .then(response => {
                         this.adminRightsResult = response.data;
+                        this.showAdminButton = false;
                       })
                       .catch((error) => {
-                        this.adminRightsResult = error.response.data;
+                        this.adminRightsResult = error.response.data.Errors;
                       })
             }
             this.showResult = true;
