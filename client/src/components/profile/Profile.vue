@@ -29,7 +29,7 @@
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
         <button id = "profileAdminRightsButton" class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0" v-on:click="grantAdminRights">Make admin</button>
-        <h6 class="adminRightsResult">{{adminRightsResult}}</h6>
+        <h6 v-show="showResult" class="adminRightsResult">{{adminRightsResult}}</h6>
       </div>
     <div class="centreContainer">
       <div class="profileHeaderContainer">
@@ -146,7 +146,8 @@ export default {
         3: "I can run a medium distance",
         4: "I can run a marathon"
       },
-      adminRightsResult: ""
+      adminRightsResult: "",
+      showResult: false
     };
   },
   mounted() {
@@ -238,8 +239,14 @@ export default {
           .then(response => {
             this.adminRightsResult = response.data;
           })
+          .catch((error) => {
+            this.adminRightsResult = error.response.data;
+          })
       }
-    }
+      this.showResult = true;
+      setTimeout(() => this.showResult = false, 5000)
+    },
+
   }
 };
 </script>
