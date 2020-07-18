@@ -22,7 +22,12 @@
             <v-row class="searchRow">
               <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers" :key="user.email" link>
                 <v-list-item-content>
-                  <v-list-item-title>{{ user.firstname + " " + user.middlename + " " + user.lastname}}</v-list-item-title>
+                  <v-list-item-title v-if="user.middlename != null">
+                    {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                  </v-list-item-title>
+                  <v-list-item-title v-else>
+                    {{ user.firstname + " " + user.lastname}}
+                  </v-list-item-title>
                   <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
