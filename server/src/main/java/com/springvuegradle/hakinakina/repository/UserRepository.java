@@ -65,10 +65,10 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(nativeQuery = true, value = "SELECT DISTINCT u.* FROM User u " +
             "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
-            "WHERE u.primary_email like :email% " +
-            "OR concat(u.first_name, ' ', u.last_name) like :fullname% " +
-            "OR u.last_name like :lastname% " +
-            "OR a.type_id IN :userActivityTypes"
+            "WHERE (:email IS NULL OR u.primary_email like :email%) " +
+            "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) " +
+            "AND (:lastname IS NULL OR u.last_name like :lastname%) " +
+            "AND a.type_id IN :userActivityTypes"
     )
     Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
 
@@ -91,14 +91,22 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                                int startIndex,
                                @Param("size") int size);
 
-    @Query(value = "SELECT DISTINCT(user_id) FROM User_ActivityTypes "
-                 + "WHERE user_id NOT IN (SELECT user_id "
-                 +  "FROM ( "
-                 + " (SELECT user_id, type_id FROM "
-                 + " (SELECT type_id FROM Activity_Type WHERE type_id IN :activityTypes) AS all_activity_types "
-                 + "CROSS JOIN "
-                 + " (SELECT DISTINCT user_id FROM User_ActivityTypes) AS all_users_linked_to_activities) "
-                 + "EXCEPT "
-                 + "(SELECT user_id, type_id FROM User_ActivityTypes) ) AS all_users_we_dont_need )", nativeQuery = true)
-    Set<User> getUsersWithActivityType(Set<ActivityType> activityTypes);
+   @Query(value = "SELECT DISTINCT(a.user_id) FROM User_ActivityTypes a "
+            + "INNER JOIN User u ON a.user_id = u.user_id "
+            + "WHERE a.user_id NOT IN (SELECT user_id "
+            + "FROM ( "
+            + " (SELECT user_id, type_id FROM "
+            + " (SELECT type_id FROM Activity_Type WHERE type_id IN :activityTypes) AS all_activity_types "
+            + "CROSS JOIN "
+            + " (SELECT DISTINCT user_id FROM User_ActivityTypes) AS all_users_linked_to_activities) "
+            + "EXCEPT "
+            + "(SELECT user_id, type_id FROM User_ActivityTypes) ) AS all_users_we_dont_need ) "
+            + "AND (:email IS NULL OR u.primary_email like :email%) "
+            + "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) "
+            + "AND (:lastname IS NULL OR u.last_name like :lastname%)", nativeQuery = true)
+    Page<User> getUsersWithActivityType(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
 }
+
+
+
+
