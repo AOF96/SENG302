@@ -545,22 +545,20 @@ public class UserService {
                 return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
             }
 
-            System.out.println(session.getUser().getUserId());
-
             //If the session matches the user or the user has admin privileges
             boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
             boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
             if (isAdmin || isDefaultAdmin || session.getUser().getUserId().equals(profileId)) {
                 if (userRepository.findById(profileId).isPresent()) {
-
-                    // create a cookie
-                    Cookie cookie = new Cookie("s_id", null);
-                    cookie.setMaxAge(0);
-                    cookie.setHttpOnly(true);
-                    cookie.setPath("/");
-                    //add cookie to response
-                    response.addCookie(cookie);
-
+                    if (session.getUser().getUserId().equals(profileId)) {
+                        // create a cookie
+                        Cookie cookie = new Cookie("s_id", null);
+                        cookie.setMaxAge(0);
+                        cookie.setHttpOnly(true);
+                        cookie.setPath("/");
+                        //add cookie to response
+                        response.addCookie(cookie);
+                    }
                     userRepository.deleteById(profileId);
                 } else {
                     return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
