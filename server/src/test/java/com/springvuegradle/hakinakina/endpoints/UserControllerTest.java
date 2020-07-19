@@ -222,6 +222,52 @@ public class UserControllerTest {
     }
 
     @Test
+    public void validateLoginTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        this.mockMvc.perform(get("/validateLogin").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200));
+    }
+
+    @Test
+    public void validateLoginTestNotLoggedIn() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "wrongToken");
+        when(sessionRepository.findUserIdByToken("wrongToken")).thenReturn(null);
+        this.mockMvc.perform(get("/validateLogin").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(401))
+                .andExpect(content().string(containsString("User not currently logged in")));
+    }
+
+    @Test
+    public void getUserByEmailTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.resetPassportCountries();
+        testSession.setUser(testUser);
+
+        String input = "{\"email\": \"john@gmail.com\"}";
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.getIdByEmail("john@gmail.com")).thenReturn("1");
+        this.mockMvc.perform(get("/email/id/").cookie(tokenCookie)
+                .param("email", "john@gmail.com")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200));
+    }
+
+    @Test
     public void addEmailsTest() throws Exception {
         final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
