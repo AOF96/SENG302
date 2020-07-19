@@ -76,13 +76,19 @@
 }
 .editForm input, textarea {
     width: 100%;
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
 }
 .editForm textarea {
     height: 100px;
     resize: none;
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
 }
 .editForm select {
     width: 100%;
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
 }
 .updateProfileButton {
     padding: 6px 18px;
@@ -195,6 +201,8 @@
 .addEmailInput {
     display: inline;
     width: calc(100% - 78px);
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
 }
 .addEmailButton {
     display: inline;
@@ -266,6 +274,8 @@
     width: calc(100% - 40px);
     display:block;
     margin: 20px auto 0;
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
 }
 .updatePasswordButton {
     width: calc(100% - 40px);
@@ -313,9 +323,9 @@
 .itemSelect {
     margin: 0 0 20px 20px;
     padding: 8px 20px;
-    border-radius: 30px;
+    border-radius: 30px !important;
     background: white;
-    border: 2px solid #a8a8a8;
+    border: 2px solid #a8a8a8 !important;
     font-size: 14px;
     width: calc(100% - 120px);
     display: inline;

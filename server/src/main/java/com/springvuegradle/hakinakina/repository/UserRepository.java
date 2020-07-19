@@ -1,21 +1,24 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository for storing users
  */
 @RepositoryRestResource
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     @Query(value = "Select * from User u where u.primary_email = ?1", nativeQuery = true)
     User findUserByEmail(String email);
 
@@ -73,4 +76,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                @Param("fullname") String fullname,
                                int startIndex,
                                @Param("size") int size);
+
+   @Query(value = "SELECT DISTINCT(a.user_id) FROM User_ActivityTypes a "
+            + "INNER JOIN User u ON a.user_id = u.user_id "
+            + "WHERE a.user_id NOT IN (SELECT user_id "
+            + "FROM ( "
+            + " (SELECT user_id, type_id FROM "
+            + " (SELECT type_id FROM Activity_Type WHERE type_id IN :activityTypes) AS all_activity_types "
+            + "CROSS JOIN "
+            + " (SELECT DISTINCT user_id FROM User_ActivityTypes) AS all_users_linked_to_activities) "
+            + "EXCEPT "
+            + "(SELECT user_id, type_id FROM User_ActivityTypes) ) AS all_users_we_dont_need ) "
+            + "AND (:email IS NULL OR u.primary_email like :email%) "
+            + "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) "
+            + "AND (:lastname IS NULL OR u.last_name like :lastname%)", nativeQuery = true)
+    Page<User> getUsersWithActivityType(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
 }
+
+
+
+

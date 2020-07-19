@@ -54,6 +54,8 @@
 .signUpFormContainer input, .signUpFormContainer select, .signUpFormContainer textarea {
     margin-bottom: 15px;
     width: 100%;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
 }
 .signUpInputBirthday {
     padding: 8px 12px;

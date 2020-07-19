@@ -1,6 +1,5 @@
 <template>
   <div class="settingsNavContainer">
-    <NavBar />
     <h1>Settings</h1>
     <div class="navButtonContainer">
       <router-link v-bind:to="'/settings/profile/' + this.$route.params.profileId">
@@ -27,10 +26,9 @@
 </template>
 
 <script>
-import NavBar from "../../modules/NavBar";
 export default {
   components: {
-    NavBar
+    //
   }
 };
 </script>

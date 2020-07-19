@@ -8,6 +8,7 @@ build/
 dist/
 node_modules/
 bin/
+*.env
 
 ### STS ###
 .apt_generated

@@ -548,30 +548,59 @@ public class UserService {
      * @param email    email of the user you want to search
      * @param fullname full name of the user you want to search
      * @param lastname last name of the user you want to search
+     * @param activityTypes activityTypes of the user you want to search
+     * @param method
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname) {
-
-        Page<User> userPage = null;
-        boolean withQuotation = false;
-
-        if(isWithinQuotation(email)) {
-            email = email.substring(1, email.length() - 1);
-            withQuotation = true;
-        } else if (isWithinQuotation(fullname)) {
-            fullname = fullname.substring(1, fullname.length() - 1);
-            withQuotation = true;
-        } else if(isWithinQuotation(lastname)) {
-            lastname = lastname.substring(1, lastname.length() - 1);
-            withQuotation = true;
-        }
-
-        if (withQuotation) {
-            userPage = userRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
+        Page<User> userPage;
+        if (activityTypes != null) {
+            if (method.equals("or")) {
+                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+            } else {
+                 userPage = userRepository.getUsersWithActivityType(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                }
         } else {
-            userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+            boolean withQuotation = false;
+
+            if(isWithinQuotation(email)) {
+                email = email.substring(1, email.length() - 1);
+                withQuotation = true;
+            } else if (isWithinQuotation(fullname)) {
+                fullname = fullname.substring(1, fullname.length() - 1);
+                withQuotation = true;
+            } else if(isWithinQuotation(lastname)) {
+                lastname = lastname.substring(1, lastname.length() - 1);
+                withQuotation = true;
+            }
+
+            if (withQuotation) {
+                userPage = userRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
+            } else {
+                userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+            }
         }
         return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Finds the intersection of a List of Sets of Users. Much of this code was adapted from
+     * https://stackoverflow.com/questions/37749559/conversion-of-list-to-page-in-spring
+     * @param listOfUserSets A List of Sets of User objects
+     * @return The intersection of these Sets as a List
+     */
+    public List<User> getIntersectionOfListOfSetsOfUsers(List<Set<User>> listOfUserSets) {
+        List<User> result = new ArrayList<>();
+        if (!listOfUserSets.isEmpty()) {
+            Set<User> userCross = listOfUserSets.get(0);
+            for (int i = 1; i < listOfUserSets.size(); i++) {
+                userCross.retainAll(listOfUserSets.get(i));
+            }
+            for (User user : userCross) {
+                result.add(user);
+            }
+        }
+        return result;
     }
 
     /**
@@ -591,6 +620,7 @@ public class UserService {
             searchUserDto.setLastname(user.getLastName());
             searchUserDto.setMiddlename(user.getMiddleName());
             searchUserDto.setNickname(user.getNickName());
+            searchUserDto.setActivityTypes(user.getActivityTypes());
             userResponses.add(searchUserDto);
         }
         return new PageImpl<>(userResponses);
