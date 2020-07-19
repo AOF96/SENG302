@@ -80,15 +80,19 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) " +
             "AND (:lastname IS NULL OR u.last_name like :lastname%) " +
             "AND a.type_id IN :userActivityTypes " +
-            "AND u.permission_level < 2"
-    )
+            "AND u.permission_level < 2")
     Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
-
 
     /**
      * Retrieves users based on the following query parameters
      * This returns the users' primary email, full name (first, middle and last name) and nickname
      * Provides the startIndex and size of the result set
+     * @param email email address of the user
+     * @param nickname nickname of the user
+     * @param fullname full name of the user
+     * @param startIndex index of results
+     * @param size size of results needed
+     * @return List of users
      */
     @Query(value = "SELECT u.primary_email as primary_email, u.first_name as firstname, u.last_name as lastname, u.middle_name as middlename, u.nick_name as nickname " +
             "FROM User u " +
@@ -97,12 +101,11 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "AND (:fullname is null or u.first_name LIKE :fullname% or u.middle_name LIKE :fullname% or u.last_name LIKE :fullname%) " +
             "LIMIT :startIndex, :size " +
             "FOR JSON AUTO;", nativeQuery = true)
-
     List<Object> searchForUser(String email,
                                String nickname,
                                String fullname,
                                int startIndex,
-                               int size);
+                               @Param("size") int size);
 
     /**
      * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match all
