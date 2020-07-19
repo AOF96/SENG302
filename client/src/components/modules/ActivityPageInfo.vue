@@ -40,7 +40,7 @@
       </router-link>
       <button v-if="authorId===user.profile_id || user.permission_level > 0"
               class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-              type="button" v-on:click="deleteActivity()">Delete Activity
+              type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
       </button>
     </div>
   </v-card>
