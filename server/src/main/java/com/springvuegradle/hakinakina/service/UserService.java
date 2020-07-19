@@ -558,7 +558,7 @@ public class UserService {
             if (method.equals("or")) {
                 userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
             } else {
-                 userPage = userRepository.getUsersWithActivityType(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                 userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
                 }
         } else {
             boolean withQuotation = false;
@@ -580,6 +580,7 @@ public class UserService {
                 userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
             }
         }
+
         return userPageToSearchResponsePage(userPage);
     }
 

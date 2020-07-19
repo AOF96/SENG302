@@ -46,9 +46,10 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @return Page object with list of users with the query search
      */
     @Query(value = "FROM User u " +
-            "WHERE u.primaryEmail like %?1% " +
-            "OR concat(u.firstName, ' ', u.lastName) like %?2% " +
-            "OR u.lastName like %?3%")
+            "WHERE u.permissionLevel < 2" +
+            "AND (u.primaryEmail like :email% " +
+            "OR concat(u.firstName, ' ', u.lastName) like :fullname% " +
+            "OR u.lastName like :lastname%)")
     Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
 
     @Query(value = "FROM User u " +
@@ -56,6 +57,27 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "OR concat(u.firstName, ' ', u.lastName) like ?2 " +
             "OR u.lastName = ?3")
     Page<User> findAllByQueryWithQuotation(Pageable pageable, String email, String fullname, String lastname);
+
+ /**
+     * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match any
+     * of those in the userActivityTypes set (OR).
+     * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
+     * @param pageable abstract interface for pagination information, if provided page object is sent back
+     * @param email email of the user you are searching for
+     * @param fullname full name of the user you are searching for
+     * @param lastname last name of the user you are searching for
+     * @param userActivityTypes set of activities of user you are searching for
+     * @return Page object with list of users with the query search
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT(a.user_id) FROM User u " +
+            "INNER JOIN User_ActivityTypes a ON u.user_id = a.user_id " +
+            "WHERE (:email IS NULL OR u.primary_email like :email%) " +
+            "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) " +
+            "AND (:lastname IS NULL OR u.last_name like :lastname%) " +
+            "AND a.type_id IN :userActivityTypes " +
+            "AND u.permission_level < 2"
+    )
+    Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
 
 
     /**
@@ -65,9 +87,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(value = "SELECT u.primary_email as primary_email, u.first_name as firstname, u.last_name as lastname, u.middle_name as middlename, u.nick_name as nickname " +
             "FROM User u " +
-            "WHERE (:email is null or u.primary_email = :email) " +
-            "AND (:nickname is null or u.nick_name = :nickname) " +
-            "AND (:fullname is null or u.first_name LIKE %:fullname% or u.middle_name LIKE %:fullname% or u.last_name LIKE %:fullname%) " +
+            "WHERE (:email is null or u.primary_email = :email%) " +
+            "AND (:nickname is null or u.nick_name = :nickname%) " +
+            "AND (:fullname is null or u.first_name LIKE :fullname% or u.middle_name LIKE :fullname% or u.last_name LIKE :fullname%) " +
             "LIMIT :startIndex, :size " +
             "FOR JSON AUTO;", nativeQuery = true)
 
@@ -77,6 +99,17 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                                int startIndex,
                                @Param("size") int size);
 
+    /**
+     * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match all
+     * of those in the activityTypes set (AND)
+     * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
+     * @param pageable abstract interface for pagination information, if provided page object is sent back
+     * @param email email of the user you are searching for
+     * @param fullname full name of the user you are searching for
+     * @param lastname last name of the user you are searching for
+     * @param activityTypes set of activities of user you are searching for
+     * @return Page object with list of users with the query search
+     */
    @Query(value = "SELECT DISTINCT(a.user_id) FROM User_ActivityTypes a "
             + "INNER JOIN User u ON a.user_id = u.user_id "
             + "WHERE a.user_id NOT IN (SELECT user_id "
@@ -89,8 +122,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + "(SELECT user_id, type_id FROM User_ActivityTypes) ) AS all_users_we_dont_need ) "
             + "AND (:email IS NULL OR u.primary_email like :email%) "
             + "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) "
-            + "AND (:lastname IS NULL OR u.last_name like :lastname%)", nativeQuery = true)
-    Page<User> getUsersWithActivityType(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
+            + "AND (:lastname IS NULL OR u.last_name like :lastname%) "
+            + "AND u.permission_level < 2 ", nativeQuery = true)
+    Page<User> getUsersWithActivityTypeAnd(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
 }
 
 

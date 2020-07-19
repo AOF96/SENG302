@@ -1,6 +1,5 @@
 /* eslint-env jest*/
-
-import {createLocalVue, mount} from '@vue/test-utils'
+import {createLocalVue, mount, shallowMount} from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import NavBar from '../modules/NavBar.vue'
 import Vuex from 'vuex'
@@ -10,10 +9,9 @@ localVue.use(VueRouter)
 const router = new VueRouter()
 localVue.use(Vuex)
 
-describe('NavBar after the login is successful as a normal user', () => {
+describe('NavBar after the login is successful', () => {
   let getters
   let store
-  let actions
 
   beforeEach(() => {
     getters = {
@@ -22,42 +20,37 @@ describe('NavBar after the login is successful as a normal user', () => {
         isLogin: true,
         permission_level: 0,
       }),
-      isAdmin: () => ({
-        isAdmin: false
-      }),
+      isAdmin: () => {
+        false
+      },
     }
-    actions = {logout: jest.fn()}
     store = new Vuex.Store({
-      getters,
-      actions
+      getters
     })
   })
 
-  it('NavBar should not have login button anymore and have myaccount button instead', () => {
+
+  it('NavBar should not have login button anymore and have website logo button instead', () => {
     const wrapper = mount(NavBar, {store, localVue, router})
     expect(wrapper.find(".login").exists()).toBe(false)
-    expect(wrapper.find(".myaccount").exists()).toBe(true)
-    //myaccount = profile button
+    expect(wrapper.find("#appNavLogo").exists()).toBe(true)
+
   })
 
-  it('myaccount button that is on the NavBar should take the user to profile page', () => {
+  it("Website's logo button that is on the NavBar on the click should redirects the user to profile page", () => {
     const wrapper = mount(NavBar, {store, localVue, router})
-    wrapper.find(".myaccount").trigger('click')
-    expect(window.location.href).toBe('http://localhost/#/profile/100')
+    wrapper.find("#appNavLogo").trigger('click')
+    expect(window.location.href).toBe('http://localhost/#/')
   })
 
-  it('should have logout button and the button should call logout method', () => {
+  it('Global search bar exists on the top of the NavBar', () => {
     const wrapper = mount(NavBar, {store, localVue, router})
-    expect(wrapper.find('#navBarLogoutButton').exists()).toBe(true)
-    wrapper.find('#navBarLogoutButton').trigger('click')
-    expect(actions.logout).toHaveBeenCalledTimes(1)
-    expect(wrapper.findComponent({name: 'Login'}))
+    expect(wrapper.find("#globalSearchBarInput").exists()).toBe(true)
   })
 
-  it('should have search button and the button should takr you to search page', () => {
+  it('A hamburger menu option exists for quick navigation around website in the of the NavBar', () => {
     const wrapper = mount(NavBar, {store, localVue, router})
-    expect(wrapper.find('#navBarSearchBtn').exists()).toBe(true)
-    wrapper.find('#navBarSearchBtn').trigger('click')
-    expect(wrapper.findComponent({name: 'searchUser'}))
+    expect(wrapper.find("#headerNavToggle").exists()).toBe(true)
   })
+
 })
