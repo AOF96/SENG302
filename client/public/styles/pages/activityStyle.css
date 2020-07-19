@@ -19,11 +19,11 @@
 }
 
 .activityContainer{
-    font-family: Roboto;
     width: 60%;
     margin: 0 auto;
     display: block;
     position: relative;
+    border-radius: 50px;
 }
 
 .activityInfoContainer {
