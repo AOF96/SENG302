@@ -199,6 +199,7 @@ public class UserController {
         } else {
             resultPage = userService.findPaginated(page, size);
         }
+
         return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
     }
 

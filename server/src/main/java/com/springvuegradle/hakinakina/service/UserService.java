@@ -563,6 +563,7 @@ public class UserService {
         } else {
             userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
         }
+
         return userPageToSearchResponsePage(userPage);
     }
 

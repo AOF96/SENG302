@@ -46,10 +46,10 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @return Page object with list of users with the query search
      */
     @Query(value = "FROM User u " +
-            "WHERE u.primaryEmail like :email% " +
+            "WHERE u.permissionLevel < 2" +
+            "AND (u.primaryEmail like :email% " +
             "OR concat(u.firstName, ' ', u.lastName) like :fullname% " +
-            "OR u.lastName like :lastname% "
-            )
+            "OR u.lastName like :lastname%)")
     Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
 
     /**
@@ -68,7 +68,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "WHERE (:email IS NULL OR u.primary_email like :email%) " +
             "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) " +
             "AND (:lastname IS NULL OR u.last_name like :lastname%) " +
-            "AND a.type_id IN :userActivityTypes"
+            "AND a.type_id IN :userActivityTypes" +
+            "AND u.permission_level < 2"
     )
     Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
 
@@ -103,7 +104,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + "(SELECT user_id, type_id FROM User_ActivityTypes) ) AS all_users_we_dont_need ) "
             + "AND (:email IS NULL OR u.primary_email like :email%) "
             + "AND (:fullname IS NULL OR concat(u.first_name, ' ', u.last_name) like :fullname%) "
-            + "AND (:lastname IS NULL OR u.last_name like :lastname%)", nativeQuery = true)
+            + "AND (:lastname IS NULL OR u.last_name like :lastname%) "
+            + "AND u.permission_level < 2 ", nativeQuery = true)
     Page<User> getUsersWithActivityType(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
 }
 
