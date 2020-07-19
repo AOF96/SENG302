@@ -1,29 +1,46 @@
 <template>
   <div>
     <header class="navBarContainer">
-      <svg id="headerNavToggle" @click.stop="navDrawer = !navDrawer" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-      <router-link to="/"><img id="appNavLogo" src="/favicon.png"></router-link>
-      <router-link to="/logout" v-if="user.isLogin">
-        <button class="navBarButton" v-on:click="logoutUser">Logout</button>
-      </router-link>
-
-      <!-- <router-link v-bind:to="'/search'" v-if="user.isLogin">
-        <button class="myaccount navBarButton" id="navBarSearchBtn"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>Search</button>
-      </router-link> -->
-
-      <div id="globalSearchBarContainer" v-if="user.isLogin">
-        <svg id="globalSearchBarIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input id="globalSearchBarInput" v-model="searchQuery" v-on:keyup="submitSearch" type="text" placeholder="Search" autocomplete="false">
-        <div class="floatClear"></div>
-      </div>
-
-      <router-link to="/signup" v-if="!user.isLogin">
-        <button class="signup navBarButton" name="Sign Up">Sign Up</button>
-      </router-link>
-
-      <router-link to="/login" v-if="!user.isLogin">
-        <button class="login navBarButton" value="Login In">Login</button>
-      </router-link>
+      <v-row justify="center" align="center">
+        <v-col class="navBarLeftCol">
+          <v-row align="center">
+            <v-btn id="headerNavToggle" icon @click.stop="navDrawer = !navDrawer">
+              <v-icon large>mdi-menu</v-icon>
+            </v-btn>
+            <img class="navBarLeftColIcon" v-on:click="$router.push('/')" id="appNavLogo" src="/favicon.png">
+          </v-row>
+        </v-col>
+        <v-col>
+          <v-row justify="center">
+            <BackButton/>
+          </v-row>
+        </v-col>
+        <v-col>
+          <v-row>
+            <div id="globalSearchBarContainer" v-if="user.isLogin">
+              <svg id="globalSearchBarIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input id="globalSearchBarInput" v-model="searchQuery" v-on:keyup="submitSearch" type="text" placeholder="Search" autocomplete="false">
+              <div class="floatClear"></div>
+            </div>
+          </v-row>
+        </v-col>
+        <v-col>
+          <v-row justify="center">
+            <ForwardButton/>
+          </v-row>
+        </v-col>
+        <v-col>
+          <router-link to="/logout" v-if="user.isLogin">
+            <button class="navBarButton" v-on:click="logoutUser">Logout</button>
+          </router-link>
+          <router-link to="/signup" v-if="!user.isLogin">
+            <button class="signup navBarButton" name="Sign Up">Sign Up</button>
+          </router-link>
+          <router-link to="/login" v-if="!user.isLogin">
+            <button class="login navBarButton" value="Login In">Login</button>
+          </router-link>
+        </v-col>
+      </v-row>
     </header>
     <v-navigation-drawer
       class="accent-4"
@@ -126,6 +143,8 @@
 <script>
     import { mapGetters, mapActions } from 'vuex';
     import {apiUser} from "../../api";
+    import BackButton from "./BackButton";
+    import ForwardButton from "./ForwardButton";
 
     export default {
         name: "NavBar",
@@ -134,6 +153,10 @@
             navDrawer: false,
             searchQuery: ""
           }
+        },
+        components: {
+          ForwardButton,
+          BackButton,
         },
         computed: {
             ...mapGetters(["user", "isAdmin"]),

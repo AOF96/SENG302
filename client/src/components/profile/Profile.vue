@@ -78,7 +78,7 @@
           <h2>Activities</h2>
           <h3>Activity Types</h3>
           <ul class="activityTypesList">
-            <li v-for="type in searchedUser.activities" v-bind:key="type">{{type}}</li>
+            <li v-for="(type, idx) in searchedUser.activities" v-bind:key="idx">{{type}}</li>
           </ul>
           <hr class="profileActivitySeparator" />
           <h3>Duration Activities</h3>
@@ -92,7 +92,7 @@
               </v-progress-linear>
             </v-col>
           </v-row>
-          <div class="activitySummaryContainer" v-for="activity in dur_activities" v-bind:key="activity">
+          <div class="activitySummaryContainer" v-for="(activity, idx) in dur_activities" v-bind:key="idx">
             <div class="activityTextWrapDiv">
               <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
               <h4 class="profileActivityDescription">{{activity.description}}</h4>
@@ -116,7 +116,7 @@
               </v-progress-linear>
             </v-col>
           </v-row>
-          <div class="activitySummaryContainer" v-for="activity in cont_activities" v-bind:key="activity">
+          <div class="activitySummaryContainer" v-for="(activity, idx) in cont_activities" v-bind:key="idx">
             <div class="activityTextWrapDiv">
               <router-link v-bind:to="'/activity/' + activity.id"><a class="profileActivityTitle">{{activity.name}}</a></router-link>
               <h4 class="profileActivityDescription">{{activity.description}}</h4>

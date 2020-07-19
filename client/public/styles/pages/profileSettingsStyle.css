@@ -188,6 +188,8 @@
 }
 .addEmailInput {
     width: 100%;
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
 }
 .addEmailButton {
     display: inline;

@@ -7,12 +7,33 @@ const state = {
     scrollPos: 0,
     activityTypesSelected: [],
     filterMethod: null
+  },
+  pageHistory: {
+    previousPages: [],
+    nextPages: [],
   }
 };
 
 const getters = {
   userSearch(state) {
     return state.userSearch;
+  },
+  pageHistory(state) {
+    return state.pageHistory;
+  },
+  getPreviousPage(state) {
+    if (state.previousPages !== []) {
+      return state.pageHistory.previousPages[state.pageHistory.previousPages.length - 1];
+    } else {
+      return null;
+    }
+  },
+  getNextPage(state) {
+    if (state.nextPages !== []) {
+      return state.pageHistory.nextPages[state.pageHistory.nextPages.length - 1];
+    } else {
+      return null;
+    }
   }
 };
 
@@ -46,6 +67,25 @@ const mutations = {
     state.userSearch.scrollPos = 0;
     state.activityTypesSelected = [];
     state.userSearch.filterMethod = null;
+  },
+  clearPages(state) {
+    state.pageHistory.previousPages = [];
+    state.pageHistory.nextPages = [];
+  },
+  addPreviousPage(state, page) {
+    state.pageHistory.previousPages.push(page);
+  },
+  removePreviousPage(state) {
+    state.pageHistory.previousPages.pop();
+  },
+  addNextPage(state, page) {
+    state.pageHistory.nextPages.push(page);
+  },
+  removeNextPage(state) {
+    state.pageHistory.nextPages.pop();
+  },
+  clearNextHistory(state) {
+    state.pageHistory.nextPages = [];
   }
 };
 
@@ -65,6 +105,26 @@ const actions = {
   resetSearch({ commit }) {
     commit('clearSearch')
   },
+  previousPage({commit}, currentPage) {
+    commit('addNextPage', currentPage);
+    commit('removePreviousPage');
+  },
+  nextPage({commit}, currentPage) {
+    commit('addPreviousPage', currentPage);
+    commit('removeNextPage');
+  },
+  resetPageHistory({commit}) {
+    commit('clearPages')
+  },
+  addPreviousPage({commit}, page) {
+    commit('addPreviousPage', page)
+  },
+  addNextPage({commit}, page) {
+    commit('addNextPage', page)
+  },
+  clearNextHistory({commit}) {
+    commit('clearNextHistory')
+  }
 };
 
 export default {
