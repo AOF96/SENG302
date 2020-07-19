@@ -1,7 +1,10 @@
 <template>
-  <div class="activityContainer">
+  <v-card class="activityContainer"
+          :loading="loadingActivity"
+          width="1000px"
+          style="border-radius: 14px;"
+  >
     <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
-    <hr class="activityPageActivitySeparator">
     <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
     <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
     <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><h3>
@@ -28,21 +31,19 @@
           Back to Profile
         </button>
       </router-link>
-      <router-link v-if="authorId===user.profile_id || user.permission_level > 0"
-                   v-bind:to="'/activity_editing/' + activityId">
+      <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
         <button
-          class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-          type="button"
+            class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+            type="button"
         >Edit Activity
         </button>
       </router-link>
       <button v-if="authorId===user.profile_id || user.permission_level > 0"
               class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-              id="activityPageInfoDeleteButton"
               type="button" v-on:click="deleteActivity()">Delete Activity
       </button>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -66,7 +67,8 @@
         location: "",
         loaded: false,
         authorId: null,
-        activityId: null
+        activityId: null,
+        loadingActivity: true,
       }
     },
 
@@ -119,6 +121,7 @@
             this.activity_author_lastname = tempActivityData.author.lastname;
             this.authorId = tempActivityData.author.profile_id;
             this.loaded = true;
+            this.loadingActivity = false;
           }
         }
       },
