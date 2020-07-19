@@ -4,9 +4,12 @@ import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
     String getIdByEmail(String email);
 
+    @Query(value = "delete from User where user_id = ?", nativeQuery = true)
+    void deleteUserById(Long profileId);
 
     /**
      * Retrieves users based on the following query parameters
@@ -66,4 +71,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                @Param("fullname") String fullname,
                                int startIndex,
                                @Param("size") int size);
+
+    /***
+     * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
+     * @param userID the id of the user being promoted
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE User SET permission_level = 1 WHERE user_id = ?", nativeQuery = true)
+    void grantAdminRights(Long userID);
 }

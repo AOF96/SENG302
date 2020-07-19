@@ -153,6 +153,19 @@ export const apiUser = {
     instance.put("/profiles/" + profile_id + "/activity-types", {
       activities: activities,
     }),
+
+    /***
+     * API call to promote an user with permission level 0 to admin.
+     * @param profile_id the id of the user being promoted.
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    promoteToAdmin: (profile_id) =>
+    instance.put("/profiles/" + profile_id + "/role", {
+        "role": "admin"
+    }),
+
+    // Request to delete a user account
+    deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`)
 };
 
 export const apiActivity = {

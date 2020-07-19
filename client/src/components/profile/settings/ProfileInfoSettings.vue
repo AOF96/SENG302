@@ -106,6 +106,40 @@
         ></textarea>
         <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
         <button
+          class="genericDeleteButton deleteProfileButton"
+          @click.stop="dialog = true"
+        >
+          Delete Account
+        </button>
+        <v-dialog
+          v-model="dialog"
+          max-width="290"
+        >
+          <v-card>
+            <v-card-title class="headline">Delete Account</v-card-title>
+            <v-card-text>
+              Are you sure you want to delete this account?
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <button
+                @click="dialog = false"
+                v-on:click="deleteAccount()"
+                class="genericConfirmButton updateProfileButton"
+              >
+                Yes
+              </button>
+
+              <button
+                class="genericDeleteButton deleteProfileButton"
+                @click="dialog = false"
+              >
+                No
+              </button>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <button
           class="genericConfirmButton updateProfileButton" id="profileUpdateButton"
           v-on:click="updateProfile()"
           type="submit"
@@ -136,11 +170,12 @@ export default {
       showAdmin: false,
       suggestedLocations: [],
       showLocations: false,
-      location: null
+      location: null,
+      dialog: false,
     };
   },
   methods: {
-    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile"]),
+    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount"]),
 
       /**
      * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
@@ -192,7 +227,6 @@ export default {
     was unsuccessful.
     */
     updateProfile() {
-      console.log(this.searchedUser);
       this.editProfile(
           this.searchedUser
         )
@@ -223,9 +257,32 @@ export default {
       }
     },
 
-    /*
-            Uses user id from url to request user data.
-         */
+    /**
+     * Allows user or admin to delete the account
+     */
+    deleteAccount() {
+      this.deleteUserAccount({'id': this.searchedUser.profile_id})
+        .then(() => {
+          if (this.user.permission_level > 0) {
+            if (this.searchedUser.profile_id == this.user.profile_id) {
+              location.reload();
+            } else {
+              this.$router.push("/settings/admin_dashboard");
+            }
+          }
+          else {
+            location.reload();
+          }
+        })
+      .catch((error) => {
+        console.log(error);
+          }
+      )
+    },
+
+    /**
+     * Uses user id from url to request user data.
+     */
     async loadSearchedUser() {
       if (
         this.$route.params.profileId == null ||
