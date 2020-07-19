@@ -112,98 +112,95 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { apiUser, apiActivity } from "../api";
+import axios from 'axios';
 import router from "../router";
-import axios from "axios";
 import NavBar from "./modules/NavBar";
 
 export default {
-  components: {
-    NavBar
-  },
-  data() {
-    return {
-      selected_activity: "Activity Type",
-      activities_option: [],
-      location: "",
-      duration: "duration",
-      activity_types_selected: [],
-      start_date: null,
-      end_date: null,
-      start_time: null,
-      end_time: null,
-      activity_name: "",
-      combinedEndTime: null,
-      combinedStartTime: null,
-      continuous: false,
-      description: "",
-      author_id: null,
-      suggestedLocations: [],
-      showLocations: false
-    };
-  },
+    components: {
+        NavBar
+    },
+    data() {
+        return {
+            selected_activity: "Activity Type",
+            activities_option: [],
+            location: "",
+            duration: "duration",
+            activity_types_selected: [],
+            start_date: null,
+            end_date: null,
+            start_time: null,
+            end_time: null,
+            activity_name: "",
+            combinedEndTime: null,
+            combinedStartTime: null,
+            continuous: false,
+            description: "",
+            author_id: null,
+            suggestedLocations: [],
+            showLocations: false
+        };
+    },
 
-  /**
-   * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-   * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-   * duplicate summaries are removed.
-   */
-  mounted: function() {
-    let outer = this;
-    let input = document.querySelector('#locationInput');
-    let timeout = null;
-    input.addEventListener('keyup', function () {
-      clearTimeout(timeout);
-      timeout = setTimeout(function () {
-        const url = "https://photon.komoot.de/api/?q=" + input.value;
-        axios.get(url)
-                .then((response) => {
-                  //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-                  //is only displayed when it is finished, avoiding the problem of the user being taken to the
-                  //middle of the list instead of the top
-                  let temp = [];
-                  let locationSummaries = [];
-                  for(let location in response.data.features) {
-                    let locationSummary = outer.getLocationSummary(response.data.features[location]);
-                    if (!locationSummaries.includes(locationSummary)) {
-                      temp.push(response.data.features[location]);
-                      temp[temp.length - 1]["summary"] = locationSummary;
-                      locationSummaries.push(locationSummary);
-                    }
-                  }
-                  outer.suggestedLocations = temp;
-                  outer.showLocations = true;
-                })
-                .catch(error => console.log(error));
-      }, 1000);
-    });
-  },
+    /**
+     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
+     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
+     * duplicate summaries are removed.
+     */
+    mounted: function() {
+            let outer = this;
+            let input = document.querySelector('#locationInput');
+            let timeout = null;
+            input.addEventListener('keyup', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    const url = "https://photon.komoot.de/api/?q=" + input.value;
+                    axios.get(url)
+                        .then((response) => {
+                            //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                            //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                            //middle of the list instead of the top
+                            let temp = [];
+                            let locationSummaries = [];
+                            for (let location in response.data.features) {
+                                let locationSummary = outer.getLocationSummary(response.data.features[location]);
+                                if (!locationSummaries.includes(locationSummary)) {
+                                    temp.push(response.data.features[location]);
+                                    temp[temp.length - 1]["summary"] = locationSummary;
+                                    locationSummaries.push(locationSummary);
+                                }
+                            }
+                            outer.suggestedLocations = temp;
+                            outer.showLocations = true;
+                        })
+                        .catch(error => console.log(error));
+                }, 1000);
+            });
+    },
 
-  computed: {
-    ...mapGetters(["user"]),
-    isDuration() {
-      return this.duration == "duration";
-    }
-  },
-  created: async function() {
-    this.loadActivity();
-    // Ensures only activity types from the database can be selected and cannot select ones already selected
-    await apiUser
-      .getActivityTypes()
-      .then(response => {
-        this.activities_option = response.data;
-        this.activity_types_selected.forEach(e => {
-          this.activities_option.some((v, i) => {
-            if (v == e) this.activities_option.splice(i, 1);
-          });
-        });
-      })
-      .catch(error => console.log(error));
+    computed: {
+        ...mapGetters(["user"]),
+        isDuration() {
+            return this.duration == "duration";
+        }
+    },
+    created: async function () {
+        this.loadActivity();
+        // Ensures only activity types from the database can be selected and cannot select ones already selected
+        await this
+            .getActivityTypes()
+            .then(response => {
+                this.activities_option = response.data;
+                this.activity_types_selected.forEach(e => {
+                    this.activities_option.some((v, i) => {
+                        if (v == e) this.activities_option.splice(i, 1);
+                    });
+                });
+            })
+            .catch(error => console.log(error));
   },
   methods: {
-    ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserContinuousActivities"]),
-    ...mapActions(["updateUserDurationActivities"]),
+    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities", "getActivityById", 'editActivity',"getUserContinuousActivities", "getUserDurationActivities", "deleteActivity", "getActivityTypes"]),
 
     /**
      * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
@@ -248,7 +245,7 @@ export default {
       ) {
         this.$router.push("/profile");
       } else {
-        var tempActivityData = await apiActivity.getActivityById(
+        var tempActivityData = await this.getActivityById(
           this.$route.params.activityId
         );
         if (tempActivityData == "Invalid permissions") {
@@ -445,27 +442,27 @@ export default {
       // Sets duration to a boolean for the request
       this.duration = this.duration !== "duration";
 
-      apiActivity
+      this
         .editActivity(
-          this.user.profile_id,
-          this.activity_name,
-          this.duration,
-          this.combinedStartTime,
-          this.combinedEndTime,
-          this.description,
-          this.location,
-          this.activity_types_selected,
-          this.$route.params.activityId
+            {'userId': this.user.profile_id,
+          'name': this.activity_name,
+          'duration': this.duration,
+          'startTime': this.combinedStartTime,
+          'endTime': this.combinedEndTime,
+          'description': this.description,
+          'location': this.location,
+          'activityTypes': this.activity_types_selected,
+          'activityId': this.$route.params.activityId}
         )
         .then(
           response => {
             console.log(response);
-            apiUser
+            this
               .getUserContinuousActivities(this.user.profile_id)
               .then(response => {
                 this.updateUserContinuousActivities(response.data);
               });
-            apiUser
+            this
               .getUserDurationActivities(this.user.profile_id)
               .then(response => {
                 this.updateUserDurationActivities(response.data);
@@ -478,16 +475,16 @@ export default {
         );
     },
     deleteActivity() {
-      apiActivity
-        .deleteActivity(this.user.profile_id, this.$route.params.activityId)
+      this
+        .deleteActivity({'userId': this.user.profile_id, 'activityId': this.$route.params.activityId})
         .then(response => {
           console.log(response);
-          apiUser
+          this
             .getUserContinuousActivities(this.user.profile_id)
             .then(response => {
               this.updateUserContinuousActivities(response.data);
             });
-          apiUser
+          this
             .getUserDurationActivities(this.user.profile_id)
             .then(response => {
               this.updateUserDurationActivities(response.data);
