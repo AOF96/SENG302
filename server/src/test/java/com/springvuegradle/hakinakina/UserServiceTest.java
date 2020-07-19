@@ -1,8 +1,5 @@
 package com.springvuegradle.hakinakina;
 
-import com.springvuegradle.hakinakina.repository.SearchCriteria;
-import com.springvuegradle.hakinakina.repository.SearchOperation;
-import com.springvuegradle.hakinakina.repository.UserSearchSpecification;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.UserRepository;

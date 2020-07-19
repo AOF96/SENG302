@@ -13,7 +13,7 @@
         <div class="floatClear"></div>
       </div>
       <div id="activityActions">
-        <form class="formTopSpacing" @submit.prevent>
+        <form class="formTopSpacing">
           <select
             v-model="selected_activity"
             name="activityType"
@@ -28,8 +28,8 @@
               v-bind:key="addingActivity"
             >{{addingActivity}}</option>
           </select>
-          <button class="genericConfirmButton addItemButton" v-on:click="addActivityType()">Add</button>
-          <button class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
+          <button type="button" class="genericConfirmButton addItemButton" v-on:click="addActivityType()">Add</button>
+          <button type="button" class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
         </form>
       </div>
       <div class="errorMessageContainer">

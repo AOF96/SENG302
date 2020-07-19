@@ -54,7 +54,7 @@
         <v-list-item-group
           active-class="text--accent-4"
         >
-          <v-list-item link class="mt-2" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link class="mt-2" id="homeButton" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>dashboard</v-icon>
             </v-list-item-icon>
@@ -62,7 +62,7 @@
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link class="mt-2" id="profileButton" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>account_box</v-icon>
             </v-list-item-icon>
@@ -70,7 +70,7 @@
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" v-bind:to="'/search'" v-if="user.isLogin">
+          <v-list-item link class="mt-2" id="searchButton" v-bind:to="'/search'" v-if="user.isLogin">
             <v-list-item-icon>
               <v-icon>search</v-icon>
             </v-list-item-icon>
@@ -78,7 +78,7 @@
               <v-list-item-title>Search</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" v-bind:to="'/settings/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link class="mt-2" id="settingsButton" v-bind:to="'/settings/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>settings</v-icon>
             </v-list-item-icon>
@@ -86,7 +86,7 @@
               <v-list-item-title>Settings</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">
+          <v-list-item link class="mt-2" id="adminDashboardButton" v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">
             <v-list-item-icon>
               <v-icon>gavel</v-icon>
             </v-list-item-icon>
@@ -115,7 +115,7 @@
       <template v-slot:append>
         <router-link to="/logout" v-if="user.isLogin">
           <div class="pa-2">
-            <v-btn v-on:click="logoutUser" block color="#c9c9c9">Logout</v-btn>
+            <v-btn v-on:click="logoutUser" class="logoutButton" block color="#c9c9c9">Logout</v-btn>
           </div>
         </router-link>
       </template>
