@@ -72,6 +72,7 @@
 <script>
     import { mapGetters, mapState, mapActions } from "vuex";
     import NavBar from "./modules/NavBar";
+    import {apiUser} from "../api";
 
     export default {
       name: "searchUser",
@@ -101,7 +102,7 @@
         this.loadPreviousSearch();
       },
       methods:{
-        ...mapActions(["setUserSearch", "setScrollPosition", "searchForUsers", "getIdByEmail"]),
+        ...mapActions(["setUserSearch", "setScrollPosition"]),
         /**
          * Search for size amount of users on given page and append to list
          *
@@ -125,7 +126,7 @@
             this.disabled = true;
 
             /* Search for users */
-            this.searchForUsers({'searchTerm': this.searchedTerm, 'searchBy': this.searchBy, 'page': page - 1, 'size': size}).then(
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, page - 1, size).then(
                 (response) => {
                   if (response.data.content.length === 0) {
                     this.disabled = true;
@@ -161,7 +162,7 @@
          * @param email A users email
          */
         getUser(email){
-            this.getIdByEmail({'email': email}).then(
+            apiUser.getIdByEmail(email).then(
                 (response) => {
                   this.setScrollPosition({scrollPos: window.scrollY});
                   this.$router.push({path:"/profile/" + response.data.id})
@@ -182,7 +183,7 @@
             this.moreHidden = false;
             this.loading = true;
 
-            this.searchForUsers({'searchTerm': this.searchedTerm, 'searchBy': this.searchBy, 'page': 0, 'size': this.userSearch.size * this.userSearch.page}).then(
+            apiUser.searchUsers(this.searchedTerm, this.searchBy, 0, this.userSearch.size * this.userSearch.page).then(
                 (response) => {
                   if (response.data.content.size === 0) {
                     this.disabled = true;

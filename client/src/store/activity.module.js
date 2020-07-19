@@ -1,5 +1,3 @@
-import {apiActivity} from "../api";
-
 const state = {
     activity: {
         author_id: null,
@@ -61,18 +59,6 @@ const actions = {
         commit('setDescription', data);
         commit('setLocation', data);
         commit('setActivityTypes', data);
-    },
-    async addActivity(data, {'id': id, 'name': name, 'duration': duration, 'startTime': startTime, 'endTime': endTime, 'description': description, 'location': location, 'activityTypes': activityTypes}) {
-        await apiActivity.addActivity(id, name, duration, startTime, endTime, description, location, activityTypes);
-    },
-    async getActivityById(data, id) {
-        return await apiActivity.getActivityById(id)
-    },
-    async editActivity(data, {'userId': userId, 'name': name, 'duration': duration, 'startTime': startTime, 'endTime': endTime, 'description': description, 'location': location, 'activityTypes': activityTypes, 'activityId': activityId}) {
-        return await apiActivity.editActivity(userId, name, duration, startTime, endTime,description, location, activityTypes, activityId);
-    },
-    async deleteActivity(data, {'userId': userId, 'activityId': activityId}) {
-        return await apiActivity.deleteActivity(userId, activityId);
     }
 };
 

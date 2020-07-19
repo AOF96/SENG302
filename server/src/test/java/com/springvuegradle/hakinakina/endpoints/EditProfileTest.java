@@ -35,19 +35,22 @@ public class EditProfileTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private String input;
-    private Long userId;
-
     @BeforeEach
     void setup() {
+    }
+
+    @Test
+    public void editProfileWithBoundaryDatesShouldSucceed() throws Exception {
+
         Session testSession = new Session("t0k3n");
         User testUser = new User("John", "Smith", "john@gmail.com", null,
                 Gender.MALE, 1, "Password1");
-        userId = userRepository.save(testUser).getUserId();
+        Long userId = userRepository.save(testUser).getUserId();
         testSession.setUser(testUser);
         sessionRepository.save(testSession);
 
-        input = "{\n" +
+        String birthday = "1985-01-20";
+        String input = "{\n" +
                 "  \"lastname\": \"Qiu\",\n" +
                 "  \"firstname\": \"Jackie\",\n" +
                 "  \"middlename\": \"Danger\",\n" +
@@ -61,29 +64,19 @@ public class EditProfileTest {
                 "  \"fitness\": 2\n" +
                 "}";
 
-    }
-
-    @Test
-    public void editProfileWithBoundaryLowerDatesShouldSucceed() throws Exception {
-        String birthday = "1985-01-20";
-
         mockMvc.perform(put("/profiles/" + userId)
                 .cookie(new Cookie("s_id", "t0k3n"))
                 .contentType(MediaType.APPLICATION_JSON).content(String.format(input, birthday)))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("User updated")));
 
-    }
-
-    @Test
-    public void editProfileWithBoundaryUpperDatesShouldSucceed() throws Exception {
-        String birthday = "1985-12-25";
-
+        birthday = "1985-12-25";
         mockMvc.perform(put("/profiles/" + userId)
                 .cookie(new Cookie("s_id", "t0k3n"))
                 .contentType(MediaType.APPLICATION_JSON).content(String.format(input, birthday)))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("User updated")));
+
 
     }
 }

@@ -12,8 +12,6 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
-import net.minidev.json.JSONObject;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -288,10 +286,11 @@ public class UserService {
                 userRepository.save(user);
 
                 //Generate session token
-                String sessionToken = RandomToken.getToken(40);
+                RandomToken randomToken = new RandomToken();
+                String sessionToken = randomToken.getToken(40);
                 Session session = new Session(sessionToken);
-                user.addSession(session);
-                userRepository.save(user);
+                session.setUser(user);
+                sessionRepository.save(session);
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
@@ -395,10 +394,7 @@ public class UserService {
 
                 //Generate session token
                 String sessionToken = RandomToken.getToken(40);
-                Session session = new Session(sessionToken);
-                user.addSession(session);
-                userRepository.save(user);
-
+                sessionRepository.insertToken(sessionToken, user.getUserId());
                 // create a cookie
                 Cookie cookie = new Cookie("s_id", sessionToken);
                 // expires in 7 days
@@ -533,49 +529,6 @@ public class UserService {
     }
 
     /**
-     * Allows the user to delete their account and admins to delete another registered user's account
-     * @param profileId    the user's id
-     * @param sessionToken the user's token from the cookie for their current session.
-     * @return response entity to inform user or admin if deleting the user was successful or not
-     */
-    public ResponseEntity deleteUser(Long profileId,
-                                     String sessionToken,
-                                     HttpServletResponse response) {
-        try {
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if (session == null) {
-                return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
-            }
-
-            //If the session matches the user or the user has admin privileges
-            boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
-            boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
-            if (isAdmin || isDefaultAdmin || session.getUser().getUserId().equals(profileId)) {
-                if (userRepository.findById(profileId).isPresent()) {
-                    if (session.getUser().getUserId().equals(profileId)) {
-                        // create a cookie
-                        Cookie cookie = new Cookie("s_id", null);
-                        cookie.setMaxAge(0);
-                        cookie.setHttpOnly(true);
-                        cookie.setPath("/");
-                        //add cookie to response
-                        response.addCookie(cookie);
-                    }
-                    userRepository.deleteById(profileId);
-                } else {
-                    return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
-                }
-            } else {
-                return new ResponseEntity("Unauthorised User", HttpStatus.FORBIDDEN);
-            }
-            return new ResponseEntity("Successfully Deleted User", HttpStatus.OK);
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not delete user");
-            return new ResponseEntity("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
      * Deals with pagination with no conditions like email, surname, full name etc
      *
      * @param page number of a page you want to be at
@@ -622,49 +575,5 @@ public class UserService {
             userResponses.add(searchUserDto);
         }
         return new PageImpl<>(userResponses);
-    }
-
-    /***
-     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
-     * @param jsonString the request body.
-     * @param profileID the id of the user being promoted to admin.
-     * @param sessionToken the authentication token of the admin performing the request.
-     * @return the response status that specifies if the operation was successful or not.
-     */
-    public ResponseEntity promoteUser(String jsonString, Long profileID, String sessionToken) {
-        ResponseEntity result;
-
-        try {
-            System.out.println(sessionToken);
-            if (sessionToken == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            } else {
-                Session session = sessionRepository.findUserIdByToken(sessionToken);
-                int userPermissionLevel = session.getUser().getPermissionLevel();
-                Optional<User> userToPromote = userRepository.getUserById(profileID);
-                Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
-                String role = (String) json.get("role");
-                if (!role.equals("admin")) {
-                    result = responseHandler.formatErrorResponse(400, "Bad request");
-
-                }
-                else if (userToPromote.get().getPermissionLevel() > 0) {
-                    result = responseHandler.formatErrorResponse(400, "User to promote is already an admin");
-                }
-                else if (userPermissionLevel == 0) {
-                    result = responseHandler.formatErrorResponse(403, "Unauthorized user");
-                } else {
-                    userRepository.grantAdminRights(profileID);
-                    result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
-
-                }
-            }
-
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not promote user");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-
-        return result;
     }
 }
