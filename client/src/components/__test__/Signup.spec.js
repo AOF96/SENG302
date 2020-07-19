@@ -1,13 +1,24 @@
+/* eslint-env jest*/
 import {createLocalVue, shallowMount} from '@vue/test-utils'
-import VueRouter from 'vue-router'
 import Signup from '@/components/Signup.vue'
 import Vuex from 'vuex'
 import user from '@/store/user.module'
+import {apiUser} from "../../api";
 
+//mock api
+jest.mock("@/api")
+
+//mock router
+const mocks = {
+  $router: {
+    push: jest.fn()
+  }
+}
+
+//make the test igonre router-link when found
+const stubs = ['router-link']
 
 const localVue = createLocalVue()
-localVue.use(VueRouter)
-const router = new VueRouter()
 localVue.use(Vuex)
 
 const state = {
@@ -38,8 +49,9 @@ describe('Signup page display', () => {
 
     wrapper = shallowMount(Signup, {
       localVue,
-      router,
-      store
+      store,
+      mocks,
+      stubs
     })
   })
 
@@ -110,5 +122,139 @@ describe('Signup page display', () => {
   it('should show an error if dob is not within #common-sense', () => {
     expect(wrapper.find("#signup-dob-err").text()).toContain("Please select a valid date of birth")
   })
+})
 
+describe('profile created', () => {
+  apiUser.signUp = jest.fn()
+  const actions = {
+    createUserProfile: jest.fn(),
+    signUp: jest.fn()
+  }
+
+  const getters = {
+    user: () => ({
+      firstname: "Wendy",
+      lastname: "Lambkins",
+      middlename: "",
+      nickname: "",
+      gender: "Female",
+      primary_email: "wendy@ac.com",
+      date_of_birth: "2000-01-01",
+      fitness: 1,
+      password: "Water123",
+      bio: ""
+    })
+  }
+  const store = new Vuex.Store({
+    actions,
+    getters
+  })
+
+  apiUser.signUp.mockResolvedValue({
+    data: {
+      profile_id: 1
+    }
+  })
+
+  it('should call createUserProfile and router push to move to profile page', async () => {
+    const wrapper = shallowMount(Signup, {store, localVue, mocks, stubs})
+    wrapper.setData({password1: "Water123", password2: "Water123"})
+
+    await wrapper.find('#signUpButton').trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(actions.signUp).toHaveBeenCalledTimes(1)
+    expect(actions.createUserProfile).toHaveBeenCalledTimes(0)
+    expect(mocks.$router.push).toHaveBeenCalledTimes(0)
+  })
+})
+
+describe('password error handling', () => {
+
+  let store
+  let wrapper
+
+  const getters = {
+    user: () => ({
+      firstname: "Wendy",
+      lastname: "Lambkins",
+      middlename: "",
+      nickname: "",
+      gender: "Female",
+      primary_email: "wendy@ac.com",
+      date_of_birth: "2000-01-01",
+      fitness: 1,
+      password: "Water123",
+      bio: ""
+    })
+  }
+
+  beforeEach(() => {
+    store = new Vuex.Store({
+      state: state,
+      getters
+    })
+
+    wrapper = shallowMount(Signup, {
+      localVue,
+      store,
+      mocks,
+      stubs
+    })
+  })
+
+  it('should show an error if password is shorter than 8 characters', () => {
+
+    const input = wrapper.find('#signup-password-1')
+    input.element.value = 'Water12'
+    input.trigger('input')
+    const input2 = wrapper.find('#signup-password-2')
+    input2.element.value = 'Water12'
+    input2.trigger('input')
+
+    expect(wrapper.vm.validation.password.length).toBe(false)
+  })
+
+  it('should show an error if password1 and password2 do not match', () => {
+    const input = wrapper.find('#signup-password-1')
+    input.element.value = 'Water123'
+    input.trigger('input')
+    const input2 = wrapper.find('#signup-password-2')
+    input2.element.value = 'Fire123'
+    input2.trigger('input')
+
+    expect(wrapper.vm.validation.password.match).toBe(false)
+  })
+
+  it('should show an error if number is not included in the password', () => {
+    const input = wrapper.find('#signup-password-1')
+    input.element.value = 'Water'
+    input.trigger('input')
+    const input2 = wrapper.find('#signup-password-2')
+    input2.element.value = 'Water'
+    input2.trigger('input')
+
+    expect(wrapper.vm.validation.password.number).toBe(false)
+  })
+
+  it('should show an error if there is no lowercase letters in the password', () => {
+    const input = wrapper.find('#signup-password-1')
+    input.element.value = 'WATER123'
+    input.trigger('input')
+    const input2 = wrapper.find('#signup-password-2')
+    input2.element.value = 'WATER123'
+    input2.trigger('input')
+
+    expect(wrapper.vm.validation.password.lowercase).toBe(false)
+  })
+
+  it('should show an error if there is no uppercase letters in the password', () => {
+    const input = wrapper.find('#signup-password-1')
+    input.element.value = 'water123'
+    input.trigger('input')
+    const input2 = wrapper.find('#signup-password-2')
+    input2.element.value = 'water123'
+    input2.trigger('input')
+
+    expect(wrapper.vm.validation.password.uppercase).toBe(false)
+  })
 })

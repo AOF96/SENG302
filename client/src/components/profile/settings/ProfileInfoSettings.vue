@@ -114,10 +114,9 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import UserSettingsMenu from "./ProfileSettingsMenu";
-import { apiUser } from "../../../api";
-import axios from "axios";
 
 export default {
+  name: "EditUserInfo",
   components: {
     UserSettingsMenu
   },
@@ -135,10 +134,9 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["logout"]),
-    ...mapActions(["updateUserProfile"]),
+    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl"]),
 
-    /**
+      /**
      * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
      * the location input.
      */
@@ -188,24 +186,9 @@ export default {
     was unsuccessful.
     */
     updateProfile() {
-      console.log(this.searchedUser.fitness);
-      apiUser
-        .editProfile(
-          this.searchedUser.profile_id,
-          this.searchedUser.firstname,
-          this.searchedUser.lastname,
-          this.searchedUser.middlename,
-          this.searchedUser.nickname,
-          this.searchedUser.primary_email,
-          this.searchedUser.bio,
-          this.searchedUser.date_of_birth,
-          this.searchedUser.gender,
-          Number(this.searchedUser.fitness),
-          this.searchedUser.additional_email,
-          this.searchedUser.passports,
-          this.searchedUser.permission_level,
-          this.searchedUser.activities,
-          this.searchedUser.location
+      console.log(this.searchedUser);
+      this.editProfile(
+          this.searchedUser
         )
         .then(
           response => {
@@ -245,9 +228,7 @@ export default {
         this.$router.push("/settings/profile/" + this.user.profile_id);
         this.searchedUser = this.user;
       } else {
-        var tempUserData = await apiUser.getUserById(
-          this.$route.params.profileId
-        );
+        var tempUserData = await this.getUserById(this.$route.params.profileId);
         if (tempUserData == "Invalid permissions") {
           this.$router.push("/settings/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
@@ -282,8 +263,7 @@ export default {
       clearTimeout(timeout);
       timeout = setTimeout(function() {
         const url = "https://photon.komoot.de/api/?q=" + input.value;
-        axios
-          .get(url)
+        this.getDataFromUrl(url)
           .then(response => {
             //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
             //is only displayed when it is finished, avoiding the problem of the user being taken to the

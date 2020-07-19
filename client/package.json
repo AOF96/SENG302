@@ -14,6 +14,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
+    "flush-promises": "^1.0.2",
     "serve": "^11.3.2",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
@@ -76,7 +77,9 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
-    "setupTestFrameworkScriptFile": "<rootDir>/src/components/__test__/localStorageMock.js"
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/components/__test__/localStorageMock.js"
+    ]
   },
   "jestSonar": {
     "reportPath": "coverage",

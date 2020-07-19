@@ -47,12 +47,18 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(value = "FROM User u " +
             "WHERE u.permissionLevel < 2" +
-            "AND (u.primaryEmail like :email% " +
-            "OR concat(u.firstName, ' ', u.lastName) like :fullname% " +
-            "OR u.lastName like :lastname%)")
+            "AND (u.primaryEmail like %:email% " +
+            "OR concat(u.firstName, ' ', u.lastName) like %:fullname% " +
+            "OR u.lastName like %:lastname%)")
     Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
 
-    /**
+    @Query(value = "FROM User u " +
+            "WHERE u.primaryEmail = ?1 " +
+            "OR concat(u.firstName, ' ', u.lastName) like ?2 " +
+            "OR u.lastName = ?3")
+    Page<User> findAllByQueryWithQuotation(Pageable pageable, String email, String fullname, String lastname);
+
+ /**
      * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match any
      * of those in the userActivityTypes set (OR).
      * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
@@ -72,6 +78,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "AND u.permission_level < 2"
     )
     Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
+
 
     /**
      * Retrieves users based on the following query parameters

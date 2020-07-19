@@ -112,12 +112,12 @@ router.beforeEach((to, from, next) => {
         const responseData = response.data;
         store._actions.updateUserProfile[0](responseData);
         isAuthPath ? next("/profile") : next();
-      },
+      }).catch(
       (error) => {
         console.log("Not logged in: " + error);
         next();
-      }
-    );
+      })
+    ;
   } else {
     if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level === 2 && isLoggedIn) {
       next();
