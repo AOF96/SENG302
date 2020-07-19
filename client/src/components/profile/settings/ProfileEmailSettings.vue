@@ -67,7 +67,7 @@
                                 <input class="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
                             </v-col>
                             <v-col style="padding: 0px" cols="2">
-                                <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addEmail(textInput)">Add</button>
+                                <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addNewEmail(textInput)">Add</button>
                             </v-col>
                         </v-row>
                     </form>
@@ -83,7 +83,7 @@
                 <h6 class="addExtraEmailErrorMessage" v-if="editErrorMsg">{{editErrorMsg}}</h6>
                 <form class="addEmailForm" @submit.prevent>
                     <input class="addEmailInput" v-model="editEmailInput" type="email" placeholder="Secondary Email" required>
-                    <button class="genericConfirmButton addEmailButton" v-on:click="editEmail()">Update</button>
+                    <button class="genericConfirmButton addEmailButton" v-on:click="editExistingEmail()">Update</button>
                 </form>
             </div>
         </transition>
@@ -129,7 +129,7 @@
                Adds a new email into the secondary emails lists. Prevents the user from entering empty text, adding more
                than 5 emails or from trying to enter an existing email.
             */
-            async addEmail(textInput) {
+            async addNewEmail(textInput) {
                 this.errorMsg = "";
                 if (this.searchedUser.additional_email.length === LIMIT_NUM_EMAIL) {
                     this.showButton = false;
@@ -140,7 +140,6 @@
                     this.errorMsg = "Please enter an email.";
                     return;
                 }
-
                 if (this.searchedUser.additional_email.includes(textInput) || textInput == this.searchedUser.primary_email || emails.data.includes(textInput)) {
                     this.errorMsg = "Email already in use.";
                 } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
@@ -186,7 +185,7 @@
             /*
               Function to edit a secondary email. Shows an error message if the entered email is already in use.
             */
-            async editEmail() {
+            async editExistingEmail() {
                 this.editErrorMsg = "";
                 const emails = await this.getAllEmails();
                 if (this.searchedUser.additional_email.includes(this.editEmailInput) || this.editEmailInput == this.searchedUser.primary_email || emails.data.includes(this.editEmailInput)) {

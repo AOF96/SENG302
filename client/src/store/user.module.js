@@ -250,7 +250,7 @@ const actions = {
   async addEmail(data, {'id': id, 'newEmail': additionalEmails}) {
     await apiUser.addEmails(id, additionalEmails);
   },
-  async editEmail(data, {'id': id, 'primaryEmail': primaryEmail, 'secondaryEmails': secondaryEmails}) {
+  async editEmail(data, {'id': id, 'primaryEmail': primaryEmail, 'additionalEmail': secondaryEmails}) {
     await apiUser.editEmail(id, primaryEmail, secondaryEmails);
   },
   async editProfile(data, user) {
