@@ -3,21 +3,24 @@ package com.springvuegradle.hakinakina.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.PassportCountry;
+import com.springvuegradle.hakinakina.entity.Session;
+import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 
 /**
@@ -31,21 +34,26 @@ public class UserController {
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
     public ActivityTypeRepository activityTypeRepository;
-    private ResponseHandler responseHandler = new ResponseHandler();
-
     private UserService userService;
 
+    private ResponseHandler responseHandler = new ResponseHandler();
+
+
     /**
-     * Contructs a UserController, passing in the repositories so that they can be accessed.
+     * Contructs a UserController, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository    The repository containing Users
      * @param countryRepository The repository containing PassportCountries
      * @param emailRepository   The repository containing Emails
      * @param sessionRepository The repository containing Sessions
+     * @param userService       The service for Users
      */
-    public UserController(UserRepository userRepository, PassportCountryRepository countryRepository,
-                          EmailRepository emailRepository, SessionRepository sessionRepository,
-                          ActivityTypeRepository activityTypeRepository, UserService userService) {
+    public UserController(UserRepository userRepository,
+                          PassportCountryRepository countryRepository,
+                          EmailRepository emailRepository,
+                          SessionRepository sessionRepository,
+                          ActivityTypeRepository activityTypeRepository,
+                          UserService userService) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.emailRepository = emailRepository;
@@ -55,48 +63,63 @@ public class UserController {
     }
 
     /**
+     * Parses a list of activity types
+     *
+     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
+     * @return A JSON list of strings of the activity types
+     */
+    public static List<String> parseActivityList(JsonNode activitiesNode) {
+        List<String> activities = new ArrayList<>();
+        for (JsonNode activity : activitiesNode) {
+            activities.add(activity.textValue());
+        }
+
+        return activities;
+    }
+
+    /**
      * Processes create user request and puts user into repository if email is unique and all required fields have
      * been provided
      *
-     * @param user
-     * @return success or error message
+     * @param user The user received from the request
+     * @return response entity to inform user if registering a new account was successful or not
      */
     @PostMapping("/profiles")
     public ResponseEntity createProfile(@RequestBody User user) {
         return userService.validateCreateProfile(user);
     }
 
-    /**edits email
+    /**
+     * Handles requests for editing a user's email
      *
-     * PUT /profiles/{profileId}/emails
-     * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
-     * }
-     *
-     * @return*/
+     * @param request      the request that contains the updated emails
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if editing their email was successful or not
+     */
     @PutMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> editEmail(@RequestBody String request, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity<String> editEmail(@RequestBody String request,
+                                            @PathVariable("profileId") long profileId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
         return userService.editEmail(request, profileId, sessionToken);
     }
 
-    /***
+    /**
      * Endpoint for handling the editing of a user's profile information. Returns appropriate error codes if something
      * is wrong with the request. Checks if the request comes from an admin so it can edit someone else profile.
-     * @param user the JSON object containing the values the user wants to edit.
-     * @param profileId the ID of the given user.
-     * @param sessionToken authentication token to validate the user sending the request.
-     * @return a 400 response if the provided ID and token don't match or is not an admin. 200 if it's a valid request.
+     *
+     * @param user         the JSON object containing the values the user wants to edit.
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return ResponseEntity with a 400 response if the provided ID and token don't match or is not an admin or
+     * 200 if it's a valid request.
      */
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
-          return responseHandler.formatErrorResponse(400, "Invalid Session");
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
         }
 
         // only a user and an admin can edit the user profile
@@ -109,8 +132,8 @@ public class UserController {
             }
 
             // only the default admin can edit permission level
-           boolean isEditPermission = !oldUser.getPermissionLevel().equals(user.getPermissionLevel());
-            if(isEditPermission && !isDefaultAdmin) {
+            boolean isEditPermission = !oldUser.getPermissionLevel().equals(user.getPermissionLevel());
+            if (isEditPermission && !isDefaultAdmin) {
                 return responseHandler.formatErrorResponse(401, "Unauthorized: Only the default admin can edit the user permission level");
             }
 
@@ -126,42 +149,88 @@ public class UserController {
         }
     }
 
-    /** adds email
-     * POST /profiles/{profileId}/emails
-     * {
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *     ]
-     * }
+
+    /**
+     * Handles requests for adding emails to a profile
      *
-     *
-     * @return*/
+     * @param request
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if adding a new email was successful or not
+     */
     @PostMapping("/profiles/{profileId}/emails")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity addEmails(@RequestBody String request, @PathVariable long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity addEmails(@RequestBody String request,
+                                    @PathVariable long profileId,
+                                    @CookieValue(value = "s_id") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
     }
 
     /**
-     * Processes get users request
+     * Handle request for retrieving users with email or full name or surname
      *
-     * @return List of profiles
+     * @param email    searching for a user with the given email
+     * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
+     * @param lastname searching for a user with the given nickname
+//     * @param activityTypes searching for users with given activity types
+     * @param page     current page number that the user is viewing
+     * @param size     how many results we want to return
+     * @return response entity containing a list of profiles
      */
     @GetMapping("/profiles")
-    public ResponseEntity getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return responseHandler.formatGetUsers(users);
+    public ResponseEntity findPaginated(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String fullname,
+            @RequestParam(required = false) String lastname,
+            @RequestParam(required = false) String activity,
+            @RequestParam("method") String method,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        if (!method.equals("or") && !method.equals("and")) {
+            return new ResponseEntity("Method must either be 'or' or 'and'", HttpStatus.valueOf(400));
+        }
+        Set<ActivityType> activityTypes = getActivityTypesSet(activity);
+        Page<SearchUserDto> resultPage;
+        if(activityTypes.size() == 0){
+            activityTypes = null;
+        }
+        if (email != null || fullname != null || lastname != null || activityTypes != null) {
+            resultPage = userService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
+        } else {
+            resultPage = userService.findPaginated(page, size);
+        }
+
+        return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Takes a string of activity types from the URL and matches each to an Activity Type object, which is added to a
+     * set and returned.
+     * @param activity The string of activities from the url
+     * @return A set of ActivityType objects matching those in the URL
+     */
+    public Set<ActivityType> getActivityTypesSet(String activity) {
+        Set<ActivityType> activityTypes = new HashSet<>();
+        if(activity != null) {
+            String[] arrOfActivities = activity.split(" ");
+            for (String activityType : arrOfActivities) {
+                ActivityType retrievedType = activityTypeRepository.findActivityTypeByName(activityType);
+                if (retrievedType != null) {
+                    activityTypes.add(retrievedType);
+                }
+            }
+        }
+        return activityTypes;
+    }
 
     /**
      * Validates user login by checking their sessionToken and returns user info
      *
-     * @return User json object for user with matching sessionToken
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity containing a user json object for user with the matching sessionToken
      */
     @GetMapping("/validateLogin")
-    public ResponseEntity validateLogin(@RequestHeader("token") String sessionToken) {
+    public ResponseEntity validateLogin(@CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
             return responseHandler.formatErrorResponse(401, "User not currently logged in");
@@ -171,30 +240,38 @@ public class UserController {
     }
 
     /**
-     * Processes request to retrieve certain user and returns
-     *
-     * @param profileId
-     * @return Specific user
+     * Retrieves searched user id by their email
+     * @param sessionToken  the user's token from the cookie for their current session.
+     * @param email searched user email
+     * @return searched user id
      */
-    @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @RequestHeader("token") String sessionToken) {
+    @GetMapping("/email/id/")
+    public ResponseEntity getUserByEmail(@CookieValue(value = "s_id") String sessionToken,
+                                         @RequestParam String email) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
-            return responseHandler.formatErrorResponse(400, "Invalid Session");
+            return responseHandler.formatErrorResponse(401, "User not currently logged in");
         }
-        // only a user and an admin can edit the user profile
-        boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
-        boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
-        if (isAdmin || isDefaultAdmin || session.getUser().getUserId() == profileId) {
-            Optional<User> optional = userRepository.getUserById(profileId);
-            if (optional.isPresent()) {
-                User user = optional.get();
-                return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
-            } else {
-                return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
-            }
+        String userId = userRepository.getIdByEmail(email);
+        return new ResponseEntity("{\"id\": \"" + userId + "\"}", HttpStatus.valueOf(200));
+    }
+
+
+    /**
+     * Handles requests for retrieving a user
+     *
+     * @param profileId the user's id to be retrieved
+     * @return response entity containing the specific user
+     * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
+     */
+    @GetMapping("/profiles/{profile_id}")
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
+        Optional<User> optional = userRepository.getUserById(profileId);
+        if (optional.isPresent() && optional.get().getPermissionLevel() != 2) {
+            User user = optional.get();
+            return new ResponseEntity(user.toJson(), HttpStatus.valueOf(200));
         } else {
-            return responseHandler.formatErrorResponse(400, "Session mismatch");
+            return new ResponseEntity("User does not exist", HttpStatus.valueOf(404));
         }
     }
 
@@ -208,21 +285,22 @@ public class UserController {
         return countryRepository.findAll().toString();
     }
 
-    /***
-     * Endpoint for retrieving all the primary emails that are stored in the database.
+    /**
+     * Handles requests for retrieving emails
+     *
      * @return a list with all the primary emails.
      */
     @GetMapping("/emails")
     public String getAllEmails() {
         //ToDO use the commented out return statement rather than the current one once the email table has been fixed
-        /*
-//        return emailRepository.getAllEmails();
-         */
+        //return emailRepository.getAllEmails();
+
         return userRepository.getAllPrimaryEmails().toString();
     }
 
-    /***
+    /**
      * Retrieves the session token of an user. Based on the profile ID that is provided.
+     *
      * @param profileId the user's ID
      * @return a list containing all the tokens that belong to the given user.
      */
@@ -237,27 +315,42 @@ public class UserController {
      * actual password, then checking for equality.
      *
      * @param jsonString The JSON body passed as a string.
-     * @return isLogin Whether the attempt was correct or not.
+     * @param response   the response servlet
+     * @return response entity to inform user if credentials for logging in was successful or not
      */
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody String jsonString) {
+    @ResponseBody
+    public ResponseEntity checkLogin(@RequestBody String jsonString,
+                                     HttpServletResponse response) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String attempt = (String) json.get("password");
         String email = (String) json.get("email");
 
-        return userService.checkLogin(email, attempt);
+        return userService.checkLogin(email, attempt, response);
     }
 
     /**
      * Logs out the current user and deletes the entry in the Session table
      *
      * @param sessionToken token stored in the cookie to identify the user
-     * @return message and status to notify if log out was successful
-     * */
+     * @param response     the response servlet
+     * @return response entity to inform user if logging out was successful or not
+     */
     @PostMapping("/logout")
-    public ResponseEntity checkLogout(@RequestHeader("token") String sessionToken) {
+    @ResponseBody
+    public ResponseEntity checkLogout(@CookieValue(value = "s_id") String sessionToken,
+                                      HttpServletResponse response) {
         try {
             sessionRepository.removeToken(sessionToken);
+
+            // create a cookie
+            Cookie cookie = new Cookie("s_id", null);
+            cookie.setMaxAge(0);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            //add cookie to response
+            response.addCookie(cookie);
+
             return new ResponseEntity("User logged out", HttpStatus.OK);
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "couldn't log out");
@@ -266,12 +359,17 @@ public class UserController {
     }
 
     /**
-     *  Processes to edit user password
+     * Handles request to edit user password
      *
-     * @param sessionToken token stored in the cookie to identify the user
-     * */
+     * @param jsonString   the json as string. Request contains the updated passwords
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user if editing a password was successful or not
+     */
     @PutMapping("/profiles/{profileId}/password")
-    public ResponseEntity editPassword(@RequestBody String jsonString, @PathVariable Long profileId, @RequestHeader("token") String sessionToken) {
+    public ResponseEntity editPassword(@RequestBody String jsonString,
+                                       @PathVariable Long profileId,
+                                       @CookieValue(value = "s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String oldPassword = (String) json.get("old_password");
         String newPassword = (String) json.get("new_password");
@@ -286,13 +384,15 @@ public class UserController {
     /**
      * Handles the editing of a user's activity types. Parses the list of activities and calls the service method,
      * returning the result as a ResponseEntity
-     * @param jsonString The json as a string
-     * @param profileId The ID of the user to update
+     *
+     * @param jsonString The json as a string. Request contains activity types
+     * @param profileId  the user's id that needs updating
      * @return A ResponseEntity stating the result
      * @throws JsonProcessingException If there is an issue while parsing the JSON
      */
     @PutMapping("/profiles/{profileId}/activity-types")
-    public ResponseEntity editActivityTypes(@RequestBody String jsonString, @PathVariable Long profileId) throws JsonProcessingException {
+    public ResponseEntity editActivityTypes(@RequestBody String jsonString,
+                                            @PathVariable Long profileId) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -308,6 +408,7 @@ public class UserController {
 
     /**
      * Retrieve the names of all the Activity Types in the database
+     *
      * @return A JSON list of names of activity types
      */
     @GetMapping("/activity-types")
@@ -322,17 +423,36 @@ public class UserController {
     }
 
     /**
-     * Parses a list of activity types
-     * @param activitiesNode A JsonNode of the activities key extracted from the JSON
-     * @return A List of Strings of the activity types
+     * Handles the updating of user location with city, state and country.
+     * @param jsonString JSON request as string
+     * @param profileId id of user to update
+     * @return ResponseEntity of the result
+     * @throws JsonProcessingException If there is an issue parsing JSON
      */
-    public static List<String> parseActivityList(JsonNode activitiesNode) {
-        List<String> activities = new ArrayList<>();
-        for (JsonNode activity : activitiesNode) {
-            activities.add(activity.textValue());
-        }
+    @PutMapping("/profiles/{profileId}/location")
+    public ResponseEntity editLocation(@RequestBody String jsonString,
+                                       @PathVariable Long profileId)
+            throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode locationNode = mapper.readTree(jsonString).get("location");
+        String city = locationNode.get("city").asText();
+        String state = locationNode.get("state").asText();
+        String country = locationNode.get("country").asText();
 
-        return activities;
+        return userService.editLocation(city, state, country, profileId);
+    }
+
+    /**
+     * Allows the user to delete their account and admins to delete another registered user's account
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user or admin if deleting the user was successful or not
+     */
+    @DeleteMapping("/profiles/{profileId}")
+    public ResponseEntity deleteUser(@PathVariable Long profileId,
+                                     @CookieValue(value = "s_id") String sessionToken,
+                                     HttpServletResponse response) {
+        return userService.deleteUser(profileId, sessionToken, response);
     }
 
     // Create Exception Handle
@@ -341,4 +461,18 @@ public class UserController {
     public void badIdExceptionHandler() {
         //Nothing to do
     }
+
+    /***
+     * Endpoint to give an user admin rights. Calls userService to perform authentication and grant admin rights.
+     * @param jsonString the request body.
+     * @param profileId the id of the user being promoted to admin.
+     * @param sessionToken the authentication token of the admin performing the request.
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    @PutMapping("/profiles/{profileId}/role")
+    public ResponseEntity promoteUser(@RequestBody String jsonString,
+                                      @PathVariable Long profileId, @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.promoteUser(jsonString, profileId, sessionToken);
+    }
+
 }

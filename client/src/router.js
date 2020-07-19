@@ -14,6 +14,7 @@ import ActivitySettings from "./components/activity/settings/ActivitySettings";
 import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
+import Search from "./components/Search";
 
 Vue.use(VueRouter);
 
@@ -78,6 +79,14 @@ const routes = [
     {
         path: '/activity_editing/:activityId',
         component: EditActivity
+    },
+    {
+        path: '/search/:query',
+        component: Search
+    },
+    {
+        path: '/search',
+        component: Search
     }
 ];
 
@@ -95,37 +104,47 @@ router.beforeEach((to, from, next) => {
   const isAdmin = store ? store.getters.isAdmin : null;
   const isLoggedIn = store ? store.getters.isLoggedIn : null;
   const isAuthPath = to.path === "/signup" || to.path === "/login";
-  console.log("start routing to " + to.path);
-  console.log("isAdmin: " + isAdmin);
-  console.log("isLogin: " + isLoggedIn);
 
-  if (firstLoad === true && localStorage.getItem("s_id") !== null) {
+  if (firstLoad === true) {
     firstLoad = false;
     apiUser.getUserByToken().then(
       (response) => {
-        console.log("Token is matched");
         const responseData = response.data;
         store._actions.updateUserProfile[0](responseData);
         isAuthPath ? next("/profile") : next();
-      },
+      }).catch(
       (error) => {
         console.log("Not logged in: " + error);
         next();
-      }
-    );
+      });
   } else {
-    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level == 2 && isLoggedIn) {
-      console.log("login as an admin user");
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level === 2 && isLoggedIn) {
+      updatePageHistory(to, from);
       next();
     } else if (isAuthPath) {
+      store._actions.resetPageHistory[0]();
       isLoggedIn ? next("/profile") : next();
     } else if (to.path !== "/logout" && isLoggedIn) {
+      updatePageHistory(to, from);
       next();
     } else {
-      localStorage.removeItem("s_id");
+      store._actions.resetPageHistory[0]();
       next("/login");
     }
   }
 });
+
+function updatePageHistory(to, from) {
+  if (store.getters.getPreviousPage === to.path) {
+    store._actions.previousPage[0](from.path);
+  } else if (store.getters.getNextPage === to.path) {
+    store._actions.nextPage[0](from.path);
+  } else if (to.path === "/profile" || from.path === "/profile") {
+    store._actions.resetPageHistory[0]();
+  } else if (to.path !== from.path && from.path !== "/login" && from.path !== "/signup") {
+    store._actions.clearNextHistory[0]();
+    store._actions.addPreviousPage[0](from.path);
+  }
+}
 
 export default router;

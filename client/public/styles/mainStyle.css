@@ -1,25 +1,22 @@
 /* -- General ---- */
 *{
-  margin:0;
-  padding:0;
+    margin:0;
+    padding:0;
 }
 p, h1, h2, h3, h4, h5, h6, span, a, li, button, textarea, input, label{
-    font-family: Roboto, sans-serif;
+    font-family: Roboto, sans-serif !important;
     text-decoration: none;
     font-weight: 400;
-    text-decoration: none;
     color:rgba(0,0,0,0.85);
 }
 
 /* -- Forms ---- */
 input, select, textarea {
-    border-radius: 20px;
-    font-size: 14px;
+    font-size: 14px !important;
     background: #ffffff;
     outline: none;
-    border: 1px solid #d8d8d8;
     padding: 10px 15px;
-    resize: none;
+    resize: none !important;
 }
 .successMessage {
     font-weight: 500;
@@ -27,13 +24,32 @@ input, select, textarea {
     color: #1dca92;
 }
 .errorMessage {
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 15px;
     color: #f06a6a;
     margin-bottom: 19px;
+    margin-left: 10px;
 }
 .errorMessage li{
   margin: 3px 15px;
+  color: #f06a6a;
+}
+
+.loginErrorMessages {
+    font-weight: 600;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-bottom: 12px;
+    margin-left: 14px;
+}
+
+.editProfileInfoErrorMessage {
+    font-weight: 700;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-bottom: -12px;
+    margin-left: 27px;
+    margin-top: 5px;
 }
 
 /* -- Default Containers ---- */
@@ -64,7 +80,7 @@ input, select, textarea {
     -webkit-transition: all .2s ease;
     transition: all .2s ease;
     border-radius: 100px;
-    padding: 8px 18px;
+    padding: 6px 18px;
     float: right;
     margin-right: 10px;
 }
@@ -135,8 +151,40 @@ input, select, textarea {
     width: 100%;
     position: fixed;
     background: #ffffff;
-    padding: 10px 0;
     color: #fff;
     z-index: 100;
     box-shadow: 0 3px 4px 0 rgba(0,0,0,0.14), 0 3px 3px -2px rgba(0,0,0,0.12), 0 1px 8px 0 rgba(0,0,0,0.20);
+}
+#appNavLogo{
+    width: 35px;
+    cursor:pointer;
+}
+#globalSearchBarContainer{
+    background-color: #eaeaea;
+    width: 550px;
+    border-radius: 30px;
+}
+#globalSearchBarIcon{
+    float: left;
+    fill: rgba(0, 0, 0, 0.4);
+    width: 22px;
+    height: 22px;
+    padding: 8px 8px 8px 14px;
+    box-sizing: content-box;
+}
+#globalSearchBarInput{
+    float: right;
+    padding: 8px 0;
+    width: calc(100% - 45px);
+    font-size: 15px !important;
+    color:rgba(0,0,0,0.8);
+}
+#headerNavToggle{
+    cursor: pointer;
+}
+.navBarLeftCol {
+    margin-left: 30px;
+}
+.navBarLeftColIcon {
+    margin-left: 20px;
 }

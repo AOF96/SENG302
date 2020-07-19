@@ -2,18 +2,31 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Email;
+import com.springvuegradle.hakinakina.entity.Session;
+import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import net.minidev.json.JSONObject;
+import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -41,6 +54,7 @@ public class UserService {
 
     /**
      * Checks whether an email has the correct format
+     *
      * @param email Email String in question
      * @return True if correct, False otherwise
      */
@@ -64,18 +78,18 @@ public class UserService {
      *
      * @param request
      * @return reply to client
-     *
-     *edits email
-     *
+     * <p>
+     * edits email
+     * <p>
      * PUT /profiles/{profileId}/emails
      * {
-     *   "primary_email": "triplej@google.com",
-     *   "additional_email": [
-     *     "triplej@xtra.co.nz",
-     *     "triplej@msn.com"
-     *   ]
+     * "primary_email": "triplej@google.com",
+     * "additional_email": [
+     * "triplej@xtra.co.nz",
+     * "triplej@msn.com"
+     * ]
      * }
-     * */
+     */
     public ResponseEntity<String> editEmail(String request, long profileId, String sessionToken) {
         ResponseEntity<String> response = null;
 
@@ -110,8 +124,6 @@ public class UserService {
         return response;
     }
 
-
-
     /**
      * Switches primary email with secondary email
      *
@@ -136,7 +148,6 @@ public class UserService {
             return responseHandler.formatSuccessResponse(400, "Could not switch email");
         }
     }
-
 
     /**
      * Updates the users secondary emails to match the new set
@@ -172,21 +183,19 @@ public class UserService {
         userRepository.save(user);
 
         if (emailsAdded.equals("")) {
-            if(emailsRemoved.equals("")){
+            if (emailsRemoved.equals("")) {
                 return responseHandler.formatErrorResponse(400, "No emails added.");
-            }else {
+            } else {
                 return responseHandler.formatSuccessResponse(200, "Secondary emails successfully removed: " + emailsRemoved);
             }
         } else {
-            if(emailsRemoved.equals("")){
+            if (emailsRemoved.equals("")) {
                 return responseHandler.formatSuccessResponse(200, "Secondary emails successfully added: " + emailsAdded);
-            }else {
+            } else {
                 return responseHandler.formatSuccessResponse(200, "Secondary emails added: " + emailsAdded + " - Secondary emails removed: " + emailsRemoved);
             }
         }
     }
-
-
 
     /***
      * Handles adding emails for the given user. Returns appropriate error messages if the request format is invalid or
@@ -252,7 +261,7 @@ public class UserService {
             messages.add("Please provide a valid email.");
         } else if (user.getPrimaryEmail().isBlank()) {
             messages.add("Please provide a valid email.");
-        } else if (isEmailProperlyFormatted(user.getPrimaryEmail()) != true){
+        } else if (isEmailProperlyFormatted(user.getPrimaryEmail()) != true) {
             messages.add("Please provide a valid email.");
         }
         if (user.getBirthDate() == null) {
@@ -261,7 +270,7 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4){
+        if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
             messages.add("Please select the fitness level in the range 0 and 5");
         }
         if (user.getBirthDate().after(new Date())) {
@@ -276,12 +285,13 @@ public class UserService {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
-                //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
                 userRepository.save(user);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
+
+                //Generate session token
+                String sessionToken = RandomToken.getToken(40);
+                Session session = new Session(sessionToken);
+                user.addSession(session);
+                userRepository.save(user);
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
@@ -315,7 +325,7 @@ public class UserService {
         if (user.getGender() == null) {
             messages.add("You cannot delete required fields. Please provide a valid gender. male, female or non-binary.");
         }
-        if(user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4){
+        if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
             messages.add("You cannot delete the required filed. Please select the fitness level in the range 0 and 5");
         }
         if (!checkAge(user.getBirthDate(), LocalDate.now())) {
@@ -336,7 +346,7 @@ public class UserService {
      * @return A boolean of whether the user is of a valid age
      */
     public static boolean checkAge(Date birthDate, LocalDate currentDate) {
-         boolean result = true;
+        boolean result = true;
         int age = calculateAge(birthDate, currentDate);
         if (birthDate.after(new Date()) || age < 13 || age > 140) {
             result = false;
@@ -351,8 +361,8 @@ public class UserService {
      * @return Their age as an int
      */
     public static int calculateAge(Date date, LocalDate currentDate) {
-        LocalDate birthDate = LocalDate.of(date.getYear() + 1900, date.getMonth(), date.getDate());
-        if ((birthDate != null) && (currentDate != null)) {
+        LocalDate birthDate = Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+        if (currentDate != null) {
             return Period.between(birthDate, currentDate).getYears();
         } else {
             return 0;
@@ -367,11 +377,12 @@ public class UserService {
      * Checks whether a login attempt was successful. First checks if there exists a user with that primary email.
      * Then checks that the password is correct. If it is, a token is created for that user and is stored for future
      * actions.
-     * @param email A string of what could be an existing email
+     *
+     * @param email   A string of what could be an existing email
      * @param attempt The password attempt
      * @return A ResponseEntity detailing the results
      */
-    public ResponseEntity checkLogin(String email, String attempt) {
+    public ResponseEntity checkLogin(String email, String attempt, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
@@ -381,13 +392,22 @@ public class UserService {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-                //Generate session token
-                RandomToken randomToken = new RandomToken();
-                String sessionToken = randomToken.getToken(40);
-                Session session_token = new Session(sessionToken);
-                sessionRepository.insertToken(sessionToken, user.getUserId());
 
-                return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
+                //Generate session token
+                String sessionToken = RandomToken.getToken(40);
+                Session session = new Session(sessionToken);
+                user.addSession(session);
+                userRepository.save(user);
+
+                // create a cookie
+                Cookie cookie = new Cookie("s_id", sessionToken);
+                // expires in 7 days
+                cookie.setMaxAge(7 * 24 * 60 * 60);
+                cookie.setHttpOnly(true);
+                // add cookie to response
+                response.addCookie(cookie);
+
+                return new ResponseEntity(user.toJson(), HttpStatus.OK);
             } else {
                 return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
             }
@@ -401,10 +421,11 @@ public class UserService {
     /**
      * Firstly checks that the user is authenticated and the old password matches the Users current password. Then
      * updates the users password and salt if successful
-     * @param profileId The id of the user to be changed
+     *
+     * @param profileId    The id of the user to be changed
      * @param sessionToken The authentication token
-     * @param oldPassword The attempt for Users original password
-     * @param newPassword The password to set to
+     * @param oldPassword  The attempt for Users original password
+     * @param newPassword  The password to set to
      * @return
      */
     public ResponseEntity changePassword(long profileId, String sessionToken, String oldPassword, String newPassword) {
@@ -416,7 +437,7 @@ public class UserService {
             if (session != null) {
 
                 //If the user associated with the session matches the user to be edited, or if the user is an admin
-                if(session.getUser().getUserId() == profileId || session.getUser().getPermissionLevel() > 0) {
+                if (session.getUser().getUserId() == profileId || session.getUser().getPermissionLevel() > 0) {
                     if (session.getUser().getPermissionLevel() == 0) {
                         try {
                             String encryptedPassword = EncryptionUtil.getEncryptedPassword(oldPassword, user.getSalt());
@@ -450,8 +471,9 @@ public class UserService {
 
     /**
      * Updates a user's activity types. If a supplied activity type doesn't actually exist, it is skipped.
+     *
      * @param activityTypes An ArrayList of activity type Strings
-     * @param id The Long ID of the User to modify
+     * @param id            The Long ID of the User to modify
      * @return ResponseEntity of result
      */
     public ResponseEntity editActivityTypes(List<String> activityTypes, long id) {
@@ -480,5 +502,232 @@ public class UserService {
         } else {
             return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
         }
+    }
+
+    /**
+     * Updates a uses city, state, and country.
+     * @param city String city name
+     * @param state String state name
+     * @param country String country name
+     * @param userId Long id of user to update
+     * @return ResponseEntity of result
+     */
+    public ResponseEntity editLocation(String city, String state, String country, Long userId) {
+        boolean result = false;
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setCity(city);
+            user.setState(state);
+            user.setCountry(country);
+            userRepository.save(user);
+            result = true;
+        }
+
+        if (result) {
+            return new ResponseEntity("Successfully updated location", HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity("No user with that ID", HttpStatus.valueOf(401));
+        }
+    }
+
+    /**
+     * Allows the user to delete their account and admins to delete another registered user's account
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user or admin if deleting the user was successful or not
+     */
+    public ResponseEntity deleteUser(Long profileId,
+                                     String sessionToken,
+                                     HttpServletResponse response) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.UNAUTHORIZED);
+            }
+
+            //If the session matches the user or the user has admin privileges
+            boolean isAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "1");
+            boolean isDefaultAdmin = java.util.Objects.equals(session.getUser().getPermissionLevel().toString(), "2");
+            if (isAdmin || isDefaultAdmin || session.getUser().getUserId().equals(profileId)) {
+                if (userRepository.findById(profileId).isPresent()) {
+                    if (session.getUser().getUserId().equals(profileId)) {
+                        // create a cookie
+                        Cookie cookie = new Cookie("s_id", null);
+                        cookie.setMaxAge(0);
+                        cookie.setHttpOnly(true);
+                        cookie.setPath("/");
+                        //add cookie to response
+                        response.addCookie(cookie);
+                    }
+                    userRepository.deleteById(profileId);
+                } else {
+                    return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity("Unauthorised User", HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity("Successfully Deleted User", HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not delete user");
+            return new ResponseEntity("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Deals with pagination with no conditions like email, surname, full name etc
+     *
+     * @param page number of a page you want to be at
+     * @param size how many results you want on a page
+     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
+     */
+    public Page<SearchUserDto> findPaginated(int page, int size) {
+        Page<User> userPage = userRepository.findAll(PageRequest.of(page, size));
+        return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Deals with pagination where you can search users with email, full name and last name
+     *
+     * @param page     number of a page you want to be at
+     * @param size     how many results you want on a page
+     * @param email    email of the user you want to search
+     * @param fullname full name of the user you want to search
+     * @param lastname last name of the user you want to search
+     * @param activityTypes activityTypes of the user you want to search
+     * @param method
+     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
+     */
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
+        Page<User> userPage;
+        if (activityTypes != null) {
+            if (method.equals("or")) {
+                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+            } else {
+                 userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                }
+        } else {
+            boolean withQuotation = false;
+
+            if(isWithinQuotation(email)) {
+                email = email.substring(1, email.length() - 1);
+                withQuotation = true;
+            } else if (isWithinQuotation(fullname)) {
+                fullname = fullname.substring(1, fullname.length() - 1);
+                withQuotation = true;
+            } else if(isWithinQuotation(lastname)) {
+                lastname = lastname.substring(1, lastname.length() - 1);
+                withQuotation = true;
+            }
+
+            if (withQuotation) {
+                userPage = userRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
+            } else {
+                userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+            }
+        }
+
+        return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Finds the intersection of a List of Sets of Users. Much of this code was adapted from
+     * https://stackoverflow.com/questions/37749559/conversion-of-list-to-page-in-spring
+     * @param listOfUserSets A List of Sets of User objects
+     * @return The intersection of these Sets as a List
+     */
+    public List<User> getIntersectionOfListOfSetsOfUsers(List<Set<User>> listOfUserSets) {
+        List<User> result = new ArrayList<>();
+        if (!listOfUserSets.isEmpty()) {
+            Set<User> userCross = listOfUserSets.get(0);
+            for (int i = 1; i < listOfUserSets.size(); i++) {
+                userCross.retainAll(listOfUserSets.get(i));
+            }
+            for (User user : userCross) {
+                result.add(user);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Helper function used in findPaginated and findPaginatedByQuery,
+     * creates SearchUserResponse object which has user email, full name and nickname details
+     * from the list of users in page object returned by the query
+     *
+     * @param users Page object that contains list of users found by the query
+     * @return Page object with list of SearchUserResponse object
+     */
+    private Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+        List<SearchUserDto> userResponses = new ArrayList<>();
+        for (User user : users) {
+            SearchUserDto searchUserDto = new SearchUserDto();
+            searchUserDto.setEmail(user.getPrimaryEmail());
+            searchUserDto.setFirstname(user.getFirstName());
+            searchUserDto.setLastname(user.getLastName());
+            searchUserDto.setMiddlename(user.getMiddleName());
+            searchUserDto.setNickname(user.getNickName());
+            searchUserDto.setActivityTypes(user.getActivityTypes());
+            userResponses.add(searchUserDto);
+        }
+        return new PageImpl<>(userResponses);
+    }
+
+    /***
+     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
+     * @param jsonString the request body.
+     * @param profileID the id of the user being promoted to admin.
+     * @param sessionToken the authentication token of the admin performing the request.
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    public ResponseEntity promoteUser(String jsonString, Long profileID, String sessionToken) {
+        ResponseEntity result;
+
+        try {
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else {
+                Session session = sessionRepository.findUserIdByToken(sessionToken);
+                int userPermissionLevel = session.getUser().getPermissionLevel();
+                Optional<User> userToPromote = userRepository.getUserById(profileID);
+                Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
+                String role = (String) json.get("role");
+                if (!role.equals("admin")) {
+                    result = responseHandler.formatErrorResponse(400, "Bad request");
+
+                }
+                else if (userToPromote.get().getPermissionLevel() > 0) {
+                    result = responseHandler.formatErrorResponse(400, "User to promote is already an admin");
+                }
+                else if (userPermissionLevel == 0) {
+                    result = responseHandler.formatErrorResponse(403, "Unauthorized user");
+                } else {
+                    userRepository.grantAdminRights(profileID);
+                    result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
+
+                }
+            }
+
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not promote user");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
+    }
+
+    /**
+     * Helper function used in findPaginatedByQuery,
+     * checks whether the strings given has quotation marks (" or ') around the search term string.
+     *
+     * @param searchText text you are using to search users
+     * @return true if quotation wraps the search term, false otherwise
+     */
+    private boolean isWithinQuotation(String searchText) {
+        if(searchText != null && searchText.length() > 1) {
+            return searchText.startsWith("\"") && searchText.endsWith("\"") || searchText.startsWith("'") && searchText.endsWith("'");
+        }
+        return false;
     }
 }

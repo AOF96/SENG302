@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -62,6 +63,21 @@ public class User {
     @Column(name = "fitness_level")
     private int fitnessLevel;
 
+    @JsonProperty("city")
+    @Column(name = "city")
+    private String city;
+
+
+    @JsonProperty("state")
+    @Column(name = "state")
+    private String state;
+
+
+    @JsonProperty("country")
+    @Column(name = "country")
+
+    private String country;
+
     @JsonProperty("passports")
     @JsonSerialize(using= PassportSerializer.class)
     @JsonDeserialize(using = CountryDeserializer.class)
@@ -109,6 +125,13 @@ public class User {
     @JsonProperty("permission_level")
     @Column(name = "permission_level")
     private Integer permissionLevel;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Session> sessions = new HashSet<>();
 
     public User() {}
 
@@ -158,6 +181,16 @@ public class User {
         emails.remove(email);
     }
 
+    public void addSession(Session session) {
+        sessions.add(session);
+        session.setUser(this);
+    }
+
+    public void removeSession(Session session) {
+        sessions.remove(session);
+        session.setUser(null);
+    }
+
     public Set<PassportCountry> getPassportCountries() {
         return passportCountries;
     }
@@ -173,10 +206,6 @@ public class User {
     public void setActivity(Set<Activity> activities) {
         this.activity = activities;
     }
-
-    /*public Set<Activity> getActivity() {
-        return activity;
-    }*/
 
     /**
      * Adds passport country to relation
@@ -249,6 +278,30 @@ public class User {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getPassword() {

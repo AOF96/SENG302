@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 public class RegisterTest {
 
     @Autowired
@@ -39,16 +38,11 @@ public class RegisterTest {
 
     @BeforeEach
     void createUser() {
+        sessionRepo.deleteAll();
+        userRepo.deleteAll();
         u = new User("Mayuko", "Williams",
                 "mwi@williams.com", "1970-01-01", Gender.FEMALE,
                 3, "P@ssw0rd!123");
-        User temp = userRepo.findUserByEmail("mwi@williams.com");
-        if (temp != null) {
-            sessionRepo.removeTokenByUserId(String.valueOf(temp.getUserId()));
-            userRepo.deleteById(temp.getUserId());
-        }
-
-
     }
 
     @Test

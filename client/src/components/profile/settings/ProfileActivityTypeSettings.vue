@@ -2,6 +2,9 @@
   <div class="settingsContainer">
     <UserSettingsMenu />
     <div class="settingsContentContainer">
+      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+        <button class="genericConfirmButton backButton">Back to Profile</button>
+      </router-link>
       <h1>Edit Activity Type</h1>
       <hr />
       <div class="itemContainer" v-for="activity in searchedUser.activities" v-bind:key="activity">
@@ -10,7 +13,7 @@
         <div class="floatClear"></div>
       </div>
       <div id="activityActions">
-        <form class="formTopSpacing" @submit.prevent>
+        <form class="formTopSpacing">
           <select
             v-model="selected_activity"
             name="activityType"
@@ -25,12 +28,15 @@
               v-bind:key="addingActivity"
             >{{addingActivity}}</option>
           </select>
-          <button class="genericConfirmButton addItemButton" v-on:click="addActivityType()">Add</button>
-          <button class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
+          <button type="button" class="genericConfirmButton addItemButton" v-on:click="addActivityType()">Add</button>
+          <button type="button" class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
         </form>
       </div>
-      <h6 class="successMessage" id="activity_type_success" hidden="false">Saved successfully</h6>
-      <h6 class="errorMessage" id="activity_type_error" hidden="false">An error has occurred</h6>
+      <div class="errorMessageContainer">
+        <h6 class="editSuccessMsg" id="activity_type_success" hidden="false">Saved successfully</h6>
+        <h6 class="editErrorMsg" id="activity_type_error" hidden="false">An error has occurred</h6>
+      </div>
+
     </div>
     <div class="floatClear"></div>
   </div>
@@ -39,9 +45,9 @@
 <script>
 import UserSettingsMenu from "./ProfileSettingsMenu";
 import { mapActions, mapState, mapGetters } from "vuex";
-import { apiUser } from "../../../api";
 
 export default {
+  name: "AddUserActivity",
   components: {
     UserSettingsMenu
   },
@@ -59,8 +65,7 @@ export default {
   },
   created: async function() {
     // Ensures only activity types from the database can be selected and cannot select ones already selected
-    await apiUser
-      .getActivityTypes()
+    await this.getActivityTypes()
       .then(response => {
         const activityTypes = response.data;
 
@@ -77,7 +82,7 @@ export default {
     this.loadSearchedUser();
   },
   methods: {
-    ...mapActions(["updateActivities"]),
+      ...mapActions(["updateActivities", "getUserById", "editUserActivityTypes", "getActivityTypes"]),
 
     startUp() {
       console.log("init");
@@ -91,7 +96,6 @@ export default {
       if (!this.selected_activity || this.selected_activity === "Activity Type")
         return;
       this.searchedUser.activities.push(this.selected_activity);
-      console.log(this.searchedUser.activities);
       const index = this.activities_option.indexOf(this.selected_activity);
       if (index === -1) return;
       this.activities_option.splice(index, 1);
@@ -117,12 +121,7 @@ export default {
      */
     saveActivityTypes() {
       this.updateActivities(this.searchedUser);
-      console.log(this.searchedUser.activities);
-      apiUser
-        .editUserActivityTypes(
-          this.searchedUser.profile_id,
-          this.searchedUser.activities
-        )
+      this.editUserActivityTypes({'id': this.searchedUser.profile_id, 'activities': this.searchedUser.activities})
         .then(
           response => {
             document.getElementById("activity_type_success").hidden = false;
@@ -150,9 +149,7 @@ export default {
         this.$router.push("/settings/activities/" + this.user.profile_id);
         this.searchedUser = this.user;
       } else {
-        var tempUserData = await apiUser.getUserById(
-          this.$route.params.profileId
-        );
+        var tempUserData = await this.getUserById(this.$route.params.profileId);
         if (tempUserData == "Invalid permissions") {
           this.$router.push("/settings/activities/" + this.user.profile_id);
           this.searchedUser = this.user;

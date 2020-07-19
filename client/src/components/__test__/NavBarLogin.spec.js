@@ -1,3 +1,4 @@
+/* eslint-env jest*/
 import {createLocalVue, mount, shallowMount} from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import NavBar from '../modules/NavBar.vue'
@@ -29,24 +30,27 @@ describe('NavBar after the login is successful', () => {
   })
 
 
-  it('NavBar should not have login button anymore and have myaccount button instead', () => {
+  it('NavBar should not have login button anymore and have website logo button instead', () => {
     const wrapper = mount(NavBar, {store, localVue, router})
     expect(wrapper.find(".login").exists()).toBe(false)
-    expect(wrapper.find(".myaccount").exists()).toBe(true)
+    expect(wrapper.find("#appNavLogo").exists()).toBe(true)
 
   })
 
-  // it('NavBar should redirect to  ', () => {
-  //     const wrapper = mount(NavBar, { store, localVue, router })
-  //     wrapper.find( ".login").trigger('click')
-  //     expect(window.location.href).toBe('http://localhost/#/login')
-  // })
-
-  it('myaccount button that is on the NavBar should take the user to profile page', () => {
+  it("Website's logo button that is on the NavBar on the click should redirects the user to profile page", () => {
     const wrapper = mount(NavBar, {store, localVue, router})
-    wrapper.find(".myaccount").trigger('click')
-    expect(window.location.href).toBe('http://localhost/#/profile/100')
+    wrapper.find("#appNavLogo").trigger('click')
+    expect(window.location.href).toBe('http://localhost/#/')
   })
 
+  it('Global search bar exists on the top of the NavBar', () => {
+    const wrapper = mount(NavBar, {store, localVue, router})
+    expect(wrapper.find("#globalSearchBarInput").exists()).toBe(true)
+  })
+
+  it('A hamburger menu option exists for quick navigation around website in the of the NavBar', () => {
+    const wrapper = mount(NavBar, {store, localVue, router})
+    expect(wrapper.find("#headerNavToggle").exists()).toBe(true)
+  })
 
 })

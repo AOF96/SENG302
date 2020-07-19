@@ -2,6 +2,9 @@
     <div class="settingsContainer">
         <UserSettingsMenu />
         <div class="settingsContentContainer">
+            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
+                <button class="genericConfirmButton backButton">Back to Profile</button>
+            </router-link>
             <h1>Edit Passport Countries</h1>
             <hr>
             <div class="itemContainer" v-for="country in searchedUser.passports" v-bind:key="country">
@@ -27,8 +30,11 @@
                     <div class="floatClear"></div>
                 </form>
             </div>
-            <h6 class="successMessage" id="passport_success" hidden="false">Saved successfully</h6>
-            <h6 class="errorMessage" id="passport_error" hidden="false">An error has occurred</h6>
+            <div class="errorMessageContainer">
+                <h6 class="editSuccessMsg" id="passport_success" hidden="false">Passport saved successfully</h6>
+                <h6 class="editErrorMsg" id="passport_error" hidden="false">An error has occurred</h6>
+            </div>
+
         </div>
         <div class="floatClear"></div>
     </div>
@@ -36,9 +42,7 @@
 
 <script>
     import UserSettingsMenu from './ProfileSettingsMenu';
-    import axios from "axios";
     const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
-    import {apiUser} from "../../../api";
     import { mapState, mapActions, mapGetters } from 'vuex'
 
     export default {
@@ -61,14 +65,14 @@
             this.loadSearchedUser();
         },
         methods: {
-            ...mapActions(['updatePassports']),
+            ...mapActions(['updatePassports', "getDataFromUrl", "getUserById","editProfile"]),
             /*
               Displays all the possible options a user can pick when selecting a new passport country. Prevents the user
               from selecting the same country twice.
             */
             startUp() {
                 this.searchedUser.passports = this.searchedUser.passports.slice();
-                axios.get(COUNTRIES_URL)
+                this.getDataFromUrl(COUNTRIES_URL)
                     .then((response) => {
                         const countries = []
                         const data = response.data
@@ -94,7 +98,7 @@
                     this.$router.push('/settings/passport_countries/'+this.user.profile_id);
                     this.searchedUser = this.user;
                 }else{
-                    var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
+                    var tempUserData = await this.getUserById(this.$route.params.profileId);
                     if(tempUserData == "Invalid permissions"){
                         this.$router.push('/settings/passport_countries/'+this.user.profile_id);
                         this.searchedUser = this.user;
@@ -137,9 +141,7 @@
             savePassportCountries() {
                 this.updatePassports(this.searchedUser);
                 console.log(this.countries_code_name_option);
-                apiUser.editProfile(this.searchedUser.profile_id, this.searchedUser.firstname, this.searchedUser.lastname, this.searchedUser.middlename,
-                    this.searchedUser.nickname, this.searchedUser.primary_email, this.searchedUser.bio, this.searchedUser.date_of_birth, this.searchedUser.gender,
-                    Number(this.searchedUser.fitness), this.searchedUser.additional_email, this.searchedUser.passports, this.searchedUser.permission_level, this.searchedUser.activities).then((response) => {
+                this.editProfile(this.searchedUser).then((response) => {
                     document.getElementById("passport_success").hidden = false;
                     document.getElementById("passport_error").hidden = true;
                     console.log(response);

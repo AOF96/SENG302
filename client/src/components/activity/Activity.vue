@@ -1,20 +1,15 @@
 np
 <template>
     <div>
-        <NavBar/>
         <div class="profileBanner">
         </div>
         <div class="activityWrap">
-            <div class="activityWhiteBoxContainer">
-                <ActivityPageInfo/>
-                <div class="floatClear"></div>
-            </div>
+            <ActivityPageInfo/>
         </div>
     </div>
 </template>
 
 <script>
-  import NavBar from "../modules/NavBar";
   import ActivityPageInfo from "../modules/ActivityPageInfo";
   import {mapGetters} from "vuex";
 
@@ -36,7 +31,6 @@ np
     mounted() {
     },
     components: {
-      NavBar,
       ActivityPageInfo
     },
     computed: {

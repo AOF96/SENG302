@@ -1,3 +1,4 @@
+client/coverage
 server/HELP.md
 .gradle
 build/
@@ -7,6 +8,7 @@ build/
 dist/
 node_modules/
 bin/
+*.env
 
 ### STS ###
 .apt_generated

@@ -1,32 +1,36 @@
 <template>
     <div>
-        <NavBar/>
         <div class="loginContainer">
             <div class="loginFormContainer">
                 <h1>Login</h1>
                 <h2>Sign in to your account</h2>
                 <form @submit.prevent>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
+                        <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
                     </div>
                     <div class="loginRow">
                         <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
-                               required>
+                               required id="loginEmailForm">
                     </div>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
+                        <h6 class="loginErrorMessages" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
                             }}</h6>
                     </div>
                     <div class="loginRow">
                         <input type="password" v-model="user.password" name="password"
-                               placeholder="Password" required>
+                               placeholder="Password" required id="loginPasswordForm">
                     </div>
                     <div class="loginRow">
-                        <h6 class="errorMessage" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
+                        <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
                     </div>
                     <hr>
                     <div class="loginRow">
-                        <button type="submit" v-on:click="submitLogin()" class="loginButton"> Login</button>
+                        <button v-on:click="submitLogin()"
+                                class="loginButton"
+                               id="loginButton"
+                        >
+                            Login
+                        </button>
                     </div>
                 </form>
             </div>
@@ -41,8 +45,6 @@
   import {mapActions, mapGetters} from 'vuex';
   import {apiUser} from '../api'
 
-  import NavBar from "./modules/NavBar";
-
   export default {
     name: 'Login',
     data: function () {
@@ -50,11 +52,8 @@
         topErrorMsg: "",
         passwordErrorMsg: "",
         otherErrorMsg: "",
-
+        loadingLogin: false,
       }
-    },
-    components: {
-      NavBar
     },
     computed: {
       ...mapGetters(['user']),
@@ -69,39 +68,38 @@
         messages if the email or password provided is wrong. Server side provides a cookie if the login was successful
       */
       submitLogin() {
-        this.topErrorMsg = ""
-        this.passwordErrorMsg = ""
-        this.otherErrorMsg = ""
+        this.topErrorMsg = "";
+        this.passwordErrorMsg = "";
+        this.otherErrorMsg = "";
+        this.loadingLogin = true;
 
         if (!this.user.primary_email || !this.user.password) {
-          this.topErrorMsg = "Please enter email or password"
+          this.topErrorMsg = "Please enter email or password";
+          this.loadingLogin = false;
           return;
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password)
             .then((response) => {
               const responseData = response.data;
-              //Save token to local storage
-              localStorage.setItem("s_id", responseData[1]["sessionToken"]);
-              apiUser.refreshInstance();
-              this.updateUserProfile(responseData[0]);
+              this.updateUserProfile(responseData);
               this.$router.push('Profile');
-              apiUser.getUserContinuousActivities(responseData[0].profile_id).then((response) => {
+              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
                 this.updateUserContinuousActivities(response.data);
               }).catch(err => console.log(err));
-              apiUser.getUserDurationActivities(responseData[0].profile_id).then((response) => {
+              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
                 this.updateUserDurationActivities(response.data);
               }).catch(err => console.log(err));
-              if (responseData[0].permission_level == 2) {
+              if (responseData.permission_level === 2) {
                 this.$router.push("/settings/admin_dashboard");
               } else {
-                this.$router.push("profile?u=" + responseData[0].profile_id);
+                this.$router.push("profile?u=" + responseData.profile_id);
               }
             })
             .catch(error => {
-
               const responseData = error.response.data;
               const responseCode = error.response.status;
+              this.loadingLogin = false;
 
               if (responseCode === 403 && responseData === "Email does not exist") {
                 this.topErrorMsg = "Account does not exist"

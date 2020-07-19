@@ -1,6 +1,5 @@
 <template>
     <div>
-        <NavBar />
         <div>
             <button  id = "openButton" class="openbtn" v-on:click="openSearch()">Open Search Box</button>
         </div>
@@ -16,16 +15,12 @@
 
 <script>
 
-    import NavBar from "./modules/NavBar";
     import {apiUser} from "../api";
     // import json from "../../../public/json/data.json";
     // import axios from 'axios'
     // import router from "../router";
     export default {
         name: "AdminDashboard",
-        components: {
-            NavBar
-        },
         data: function() {
             return {
                 searchedUser: {}
@@ -128,7 +123,7 @@
         border: none;
         color: white;
         font-size: 15px;
-        margin-right: 10px;
+        margin: 12px;
         font-weight: 500;
         cursor: pointer;
         border: 2px solid #1dca92;

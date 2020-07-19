@@ -94,4 +94,20 @@ public class UserTests {
         assertEquals(0, testUser.getPermissionLevel());
     }
 
+
+    @Test
+    public void testAddedLocationToNewUser() {
+
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        testUser.setCity("Houston");
+        testUser.setState("Texas");
+        testUser.setCountry("U.S.A");
+        assertEquals("Houston", testUser.getCity());
+        assertEquals("Texas", testUser.getState());
+        assertEquals("U.S.A", testUser.getCountry());
+    }
+
 }

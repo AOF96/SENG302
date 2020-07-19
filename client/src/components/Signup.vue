@@ -1,6 +1,5 @@
 <template>
   <div>
-    <NavBar />
     <div class="signUpContainer">
       <div class="signUpFormContainer">
         <h1>Sign Up</h1>
@@ -19,13 +18,14 @@
           <p id="signup-lastname-err" v-if="!validation.lastname" class="errorMessage">{{ this.err_msg.lastname }}</p>
           <div class="signUpRow">
             <input id="signup-nickname" v-model="user.nickname" name="nickname" type="text" placeholder="Nickname" />
-            <select id="signup-gender" v-model="user.gender" name="gender" placeholder="Gender" value="Gender" required>
-              <option selected disabled hidden>Gender</option>
+            <select id="signup-gender" v-model="user.gender" name="gender" required @change="genderChange($event)">
+              <option selected disabled hidden value="Gender">Gender*</option>
               <option>Non-Binary</option>
               <option>Female</option>
               <option>Male</option>
             </select>
           </div>
+          <p id="genderErr" v-if="!validation.gender" class="errorMessage">{{ this.err_msg.gender }}</p>
           <p id="signup-bio-err" v-if="warning.bio" class="errorMessage">{{ this.bio_warning_msg }}</p>
           <div class="signUpRow">
             <textarea id="signup-bio" maxlength="255" v-model="user.bio" class="signupTextarea" name="bio" type="text" placeholder="Bio"></textarea>
@@ -35,12 +35,12 @@
           </div>
           <p id="signup-primary-email-err" v-if="user.primary_email && !validation.email" class="errorMessage">{{ this.err_msg.email }}</p>
           <div class="signUpRow">
-            <h3 class="signUpText">Birthday</h3>
+            <h3 class="signUpText">Birthday*</h3>
             <input id="signup-dob" v-model="user.date_of_birth" class="signUpInputBirthday" name="birthday" type="date" placeholder="Birthday" required/>
           </div>
           <p id="signup-dob-err" v-if="!validation.birthday" class="errorMessage">{{ this.err_msg.birthday }}</p>
           <div class="signUpRow">
-            <h3 class="signUpText">Fitness Level</h3>
+            <h3 class="signUpText">Fitness level*</h3>
             <select id="signup-fitness-level" class="fitnessLevelSelect" v-model="user.fitness" name="fitnesslevel" placeholder="Fitness Level" value="Fitness" required>
                 <option value="-1" selected disabled hidden>Fitness</option>
               <option value="0">I never exercise</option>
@@ -65,7 +65,7 @@
           </ul>
           <hr />
           <div class="signUpRow">
-            <button v-on:click="submitSignUp()" class="loginButton" type="submit">Sign Up</button>
+            <button id="signUpButton" v-on:click="submitSignUp()" class="loginButton" type="submit">Sign Up</button>
           </div>
         </form>
       </div>
@@ -78,12 +78,9 @@
 </template>
 
 <script>
-  import {mapActions, mapGetters} from "vuex";
-  import {apiUser} from "../api";
+import {mapActions, mapGetters} from "vuex";
 
-  import NavBar from "./modules/NavBar";
-
-  const ERR_MSG_FNAME = "Please enter your First name";
+const ERR_MSG_FNAME = "Please enter your First name";
 const ERR_MSG_LNAME = "Please enter your Last name";
 const ERR_MSG_GENDER = "Please select your Gender";
 const ERR_MSG_EMAIL = "Please enter a valid Email";
@@ -98,11 +95,9 @@ const WARNING_MSG_BIO = "You have reached the maximum amount of characters";
 
 export default {
   name: "Signup",
-  components: {
-    NavBar
-  },
   data() {
     return {
+      firstOccurrence: true,
       errorMessages: [],
       submissionError: "",
       password1: "",
@@ -142,10 +137,11 @@ export default {
       return {
         firstname: this.user.firstname !== "",
         lastname: this.user.lastname !== "",
-        gender: this.user.gender !== "Gender",
+        //Don't display the gender error message if the user has not done anything yet
+        gender: this.user.gender !== "Gender" || this.firstOccurrence,
         email: /[^\s]+@[^\s]+/.test(this.user.primary_email),
         birthday: this.user.date_of_birth !== "" && this.birthday_validation,
-        fitnesslevel: this.user.fitnessLevel != -1,
+        fitnesslevel: this.user.fitnessLevel !== -1,
         password: {
           match: this.password1 === this.password2,
           length: /.{8,}/.test(this.password1),
@@ -174,7 +170,7 @@ export default {
        Returns true if all the provided data is valid.
     */
     valid() {
-      this.all_err_msg() // Get all the errors on the field and show it on the top of the page
+      this.all_err_msg(); // Get all the errors on the field and show it on the top of the page
       return this.errorMessages.length === 0;
     },
 
@@ -184,7 +180,8 @@ export default {
   },
 
   methods: {
-    ...mapActions(["createUserProfile"]),
+    ...mapActions(["createUserProfile", "signUp"]),
+
 
     /*
        Returns an appropriate error message if something goes wrong when signing up.
@@ -194,7 +191,7 @@ export default {
       const validation = this.validation;
       const fields = Object.keys(validation);
 
-      this.errorMessages = []
+      this.errorMessages = [];
       for (let i in fields) {
         const field = fields[i];
         if (!validation[field]) {
@@ -210,34 +207,39 @@ export default {
       }
 
     },
+
+    /**
+     * Toggles firstOccurrence if the gender has been changed or the user has clicked 'Sign Up' to ensure a gender has
+     * been selected
+     */
+    genderChange() {
+      this.firstOccurrence = false;
+    },
+
     /*
       Submits a request to register a new user. Checks if there are missing fields when signing up.
     */
     submitSignUp() {
-      this.submissionError = ""
+      this.firstOccurrence = false;
+      this.submissionError = "";
       if (!this.valid) {
         return;
       }
-
-
-      apiUser.signUp(
-        this.user.firstname,
-        this.user.lastname,
-        this.user.middlename,
-        this.user.nickname,
-        this.user.primary_email,
-        this.password1,
-        this.user.bio,
-        this.user.date_of_birth,
-        this.user.gender,
-        Number(this.user.fitness)
+        this.signUp(
+          {'firstName': this.user.firstname,
+        'lastName': this.user.lastname,
+        'middleName': this.user.middlename,
+        'nickName': this.user.nickname,
+        'email': this.user.primary_email,
+        'password': this.password1,
+        'bio': this.user.bio,
+        'dateOfBirth': this.user.date_of_birth,
+        'gender': this.user.gender,
+        'fitnessLevel': Number(this.user.fitness)}
       ).then(
         response => {
-          this.createUserProfile(response.data[0]);
-          //Save token to local storage
-          localStorage.setItem("s_id", response.data[1]["sessionToken"]);
-          apiUser.refreshInstance();
-          this.$router.push('profile?u='+response.data[0].profile_id);
+            this.createUserProfile(response.data[0]);
+            this.$router.push('profile?u='+response.data[0].profile_id);
         },
         error => {
           this.submissionError = error.response.data.Errors;

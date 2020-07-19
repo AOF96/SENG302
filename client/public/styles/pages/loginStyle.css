@@ -22,7 +22,6 @@
 
 /* -- Inner form container ---- */
 .loginFormContainer {
-    width: calc(100% - 42px);
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
@@ -43,6 +42,8 @@
 .loginFormContainer input, .loginFormContainer select {
     margin-bottom: 15px;
     width: 100%;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
 }
 .loginFormContainer hr {
     border: 0;
