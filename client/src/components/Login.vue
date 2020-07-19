@@ -10,7 +10,7 @@
                     </div>
                     <div class="loginRow">
                         <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
-                               required>
+                               required id="loginEmailForm">
                     </div>
                     <div class="loginRow">
                         <h6 class="loginErrorMessages" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
@@ -18,22 +18,19 @@
                     </div>
                     <div class="loginRow">
                         <input type="password" v-model="user.password" name="password"
-                               placeholder="Password" required>
+                               placeholder="Password" required id="loginPasswordForm">
                     </div>
                     <div class="loginRow">
                         <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
                     </div>
                     <hr>
                     <div class="loginRow">
-                        <v-btn v-on:click="submitLogin()" class="loginButton"
-                               :loading="loadingLogin"
-                               :disabled="loadingLogin"
-                               color="#1cca92"
-                               outlined
-                               rounded
+                        <button v-on:click="submitLogin()"
+                                class="loginButton"
+                               id="loginButton"
                         >
                             Login
-                        </v-btn>
+                        </button>
                     </div>
                 </form>
             </div>
