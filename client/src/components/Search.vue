@@ -161,7 +161,7 @@
          * @param email A users email
          */
         getUser(email){
-            this.getIdByEmail(email).then(
+            this.getIdByEmail({'email': email}).then(
                 (response) => {
                   this.setScrollPosition({scrollPos: window.scrollY});
                   this.$router.push({path:"/profile/" + response.data.id})
