@@ -1,5 +1,8 @@
 <template>
-  <div class="profileModule">
+  <v-card class="profileModule"
+      :loading="loadingCountries"
+      style="border-radius: 14px"
+  >
     <h1>Passport Countries</h1>
     <div class="passportCountriesContainer">
       <div class="passportCountryContainer" v-for="(country_dict, i) in country_dicts" v-bind:key="i">
@@ -8,7 +11,7 @@
         <div class="floatClear"></div>
       </div>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -22,7 +25,8 @@ export default {
   },
   data() {
     return {
-      country_dicts: []
+      country_dicts: [],
+      loadingCountries: true,
     };
   },
   computed: {
@@ -57,6 +61,7 @@ export default {
             }
           }
           this.country_dicts = country_dicts;
+          this.loadingCountries = false;
         })
         .catch(error => console.log(error));
     }

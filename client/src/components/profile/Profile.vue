@@ -9,51 +9,65 @@
     <div class="profileBanner"></div>
     <div class="profileContainer">
       <div class="leftSidebarContainer">
-        <div class="profileInfoContainer">
-          <h3>Profile Info</h3>
-          <hr />
-          <div v-if="!loadingProfileInfo">
-            <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
-            <hr />
-            <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
-            <hr />
-            <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
-            <hr />
-            <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
-            <hr />
-            <div class="profileRow">City: {{ searchedUser.city }}</div>
-            <hr />
-            <div v-if="searchedUser.state">
-              <div class="profileRow">State: {{ searchedUser.state }}</div>
+        <v-card class="profileInfoContainer"
+            style="border-radius: 14px;"
+            :loading="loadingProfileInfo"
+        >
+          <v-container>
+            <h3>Profile Info</h3>
+            <div v-if="!loadingProfileInfo">
               <hr />
+              <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
+              <hr />
+              <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
+              <hr />
+              <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
+              <hr />
+              <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
+              <hr />
+              <div class="profileRow">City: {{ searchedUser.city }}</div>
+              <hr />
+              <div v-if="searchedUser.state">
+                <div class="profileRow">State: {{ searchedUser.state }}</div>
+                <hr />
+              </div>
+              <div class="profileRow">Country: {{ searchedUser.country }}</div>
             </div>
-            <div class="profileRow">Country: {{ searchedUser.country }}</div>
-          </div>
-          <v-row justify="center">
-            <v-progress-circular v-if="loadingProfileInfo" indeterminate></v-progress-circular>
-          </v-row>
-        </div>
+          </v-container>
+        </v-card>
       </div>
     <div class="centreContainer">
-      <div class="profileHeaderContainer">
-        <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-          <path d="M0 0h24v24H0V0z" fill="none" />
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z" />
-        </svg>
-        <div class="profileMainInfoContainer">
-          <h1>
-            {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
-            <span id="userNickname" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
-          </h1>
-          <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
-        </div>
-        <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
-          <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
-            <button class="genericConfirmButton">Edit Profile</button>
-          </router-link>
-        </div>
-        <div class="floatClear"></div>
-      </div>
+      <v-card class="profileHeaderContainer"
+        style="border-radius: 14px;"
+        :loading="loadingProfileInfo"
+      >
+        <v-container>
+          <v-row align="center" justify="center">
+            <v-col cols="2">
+              <svg class="profileMainInfoIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z" />
+              </svg>
+            </v-col>
+            <v-col>
+              <div class="profileMainInfoContainer">
+                <h1>
+                  {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
+                  <span id="userNickname" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
+                </h1>
+                <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
+              </div>
+            </v-col>
+            <v-col cols="3">
+              <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
+                <router-link v-bind:to="'/settings/profile/' + searchedUser.profile_id">
+                  <button class="genericConfirmButton">Edit Profile</button>
+                </router-link>
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
       <div class="profileActivitiesContainer">
         <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
           <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
@@ -67,8 +81,15 @@
         </ul>
         <hr class="profileActivitySeparator" />
         <h3>Duration Activities</h3>
-        <v-row justify="center">
-          <v-progress-circular v-if="loadingDurationActivities" indeterminate></v-progress-circular>
+        <v-row v-if="loadingDurationActivities" justify="center">
+          <v-col cols="6">
+            <v-progress-linear
+              v-if="loadingDurationActivities"
+              indeterminate
+              rounded
+            >
+            </v-progress-linear>
+          </v-col>
         </v-row>
         <div class="activitySummaryContainer" v-for="activity in dur_activities" v-bind:key="activity">
           <div class="activityTextWrapDiv">
@@ -84,8 +105,15 @@
         <h4 v-if="dur_activities.length === 0 && !loadingDurationActivities">None</h4>
         <hr class="profileActivitySeparator" />
         <h3>Continuous Activities</h3>
-        <v-row justify="center">
-          <v-progress-circular v-if="loadingContinuousActivities" indeterminate></v-progress-circular>
+        <v-row v-if="loadingContinuousActivities" justify="center">
+          <v-col cols="6">
+            <v-progress-linear
+                v-if="loadingContinuousActivities"
+                indeterminate
+                rounded
+            >
+            </v-progress-linear>
+          </v-col>
         </v-row>
         <div class="activitySummaryContainer" v-for="activity in cont_activities" v-bind:key="activity">
           <div class="activityTextWrapDiv">
