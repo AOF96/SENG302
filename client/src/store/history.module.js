@@ -5,7 +5,7 @@ const state = {
     page: null,
     size: null,
     scrollPos: 0,
-  },
+  }
 };
 
 const getters = {

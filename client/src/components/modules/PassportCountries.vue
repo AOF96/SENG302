@@ -1,8 +1,5 @@
 <template>
-  <v-card class="profileModule"
-      :loading="loadingCountries"
-      style="border-radius: 14px"
-  >
+  <div class="profileModule">
     <h1>Passport Countries</h1>
     <div class="passportCountriesContainer">
       <div class="passportCountryContainer" v-for="(country_dict, i) in country_dicts" v-bind:key="i">
@@ -11,22 +8,21 @@
         <div class="floatClear"></div>
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import axios from "axios";
+import { mapGetters, mapActions } from "vuex";
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
 export default {
+  name: "PassportCountries",
   props: {
     passports: Array
   },
   data() {
     return {
-      country_dicts: [],
-      loadingCountries: true,
+      country_dicts: []
     };
   },
   computed: {
@@ -36,14 +32,14 @@ export default {
     this.startUp();
   },
   methods: {
+      ...mapActions(["getDataFromUrl"]),
     /*
           Function uses the country api and checks it against the ist of passport countries selected by the user and then
           creates a dictionary of name mapped to the country code which is further used to retrieve the flags and display
           them on the profile page.
          */
     startUp() {
-      axios
-        .get(COUNTRIES_URL)
+      this.getDataFromUrl(COUNTRIES_URL)
         .then(response => {
           var country_dicts = [];
           const data = response.data;
@@ -61,7 +57,6 @@ export default {
             }
           }
           this.country_dicts = country_dicts;
-          this.loadingCountries = false;
         })
         .catch(error => console.log(error));
     }

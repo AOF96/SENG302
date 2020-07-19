@@ -26,15 +26,7 @@
                     </div>
                     <hr>
                     <div class="loginRow">
-                        <v-btn v-on:click="submitLogin()" class="loginButton"
-                               :loading="loadingLogin"
-                               :disabled="loadingLogin"
-                               color="#1cca92"
-                               outlined
-                               rounded
-                        >
-                            Login
-                        </v-btn>
+                        <button type="submit" v-on:click="submitLogin()" class="loginButton"> Login</button>
                     </div>
                 </form>
             </div>
@@ -47,8 +39,6 @@
 
 <script>
   import {mapActions, mapGetters} from 'vuex';
-  import {apiUser} from '../api'
-
   import NavBar from "./modules/NavBar";
 
   export default {
@@ -58,7 +48,7 @@
         topErrorMsg: "",
         passwordErrorMsg: "",
         otherErrorMsg: "",
-        loadingLogin: false,
+
       }
     },
     components: {
@@ -68,9 +58,7 @@
       ...mapGetters(['user']),
     },
     methods: {
-      ...mapActions(['updateUserProfile']),
-      ...mapActions(['updateUserContinuousActivities']),
-      ...mapActions(['updateUserDurationActivities']),
+      ...mapActions(['updateUserProfile', 'updateUserContinuousActivities', 'updateUserDurationActivities', 'login', 'getUserContinuousActivities', 'getUserDurationActivities']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
@@ -80,23 +68,21 @@
         this.topErrorMsg = "";
         this.passwordErrorMsg = "";
         this.otherErrorMsg = "";
-        this.loadingLogin = true;
 
         if (!this.user.primary_email || !this.user.password) {
           this.topErrorMsg = "Please enter email or password";
-          this.loadingLogin = false;
           return;
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
-          apiUser.login(this.user.primary_email, this.user.password)
+          this.login({'email': this.user.primary_email, 'password': this.user.password})
             .then((response) => {
               const responseData = response.data;
               this.updateUserProfile(responseData);
               this.$router.push('Profile');
-              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
+              this.getUserContinuousActivities(responseData.profile_id).then((response) => {
                 this.updateUserContinuousActivities(response.data);
               }).catch(err => console.log(err));
-              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
+              this.getUserDurationActivities(responseData.profile_id).then((response) => {
                 this.updateUserDurationActivities(response.data);
               }).catch(err => console.log(err));
               if (responseData.permission_level === 2) {
@@ -106,9 +92,9 @@
               }
             })
             .catch(error => {
+
               const responseData = error.response.data;
               const responseCode = error.response.status;
-              this.loadingLogin = false;
 
               if (responseCode === 403 && responseData === "Email does not exist") {
                 this.topErrorMsg = "Account does not exist"
