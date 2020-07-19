@@ -16,7 +16,7 @@
                 </v-select>
               </v-col>
               <v-col>
-                <v-btn v-on:click="searchUsers(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
+                <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
               </v-col>
             </form>
             <v-row class="searchRow">
@@ -134,6 +134,15 @@ export default {
     }
   },
   methods: {
+    submitButtonCheck(page, size) {
+      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        this.searchUsers(page, size);
+      }
+    },
+
     ...mapActions(["setUserSearch", "setScrollPosition"]),
     /**
      * Search for size amount of users on given page and append to list
@@ -142,6 +151,11 @@ export default {
      * @param size Size of results to retrieve
      */
     searchUsers(page, size) {
+      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+        this.allUsers = [];
+        this.moreHidden = true;
+        return;
+      }
       if (page === this.defaultPage) {
         this.allUsers = [];
       }
@@ -155,11 +169,7 @@ export default {
       this.disabled = true;
 
       /* Search for users */
-      let searchTermInt = this.searchedTerm;
-      if (this.searchedTerm === null || this.searchedTerm.trim().length === 0) {
-        searchTermInt = null
-      }
-      apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
+      apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
         (response) => {
           if (response.data.content.length === 0) {
             this.disabled = true;
