@@ -47,9 +47,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(value = "FROM User u " +
             "WHERE u.permissionLevel < 2" +
-            "AND (u.primaryEmail like :email% " +
-            "OR concat(u.firstName, ' ', u.lastName) like :fullname% " +
-            "OR u.lastName like :lastname%)")
+            "AND (u.primaryEmail like %:email% " +
+            "OR concat(u.firstName, ' ', u.lastName) like %:fullname% " +
+            "OR u.lastName like %:lastname%)")
     Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
 
     @Query(value = "FROM User u " +
