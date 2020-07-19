@@ -434,4 +434,18 @@ public class UserController {
     public void badIdExceptionHandler() {
         //Nothing to do
     }
+
+    /***
+     * Endpoint to give an user admin rights. Calls userService to perform authentication and grant admin rights.
+     * @param jsonString the request body.
+     * @param profileId the id of the user being promoted to admin.
+     * @param sessionToken the authentication token of the admin performing the request.
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    @PutMapping("/profiles/{profileId}/role")
+    public ResponseEntity promoteUser(@RequestBody String jsonString,
+                                      @PathVariable Long profileId, @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.promoteUser(jsonString, profileId, sessionToken);
+    }
+
 }

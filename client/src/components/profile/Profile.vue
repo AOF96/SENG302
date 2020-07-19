@@ -28,6 +28,8 @@
           </div>
           <div class="profileRow">Country: {{ searchedUser.country }}</div>
         </div>
+        <button id ="profileAdminRightsButton" class="adminRightsButton" v-if="user.permission_level > 0 && searchedUser.permission_level === 0 && showAdminButton" v-on:click="grantAdminRights">Make admin</button>
+        <h6 v-show="showResult" class="adminRightsResult">{{adminRightsResult}}</h6>
       </div>
       <div class="centreContainer">
         <div class="profileHeaderContainer">
@@ -105,11 +107,13 @@
         mapState
     } from "vuex";
 
-    import NavBar from "../modules/NavBar";
-    import PassportCountries from "../modules/PassportCountries";
-    import json from "../../../public/json/data.json";
-
-    const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
+import NavBar from "../modules/NavBar";
+import PassportCountries from "../modules/PassportCountries";
+import json from "../../../public/json/data.json";
+const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
+import {
+  apiUser
+} from "../../api";
 
     export default {
         name: "Profile",
@@ -140,7 +144,10 @@
                     2: "I can jog a short distance",
                     3: "I can run a medium distance",
                     4: "I can run a marathon"
-                }
+                },
+              adminRightsResult: "",
+              showResult: false,
+              showAdminButton: true
             };
         },
         mounted() {
@@ -209,7 +216,27 @@
                         this.countries_option = countries;
                     })
                     .catch(error => console.log(error));
+            },
+          /***
+           * Makes a request to the server to give the searched user admin rights given the user is not already an admin and
+           * the requesting user is already an admin.
+           */
+          grantAdminRights() {
+            if (this.user.permission_level === 0 || this.searchedUser.permission_level > 0) {
+              this.adminRightsResult = "This user is already an admin or you don't have the rights to perform this.";
+            } else {
+              apiUser.promoteToAdmin(this.searchedUser.profile_id)
+                      .then(response => {
+                        this.adminRightsResult = response.data;
+                        this.showAdminButton = false;
+                      })
+                      .catch((error) => {
+                        this.adminRightsResult = error.response.data.Errors;
+                      })
             }
+            this.showResult = true;
+            setTimeout(() => this.showResult = false, 5000)
+          }
         }
     };
 </script>

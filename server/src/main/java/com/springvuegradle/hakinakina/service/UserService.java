@@ -12,6 +12,8 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import net.minidev.json.JSONObject;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -620,5 +622,49 @@ public class UserService {
             userResponses.add(searchUserDto);
         }
         return new PageImpl<>(userResponses);
+    }
+
+    /***
+     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
+     * @param jsonString the request body.
+     * @param profileID the id of the user being promoted to admin.
+     * @param sessionToken the authentication token of the admin performing the request.
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    public ResponseEntity promoteUser(String jsonString, Long profileID, String sessionToken) {
+        ResponseEntity result;
+
+        try {
+            System.out.println(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else {
+                Session session = sessionRepository.findUserIdByToken(sessionToken);
+                int userPermissionLevel = session.getUser().getPermissionLevel();
+                Optional<User> userToPromote = userRepository.getUserById(profileID);
+                Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
+                String role = (String) json.get("role");
+                if (!role.equals("admin")) {
+                    result = responseHandler.formatErrorResponse(400, "Bad request");
+
+                }
+                else if (userToPromote.get().getPermissionLevel() > 0) {
+                    result = responseHandler.formatErrorResponse(400, "User to promote is already an admin");
+                }
+                else if (userPermissionLevel == 0) {
+                    result = responseHandler.formatErrorResponse(403, "Unauthorized user");
+                } else {
+                    userRepository.grantAdminRights(profileID);
+                    result = responseHandler.formatSuccessResponse(200, "User successfully promoted");
+
+                }
+            }
+
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not promote user");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
     }
 }
