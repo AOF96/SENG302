@@ -1,8 +1,10 @@
 /* eslint-env jest*/
-import {createLocalVue, mount, shallowMount} from '@vue/test-utils'
+import {createLocalVue, mount} from '@vue/test-utils'
 import Login from '../Login.vue'
 import Vuex from 'vuex'
 import {apiUser} from "@/api"
+import flushPromises from "flush-promises";
+
 
 // creates Vue object (whole page)
 const localVue = createLocalVue()
@@ -63,7 +65,6 @@ describe('Successful login', () => {
   let store
   beforeEach(() => {
 
-    apiUser.login = jest.fn()
     getters = {
       user: () => ({
         primary_email: "test@gmail.com",
@@ -79,16 +80,14 @@ describe('Successful login', () => {
         updateUserProfile: jest.fn(),
         updateUserContinuousActivities: jest.fn(),
         updateUserDurationActivities: jest.fn(),
-        login: jest.fn(),
+        login: jest.fn()
       }
     })
   })
 
   it('should successfully login', async () => {
-    apiUser.login.mockImplementationOnce(() =>
-      Promise.resolve({
-          response: {
-            data: {
+    apiUser.login.mockResolvedValue(
+      { data: {
               "bio": "nanana",
               "authoredActivities": [],
               "profile_id": 2,
@@ -110,101 +109,103 @@ describe('Successful login', () => {
             },
             status: 200
           }
+    )
+
+    apiUser.getUserContinuousActivities.mockResolvedValue({data:[]})
+    apiUser.getUserDurationActivities.mockResolvedValue({data:[]})
+
+
+
+    const wrapper = mount(Login, {store, localVue, mocks, stubs})
+    await wrapper.find('#loginButton').trigger('click')
+    // this waits until the web page is uploaded
+    await flushPromises();
+    // checks if the login method is called once
+    expect(apiUser.login).toHaveBeenCalledTimes(1)
+    //trying to test whether the page has moved to the user profile test
+    expect(mocks.$router.push).toHaveBeenCalledTimes(2)
+  })
+})
+
+
+// test for login errors
+describe('Login account error, password error and email/password input error', () => {
+
+  let getters
+  let store
+
+  beforeEach(() => {
+
+    apiUser.login = jest.fn()
+    getters = {
+      user: () => ({
+        primary_email: "test@gmail.com", //this is not registered
+        password: "Welcome1"
+      }),
+      isAdmin: () => ({
+        isAdmin: false
+      }),
+    }
+    store = new Vuex.Store({
+      getters
+    })
+  })
+
+
+  it('fails because of wrong email', async () => {
+    apiUser.login.mockImplementationOnce(() =>
+      Promise.reject({
+          response: {
+            data: "Email does not exist",
+            status: 403
+          }
         }
       )
     )
 
-
-    const wrapper = shallowMount(Login, {store, localVue, mocks, stubs})
-    await wrapper.find('#loginButton').trigger('click')
+    const wrapper = mount(Login, {store, localVue, mocks, stubs})
+    await wrapper.find('.loginButton').trigger('click')
     // this waits until the web page is uploaded
     await wrapper.vm.$nextTick()
     // checks if the login method is called once
     expect(apiUser.login).toHaveBeenCalledTimes(1)
-    //trying to test whether the page has moved to the user profile test
-    expect(mocks.$router.push).toHaveBeenCalledTimes(1)
+    expect(wrapper.vm.topErrorMsg).toBe("Account does not exist")
+  })
+
+  it('fails because of wrong password', async () => {
+    apiUser.login.mockImplementationOnce(() =>
+      Promise.reject({
+          response: {
+            data: "Incorrect password",
+            status: 403
+          }
+        }
+      )
+    )
+
+    const wrapper = mount(Login, {store, localVue, mocks, stubs})
+    await wrapper.find('.loginButton').trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(apiUser.login).toHaveBeenCalledTimes(1)
+    expect(wrapper.vm.passwordErrorMsg).toBe("Incorrect Password")
+  })
+
+  it('fails because email, password or both are not provided', async () => {
+    apiUser.login.mockImplementationOnce(() =>
+      Promise.reject({
+          response: {
+            data: "Please enter email/password",
+            status: 403
+          }
+        }
+      )
+    )
+
+    const wrapper = mount(Login, {store, localVue, mocks, stubs})
+    await wrapper.find('.loginButton').trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(apiUser.login).toHaveBeenCalledTimes(1)
+    expect(wrapper.vm.topErrorMsg).toBe("Please enter email/password")
   })
 })
 
-//
-// // test for login errors
-// describe('Login account error, password error and email/password input error', () => {
-//
-//   let getters
-//   let store
-//
-//   beforeEach(() => {
-//
-//     apiUser.login = jest.fn()
-//     getters = {
-//       user: () => ({
-//         primary_email: "test@gmail.com", //this is not registered
-//         password: "Welcome1"
-//       }),
-//       isAdmin: () => {
-//         false
-//       },
-//     }
-//     store = new Vuex.Store({
-//       getters
-//     })
-//   })
-//
-//
-//   it('fails because of wrong email', async () => {
-//     apiUser.login.mockImplementationOnce(() =>
-//       Promise.reject({
-//           response: {
-//             data: "Email does not exist",
-//             status: 403
-//           }
-//         }
-//       )
-//     )
-//
-//     const wrapper = shallowMount(Login, {store, localVue, mocks, stubs})
-//     await wrapper.find('.loginButton').trigger('click')
-//     // this waits until the web page is uploaded
-//     await wrapper.vm.$nextTick()
-//     // checks if the login method is called once
-//     expect(apiUser.login).toHaveBeenCalledTimes(0)
-//     expect(wrapper.vm.topErrorMsg).toBe("")
-//   })
-//
-//   it('fails because of wrong password', async () => {
-//     apiUser.login.mockImplementationOnce(() =>
-//       Promise.reject({
-//           response: {
-//             data: "Incorrect password",
-//             status: 403
-//           }
-//         }
-//       )
-//     )
-//
-//     const wrapper = shallowMount(Login, {store, localVue, mocks, stubs})
-//     await wrapper.find('.loginButton').trigger('click')
-//     await wrapper.vm.$nextTick()
-//     expect(apiUser.login).toHaveBeenCalledTimes(0)
-//     expect(wrapper.vm.passwordErrorMsg).toBe("")
-//   })
-//
-//   it('fails because email, password or both are not provided', async () => {
-//     apiUser.login.mockImplementationOnce(() =>
-//       Promise.reject({
-//           response: {
-//             data: "Please enter email/password",
-//             status: 403
-//           }
-//         }
-//       )
-//     )
-//
-//     const wrapper = shallowMount(Login, {store, localVue, mocks, stubs})
-//     await wrapper.find('.loginButton').trigger('click')
-//     await wrapper.vm.$nextTick()
-//     expect(apiUser.login).toHaveBeenCalledTimes(0)
-//     expect(wrapper.vm.topErrorMsg).toBe("")
-//   })
-// })
-//
