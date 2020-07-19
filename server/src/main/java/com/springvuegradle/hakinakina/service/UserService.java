@@ -685,7 +685,6 @@ public class UserService {
         ResponseEntity result;
 
         try {
-            System.out.println(sessionToken);
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
             } else {
