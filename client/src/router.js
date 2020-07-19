@@ -116,19 +116,35 @@ router.beforeEach((to, from, next) => {
       (error) => {
         console.log("Not logged in: " + error);
         next();
-      })
-    ;
+      });
   } else {
     if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level === 2 && isLoggedIn) {
+      updatePageHistory(to, from);
       next();
     } else if (isAuthPath) {
+      store._actions.resetPageHistory[0]();
       isLoggedIn ? next("/profile") : next();
     } else if (to.path !== "/logout" && isLoggedIn) {
+      updatePageHistory(to, from);
       next();
     } else {
+      store._actions.resetPageHistory[0]();
       next("/login");
     }
   }
 });
+
+function updatePageHistory(to, from) {
+  if (store.getters.getPreviousPage === to.path) {
+    store._actions.previousPage[0](from.path);
+  } else if (store.getters.getNextPage === to.path) {
+    store._actions.nextPage[0](from.path);
+  } else if (to.path === "/profile" || from.path === "/profile") {
+    store._actions.resetPageHistory[0]();
+  } else if (to.path !== from.path && from.path !== "/login" && from.path !== "/signup") {
+    store._actions.clearNextHistory[0]();
+    store._actions.addPreviousPage[0](from.path);
+  }
+}
 
 export default router;
