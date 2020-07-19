@@ -96,6 +96,7 @@
     const NavBar = () => import("../../modules/NavBar");
     import axios from 'axios';
     export default {
+        name: 'ActivitySettings',
         components: {
             NavBar
         },
