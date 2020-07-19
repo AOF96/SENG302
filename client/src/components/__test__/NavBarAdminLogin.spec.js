@@ -3,6 +3,7 @@ import {createLocalVue, mount, shallowMount} from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import NavBar from '../modules/NavBar.vue'
 import Vuex from 'vuex'
+import flushPromises from "flush-promises";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -38,17 +39,19 @@ describe('NavBar after the login is successful', () => {
 
     })
 
-    it('Clicking on the Dashboard button the user gets redirected to the Search page', () => {
+    it('Clicking on the Dashboard button the user gets redirected to the Search page', async () => {
         const wrapper = mount(NavBar, {store, localVue, router})
         wrapper.find("#navBarSearchBtn").trigger('click')
-        expect(wrapper.findComponent({name: 'searchUser'}))
+        await flushPromises();
+        expect(window.location.href).toBe('http://localhost/#/search')
 
     })
 
-    it('Clicking on the Dashboard button the user gets redirected to Admin dashboard', () => {
+    it('Clicking on the Dashboard button the user gets redirected to Admin dashboard', async () => {
         const wrapper = mount(NavBar, {store, localVue, router})
         wrapper.find("#dashboardButton").trigger('click')
-        expect(wrapper.findComponent({name: 'AdminDashboard'}))
+        await flushPromises();
+        expect(window.location.href).toBe('http://localhost/#/settings/admin_dashboard')
 
     })
 
