@@ -7,7 +7,6 @@
       </router-link>
       <h1 class="settingsTitle">Edit Profile Info</h1>
       <hr />
-      <h6 class="editProfileInfoErrorMessage" id="error" hidden="true"></h6>
       <form @submit.prevent class="editForm">
         <div
           id="adminToggle"
@@ -104,6 +103,7 @@
           v-model="searchedUser.bio"
           placeholder="Write about yourself"
         ></textarea>
+        <h6 class="editProfileInfoErrorMessage" id="error" hidden="true"></h6>
         <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
         <button
           class="genericDeleteButton deleteProfileButton"
