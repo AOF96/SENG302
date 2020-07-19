@@ -15,11 +15,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
+import axios from "axios";
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
 export default {
-  name: "PassportCountries",
   props: {
     passports: Array
   },
@@ -36,14 +36,14 @@ export default {
     this.startUp();
   },
   methods: {
-      ...mapActions(["getDataFromUrl"]),
     /*
           Function uses the country api and checks it against the ist of passport countries selected by the user and then
           creates a dictionary of name mapped to the country code which is further used to retrieve the flags and display
           them on the profile page.
          */
     startUp() {
-      this.getDataFromUrl(COUNTRIES_URL)
+      axios
+        .get(COUNTRIES_URL)
         .then(response => {
           var country_dicts = [];
           const data = response.data;

@@ -5,7 +5,7 @@
     </router-link>
 
     <router-link v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
-      <button class="myaccount navBarButton" id="profileButton">Profile</button>
+      <button class="myaccount navBarButton">Profile</button>
     </router-link>
 
     <router-link v-bind:to="'/search'" v-if="user.isLogin">
@@ -13,7 +13,7 @@
     </router-link>
 
     <router-link v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">
-      <button class="navBarButton" id="dashboardButton">Dashboard</button>
+      <button class="navBarButton" >Dashboard</button>
     </router-link>
 
     <router-link to="/signup" v-if="!user.isLogin">
@@ -28,6 +28,7 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex';
+    import {apiUser} from "../../api";
 
     export default {
         name: "NavBar",
@@ -35,18 +36,21 @@
             ...mapGetters(["user", "isAdmin"]),
         },
         methods: {
-            ...mapActions(['logout', 'updateUserProfile','updateUserContinuousActivities', 'updateUserDurationActivities', "getUserContinuousActivities", "getUserDurationActivities", "refreshUserData"]),
+            ...mapActions(['logout']),
+            ...mapActions(['updateUserProfile']),
+            ...mapActions(['updateUserContinuousActivities']),
+            ...mapActions(['updateUserDurationActivities']),
             /*
                 Redirects the user into the profile page. Refreshes the data by making a request to the server side.
             */
             goToProfile() {
-                this.refreshUserData(this.user.profile_id).then((response) => {
+                apiUser.refreshUserData(this.user.profile_id).then((response) => {
                     this.updateUserProfile(response.data);
                 });
-                this.getUserContinuousActivities(this.user.profile_id).then((response) => {
+                apiUser.getUserContinuousActivities(this.user.profile_id).then((response) => {
                     this.updateUserContinuousActivities(response.data);
                 });
-                this.getUserDurationActivities(this.user.profile_id).then((response) => {
+                apiUser.getUserDurationActivities(this.user.profile_id).then((response) => {
                     this.updateUserDurationActivities(response.data);
                 });
             },

@@ -51,7 +51,8 @@
 
 <script>
 import UserSettingsMenu from "./ProfileSettingsMenu";
-import { mapGetters, mapActions } from "vuex";
+import { apiUser } from "../../../api";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -73,7 +74,7 @@ export default {
     validation() {
       return {
         oldPassword: this.oldPassword !== "" || this.user.permission_level > 0,
-        match: this.newPassword === this.confirmPassword,
+        match: this.newPassword == this.confirmPassword,
         length: /.{8,}/.test(this.newPassword),
         number: /\d/.test(this.newPassword),
         uppercase: /[A-Z]/.test(this.newPassword)
@@ -81,22 +82,21 @@ export default {
     }
   },
   methods: {
-      ...mapActions(["getUserById", "changePassword"]),
     /*
       Uses user id from url to request user data.
     */
     async loadSearchedUser() {
       if (
-        this.$route.params.profileId === null ||
-        this.$route.params.profileId === ""
+        this.$route.params.profileId == null ||
+        this.$route.params.profileId == ""
       ) {
         this.$router.push("/settings/password/" + this.user.profile_id);
         this.searchedUser = this.user;
       } else {
-        var tempUserData = await this.getUserById(
+        var tempUserData = await apiUser.getUserById(
           this.$route.params.profileId
         );
-        if (tempUserData === "Invalid permissions") {
+        if (tempUserData == "Invalid permissions") {
           this.$router.push("/settings/password/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
@@ -122,11 +122,12 @@ export default {
     submitPasswordChange() {
         document.getElementById("success").hidden = true;
       if (!this.isValid()) return;
-      this.changePassword( {
-          'id': this.searchedUser.profile_id,
-          'oldPassword': this.oldPassword,
-          'newPassword': this.newPassword,
-          'confirmPassword': this.confirmPassword }
+      apiUser
+        .changePassword(
+          this.searchedUser.profile_id,
+          this.oldPassword,
+          this.newPassword,
+          this.confirmPassword
         )
         .then(
           response => {

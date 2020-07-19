@@ -45,9 +45,9 @@
 <script>
 import UserSettingsMenu from "./ProfileSettingsMenu";
 import { mapActions, mapState, mapGetters } from "vuex";
+import { apiUser } from "../../../api";
 
 export default {
-  name: "AddUserActivity",
   components: {
     UserSettingsMenu
   },
@@ -65,7 +65,8 @@ export default {
   },
   created: async function() {
     // Ensures only activity types from the database can be selected and cannot select ones already selected
-    await this.getActivityTypes()
+    await apiUser
+      .getActivityTypes()
       .then(response => {
         const activityTypes = response.data;
 
@@ -82,7 +83,7 @@ export default {
     this.loadSearchedUser();
   },
   methods: {
-      ...mapActions(["updateActivities", "getUserById", "editUserActivityTypes", "getActivityTypes"]),
+    ...mapActions(["updateActivities"]),
 
     startUp() {
       console.log("init");
@@ -96,6 +97,7 @@ export default {
       if (!this.selected_activity || this.selected_activity === "Activity Type")
         return;
       this.searchedUser.activities.push(this.selected_activity);
+      console.log(this.searchedUser.activities);
       const index = this.activities_option.indexOf(this.selected_activity);
       if (index === -1) return;
       this.activities_option.splice(index, 1);
@@ -121,7 +123,12 @@ export default {
      */
     saveActivityTypes() {
       this.updateActivities(this.searchedUser);
-      this.editUserActivityTypes({'id': this.searchedUser.profile_id, 'activities': this.searchedUser.activities})
+      console.log(this.searchedUser.activities);
+      apiUser
+        .editUserActivityTypes(
+          this.searchedUser.profile_id,
+          this.searchedUser.activities
+        )
         .then(
           response => {
             document.getElementById("activity_type_success").hidden = false;
@@ -149,7 +156,9 @@ export default {
         this.$router.push("/settings/activities/" + this.user.profile_id);
         this.searchedUser = this.user;
       } else {
-        var tempUserData = await this.getUserById(this.$route.params.profileId);
+        var tempUserData = await apiUser.getUserById(
+          this.$route.params.profileId
+        );
         if (tempUserData == "Invalid permissions") {
           this.$router.push("/settings/activities/" + this.user.profile_id);
           this.searchedUser = this.user;

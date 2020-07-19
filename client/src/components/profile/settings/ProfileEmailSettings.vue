@@ -5,7 +5,7 @@
             <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
                 <button class="genericConfirmButton backButton">Back to Profile</button>
             </router-link>
-            <h1 id="editEmailPage">Edit Email Settings</h1>
+            <h1>Edit Email Settings</h1>
             <hr>
             <h3>Primary email</h3>
             <v-row justify="center">
@@ -94,10 +94,10 @@
 <script>
     import {mapState, mapActions, mapGetters} from 'vuex';
     import UserSettingsMenu from './ProfileSettingsMenu';
+    import {apiUser} from "../../../api";
     const LIMIT_NUM_EMAIL = 4;
 
     export default {
-        name: "EmailSettings",
         components: {
             UserSettingsMenu
         },
@@ -123,7 +123,7 @@
             ...mapGetters(['user']),
         },
         methods: {
-            ...mapActions(['updateUserEmail',"getAllEmails", "getUserById", "addEmail", "editEmail"]),
+            ...mapActions(['updateUserEmail']),
 
             /*
                Adds a new email into the secondary emails lists. Prevents the user from entering empty text, adding more
@@ -135,7 +135,7 @@
                     this.showButton = false;
                     return;
                 }
-                const emails = await this.getAllEmails();
+                const emails = await apiUser.getAllEmails();
                 if (textInput === "") {
                     this.errorMsg = "Please enter an email.";
                     return;
@@ -145,7 +145,7 @@
                     this.errorMsg = "Email already in use.";
                 } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
                     try {
-                        await this.addEmail({'id': this.searchedUser.profile_id, 'newEmail':[this.textInput]});
+                        await apiUser.addEmails(this.searchedUser.profile_id, [this.textInput]);
                         this.searchedUser.additional_email.push(this.textInput);
                         this.updateUserEmail(this.searchedUser);
                         var tempThis = this;
@@ -171,7 +171,7 @@
                 this.searchedUser.additional_email.push(this.searchedUser.primary_email);
                 this.searchedUser.primary_email = additional_email;
                 this.updateUserEmail(this.searchedUser);
-                this.editEmail({'id': this.searchedUser.profile_id, 'primaryEmail': this.searchedUser.primary_email, 'additionalEmail': this.searchedUser.additional_email});
+                apiUser.editEmail(this.searchedUser.profile_id, this.searchedUser.primary_email, this.searchedUser.additional_email);
             },
 
             /*
@@ -188,7 +188,7 @@
             */
             async editEmail() {
                 this.editErrorMsg = "";
-                const emails = await this.getAllEmails();
+                const emails = await apiUser.getAllEmails();
                 if (this.searchedUser.additional_email.includes(this.editEmailInput) || this.editEmailInput == this.searchedUser.primary_email || emails.data.includes(this.editEmailInput)) {
                     this.editErrorMsg = "Email already in use.";
                     // alert("Email already in use.");
@@ -197,7 +197,7 @@
                     this.searchedUser.additional_email[index] = this.editEmailInput;
                     this.showEditBox = false;
                     this.updateUserEmail(this.searchedUser);
-                    this.editEmail({'id': this.searchedUser.profile_id, 'primaryEmail': this.searchedUser.primary_email, 'additionalEmail': this.searchedUser.additional_email});
+                    apiUser.editEmail(this.searchedUser.profile_id, this.searchedUser.primary_email, this.searchedUser.additional_email);
                     this.editErrorMsg = "";
                 }
             },
@@ -218,7 +218,7 @@
                     this.showButton = true;
                 }
                 this.updateUserEmail(this.searchedUser);
-                this.editEmail({'id': this.searchedUser.profile_id, 'primaryEmail': this.searchedUser.primary_email, 'additionalEmail': this.searchedUser.additional_email});
+                apiUser.editEmail(this.searchedUser.profile_id, this.searchedUser.primary_email, this.searchedUser.additional_email);
             },
 
             /*
@@ -229,7 +229,7 @@
                     this.$router.push('/settings/email/'+this.user.profile_id);
                     this.searchedUser = this.user;
                 }else{
-                    var tempUserData = await this.getUserById(this.$route.params.profileId);
+                    var tempUserData = await apiUser.getUserById(this.$route.params.profileId);
                     if(tempUserData == "Invalid permissions"){
                         this.$router.push('/settings/email/'+this.user.profile_id);
                         this.searchedUser = this.user;

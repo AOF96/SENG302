@@ -3,7 +3,7 @@
     <UserSettingsMenu />
     <div class="settingsContentContainer">
       <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
+        <button class="genericConfirmButton backButton">Back to Profile</button>
       </router-link>
       <h1 class="settingsTitle">Edit Profile Info</h1>
       <hr />
@@ -29,24 +29,22 @@
         <input
           type="text"
           name="fname"
-          id="firstName"
           v-model="searchedUser.firstname"
           placeholder="First Name*"
           required
         />
         <h2>Middle Name</h2>
-        <input type="text" name="lname" id="middleName" v-model="searchedUser.middlename" placeholder="Middle Name" />
+        <input type="text" name="lname" v-model="searchedUser.middlename" placeholder="Middle Name" />
         <h2>Last Name</h2>
         <input
           type="text"
           name="lname"
-          id="lastName"
           v-model="searchedUser.lastname"
           placeholder="Last Name*"
           required
         />
         <h2>Nickname</h2>
-        <input type="text" name="nickname" id="nickName" v-model="searchedUser.nickname" placeholder="Nickname" />
+        <input type="text" name="nickname" v-model="searchedUser.nickname" placeholder="Nickname" />
 
         <h2 id="locationHeader">Location: <b>{{ location }}</b></h2>
         <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"
@@ -69,7 +67,6 @@
         <select
           v-model="searchedUser.gender"
           name="gender"
-          id="userGender"
           placeholder="Gender"
           value="Gender"
           required
@@ -85,7 +82,6 @@
           name="fitnesslevel"
           placeholder="fitness"
           value="fitness"
-          id="userFitnessLevel"
           required
         >
           <option value="0">I never exercise</option>
@@ -95,52 +91,17 @@
           <option value="4">I can run a marathon</option>
         </select>
         <h2>Birthday</h2>
-        <input v-model="searchedUser.date_of_birth" name="birthday" id="userBirthday" type="date" required />
+        <input v-model="searchedUser.date_of_birth" name="birthday" type="date" required />
         <h2>Bio</h2>
         <textarea
           maxlength="255"
           name="bio"
-          id="userBio"
           v-model="searchedUser.bio"
           placeholder="Write about yourself"
         ></textarea>
         <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
         <button
-          class="genericDeleteButton deleteProfileButton"
-          @click.stop="dialog = true"
-        >
-          Delete Account
-        </button>
-        <v-dialog
-          v-model="dialog"
-          max-width="290"
-        >
-          <v-card>
-            <v-card-title class="headline">Delete Account</v-card-title>
-            <v-card-text>
-              Are you sure you want to delete this account?
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <button
-                @click="dialog = false"
-                v-on:click="deleteAccount()"
-                class="genericConfirmButton updateProfileButton"
-              >
-                Yes
-              </button>
-
-              <button
-                class="genericDeleteButton deleteProfileButton"
-                @click="dialog = false"
-              >
-                No
-              </button>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <button
-          class="genericConfirmButton updateProfileButton" id="profileUpdateButton"
+          class="genericConfirmButton updateProfileButton"
           v-on:click="updateProfile()"
           type="submit"
         >Update Profile</button>
@@ -152,11 +113,11 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import axios from 'axios';
 import UserSettingsMenu from "./ProfileSettingsMenu";
+import { apiUser } from "../../../api";
+import axios from "axios";
 
 export default {
-  name: "EditUserInfo",
   components: {
     UserSettingsMenu
   },
@@ -170,14 +131,14 @@ export default {
       showAdmin: false,
       suggestedLocations: [],
       showLocations: false,
-      location: null,
-      dialog: false,
+      location: null
     };
   },
   methods: {
-    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount"]),
+    ...mapActions(["logout"]),
+    ...mapActions(["updateUserProfile"]),
 
-      /**
+    /**
      * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
      * the location input.
      */
@@ -227,8 +188,24 @@ export default {
     was unsuccessful.
     */
     updateProfile() {
-      this.editProfile(
-          this.searchedUser
+      console.log(this.searchedUser.fitness);
+      apiUser
+        .editProfile(
+          this.searchedUser.profile_id,
+          this.searchedUser.firstname,
+          this.searchedUser.lastname,
+          this.searchedUser.middlename,
+          this.searchedUser.nickname,
+          this.searchedUser.primary_email,
+          this.searchedUser.bio,
+          this.searchedUser.date_of_birth,
+          this.searchedUser.gender,
+          Number(this.searchedUser.fitness),
+          this.searchedUser.additional_email,
+          this.searchedUser.passports,
+          this.searchedUser.permission_level,
+          this.searchedUser.activities,
+          this.searchedUser.location
         )
         .then(
           response => {
@@ -257,32 +234,9 @@ export default {
       }
     },
 
-    /**
-     * Allows user or admin to delete the account
-     */
-    deleteAccount() {
-      this.deleteUserAccount({'id': this.searchedUser.profile_id})
-        .then(() => {
-          if (this.user.permission_level > 0) {
-            if (this.searchedUser.profile_id == this.user.profile_id) {
-              location.reload();
-            } else {
-              this.$router.push("/settings/admin_dashboard");
-            }
-          }
-          else {
-            location.reload();
-          }
-        })
-      .catch((error) => {
-        console.log(error);
-          }
-      )
-    },
-
-    /**
-     * Uses user id from url to request user data.
-     */
+    /*
+            Uses user id from url to request user data.
+         */
     async loadSearchedUser() {
       if (
         this.$route.params.profileId == null ||
@@ -291,7 +245,9 @@ export default {
         this.$router.push("/settings/profile/" + this.user.profile_id);
         this.searchedUser = this.user;
       } else {
-        var tempUserData = await this.getUserById(this.$route.params.profileId);
+        var tempUserData = await apiUser.getUserById(
+          this.$route.params.profileId
+        );
         if (tempUserData == "Invalid permissions") {
           this.$router.push("/settings/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
@@ -322,14 +278,12 @@ export default {
     let outer = this;
     let input = document.querySelector("#locationInput");
     let timeout = null;
-    if(input == null){
-      return;
-    }
     input.addEventListener("keyup", function() {
       clearTimeout(timeout);
       timeout = setTimeout(function() {
         const url = "https://photon.komoot.de/api/?q=" + input.value;
-        axios.get(url)
+        axios
+          .get(url)
           .then(response => {
             //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
             //is only displayed when it is finished, avoiding the problem of the user being taken to the

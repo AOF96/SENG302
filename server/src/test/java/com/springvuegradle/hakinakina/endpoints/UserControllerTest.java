@@ -142,6 +142,19 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("User logged out")));
     }
 
+//    @Test
+//    public void getAllUsersTest() throws Exception {
+//        User testUser = new User("John", "Smith", "john@gmail.com", null,
+//                Gender.MALE, 2, "Password1");
+//        testUser.setUserId((long) 1);
+//        ArrayList<User> testList = new ArrayList<User>();
+//        testList.add(testUser);
+//        when(userRepository.findAll()).thenReturn(testList);
+//        this.mockMvc.perform(get("/profiles"))
+//                .andExpect(status().is(200))
+//                .andExpect(content().string(containsString("{\n\"Users\": [\n\"1 John Smith\"\n]\n}")));
+//    }
+
     @Test
     public void getUserByIdTest() throws Exception {
         final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
@@ -328,7 +341,7 @@ public class UserControllerTest {
     }
 
     /**
-     * A default admin can edit any user permission level registered in the system.
+     * An default admin can edit any user permission level registered in the system.
      */
     @Test
     public void editUserPermissionLevelByDefaultAdminSuccessTest() throws Exception {
@@ -508,70 +521,4 @@ public class UserControllerTest {
                 .andExpect(content().json("[Fun, Relaxing, Extreme]"));
     }
 
-
-    /**
-     * User should be able to delete their own account
-     */
-    @Test
-    public void deleteUserTest() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        User testUser = new User("John", "Smith", "john@gmail.com", null,
-                Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-        testUser.setPermissionLevel(0);
-        testSession.setUser(testUser);
-
-        when(service.deleteUser(eq(1L), eq("t0k3n"), any(HttpServletResponse.class)))
-                .thenReturn(new ResponseEntity("Successfully Deleted User", HttpStatus.valueOf(200)));
-        this.mockMvc.perform(delete("/profiles/1").cookie(tokenCookie))
-                .andExpect(status().is(200))
-                .andExpect(content().string(containsString("Successfully Deleted User")));
-    }
-
-    /**
-     * A normal registered user should not be able to delete another user's account
-     */
-    @Test
-    public void deleteUserNotAdminTest() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        User testUser = new User("John", "Smith", "john@gmail.com", null,
-                Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-        testUser.setPermissionLevel(0);
-
-        User normalUser = new User();
-        normalUser.setPermissionLevel(0);
-        testSession.setUser(normalUser);
-
-        when(service.deleteUser(eq(1L), eq("t0k3n"), any(HttpServletResponse.class)))
-                .thenReturn(new ResponseEntity("Unauthorised User", HttpStatus.valueOf(403)));
-        this.mockMvc.perform(delete("/profiles/1").cookie(tokenCookie))
-                .andExpect(status().is(403))
-                .andExpect(content().string(containsString("Unauthorised User")));
-    }
-
-    /**
-     * An admin should be able to delete another user's account
-     */
-    @Test
-    public void deleteUserAsAdminTest() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        User testUser = new User("John", "Smith", "john@gmail.com", null,
-                Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-        testUser.setPermissionLevel(0);
-
-        User adminUser = new User();
-        adminUser.setPermissionLevel(1);
-        testSession.setUser(adminUser);
-
-        when(service.deleteUser(eq(1L), eq("t0k3n"), any(HttpServletResponse.class)))
-                .thenReturn(new ResponseEntity("Successfully Deleted User", HttpStatus.valueOf(200)));
-        this.mockMvc.perform(delete("/profiles/1").cookie(tokenCookie))
-                .andExpect(status().is(200))
-                .andExpect(content().string(containsString("Successfully Deleted User")));
-    }
 }

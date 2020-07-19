@@ -18,6 +18,7 @@ const mocks = {
 //make the test igonre router-link when found
 const stubs = ['router-link']
 
+
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
@@ -127,8 +128,7 @@ describe('Signup page display', () => {
 describe('profile created', () => {
   apiUser.signUp = jest.fn()
   const actions = {
-    createUserProfile: jest.fn(),
-    signUp: jest.fn()
+    createUserProfile: jest.fn()
   }
 
   const getters = {
@@ -162,9 +162,9 @@ describe('profile created', () => {
 
     await wrapper.find('#signUpButton').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(actions.signUp).toHaveBeenCalledTimes(1)
-    expect(actions.createUserProfile).toHaveBeenCalledTimes(0)
-    expect(mocks.$router.push).toHaveBeenCalledTimes(0)
+    expect(apiUser.signUp).toHaveBeenCalledTimes(1)
+    expect(actions.createUserProfile).toHaveBeenCalledTimes(1)
+    expect(mocks.$router.push).toHaveBeenCalledTimes(1)
   })
 })
 

@@ -11,13 +11,13 @@ public class Session {
     @Column(name = "token")
     private String  token;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
     protected Session() {}
     public Session(String token) {
         this.token = token;
     }
+
+    @ManyToOne
+    private User user;
 
     public void setUser(User user) {
         this.user = user;
