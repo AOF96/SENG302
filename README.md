@@ -24,7 +24,14 @@ Please have the server and client running at the same time while using the appli
 
 ![page_structure](/uploads/a6b190030d901a8574176e1e64811922/page_structure.png)
 
+- Mayuko Williams
 - Jackie Qiu
+- Samuel Sandri
+- Anzac Morel
+- Frankie Oprenario
+- Karna Malone
+- Shivin Gaba
+- Adrian Osuna Fregoso
 - Ryosuke Okamae
 
 Geographical data is retrieved from OpenStreetMap. Learn more here: https://www.openstreetmap.org/

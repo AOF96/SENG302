@@ -17,10 +17,7 @@
 <script>
 
     import NavBar from "./modules/NavBar";
-    import {apiUser} from "../api";
-    // import json from "../../../public/json/data.json";
-    // import axios from 'axios'
-    // import router from "../router";
+    import { mapActions } from 'vuex';
     export default {
         name: "AdminDashboard",
         components: {
@@ -32,6 +29,8 @@
             }
         },
         methods:{
+            ...mapActions(["getUserById"]),
+
             openSearch() {
                 document.getElementById("myOverlay").style.display = "block";
             },
@@ -39,15 +38,13 @@
                 document.getElementById("myOverlay").style.display = "none";
             },
             async goToSearchedUser() {
-                var tempSearchedUser = await apiUser.getUserById(this.searchedUser.profile_id)
-                console.log(tempSearchedUser)
+                var tempSearchedUser = await this.getUserById(this.searchedUser.profile_id)
                 if(tempSearchedUser ==  "Invalid permissions" || tempSearchedUser.permission_level == 2){
                     alert("User does not exist");
                 }
                 else{
                     this.$router.push('/profile/'+this.searchedUser.profile_id);
                 }
-                //console.log("User does not exist");
             }
         }
     }

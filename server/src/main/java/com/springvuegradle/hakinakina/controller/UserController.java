@@ -415,10 +415,37 @@ public class UserController {
         return userService.editLocation(city, state, country, profileId);
     }
 
+    /**
+     * Allows the user to delete their account and admins to delete another registered user's account
+     * @param profileId    the user's id
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @return response entity to inform user or admin if deleting the user was successful or not
+     */
+    @DeleteMapping("/profiles/{profileId}")
+    public ResponseEntity deleteUser(@PathVariable Long profileId,
+                                     @CookieValue(value = "s_id") String sessionToken,
+                                     HttpServletResponse response) {
+        return userService.deleteUser(profileId, sessionToken, response);
+    }
+
     // Create Exception Handle
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
     @ExceptionHandler(IllegalArgumentException.class)
     public void badIdExceptionHandler() {
         //Nothing to do
     }
+
+    /***
+     * Endpoint to give an user admin rights. Calls userService to perform authentication and grant admin rights.
+     * @param jsonString the request body.
+     * @param profileId the id of the user being promoted to admin.
+     * @param sessionToken the authentication token of the admin performing the request.
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    @PutMapping("/profiles/{profileId}/role")
+    public ResponseEntity promoteUser(@RequestBody String jsonString,
+                                      @PathVariable Long profileId, @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.promoteUser(jsonString, profileId, sessionToken);
+    }
+
 }

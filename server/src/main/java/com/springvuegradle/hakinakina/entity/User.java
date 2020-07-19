@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -125,6 +126,13 @@ public class User {
     @Column(name = "permission_level")
     private Integer permissionLevel;
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Session> sessions = new HashSet<>();
+
     public User() {}
 
     public User(String firstName,
@@ -173,6 +181,16 @@ public class User {
         emails.remove(email);
     }
 
+    public void addSession(Session session) {
+        sessions.add(session);
+        session.setUser(this);
+    }
+
+    public void removeSession(Session session) {
+        sessions.remove(session);
+        session.setUser(null);
+    }
+
     public Set<PassportCountry> getPassportCountries() {
         return passportCountries;
     }
@@ -188,10 +206,6 @@ public class User {
     public void setActivity(Set<Activity> activities) {
         this.activity = activities;
     }
-
-    /*public Set<Activity> getActivity() {
-        return activity;
-    }*/
 
     /**
      * Adds passport country to relation
