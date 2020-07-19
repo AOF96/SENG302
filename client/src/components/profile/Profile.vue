@@ -1,6 +1,5 @@
 <template>
   <div>
-    <NavBar />
     <router-link v-if="userSearch.searchTerm!==null" v-bind:to="'/search'">
       <button class="genericConfirmButton profileBackToSearchButton">
         Back to Search
@@ -72,8 +71,8 @@
         </v-card>
         <div class="profileActivitiesContainer">
           <div v-if="user.permission_level > 0 || user.profile_id === searchedUser.profile_id">
-            <router-link v-bind:to="'/activity_settings/' + searchedUser.profile_id">
-              <button class="genericConfirmButton" id="addActivityButton">Add Activity</button>
+            <router-link v-bind:to="'/activity_editing/' + activity.id">
+              <button class="genericConfirmButton profileActivityConfirmButton" type="button">Edit Activity</button>
             </router-link>
           </div>
           <h2>Activities</h2>
@@ -131,22 +130,23 @@
           <h4 v-if="cont_activities.length === 0 && !loadingContinuousActivities">None</h4>
         </div>
       </div>
-      <div class="rightSidebarContainer">
-        <template v-if="searchedUser.passports">
-          <PassportCountries :passports="searchedUser.passports" :key="componentKey"/>
-        </template>
-      </div>
-      <div class="floatClear"></div>
     </div>
+    <div class="rightSidebarContainer">
+      <template v-if="searchedUser.passports">
+        <PassportCountries :passports="searchedUser.passports" :key="componentKey"/>
+      </template>
+    </div>
+    <div class="floatClear"></div>
   </div>
-</template>
+</div>
+  </template>
 
 <script>
-    import {
-        mapActions,
-        mapGetters,
-        mapState
-    } from "vuex";
+import {
+  mapActions,
+  mapGetters,
+  mapState
+} from "vuex";
 
 import NavBar from "../modules/NavBar";
 import PassportCountries from "../modules/PassportCountries";
@@ -289,5 +289,5 @@ import {
 </script>
 
 <style scoped>
-  @import "../../../public/styles/pages/profileStyle.css";
+@import "../../../public/styles/pages/profileStyle.css";
 </style>

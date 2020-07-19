@@ -61,7 +61,7 @@ public class Main {
 				countryRepository.save(new PassportCountry(code, name));
 			}
 
-			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team Sport");
+			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team-Sport");
 			for (String activityType : activityTypes) {
 				activityTypeRepository.save(new ActivityType(activityType));
 			}

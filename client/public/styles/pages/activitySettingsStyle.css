@@ -37,11 +37,15 @@ backButton {
     width: calc(100% - 40px);
     display:block;
     margin: 5px auto 20px;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
 }
 .editActivitySelect {
     display:block;
     margin: 5px auto 20px;
     width: calc(100% - 40px);
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
 }
 .editActivityTextarea {
     width: calc(100% - 40px);
@@ -49,6 +53,8 @@ backButton {
     margin: 5px auto 20px;
     height: 100px;
     resize: none;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
 }
 
 .confirmButtonContainer .genericConfirmButton, .confirmButtonContainer .genericDeleteButton {

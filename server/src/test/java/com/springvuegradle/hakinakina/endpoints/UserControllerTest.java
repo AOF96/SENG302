@@ -20,9 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -508,6 +506,92 @@ public class UserControllerTest {
                 .andExpect(content().json("[Fun, Relaxing, Extreme]"));
     }
 
+    @Test
+    public void findPaginatedInvalidMethodTest() throws Exception {
+        when(service.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anyString()))
+                .thenReturn(null);
+        this.mockMvc.perform(get("/profiles/?method=random&activity=Adventurous&page=0&size=10"))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Method must either be 'or' or 'and'")));
+    }
+
+    @Test
+    public void findPaginatedORTest() throws Exception {
+        when(service.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anyString()))
+                .thenReturn(null);
+        this.mockMvc.perform(get("/profiles/?method=or&activity=Adventurous&page=0&size=10"))
+                .andExpect(status().is(200));
+    }
+
+    @Test
+    public void findPaginatedANDTest() throws Exception {
+        when(service.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anyString()))
+                .thenReturn(null);
+        this.mockMvc.perform(get("/profiles/?method=and&activity=Adventurous&page=0&size=10"))
+                .andExpect(status().is(200));
+    }
+
+    @Test
+    public void getActivityTypesSetTest() {
+        UserController userController = new UserController(null, null, null,
+                null, activityTypeRepository, null);
+
+        ActivityType fun = new ActivityType("Fun");
+        ActivityType adventurous = new ActivityType("Adventurous");
+        Set<ActivityType> expectedSet = new HashSet<>();
+        expectedSet.add(fun);
+        expectedSet.add(adventurous);
+
+        when(activityTypeRepository.findActivityTypeByName("Adventurous"))
+                .thenReturn(adventurous);
+        when(activityTypeRepository.findActivityTypeByName("Fun"))
+                .thenReturn(fun);
+
+        assertEquals(expectedSet, userController.getActivityTypesSet("Adventurous Fun"));
+    }
+
+    @Test
+    public void getActivityTypesSetOneItemTest() {
+        UserController userController = new UserController(null, null, null,
+                null, activityTypeRepository, null);
+
+        ActivityType fun = new ActivityType("Fun");
+        Set<ActivityType> expectedSet = new HashSet<>();
+        expectedSet.add(fun);
+
+        when(activityTypeRepository.findActivityTypeByName("Fun"))
+                .thenReturn(fun);
+
+        assertEquals(expectedSet, userController.getActivityTypesSet("Fun"));
+    }
+
+    @Test
+    public void getActivityTypesSetRedundantSpacesTest() {
+        UserController userController = new UserController(null, null, null,
+                null, activityTypeRepository, null);
+
+        ActivityType fun = new ActivityType("Fun");
+        ActivityType adventurous = new ActivityType("Adventurous");
+        Set<ActivityType> expectedSet = new HashSet<>();
+        expectedSet.add(fun);
+        expectedSet.add(adventurous);
+
+        when(activityTypeRepository.findActivityTypeByName("Adventurous"))
+                .thenReturn(adventurous);
+        when(activityTypeRepository.findActivityTypeByName("Fun"))
+                .thenReturn(fun);
+
+        assertEquals(expectedSet, userController.getActivityTypesSet(" Adventurous  Fun "));
+    }
+
+    @Test
+    public void getActivityTypesSetNullParameterTest() {
+        UserController userController = new UserController(null, null, null,
+                null, activityTypeRepository, null);
+
+        Set<ActivityType> expectedSet = new HashSet<>();
+        assertEquals(expectedSet, userController.getActivityTypesSet(null));
+    }
 
     /**
      * User should be able to delete their own account

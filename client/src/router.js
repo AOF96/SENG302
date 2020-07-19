@@ -81,6 +81,10 @@ const routes = [
         component: EditActivity
     },
     {
+        path: '/search/:query',
+        component: Search
+    },
+    {
         path: '/search',
         component: Search
     }

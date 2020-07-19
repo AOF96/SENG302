@@ -1,6 +1,5 @@
 <template>
   <div>
-    <NavBar />
     <div class="signUpContainer">
       <div class="signUpFormContainer">
         <h1>Sign Up</h1>
@@ -81,8 +80,6 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 
-import NavBar from "./modules/NavBar";
-
 const ERR_MSG_FNAME = "Please enter your First name";
 const ERR_MSG_LNAME = "Please enter your Last name";
 const ERR_MSG_GENDER = "Please select your Gender";
@@ -98,9 +95,6 @@ const WARNING_MSG_BIO = "You have reached the maximum amount of characters";
 
 export default {
   name: "Signup",
-  components: {
-    NavBar
-  },
   data() {
     return {
       firstOccurrence: true,

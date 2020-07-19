@@ -1,6 +1,5 @@
 <template>
     <div>
-        <NavBar/>
         <div class="loginContainer">
             <div class="loginFormContainer">
                 <h1>Login</h1>
@@ -10,7 +9,7 @@
                         <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
                     </div>
                     <div class="loginRow">
-                        <input id="loginEmailForm" type="email" v-model="user.primary_email" name="email" placeholder="Email"
+                        <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
                                required>
                     </div>
                     <div class="loginRow">
@@ -18,7 +17,7 @@
                             }}</h6>
                     </div>
                     <div class="loginRow">
-                        <input id="loginPasswordForm" type="password" v-model="user.password" name="password"
+                        <input type="password" v-model="user.password" name="password"
                                placeholder="Password" required>
                     </div>
                     <div class="loginRow">
@@ -47,7 +46,7 @@
 
 <script>
   import {mapActions, mapGetters} from 'vuex';
-  import NavBar from "./modules/NavBar";
+  import {apiUser} from '../api'
 
   export default {
     name: 'Login',
@@ -59,14 +58,13 @@
         loadingLogin: false,
       }
     },
-    components: {
-      NavBar
-    },
     computed: {
       ...mapGetters(['user']),
     },
     methods: {
-      ...mapActions(['updateUserProfile', 'updateUserContinuousActivities', 'updateUserDurationActivities', 'login', 'getUserContinuousActivities', 'getUserDurationActivities']),
+      ...mapActions(['updateUserProfile']),
+      ...mapActions(['updateUserContinuousActivities']),
+      ...mapActions(['updateUserDurationActivities']),
 
       /*
         Sanitizes the email and password provided. Sends a request to the server side and provides appropriate error
@@ -84,15 +82,15 @@
           return;
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
-          this.login({'email': this.user.primary_email, 'password': this.user.password})
+          apiUser.login(this.user.primary_email, this.user.password)
             .then((response) => {
               const responseData = response.data;
               this.updateUserProfile(responseData);
               this.$router.push('Profile');
-              this.getUserContinuousActivities(responseData.profile_id).then((response) => {
+              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
                 this.updateUserContinuousActivities(response.data);
               }).catch(err => console.log(err));
-              this.getUserDurationActivities(responseData.profile_id).then((response) => {
+              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
                 this.updateUserDurationActivities(response.data);
               }).catch(err => console.log(err));
               if (responseData.permission_level === 2) {

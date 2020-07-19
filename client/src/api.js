@@ -115,9 +115,11 @@ export const apiUser = {
     );
     return searchedUser;
   },
-  searchUsers: (searchTerm, searchType, page, size) => instance.get('/profiles/',
+  searchUsers: (searchTerm, searchType, activityTypes,  method, page, size) => instance.get('/profiles/',
       {params: {
           [searchType]: searchTerm,
+          method: method,
+          activity: activityTypes,
           page: page,
           size: size,
         }
@@ -125,6 +127,7 @@ export const apiUser = {
   searchedUser(searchedTerm, searchFilter) {
     let filter = {};
     filter[searchFilter] = searchedTerm;
+    filter['method'] = 'OR';
     filter['page'] = 0;
     filter['size'] = 3;
 

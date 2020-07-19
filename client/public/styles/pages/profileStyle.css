@@ -113,7 +113,7 @@
     height: 40px;
     border-radius: 100%;
     background: #1cca92;
-    fill: white;
+    fill: white !important;
     float: left;
     text-align: center;
     box-sizing: content-box;

@@ -1,7 +1,6 @@
 np
 <template>
     <div>
-        <NavBar/>
         <div class="profileBanner">
         </div>
         <div class="activityWrap">
@@ -11,7 +10,6 @@ np
 </template>
 
 <script>
-  import NavBar from "../modules/NavBar";
   import ActivityPageInfo from "../modules/ActivityPageInfo";
   import {mapGetters} from "vuex";
 
@@ -33,7 +31,6 @@ np
     mounted() {
     },
     components: {
-      NavBar,
       ActivityPageInfo
     },
     computed: {
