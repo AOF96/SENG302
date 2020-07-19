@@ -123,7 +123,7 @@
         border: none;
         color: white;
         font-size: 15px;
-        margin-right: 10px;
+        margin: 12px;
         font-weight: 500;
         cursor: pointer;
         border: 2px solid #1dca92;
