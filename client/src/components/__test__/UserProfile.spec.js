@@ -100,12 +100,12 @@ describe("Check user profile page", () => {
         expect(wrapper.find("#editProfileButton").exists()).toBe(true);
     });
     //
-    // it("There Should be an Add activity button to the Add activity page", async () => {
-    //     const wrapper = mount(Profile, { store, localVue, mocks, stubs });
-    //     await wrapper.vm.$nextTick();
-    //     expect(wrapper.find("#addActivityButton").exists()).toBe(true);
-    //     wrapper.find("#addActivityButton").trigger('click')
-    // });
+    it("There Should be an Add activity button to the Add activity page", async () => {
+        const wrapper = mount(Profile, { store, localVue, mocks, stubs });
+        await wrapper.vm.$nextTick();
+        expect(wrapper.find("#addActivityButton").exists()).toBe(true);
+        wrapper.find("#addActivityButton").trigger('click')
+    });
 
     it('should display the Logged in user details in the panel on profile page', () => {
         const wrapper = mount(Profile, { store, localVue, mocks, stubs });

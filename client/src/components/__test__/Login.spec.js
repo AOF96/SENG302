@@ -57,77 +57,77 @@ describe('All the titles and subtitles are shown on the page', () => {
 })
 
 
-//test for successful login
-// describe('Successful login', () => {
-//   let getters
-//   let store
-//   beforeEach(() => {
-//
-//     apiUser.login = jest.fn()
-//     getters = {
-//       user: () => ({
-//         primary_email: "test@gmail.com",
-//         password: "Welcome1"
-//       }),
-//       isAdmin: () => ({
-//         isAdmin: false
-//       }),
-//     }
-//     store = new Vuex.Store({
-//       getters,
-//       actions: {
-//         updateUserProfile: jest.fn(),
-//         updateUserContinuousActivities: jest.fn(),
-//         updateUserDurationActivities: jest.fn(),
-//         login: jest.fn(),
-//       }
-//     })
-//   })
-//
-//   it('should successfully login', async () => {
-//     apiUser.login.mockImplementationOnce(() =>
-//       Promise.resolve({
-//           response: {
-//             data: {
-//               "bio": "nanana",
-//               "authoredActivities": [],
-//               "profile_id": 2,
-//               "firstname": "Mayuko",
-//               "lastname": "Williams",
-//               "middlename": "hi",
-//               "gender": "Female",
-//               "nickname": "hi",
-//               "date_of_birth": "1995-01-11",
-//               "fitness": 1,
-//               "city": null,
-//               "state": null,
-//               "country": null,
-//               "passports": [],
-//               "activities": [],
-//               "primary_email": "mwi67@uclive.ac.nz",
-//               "additional_email": [],
-//               "permission_level": 0
-//             },
-//             status: 200
-//           }
-//         }
-//       )
-//     )
-//
-//
-//     const wrapper = shallowMount(Login, {store, localVue, mocks, stubs})
-//     await wrapper.find('.loginButton').trigger('click')
-//     // this waits until the web page is uploaded
-//     await wrapper.vm.$nextTick()
-//     // checks if the login method is called once
-//     expect(apiUser.login).toHaveBeenCalledTimes(0)
-//     //trying to test whether the page has moved to the user profile test
-//     expect(mocks.$router.push).toHaveBeenCalledTimes(0)
-//   })
-// })
+// test for successful login
+describe('Successful login', () => {
+  let getters
+  let store
+  beforeEach(() => {
+
+    apiUser.login = jest.fn()
+    getters = {
+      user: () => ({
+        primary_email: "test@gmail.com",
+        password: "Welcome1"
+      }),
+      isAdmin: () => ({
+        isAdmin: false
+      }),
+    }
+    store = new Vuex.Store({
+      getters,
+      actions: {
+        updateUserProfile: jest.fn(),
+        updateUserContinuousActivities: jest.fn(),
+        updateUserDurationActivities: jest.fn(),
+        login: jest.fn(),
+      }
+    })
+  })
+
+  it('should successfully login', async () => {
+    apiUser.login.mockImplementationOnce(() =>
+      Promise.resolve({
+          response: {
+            data: {
+              "bio": "nanana",
+              "authoredActivities": [],
+              "profile_id": 2,
+              "firstname": "Mayuko",
+              "lastname": "Williams",
+              "middlename": "hi",
+              "gender": "Female",
+              "nickname": "hi",
+              "date_of_birth": "1995-01-11",
+              "fitness": 1,
+              "city": null,
+              "state": null,
+              "country": null,
+              "passports": [],
+              "activities": [],
+              "primary_email": "mwi67@uclive.ac.nz",
+              "additional_email": [],
+              "permission_level": 0
+            },
+            status: 200
+          }
+        }
+      )
+    )
 
 
-// test for login errors
+    const wrapper = shallowMount(Login, {store, localVue, mocks, stubs})
+    await wrapper.find('#loginButton').trigger('click')
+    // this waits until the web page is uploaded
+    await wrapper.vm.$nextTick()
+    // checks if the login method is called once
+    expect(apiUser.login).toHaveBeenCalledTimes(1)
+    //trying to test whether the page has moved to the user profile test
+    expect(mocks.$router.push).toHaveBeenCalledTimes(1)
+  })
+})
+
+//
+// // test for login errors
 // describe('Login account error, password error and email/password input error', () => {
 //
 //   let getters
@@ -207,4 +207,4 @@ describe('All the titles and subtitles are shown on the page', () => {
 //     expect(wrapper.vm.topErrorMsg).toBe("")
 //   })
 // })
-
+//
