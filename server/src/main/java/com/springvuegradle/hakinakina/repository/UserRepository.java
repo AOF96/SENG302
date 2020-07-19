@@ -102,7 +102,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                                String nickname,
                                String fullname,
                                int startIndex,
-                               @Param("size") int size);
+                               int size);
 
     /**
      * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match all
