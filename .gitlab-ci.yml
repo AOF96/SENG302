@@ -86,6 +86,7 @@ deploy-prod-server:
   only:
     refs:
       - master
+      - tags
   script:
     # Create jar file
     - cd server
@@ -104,6 +105,7 @@ deploy-prod-client:
   only:
     refs:
       - master
+      - tags
   script:
     # Generate website files
     - cd client
