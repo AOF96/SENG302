@@ -99,7 +99,7 @@ public class UserControllerTest {
                 "  \"fitness\": 2\n" +
                 "}";
 
-        when(service.validateCreateProfile(any(User.class))).thenReturn(responseHandler
+        when(service.validateCreateProfile(any(User.class), any(HttpServletResponse.class))).thenReturn(responseHandler
                 .formatSuccessResponse(200, "User updated"));
         this.mockMvc.perform(post("/profiles").contentType(MediaType.APPLICATION_JSON)
                 .content(input)).andDo(print()).andExpect(status().isOk())
