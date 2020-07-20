@@ -193,9 +193,9 @@ import {
         },
         mounted() {
             if (!this.user.isLogin) {
-                this.$router.push('/login');
-            } else {
-                this.loadSearchedUser();
+              this.$router.push('/login');
+            }  else {
+              this.loadSearchedUser();
             }
         },
         watch: {
@@ -212,7 +212,9 @@ import {
                   Uses user id from url to request user data.
                */
             async loadSearchedUser() {
-                if (
+                if(this.user.permission_level == 2 && this.user.profile_id == this.$route.params.profileId){
+                  this.$router.push('/settings/admin_dashboard');
+                } else if (
                     this.$route.params.profileId === null ||
                     this.$route.params.profileId === ""
                 ) {

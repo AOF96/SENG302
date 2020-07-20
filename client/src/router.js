@@ -123,10 +123,18 @@ router.beforeEach((to, from, next) => {
       next();
     } else if (isAuthPath) {
       store._actions.resetPageHistory[0]();
-      isLoggedIn ? next("/profile") : next();
+      if(store.getters.user.permission_level === 2){
+        isLoggedIn ? next("/settings/admin_dashboard") : next();
+      }else{
+        isLoggedIn ? next("/profile") : next();
+      }
     } else if (to.path !== "/logout" && isLoggedIn) {
       updatePageHistory(to, from);
-      next();
+      if((to.path == "/profile" || to.path == "/profile/"+store.getters.user.profileId) && store.getters.user.permission_level === 2){
+        next("/settings/admin_dashboard");
+      }else{
+        next();
+      }
     } else {
       store._actions.resetPageHistory[0]();
       next("/login");
