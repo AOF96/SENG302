@@ -85,8 +85,9 @@ public class UserController {
      * @return response entity to inform user if registering a new account was successful or not
      */
     @PostMapping("/profiles")
-    public ResponseEntity createProfile(@RequestBody User user) {
-        return userService.validateCreateProfile(user);
+    public ResponseEntity createProfile(@RequestBody User user,
+                                        HttpServletResponse response) {
+        return userService.validateCreateProfile(user, response);
     }
 
     /**
@@ -116,7 +117,9 @@ public class UserController {
      * 200 if it's a valid request.
      */
     @PutMapping("/profiles/{profileId}")
-    public ResponseEntity editUser(@RequestBody User user, @PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
+    public ResponseEntity editUser(@RequestBody User user,
+                                   @PathVariable("profileId") long profileId,
+                                   @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
         if (session == null) {
             return responseHandler.formatErrorResponse(400, "Invalid Session");

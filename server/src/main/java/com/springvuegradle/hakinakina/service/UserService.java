@@ -249,7 +249,8 @@ public class UserService {
      * @return An error response 400 if the provided data is invalid. 403 response if the given email already exists.
      * 201 created response if the request was succesful, with the JSON object of the created user and a session token.
      */
-    public ResponseEntity validateCreateProfile(User user) {
+    public ResponseEntity validateCreateProfile(User user,
+                                                HttpServletResponse response) {
         ArrayList<String> messages = new ArrayList<String>();
 
         if (user.getLastName() == null || user.getFirstName() == null) {
@@ -285,13 +286,22 @@ public class UserService {
             if (emailExists(user.getPrimaryEmail())) {
                 return responseHandler.formatErrorResponse(403, "Email already exists");
             } else {
-                userRepository.save(user);
-
                 //Generate session token
                 String sessionToken = RandomToken.getToken(40);
                 Session session = new Session(sessionToken);
                 user.addSession(session);
                 userRepository.save(user);
+
+                // create a cookie
+                Cookie cookie = new Cookie("s_id", sessionToken);
+                // expires in 7 days
+                cookie.setMaxAge(7 * 24 * 60 * 60);
+                cookie.setHttpOnly(true);
+                // add cookie to response
+                response.addCookie(cookie);
+
+                System.out.println(cookie.getMaxAge());
+
 
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
@@ -406,7 +416,6 @@ public class UserService {
                 cookie.setHttpOnly(true);
                 // add cookie to response
                 response.addCookie(cookie);
-
                 return new ResponseEntity(user.toJson(), HttpStatus.OK);
             } else {
                 return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
