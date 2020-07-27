@@ -188,3 +188,32 @@ input, select, textarea {
 .navBarLeftColIcon {
     margin-left: 20px;
 }
+/* Hide, show and rearrange elements for mobile */
+@media only screen and (max-width: 1180px) {
+  header .hideNavForMobile{
+    display:none !important;
+  }
+}
+@media only screen and (min-width: 851px) {
+  header .showForMobile{
+    display:none !important;
+  }
+}
+@media only screen and (max-width: 850px) {
+  header .hideForMobile{
+    display:none !important;
+  }
+  header .flexForMobile{
+    flex: 1 0 auto  !important;
+  }
+}
+@media only screen and (max-width: 350px) {
+  header .navBarButton{
+    display:none !important;
+  }
+}
+@media only screen and (max-width: 230px) {
+  header #headerSearchBtn{
+    display:none !important;
+  }
+}
