@@ -40,16 +40,18 @@ public class UserService {
     private PassportCountryRepository countryRepository;
     private SessionRepository sessionRepository;
     private ActivityTypeRepository activityTypeRepository;
+    private SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
-                       ActivityTypeRepository activityTypeRepository) {
+                       ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityTypeRepository = activityTypeRepository;
+        this.searchRepository = searchRepository;
     }
 
     /**
@@ -612,9 +614,9 @@ public class UserService {
         Page<User> userPage;
         if (activityTypes != null) {
             if (method.equals("or")) {
-                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                userPage = searchRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
             } else {
-                 userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                 userPage = searchRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
                 }
         } else {
             boolean withQuotation = false;
@@ -631,9 +633,9 @@ public class UserService {
             }
 
             if (withQuotation) {
-                userPage = userRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
+                userPage = searchRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
             } else {
-                userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
+                userPage = searchRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
             }
         }
 
