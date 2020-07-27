@@ -117,10 +117,10 @@
     float: left;
     text-align: center;
     box-sizing: content-box;
-    margin-left: 10px;
 }
 .profileMainInfoContainer h1 {
     font-size: 18px;
+    font-weight: 500;
 }
 .profileMainInfoContainer h2 {
     color: #7f7f7f;
@@ -128,11 +128,9 @@
     font-weight: 500;
 }
 .profileHeaderContainer .genericConfirmButton {
-    position: absolute;
-    padding: 5px 20px;
+    padding: 4px 16px;
     right: 20px;
     top: 50%;
-    transform: translateY(-50%);
 }
 .profileActivitiesContainer {
     background: white;
@@ -144,14 +142,17 @@
     margin-bottom: 50px;
 }
 .profileActivitiesContainer h2 {
-    text-align: center;
-    padding-left: 90px;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 500;
+    padding-bottom: 12px;
 }
 .profileActivitiesContainer h3 {
     font-size: 17px;
 }
 .profileActivitiesContainer .genericConfirmButton {
-    padding: 5px 14px;
+    padding: 4px 14px;
+    font-size: 13px;
     float: right;
 }
 .activityTypesList {
@@ -233,4 +234,25 @@
     font-weight: 500;
     color: rgba(0,0,0,0.85);
     float: left;
+}
+/* Hide, show and rearrange elements for mobile */
+@media only screen and (max-width: 1160px) {
+    .profileMainInfoContainer h1{
+        font-size: 15px;
+        width:100%;
+    }
+    .profileMainInfoContainer h2{
+        font-size: 12px;
+    }
+    .profileActivitiesContainer .genericConfirmButton{
+        padding: 3px 14px;
+        font-size: 13px;
+    }
+    .profileHeaderContainer .genericConfirmButton{
+        padding: 3px 14px;
+        font-size: 13px;
+    }
+    .userNameInfoRow{
+        width:100%;
+    }
 }
