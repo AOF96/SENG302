@@ -7,7 +7,7 @@
             <v-btn id="headerNavToggle" icon @click.stop="navDrawer = !navDrawer">
               <v-icon large>mdi-menu</v-icon>
             </v-btn>
-            <img class="navBarLeftColIcon" v-on:click="$router.push('/')" id="appNavLogo" src="/favicon.png">
+            <img class="navBarLeftColIcon" v-on:click="$router.push('/')" id="appNavLogo" v-bind:src="rootLocation+'favicon.png'">
           </v-row>
         </v-col>
         <v-col>
@@ -57,7 +57,7 @@
       >
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img src="/images/userIcon.png">
+            <img v-bind:src="rootLocation+'images/userIcon.png'">
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -151,7 +151,8 @@
         data: function () {
           return {
             navDrawer: false,
-            searchQuery: ""
+            searchQuery: "",
+            rootLocation: process.env.VUE_APP_BASE_URL
           }
         },
         components: {
