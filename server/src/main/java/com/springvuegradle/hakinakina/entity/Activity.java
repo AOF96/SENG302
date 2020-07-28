@@ -63,6 +63,9 @@ public class Activity {
     @ManyToOne
     private User author;
 
+    @OneToMany(mappedBy = "activity")
+    private Set<ActivityChange> changes = new HashSet<>();
+
     protected Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {

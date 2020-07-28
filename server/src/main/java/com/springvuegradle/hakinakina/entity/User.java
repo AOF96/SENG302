@@ -110,6 +110,9 @@ public class User {
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
 
+    @OneToMany(mappedBy = "author")
+    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
+
     @JsonIgnore
     private String salt;
 
