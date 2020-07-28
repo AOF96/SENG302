@@ -105,10 +105,13 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
-    private Set<Activity> activity = new HashSet<>();
+    private Set<Activity> activities = new HashSet<>();
 
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
+
+    @OneToMany(mappedBy = "author")
+    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -201,10 +204,6 @@ public class User {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
-    }
-
-    public void setActivity(Set<Activity> activities) {
-        this.activity = activities;
     }
 
     /**
@@ -372,6 +371,10 @@ public class User {
 
     public void addAuthoredActivities(Activity authoredActivity) {
         this.authoredActivities.add(authoredActivity);
+    }
+
+    public void setActivities(Set<Activity> participateActivities) {
+        this.activities = participateActivities;
     }
 
     @Override

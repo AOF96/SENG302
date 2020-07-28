@@ -47,6 +47,9 @@ public class UserControllerTest {
     private PassportCountryRepository countryRepository;
 
     @MockBean
+    private ActivityChangeRepository activityChangeRepository;
+
+    @MockBean
     private EmailRepository emailRepository;
 
     @MockBean
@@ -160,10 +163,10 @@ public class UserControllerTest {
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
         this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
-                .andExpect(content().string(containsString("{\"bio\":null,\"authoredActivities\":[]," +
+                .andExpect(content().string(containsString("{\"bio\":null,\"activities\":[],\"authoredActivities\":[]," +
                         "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
                         "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
-                        "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
+                        "\"state\":null,\"country\":null,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
                         "\"additional_email\":[],\"permission_level\":0}")));
     }
 

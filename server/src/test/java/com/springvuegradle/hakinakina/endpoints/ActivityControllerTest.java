@@ -42,6 +42,9 @@ public class ActivityControllerTest {
     private ActivityRepository activityRepository;
 
     @MockBean
+    private ActivityChangeRepository activityChangeRepository;
+
+    @MockBean
     private UserRepository userRepository;
 
     @MockBean

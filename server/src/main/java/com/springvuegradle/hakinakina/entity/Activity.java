@@ -57,11 +57,14 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
     private Set<User> users = new HashSet<>();
 
     @ManyToOne
     private User author;
+
+    @OneToMany(mappedBy = "activity")
+    private Set<ActivityChange> changes = new HashSet<>();
 
     protected Activity() {}
 
