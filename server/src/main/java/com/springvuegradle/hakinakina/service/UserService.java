@@ -8,6 +8,7 @@ import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.Session;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.*;
+import com.springvuegradle.hakinakina.specification.UserSpecification;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
@@ -17,6 +18,7 @@ import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -617,26 +619,8 @@ public class UserService {
                  userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
                 }
         } else {
-            boolean withQuotation = false;
-
-            if(isWithinQuotation(email)) {
-                email = email.substring(1, email.length() - 1);
-                withQuotation = true;
-            } else if (isWithinQuotation(fullname)) {
-                fullname = fullname.substring(1, fullname.length() - 1);
-                withQuotation = true;
-            } else if(isWithinQuotation(lastname)) {
-                lastname = lastname.substring(1, lastname.length() - 1);
-                withQuotation = true;
-            }
-
-            if (withQuotation) {
-                userPage = userRepository.findAllByQueryWithQuotation(PageRequest.of(page, size), email, fullname, lastname);
-            } else {
-                userPage = userRepository.findAllByQuery(PageRequest.of(page, size), email, fullname, lastname);
-            }
+            userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
         }
-
         return userPageToSearchResponsePage(userPage);
     }
 
@@ -726,17 +710,22 @@ public class UserService {
         return result;
     }
 
-    /**
-     * Helper function used in findPaginatedByQuery,
-     * checks whether the strings given has quotation marks (" or ') around the search term string.
-     *
-     * @param searchText text you are using to search users
-     * @return true if quotation wraps the search term, false otherwise
+
+    /***
+     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
+     * @param lastName last name of the user you are searching
+     * @param fullName full name of the user you are searching
+     * @param email email of the user you are searching
+     * @return specification object with User search request (WHERE part of a query)
      */
-    private boolean isWithinQuotation(String searchText) {
-        if(searchText != null && searchText.length() > 1) {
-            return searchText.startsWith("\"") && searchText.endsWith("\"") || searchText.startsWith("'") && searchText.endsWith("'");
-        }
-        return false;
+    private Specification<User> generateSpecification(String lastName, String fullName, String email) {
+        return Specification.where(UserSpecification.searchByLastName(lastName))
+                .and(
+                        UserSpecification.searchByFullName(fullName))
+                .and(
+                        UserSpecification.searchByEmail(email))
+                .and(
+                        UserSpecification.searchIsNotAdmin()
+                );
     }
 }
