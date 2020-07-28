@@ -133,7 +133,7 @@ describe("Check user's edit profile page", () => {
     })
 
     it("should have an input field for user to set their current location", () => {
-        expect(wrapper.find("#locationInput").exists()).toBe(true);
+        expect(wrapper.find("#inputLocation").exists()).toBe(true);
     })
 
     it("should have a drop down field for user to set their gender", () => {

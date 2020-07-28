@@ -70,6 +70,7 @@
                   placeholder="Start typing to Search"
                   prepend-icon="mdi-database-search"
                   return-object
+                  id="inputLocation"
           ></v-autocomplete>
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
             <div
