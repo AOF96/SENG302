@@ -51,13 +51,31 @@
         <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"
                 v-on:click="deleteLocation()"><b>x</b></button>
         <div>
-          <input id="locationInput" autocomplete="off" type="text" placeholder="Search here..."
-                 onfocus="showLocations = true" />
+          <!--          <input id="locationInput" autocomplete="on" type="text" placeholder="Search here..."-->
+          <!--                 onfocus="showLocations = true" />-->
+
+          <v-autocomplete
+                  v-model="model"
+                  v-bind="locationInput"
+                  :items="items"
+                  :loading="isLoading"
+                  :search-input.sync="search"
+                  color="black"
+                  no-filter
+                  hide-no-data
+                  hide-selected
+                  item-text="Description"
+                  item-value="API"
+                  label="Public APIs"
+                  placeholder="Start typing to Search"
+                  prepend-icon="mdi-database-search"
+                  return-object
+          ></v-autocomplete>
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
             <div
-              v-for="(item, index) in suggestedLocations"
-              v-bind:key="index"
-              class="dropdown-content"
+                    v-for="(item, index) in suggestedLocations"
+                    v-bind:key="index"
+                    class="dropdown-content"
             >
               <p v-on:click="setLocation(item.summary)">{{item.summary}}</p>
             </div>
@@ -151,9 +169,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import axios from 'axios';
-import UserSettingsMenu from "./ProfileSettingsMenu";
+  import { mapGetters, mapActions } from "vuex";
+  // import axios from 'axios';
+  import UserSettingsMenu from "./ProfileSettingsMenu";
 
 export default {
   name: "EditUserInfo",
@@ -161,200 +179,248 @@ export default {
     UserSettingsMenu
   },
 
-  computed: {
-    ...mapGetters(["user"])
-  },
-  data: function() {
-    return {
-      searchedUser: {},
-      showAdmin: false,
-      suggestedLocations: [],
-      showLocations: false,
-      location: null,
-      dialog: false,
-    };
-  },
-  methods: {
-    ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount"]),
+    computed: {
+      ...mapGetters(["user"]),
+
+      items () {
+        return this.features.map(entry => {
+          const Description = this.getLocationSummary(entry);
+          console.log(Description)
+
+          return Object.assign({}, entry, { Description })
+        })
+      }
+    },
+    data: function() {
+      return {
+        searchedUser: {},
+        showAdmin: false,
+        suggestedLocations: [],
+        showLocations: false,
+        location: null,
+        dialog: false,
+        isLoading: false,
+        search: null,
+        model: null,
+        descriptionLimit: 60,
+        features: [],
+        locationInput: null
+      };
+    },
+    methods: {
+      ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount"]),
 
       /**
-     * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
-     * the location input.
-     */
-    setLocation(location) {
-      this.location = location;
-      const l = location.split(", ");
-      this.searchedUser.location = {
-        city: l[0],
-        state: l[1],
-        country: l[2]
-      };
-      document.getElementById("locationInput").value = "";
-    },
+       * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
+       * the location input.
+       */
+      setLocation(location) {
+        this.location = location;
+        const l = location.split(", ");
+        this.searchedUser.location = {
+          city: l[0],
+          state: l[1],
+          country: l[2]
+        };
+        document.getElementById("locationInput").value = "";
+      },
 
-    /**
-     * Sets the location and each of its individual components to be null.
-     */
-    deleteLocation() {
-      this.location = null;
-      this.searchedUser.location = {
-        city: null,
-        state: null,
-        country: null
-      };
-    },
+      /**
+       * Sets the location and each of its individual components to be null.
+       */
+      deleteLocation() {
+        this.location = null;
+        this.searchedUser.location = {
+          city: null,
+          state: null,
+          country: null
+        };
+      },
 
-    /**
-     * Creates a summary for a location. This is done by appending the name (which should be a name of a city), the
-     * state, and the country.
-     */
-    getLocationSummary(location) {
-      let result = "";
+      /**
+       * Creates a summary for a location. This is done by appending the name (which should be a name of a city), the
+       * state, and the country.
+       */
+      getLocationSummary(location) {
+        let result = "";
 
-      result += location.properties.name;
-      if ("state" in location.properties) {
-        result += ", " + location.properties.state;
-      } else {
-        result += ", (No State)";
-      }
-      result += ", " + location.properties.country;
+        result += location.properties.name;
+        if ("state" in location.properties) {
+          result += ", " + location.properties.state;
+        } else {
+          result += ", (No State)";
+        }
+        result += ", " + location.properties.country;
 
-      return result;
-    },
+        return result;
+      },
 
-    /*
-    Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
-    was unsuccessful.
-    */
-    updateProfile() {
-      this.editProfile(
-          this.searchedUser
+      /*
+      Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
+      was unsuccessful.
+      */
+      updateProfile() {
+        this.editProfile(
+                this.searchedUser
         )
-        .then(
-          response => {
-            this.updateUserProfile(this.searchedUser);
-            document.getElementById("success").hidden = false;
-            document.getElementById("success").innerText =
-              "Updated Successfully";
-            document.getElementById("error").hidden = true;
-            console.log(response);
-          },
-          error => {
-            document.getElementById("error").hidden = false;
-            document.getElementById("error").innerText =
-              error.response.data.Errors;
-            document.getElementById("success").hidden = true;
-            console.log(error);
-          }
-        );
-    },
+                .then(
+                        response => {
+                          this.updateUserProfile(this.searchedUser);
+                          document.getElementById("success").hidden = false;
+                          document.getElementById("success").innerText =
+                                  "Updated Successfully";
+                          document.getElementById("error").hidden = true;
+                          console.log(response);
+                        },
+                        error => {
+                          document.getElementById("error").hidden = false;
+                          document.getElementById("error").innerText =
+                                  error.response.data.Errors;
+                          document.getElementById("success").hidden = true;
+                          console.log(error);
+                        }
+                );
+      },
 
-    toggleAdmin() {
-      if (this.searchedUser.permission_level == 1) {
-        this.searchedUser.permission_level = 0;
-      } else if (this.searchedUser.permission_level == 0) {
-        this.searchedUser.permission_level = 1;
-      }
-    },
+      toggleAdmin() {
+        if (this.searchedUser.permission_level == 1) {
+          this.searchedUser.permission_level = 0;
+        } else if (this.searchedUser.permission_level == 0) {
+          this.searchedUser.permission_level = 1;
+        }
+      },
 
-    /**
-     * Allows user or admin to delete the account
-     */
-    deleteAccount() {
-      this.deleteUserAccount({'id': this.searchedUser.profile_id})
-        .then(() => {
-          if (this.user.permission_level > 0) {
-            if (this.searchedUser.profile_id == this.user.profile_id) {
-              location.reload();
-            } else {
-              this.$router.push("/settings/admin_dashboard");
-            }
-          }
-          else {
-            location.reload();
-          }
-        })
-      .catch((error) => {
-        console.log(error);
-          }
-      )
-    },
+      /**
+       * Allows user or admin to delete the account
+       */
+      deleteAccount() {
+        this.deleteUserAccount({'id': this.searchedUser.profile_id})
+                .then(() => {
+                  if (this.user.permission_level > 0) {
+                    if (this.searchedUser.profile_id == this.user.profile_id) {
+                      location.reload();
+                    } else {
+                      this.$router.push("/settings/admin_dashboard");
+                    }
+                  }
+                  else {
+                    location.reload();
+                  }
+                })
+                .catch((error) => {
+                          console.log(error);
+                        }
+                )
+      },
 
-    /**
-     * Uses user id from url to request user data.
-     */
-    async loadSearchedUser() {
-      if (
-        this.$route.params.profileId == null ||
-        this.$route.params.profileId == ""
-      ) {
-        this.$router.push("/settings/profile/" + this.user.profile_id);
-        this.searchedUser = this.user;
-      } else {
-        var tempUserData = await this.getUserById(this.$route.params.profileId);
-        if (tempUserData == "Invalid permissions") {
+      /**
+       * Uses user id from url to request user data.
+       */
+      async loadSearchedUser() {
+        if (
+                this.$route.params.profileId == null ||
+                this.$route.params.profileId == ""
+        ) {
           this.$router.push("/settings/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
-          this.searchedUser = tempUserData;
+          var tempUserData = await this.getUserById(this.$route.params.profileId);
+          if (tempUserData == "Invalid permissions") {
+            this.$router.push("/settings/profile/" + this.user.profile_id);
+            this.searchedUser = this.user;
+          } else {
+            this.searchedUser = tempUserData;
+          }
         }
+        if (this.searchedUser.city) {
+          this.setLocation(
+                  this.searchedUser.city +
+                  ", " +
+                  this.searchedUser.state +
+                  ", " +
+                  this.searchedUser.country
+          );
+        }
+        this.showAdmin = true;
       }
-      if (this.searchedUser.city) {
-        this.setLocation(
-          this.searchedUser.city +
-            ", " +
-            this.searchedUser.state +
-            ", " +
-            this.searchedUser.country
-        );
-      }
-      this.showAdmin = true;
-    }
-  },
+    },
 
-  /**
-   * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-   * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-   * duplicate summaries are removed.
-   */
-  mounted() {
-    this.loadSearchedUser();
-    let outer = this;
-    let input = document.querySelector("#locationInput");
-    let timeout = null;
-    if(input == null){
-      return;
+
+    watch: {
+      search (val) {
+        // Items have already been loaded
+        // if (this.items.length > 0) return
+
+        // Items have already been requested
+        if (this.isLoading) return
+
+        if(val.length < 3){
+          return
+        }
+        this.isLoading = true
+
+        // Lazily load input items
+        console.log(val)
+        fetch("https://photon.komoot.de/api/?q=" + val)
+                .then(res => res.json())
+                .then(res => {
+                  const { features } = res
+                  this.features = features
+                  console.log(this.features)
+                })
+                .catch(err => {
+                  console.log(err)
+                })
+                .finally(() => (this.isLoading = false))
+      }
+    },
+
+    /**
+     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
+     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
+     * duplicate summaries are removed.
+     */
+    mounted() {
+      this.loadSearchedUser();
+      // let outer = this;
+      let input = document.querySelector("#locationInput");
+      // let timeout = null;
+      if(input == null){
+        return;
+      }
+      // input.addEventListener("keyup", function() {
+      //   clearTimeout(timeout);
+      //   timeout = setTimeout(function() {
+      //     const url = "https://photon.komoot.de/api/?q=" + input.value;
+      //     this.isLoading = true;
+      //     axios.get(url)
+      //       .then(response => {
+      //         //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+      //         //is only displayed when it is finished, avoiding the problem of the user being taken to the
+      //         //middle of the list instead of the top
+      //         let temp = [];
+      //         let locationSummaries = [];
+      //         for (let location in response.data.features) {
+      //           console.log("we here")
+      //           console.log(response.data.features[location].state)
+      //           if (response.data.features[location].properties.osm_value === "city" ||
+      //                   response.data.features[location].properties.osm_value === "town") {
+      //             let locationSummary = outer.getLocationSummary(
+      //               response.data.features[location]
+      //             );
+      //             if (!locationSummaries.includes(locationSummary)) {
+      //               temp.push(response.data.features[0]);
+      //               temp[temp.length - 1]["summary"] = locationSummary;
+      //               locationSummaries.push(locationSummary);
+      //             }
+      //           }
+      //         }
+      //         outer.suggestedLocations = temp;
+      //         outer.showLocations = true;
+      //       })
+      //       .catch(error => console.log(error));
+      //   }, 1000);
+      // });
     }
-    input.addEventListener("keyup", function() {
-      clearTimeout(timeout);
-      timeout = setTimeout(function() {
-        const url = "https://photon.komoot.de/api/?q=" + input.value;
-        axios.get(url)
-          .then(response => {
-            //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-            //is only displayed when it is finished, avoiding the problem of the user being taken to the
-            //middle of the list instead of the top
-            let temp = [];
-            let locationSummaries = [];
-            for (let location in response.data.features) {
-              if (response.data.features[location].properties.osm_value === "city" ||
-                      response.data.features[location].properties.osm_value === "town") {
-                let locationSummary = outer.getLocationSummary(
-                  response.data.features[location]
-                );
-                if (!locationSummaries.includes(locationSummary)) {
-                  temp.push(response.data.features[location]);
-                  temp[temp.length - 1]["summary"] = locationSummary;
-                  locationSummaries.push(locationSummary);
-                }
-              }
-            }
-            outer.suggestedLocations = temp;
-            outer.showLocations = true;
-          })
-          .catch(error => console.log(error));
-      }, 1000);
-    });
-  }
-};
+  };
 </script>
