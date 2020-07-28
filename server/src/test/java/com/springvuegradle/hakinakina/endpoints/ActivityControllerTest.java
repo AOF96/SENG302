@@ -256,4 +256,25 @@ public class ActivityControllerTest {
                 .andExpect(content().string(containsString("Activity successfully deleted")));
 
     }
+
+    @Test
+    public void unFollowActivityEndpointTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+
+        User testUser2 = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser2.setUserId((long) 2);
+
+        Activity newActivity = createTestActivity();
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.unFollow(any(Long.class), any(Long.class), any(String.class))).
+                thenReturn(new ResponseEntity<String>("Unfollowed activity", HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/profiles/2/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Unfollowed activity")));
+    }
 }
