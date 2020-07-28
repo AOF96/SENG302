@@ -1,11 +1,18 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.service.SearchService;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -17,6 +24,7 @@ public class SearchController {
     public EmailRepository emailRepository;
     public SessionRepository sessionRepository;
     public ActivityTypeRepository activityTypeRepository;
+    public SearchService searchService;
 
     /**
      * Constructs a Search Controller, passing in the repositories and service so that they can be accessed.
@@ -25,14 +33,74 @@ public class SearchController {
      * @param emailRepository        The repository containing Emails
      * @param sessionRepository      The repository containing Sessions
      * @param activityTypeRepository The repository containing Activities
+     * @param searchService          The service for Searching
      */
     public SearchController(UserRepository userRepository,
                             EmailRepository emailRepository,
                             SessionRepository sessionRepository,
-                            ActivityTypeRepository activityTypeRepository) {
+                            ActivityTypeRepository activityTypeRepository,
+                            SearchService searchService) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.sessionRepository = sessionRepository;
         this.activityTypeRepository = activityTypeRepository;
+        this.searchService = searchService;
+    }
+
+    /**
+     * Takes a string of activity types from the URL and matches each to an Activity Type object, which is added to a
+     * set and returned.
+     * @param activity The string of activities from the url
+     * @return A set of ActivityType objects matching those in the URL
+     */
+    public Set<ActivityType> getActivityTypesSet(String activity) {
+        Set<ActivityType> activityTypes = new HashSet<>();
+        if(activity != null) {
+            String[] arrOfActivities = activity.split(" ");
+            for (String activityType : arrOfActivities) {
+                ActivityType retrievedType = activityTypeRepository.findActivityTypeByName(activityType);
+                if (retrievedType != null) {
+                    activityTypes.add(retrievedType);
+                }
+            }
+        }
+        return activityTypes;
+    }
+
+    /**
+     * Handle request for retrieving users with email or full name or surname
+     *
+     * @param email    searching for a user with the given email
+     * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
+     * @param lastname searching for a user with the given nickname
+     * @param activity searching for users with given activity types
+     * @param page     current page number that the user is viewing
+     * @param size     how many results we want to return
+     * @return response entity containing a list of profiles
+     */
+    @GetMapping("/profiles")
+    public ResponseEntity findPaginated(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String fullname,
+            @RequestParam(required = false) String lastname,
+            @RequestParam(required = false) String activity,
+            @RequestParam("method") String method,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        if (!method.equals("or") && !method.equals("and")) {
+            return new ResponseEntity("Method must either be 'or' or 'and'", HttpStatus.valueOf(400));
+        }
+        Set<ActivityType> activityTypes = getActivityTypesSet(activity);
+        Page<SearchUserDto> resultPage;
+        if(activityTypes.size() == 0){
+            activityTypes = null;
+        }
+        if (email != null || fullname != null || lastname != null || activityTypes != null) {
+            resultPage = searchService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
+        } else {
+            resultPage = searchService.findPaginated(page, size);
+        }
+
+        return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
     }
 }

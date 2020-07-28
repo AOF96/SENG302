@@ -24,7 +24,8 @@ public class SearchService {
     private UserRepository userRepository;
     private SearchRepository searchRepository;
 
-    public SearchService(UserRepository userRepository, SearchRepository searchRepository) {
+    public SearchService(UserRepository userRepository,
+                         SearchRepository searchRepository) {
         this.userRepository = userRepository;
         this.searchRepository = searchRepository;
     }
@@ -53,7 +54,13 @@ public class SearchService {
      * @param method
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
+    public Page<SearchUserDto> findPaginatedByQuery(int page,
+                                                    int size,
+                                                    String email,
+                                                    String fullname,
+                                                    String lastname,
+                                                    Set<ActivityType> activityTypes,
+                                                    String method) {
         Page<User> userPage;
         if (activityTypes != null) {
             if (method.equals("or")) {
