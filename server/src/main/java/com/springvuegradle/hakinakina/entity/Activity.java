@@ -93,6 +93,11 @@ public class Activity {
         this.users = users;
     }
 
+    public void removeUser(User user) {
+        user.unfollowActivity(this);
+        users.remove(user);
+    }
+
     public Long getId() {
         return id;
     }

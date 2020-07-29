@@ -194,6 +194,10 @@ public class User {
         session.setUser(null);
     }
 
+    public void unfollowActivity(Activity activity) {
+        activities.remove(activity);
+    }
+
     public Set<PassportCountry> getPassportCountries() {
         return passportCountries;
     }

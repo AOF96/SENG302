@@ -239,8 +239,10 @@ public class ActivityService {
             } else if (!profileId.equals(session.getUser().getUserId()) && session.getUser().getPermissionLevel() == 0) {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
-                //TODO Delete relationship between given user and activity for following
-
+                User user = userRepository.getUserById(profileId).get();
+                activity.removeUser(user);
+                activityRepository.save(activity);
+                userRepository.save(user);
                 result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
             }
         } catch (Exception e) {

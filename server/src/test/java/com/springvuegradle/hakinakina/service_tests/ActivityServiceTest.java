@@ -118,6 +118,7 @@ public class ActivityServiceTest {
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
 
         ResponseEntity<String> response = service.unFollow((long) 1, (long) 1, tokenCookie.getValue());
 
