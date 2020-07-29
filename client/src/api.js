@@ -168,7 +168,9 @@ export const apiUser = {
     }),
 
     // Request to delete a user account
-    deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`)
+    deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
+    //
+    isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId)
 };
 
 export const apiActivity = {
