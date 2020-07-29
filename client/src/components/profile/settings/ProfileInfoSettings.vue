@@ -54,7 +54,7 @@
           <!--          <input id="locationInput" autocomplete="on" type="text" placeholder="Search here..."-->
           <!--                 onfocus="showLocations = true" />-->
 
-          <v-autocomplete
+          <v-combobox
                   v-model="model"
                   v-bind="location"
                   :items="items"
@@ -68,13 +68,30 @@
                   item-value="API"
                   label="City"
                   placeholder="Start typing to Search"
-                  prepend-icon="mdi-database-search"
                   return-object
-                  id="inputLocation"
-          ></v-autocomplete>
+                  id="inputCity"
+          ></v-combobox>
 
-          <v-autocomplete
-                  v-model="model"
+
+          <v-combobox
+                  v-bind="locationState"
+                  :items="itemsState"
+                  :search-input.sync="searchState"
+                  :loading="isLoading"
+                  color="primary"
+                  no-filter
+                  hide-no-data
+                  hide-selected
+                  item-text="Description"
+                  item-value="API"
+                  label="State"
+                  placeholder="Start typing to Search"
+                  return-object
+                  id="inputState"
+          ></v-combobox>
+
+          <v-combobox
+                  v-bind="locationCountry"
                   :items="countries_option"
                   :loading="isLoading"
                   color="primary"
@@ -83,10 +100,8 @@
                   item-text="Description"
                   label="Country"
                   placeholder="Start typing to Search"
-                  prepend-icon="mdi-database-search"
                   return-object
-                  id="inputLocation"
-          ></v-autocomplete>
+          ></v-combobox>
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
             <div
                     v-for="(item, index) in suggestedLocations"
@@ -201,12 +216,20 @@ export default {
 
       items () {
         return this.features.map(entry => {
-          const Description = this.getLocationSummary(entry);
+          const Description = this.getLocationCity(entry);
+
+          return Object.assign({}, entry, { Description })
+        })
+      },
+      itemsState () {
+        return this.features.map(entry => {
+          const Description = this.getLocationState(entry);
 
           return Object.assign({}, entry, { Description })
         })
       }
     },
+
     data: function() {
       return {
         searchedUser: {},
@@ -214,10 +237,13 @@ export default {
         suggestedLocations: [],
         showLocations: false,
         location: null,
+        locationState: null,
         dialog: false,
         isLoading: false,
         search: null,
+        searchState: null,
         model: null,
+        locationCountry: null,
         descriptionLimit: 60,
         features: [],
         countries_option: [],
@@ -234,6 +260,7 @@ export default {
       // setLocation(location) {
       //   this.location = location;
       //   const l = location.split(", ");
+      //   console.log(l)
       //   this.searchedUser.location = {
       //     city: l[0],
       //     state: l[1],
@@ -253,22 +280,33 @@ export default {
       //   };
       // },
 
+
+
       /**
-       * Creates a summary for a location. This is done by appending the name (which should be a name of a city), the
-       * state, and the country.
+       * This method filters the the data received from the api and only suggests cities to the user.
+       *
        */
-      getLocationSummary(location) {
-        let result = "";
+      getLocationCity(location) {
+        let city = "";
+        console.log("we here in city")
+        console.log(typeof(location.properties.city));
 
-        result += location.properties.name;
-        if ("state" in location.properties) {
-          result += ", " + location.properties.state;
-        } else {
-          result += ", (No State)";
+        if(location.properties.city !== undefined){
+          city += location.properties.city;
         }
-        result += ", " + location.properties.country;
+        return city;
+      },
 
-        return result;
+
+      /**
+       * This method filters the the data received from the api and only suggests states to the user.
+       *
+       */
+      getLocationState(location) {
+        let state = "";
+        console.log("we here in state")
+        state += location.properties.state;
+        return state;
       },
 
       /*
@@ -286,7 +324,7 @@ export default {
                           document.getElementById("success").innerText =
                                   "Updated Successfully";
                           document.getElementById("error").hidden = true;
-                          console.log(response);
+                          console.log(response.data)
                         },
                         error => {
                           document.getElementById("error").hidden = false;
@@ -297,6 +335,8 @@ export default {
                         }
                 );
       },
+
+
 
       toggleAdmin() {
         if (this.searchedUser.permission_level == 1) {
@@ -360,13 +400,16 @@ export default {
         this.showAdmin = true;
       },
 
+
+      /**
+       * The method is used to populate the drop down menu, that allows user to select their current country.
+       */
       loadCountries() {
         // this.searchedUser.passports = this.searchedUser.passports.slice();
         this.getDataFromUrl(COUNTRIES_URL)
                 .then((response) => {
                   const countries = []
                   const data = response.data
-                  console.log(data)
                   for (let country in data) {
                     let country_name = data[country].name
                     countries.push(country_name)
@@ -385,25 +428,35 @@ export default {
 
     watch: {
       search (val) {
-        // Items have already been loaded
-        // if (this.items.length > 0) return
-
-        // Items have already been requested
-        // if (this.isLoading) return
 
         if(val.length < 3){
           return
         }
         this.isLoading = true
 
-        // Lazily load input items
-        console.log(val)
         fetch("https://photon.komoot.de/api/?q=" + val)
                 .then(res => res.json())
                 .then(res => {
                   const { features } = res
                   this.features = features
-                  console.log(this.features)
+                })
+                .catch(err => {
+                  console.log(err)
+                })
+                .finally(() => (this.isLoading = false))
+      },
+      searchState (val) {
+
+        if(val.length < 3){
+          return
+        }
+        this.isLoading = true
+
+        fetch("https://photon.komoot.de/api/?q=" + val)
+                .then(res => res.json())
+                .then(res => {
+                  const { features } = res
+                  this.features = features
                 })
                 .catch(err => {
                   console.log(err)
