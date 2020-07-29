@@ -56,7 +56,7 @@
 
           <v-autocomplete
                   v-model="model"
-                  v-bind="locationInput"
+                  v-bind="location"
                   :items="items"
                   :loading="isLoading"
                   :search-input.sync="search"
@@ -202,7 +202,6 @@ export default {
       items () {
         return this.features.map(entry => {
           const Description = this.getLocationSummary(entry);
-          console.log(Description)
 
           return Object.assign({}, entry, { Description })
         })
@@ -221,7 +220,6 @@ export default {
         model: null,
         descriptionLimit: 60,
         features: [],
-        locationInput: null,
         countries_option: [],
         adding_country: "Passport Countries",
       };
@@ -229,32 +227,31 @@ export default {
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount", "getDataFromUrl"]),
 
-      /**
-       * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
-       * the location input.
-       */
-      setLocation(location) {
-        this.location = location;
-        const l = location.split(", ");
-        this.searchedUser.location = {
-          city: l[0],
-          state: l[1],
-          country: l[2]
-        };
-        document.getElementById("locationInput").value = "";
-      },
+      // /**
+      //  * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
+      //  * the location input.
+      //  */
+      // setLocation(location) {
+      //   this.location = location;
+      //   const l = location.split(", ");
+      //   this.searchedUser.location = {
+      //     city: l[0],
+      //     state: l[1],
+      //     country: l[2]
+      //   };
+      // },
 
-      /**
-       * Sets the location and each of its individual components to be null.
-       */
-      deleteLocation() {
-        this.location = null;
-        this.searchedUser.location = {
-          city: null,
-          state: null,
-          country: null
-        };
-      },
+      // /**
+      //  * Sets the location and each of its individual components to be null.
+      //  */
+      // deleteLocation() {
+      //   this.location = null;
+      //   this.searchedUser.location = {
+      //     city: null,
+      //     state: null,
+      //     country: null
+      //   };
+      // },
 
       /**
        * Creates a summary for a location. This is done by appending the name (which should be a name of a city), the
@@ -386,15 +383,13 @@ export default {
     },
 
 
-
-
     watch: {
       search (val) {
         // Items have already been loaded
         // if (this.items.length > 0) return
 
         // Items have already been requested
-        if (this.isLoading) return
+        // if (this.isLoading) return
 
         if(val.length < 3){
           return
@@ -426,11 +421,11 @@ export default {
       this.loadSearchedUser();
       this.loadCountries();
       // let outer = this;
-      let input = document.querySelector("#locationInput");
-      // let timeout = null;
-      if(input == null){
-        return;
-      }
+      // let input = document.querySelector("#locationInput");
+      // // let timeout = null;
+      // if(input == null){
+      //   return;
+      // }
       // input.addEventListener("keyup", function() {
       //   clearTimeout(timeout);
       //   timeout = setTimeout(function() {
