@@ -53,6 +53,7 @@ public class UserSpecification {
                         criteriaBuilder.equal(fullWithoutMiddleNameQuery,fullNameWithoutQuotation)
                 );
             }
+
             return criteriaBuilder.or(
                     criteriaBuilder.like(fullNameQuery, "%" + fullName + "%"),
                     criteriaBuilder.like(fullWithoutMiddleNameQuery, "%" + fullName + "%")

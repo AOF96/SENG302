@@ -588,31 +588,7 @@ public class UserService {
     }
 
 
-    /**
-     * Deals with pagination where you can search users with email, full name and last name
-     *
-     * @param page     number of a page you want to be at
-     * @param size     how many results you want on a page
-     * @param email    email of the user you want to search
-     * @param fullname full name of the user you want to search
-     * @param lastname last name of the user you want to search
-     * @param activityTypes activityTypes of the user you want to search
-     * @param method
-     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
-     */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
-        Page<User> userPage;
-        if (activityTypes != null) {
-            if (method.equals("or")) {
-                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
-            } else {
-                 userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
-                }
-        } else {
-            userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
-        }
-        return userPageToSearchResponsePage(userPage);
-    }
+
 
     /**
      * Finds the intersection of a List of Sets of Users. Much of this code was adapted from
@@ -701,21 +677,4 @@ public class UserService {
     }
 
 
-    /***
-     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
-     * @param lastName last name of the user you are searching
-     * @param fullName full name of the user you are searching
-     * @param email email of the user you are searching
-     * @return specification object with User search request (WHERE part of a query)
-     */
-    private Specification<User> generateSpecification(String lastName, String fullName, String email) {
-        return Specification.where(UserSpecification.searchByLastName(lastName))
-                .and(
-                        UserSpecification.searchByFullName(fullName))
-                .and(
-                        UserSpecification.searchByEmail(email))
-                .and(
-                        UserSpecification.searchIsNotAdmin()
-                );
-    }
 }
