@@ -7,8 +7,6 @@ import com.springvuegradle.hakinakina.util.ErrorHandler;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -191,4 +189,23 @@ public class Activity {
         return activityStr;
     }
 
+    /**
+     * Compares this Activity with other Activity to find which attributes are different
+     * @param other The other Activity to compare to
+     * @return A Set of ActivityAttributes that changed.
+     */
+    public Set<ActivityAttribute> findActivityChanges(Activity other) {
+        Set<ActivityAttribute> differences = new HashSet<>();
+        if (!this.name.equals(other.name)) {
+            differences.add(ActivityAttribute.NAME);
+        }
+        if (!this.description.equals(other.description)) {
+            differences.add(ActivityAttribute.DESCRIPTION);
+        }
+        if (this.activityTypes.equals(other.activityTypes)) {
+            differences.add(ActivityAttribute.ACTIVITY_TYPES);
+        }
+
+        return differences;
+    }
 }
