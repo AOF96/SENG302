@@ -1,19 +1,23 @@
 <template>
-  <v-card class="activityContainer"
-          :loading="loadingActivity"
-          width="1000px"
-          style="border-radius: 14px;"
-  >
-    <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
-    <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
-    <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
-    <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><h3>
-      Start date: {{ start_date }}</h3></div>
-    <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3> End
-      date: {{ end_date }}</h3></div>
-    <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
-      Activity Type:
-      <span v-for="a in activity_types" :key="a.type_id">
+
+  <v-container fluid grid-list-md>
+    <v-layout row wrap>
+      <v-flex d-flex xs12 sm6 md4>
+        <v-card class="activityContainer"
+                :loading="loadingActivity"
+                width="600px"
+                style="border-radius: 14px;"
+        >
+          <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
+          <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
+          <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
+          <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><h3>
+            Start date: {{ start_date }}</h3></div>
+          <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3> End
+            date: {{ end_date }}</h3></div>
+          <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
+            Activity Type:
+            <span v-for="a in activity_types" :key="a.type_id">
                 <span v-if="activity_types.indexOf(a) !== activity_types.length - 1">
                         {{a.name}},
                 </span>
@@ -21,29 +25,72 @@
                         {{a.name}}.
                 </span>
             </span>
-    </div>
-    <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
-      <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
-    </div>
-    <div class="activityPageBottomButtons">
-      <router-link v-bind:to="'/profile/'+authorId">
-        <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
-          Back to Profile
-        </button>
-      </router-link>
-      <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
-        <button
-            class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-            type="button"
-        >Edit Activity
-        </button>
-      </router-link>
-      <button v-if="authorId===user.profile_id || user.permission_level > 0"
-              class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-              type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
-      </button>
-    </div>
-  </v-card>
+          </div>
+          <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
+            <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
+          </div>
+          <div class="activityPageBottomButtons">
+            <router-link v-bind:to="'/profile/'+authorId">
+              <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+                Back to Profile
+              </button>
+            </router-link>
+            <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
+              <button
+                      class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                      type="button"
+              >Edit Activity
+              </button>
+            </router-link>
+            <button v-if="authorId===user.profile_id || user.permission_level > 0"
+                    class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+                    type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+            </button>
+          </div>
+        </v-card>
+      </v-flex>
+
+      <v-flex d-flex xs12 sm3 md3>
+        <v-layout row wrap>
+          <v-flex d-flex>
+            <v-card class="activityContainer" width="650px">
+              <h2>Organisers/Participants</h2>
+              <h3>Coming soon!</h3>
+            </v-card>
+          </v-flex>
+
+          <v-flex d-flex>
+            <v-card class="activityContainer" width="650px">
+              <h2>Map track</h2>
+              <h3>Coming next sprint!</h3>
+            </v-card>
+          </v-flex>
+
+        </v-layout>
+      </v-flex>
+
+      <v-flex d-flex xs12 sm3 md3>
+        <v-layout row wrap>
+          <v-flex d-flex>
+            <v-card class="activityContainer" width="650px">
+              <h2>Gallery</h2>
+              <h3>Coming at some stage!</h3>
+            </v-card>
+          </v-flex>
+
+          <v-flex d-flex>
+            <v-card class="activityContainer" width="650px">
+              <h2>Updates</h2>
+              <h3>Coming next month!</h3>
+            </v-card>
+          </v-flex>
+
+        </v-layout>
+      </v-flex>
+
+    </v-layout>
+
+  </v-container>
 </template>
 
 <script>
