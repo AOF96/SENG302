@@ -1,8 +1,12 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.HomeFeedService;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,22 +19,49 @@ import javax.servlet.http.HttpServletResponse;
 public class HomeFeedController {
 
     public UserRepository userRepository;
-    public ActivityRepository activityRepository;
     public HomeFeedService homeFeedService;
+    public SessionRepository sessionRepository;
+    private final ResponseHandler responseHandler = new ResponseHandler();
 
     /**
      * Constructs an Activity Controller, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository     The repository containing Users
-     * @param activityRepository The repository containing Activities
      * @param homeFeedService    The service for the Home Feed
+     * @param sessionRepository  The repository containing sessions
      */
     public HomeFeedController(UserRepository userRepository,
-                              ActivityRepository activityRepository,
-                              HomeFeedService homeFeedService) {
+                              HomeFeedService homeFeedService,
+                              SessionRepository sessionRepository) {
         this.userRepository = userRepository;
-        this.activityRepository = activityRepository;
         this.homeFeedService = homeFeedService;
+        this.sessionRepository = sessionRepository;
     }
 
+    /**
+     * Returns a list of entries for the users home feed
+     * @param profileId id of user to get feed for
+     * @param sessionToken session of requesting user
+     * @return home feed results
+     */
+    @GetMapping("/profiles/{profileId}/feed")
+    public ResponseEntity<String> getHomeFeed(@PathVariable Long profileId,
+                                              @CookieValue(value = "s_id") String sessionToken) {
+        ResponseEntity<String> result;
+        try{
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponseString(401, "Invalid Session");
+            } else if (profileId == null || userRepository.getUserById(profileId).isEmpty()) {
+                result = responseHandler.formatErrorResponseString(404, "User not found");
+            } else if (!profileId.equals(sessionRepository.findUserIdByToken(sessionToken).getUser().getUserId())) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else {
+                result = homeFeedService.getHomeFeed(profileId);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot get feed");
+            result = responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+        return result;
+    }
 }

@@ -257,7 +257,7 @@ public class ActivityService {
                 result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
             }
         } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Cannot delete activity");
+            ErrorHandler.printProgramException(e, "Cannot unfollow");
             result = responseHandler.formatErrorResponseString(500, "An error occurred");
         }
         return result;
@@ -287,10 +287,9 @@ public class ActivityService {
                 result = responseHandler.formatSuccessResponseString(200, Boolean.toString(following));
             }
         } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Cannot delete activity");
+            ErrorHandler.printProgramException(e, "Cannot check following");
             result = responseHandler.formatErrorResponseString(500, "An error occurred");
         }
         return result;
     }
-
 }

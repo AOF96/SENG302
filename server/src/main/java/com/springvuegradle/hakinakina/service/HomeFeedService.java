@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,18 +11,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class HomeFeedService {
 
-    public UserRepository userRepository;
-    public ActivityRepository activityRepository;
-
     /**
      * Constructs a Home Feed Service, passing in the repositories so that they can be accessed.
-     *
-     * @param userRepository     The repository containing Users
-     * @param activityRepository The repository containing Activities
      */
-    public HomeFeedService(UserRepository userRepository,
-                           ActivityRepository activityRepository) {
-        this.userRepository = userRepository;
-        this.activityRepository = activityRepository;
+    public HomeFeedService() {
+    }
+
+    /**
+     * Returns a list of entries for the users home feed
+     * @param profileId id of user to get feed for
+     * @return home feed results
+     */
+    public ResponseEntity<String> getHomeFeed(Long profileId) throws Exception{
+        //TODO home feed from repository logic
+        return null;
     }
 }
