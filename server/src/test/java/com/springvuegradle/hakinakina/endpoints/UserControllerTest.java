@@ -164,7 +164,7 @@ public class UserControllerTest {
         this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("{\"bio\":null,\"activities\":[],\"authoredActivities\":[]," +
-                        "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
+                        "\"followingList\":[]," + "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
                         "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
                         "\"state\":null,\"country\":null,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
                         "\"additional_email\":[],\"permission_level\":0}")));

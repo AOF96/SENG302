@@ -89,6 +89,11 @@ public class Activity {
         return users;
     }
 
+    public void addUsers(User user) {
+        user.followActivity(this);
+        users.add(user);
+    }
+
     public void setUsers(Set<User> users) {
         this.users = users;
     }

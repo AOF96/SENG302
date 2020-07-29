@@ -194,6 +194,15 @@ public class User {
         session.setUser(null);
     }
 
+    public void followActivity(Activity activity) {
+        activity.addUsers(this);
+        activities.add(activity);
+    }
+
+    public Set<Activity> getFollowingList() {
+        return activities;
+    }
+
     public void unfollowActivity(Activity activity) {
         activities.remove(activity);
     }
