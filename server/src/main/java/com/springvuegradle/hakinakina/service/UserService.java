@@ -2,7 +2,6 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.Session;
@@ -13,7 +12,6 @@ import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
-import net.minidev.json.JSONObject;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -42,16 +40,18 @@ public class UserService {
     private PassportCountryRepository countryRepository;
     private SessionRepository sessionRepository;
     private ActivityTypeRepository activityTypeRepository;
+    private SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
-                       ActivityTypeRepository activityTypeRepository) {
+                       ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository) {
         this.userRepository = userRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityTypeRepository = activityTypeRepository;
+        this.searchRepository = searchRepository;
     }
 
     /**
@@ -586,17 +586,6 @@ public class UserService {
         }
     }
 
-    /**
-     * Deals with pagination with no conditions like email, surname, full name etc
-     *
-     * @param page number of a page you want to be at
-     * @param size how many results you want on a page
-     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
-     */
-    public Page<SearchUserDto> findPaginated(int page, int size) {
-        Page<User> userPage = userRepository.findAll(PageRequest.of(page, size));
-        return userPageToSearchResponsePage(userPage);
-    }
 
     /**
      * Deals with pagination where you can search users with email, full name and last name
