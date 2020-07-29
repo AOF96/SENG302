@@ -25,7 +25,11 @@ public class ActivityService {
     public SessionRepository sessionRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
-    public ActivityService(UserRepository userRepository, ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository, PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
+    public ActivityService(UserRepository userRepository,
+                           ActivityRepository activityRepository,
+                           ActivityTypeRepository activityTypeRepository,
+                           PassportCountryRepository countryRepository,
+                           SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
