@@ -271,8 +271,8 @@ const actions = {
   async getIdByEmail(data, {'email': email}) {
     return await apiUser.getIdByEmail(email);
   },
-  async isUserFollowingActivitiy(data, {'userId': userId, 'activityId', activityId}) {
-    return await apiUser.isUserFollowingActivitiy(email);
+  async isUserFollowingActivitiy(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.isUserFollowingActivitiy(userId, activityId);
   },
   async refreshUserData(data, userId) {
     return await apiUser.refreshUserData(userId);
