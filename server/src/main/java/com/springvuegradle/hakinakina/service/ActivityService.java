@@ -173,6 +173,17 @@ public class ActivityService {
     }
 
     /**
+     * Compares two activities and finds what changed
+     * @param oldActivity The old Activity
+     * @param newActivity The new Activity
+     * @return A Set of ActivityAttributes that changed.
+     */
+    public Set<ActivityAttribute> findActivityChanges(Activity oldActivity, Activity newActivity) {
+        //todo implement me!!!
+        return null;
+    }
+
+    /**
      * Removes an activity from the database if the user is authenticated.
      * @param profileId the user's profile id.
      * @param activityId the activity id to be removed.
