@@ -274,6 +274,9 @@ const actions = {
   async isUserFollowingActivitiy(data, {'userId': userId, 'activityId': activityId}) {
     return await apiUser.isUserFollowingActivitiy(userId, activityId);
   },
+  async unfollowActivity(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.unfollowActivity(userId, activityId);
+  },
   async refreshUserData(data, userId) {
     return await apiUser.refreshUserData(userId);
   },

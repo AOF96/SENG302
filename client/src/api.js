@@ -234,4 +234,7 @@ export const apiActivity = {
     );
     return await activity;
   },
+
+  unfollowActivity: (profileId, activityId) =>
+    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`)
 };
