@@ -60,13 +60,28 @@
                   :items="items"
                   :loading="isLoading"
                   :search-input.sync="search"
-                  color="black"
+                  color="primary"
                   no-filter
                   hide-no-data
                   hide-selected
                   item-text="Description"
                   item-value="API"
-                  label="Public APIs"
+                  label="City"
+                  placeholder="Start typing to Search"
+                  prepend-icon="mdi-database-search"
+                  return-object
+                  id="inputLocation"
+          ></v-autocomplete>
+
+          <v-autocomplete
+                  v-model="model"
+                  :items="countries_option"
+                  :loading="isLoading"
+                  color="primary"
+                  hide-no-data
+                  hide-selected
+                  item-text="Description"
+                  label="Country"
                   placeholder="Start typing to Search"
                   prepend-icon="mdi-database-search"
                   return-object
@@ -172,6 +187,7 @@
 <script>
   import { mapGetters, mapActions } from "vuex";
   // import axios from 'axios';
+  const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
   import UserSettingsMenu from "./ProfileSettingsMenu";
 
 export default {
@@ -205,11 +221,13 @@ export default {
         model: null,
         descriptionLimit: 60,
         features: [],
-        locationInput: null
+        locationInput: null,
+        countries_option: [],
+        adding_country: "Passport Countries",
       };
     },
     methods: {
-      ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount"]),
+      ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount", "getDataFromUrl"]),
 
       /**
        * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
@@ -343,8 +361,31 @@ export default {
           );
         }
         this.showAdmin = true;
-      }
+      },
+
+      loadCountries() {
+        // this.searchedUser.passports = this.searchedUser.passports.slice();
+        this.getDataFromUrl(COUNTRIES_URL)
+                .then((response) => {
+                  const countries = []
+                  const data = response.data
+                  console.log(data)
+                  for (let country in data) {
+                    let country_name = data[country].name
+                    countries.push(country_name)
+                  }
+                  // for(let country of this.searchedUser.passports) {
+                  //   const index = countries.indexOf(country)
+                  //   if (index === -1) continue
+                  //   countries.splice(index, 1)
+                  // }
+                  this.countries_option = countries
+                })
+                .catch(error => console.log(error));
+      },
     },
+
+
 
 
     watch: {
@@ -383,6 +424,7 @@ export default {
      */
     mounted() {
       this.loadSearchedUser();
+      this.loadCountries();
       // let outer = this;
       let input = document.querySelector("#locationInput");
       // let timeout = null;
