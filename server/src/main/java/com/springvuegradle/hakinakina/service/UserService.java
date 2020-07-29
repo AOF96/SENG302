@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.Session;
