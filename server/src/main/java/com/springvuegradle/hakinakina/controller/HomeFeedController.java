@@ -3,7 +3,10 @@ package com.springvuegradle.hakinakina.controller;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.HomeFeedService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Rest controller class for controlling requests about a user's Home Feed

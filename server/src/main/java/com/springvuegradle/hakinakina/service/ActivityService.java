@@ -183,7 +183,7 @@ public class ActivityService {
         return null;
     }
 
-    /***
+    /**
      * Removes an activity from the database if the user is authenticated.
      * @param profileId the user's profile id.
      * @param activityId the activity id to be removed.
@@ -228,6 +228,36 @@ public class ActivityService {
             result.add(activityMap);
         }
 
+        return result;
+    }
+
+    /**
+     * Removes a user from following an activity.
+     * @param profileId id of user that is unfollowing
+     * @param activityId activity to unfollow
+     * @param sessionToken session id of the user
+     * @return response entity with the result of the operation.
+     */
+    public ResponseEntity<String> unFollow(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity<String> result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponseString(401, "Invalid Session");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else if (!profileId.equals(session.getUser().getUserId()) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else {
+                //TODO Delete relationship between given user and activity for following
+
+                result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete activity");
+            result = responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
         return result;
     }
 

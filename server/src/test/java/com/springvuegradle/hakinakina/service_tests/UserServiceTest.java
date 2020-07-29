@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina;
+package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
