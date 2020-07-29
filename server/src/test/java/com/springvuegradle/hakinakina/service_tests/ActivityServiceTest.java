@@ -191,4 +191,65 @@ public class ActivityServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Activity not found", response.getBody());
     }
+
+    @Test
+    public void checkIfFollowingTrueTest() {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        User testUser2 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+        newActivity.setAuthor(testUser2);
+        activityRepository.save(newActivity);
+
+        testSession.setUser(testUser);
+
+        Set<User> users = new HashSet<>();
+        users.add(testUser);
+        newActivity.setUsers(users);
+
+        Set<Activity> activities = new HashSet<>();
+        activities.add(newActivity);
+        testUser.setActivities(activities);
+
+        activityRepository.save(newActivity);
+        userRepository.save(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+
+        ResponseEntity<String> response = service.checkFollowing((long) 1, (long) 1, "t0k3n");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("true", response.getBody());
+    }
+
+    @Test
+    public void checkIfFollowingFalseTest() {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        User testUser2 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+        newActivity.setAuthor(testUser2);
+        activityRepository.save(newActivity);
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+
+        ResponseEntity<String> response = service.checkFollowing((long) 1, (long) 1, "t0k3n");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("false", response.getBody());
+    }
 }

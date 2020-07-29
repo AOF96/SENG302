@@ -263,4 +263,34 @@ public class ActivityService {
         return result;
     }
 
+    /**
+     * Returns if the given user is following the given activity
+     * @param profileId user requested
+     * @param activityId activity to check
+     * @param sessionToken session token of the requesting user
+     * @return formatted response with result
+     */
+    public ResponseEntity<String> checkFollowing(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity<String> result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponseString(401, "Invalid Session");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else if (!profileId.equals(session.getUser().getUserId()) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else {
+                User user = userRepository.getUserById(profileId).get();
+                boolean following = activity.getUsers().contains(user);
+                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(following));
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete activity");
+            result = responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+        return result;
+    }
+
 }

@@ -134,9 +134,29 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Endpoint for unfollowing an activity
+     * @param profileId id of user that is unfollowing
+     * @param activityId activity to unfollow
+     * @param sessionToken session id of the user
+     * @return response entity with the result of the operation.
+     */
     @DeleteMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
-    public ResponseEntity unFollow(@PathVariable Long profileId, @PathVariable Long activityId,
+    public ResponseEntity<String> unFollow(@PathVariable Long profileId, @PathVariable Long activityId,
                                    @CookieValue(value = "s_id") String sessionToken) {
         return activityService.unFollow(profileId, activityId, sessionToken);
+    }
+
+    /**
+     * Returns if the given user is following the given activity
+     * @param profileId user requested
+     * @param activityId activity to check
+     * @param sessionToken session token of the requesting user
+     * @return formatted response with result
+     */
+    @GetMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity<String> getIfFollowing(@PathVariable Long profileId, @PathVariable Long activityId,
+                                                 @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.checkFollowing(profileId, activityId, sessionToken);
     }
 }
