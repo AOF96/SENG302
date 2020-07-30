@@ -1,12 +1,12 @@
 <template>
 
-  <v-container fluid grid-list-md>
-    <v-layout row wrap>
+  <v-container fluid grid-list-md fill-height fill-width>
+    <v-layout row wrap width="600px">
       <v-flex d-flex xs12 sm6 md4>
         <v-card class="activityContainer"
                 :loading="loadingActivity"
-                width="600px"
-                style="border-radius: 14px;"
+                width="1200px"
+                style="border-radius: 14px; margin-left: -60px"
         >
           <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
           <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
@@ -52,15 +52,15 @@
 
       <v-flex d-flex xs12 sm3 md3>
         <v-layout row wrap>
-          <v-flex d-flex>
-            <v-card class="activityContainer" width="650px">
+          <v-flex>
+            <v-card height="300px">
               <h2>Organisers/Participants</h2>
               <h3>Coming soon!</h3>
             </v-card>
           </v-flex>
 
-          <v-flex d-flex>
-            <v-card class="activityContainer" width="650px">
+          <v-flex>
+            <v-card height="300px">
               <h2>Map track</h2>
               <h3>Coming next sprint!</h3>
             </v-card>
@@ -71,15 +71,15 @@
 
       <v-flex d-flex xs12 sm3 md3>
         <v-layout row wrap>
-          <v-flex d-flex>
-            <v-card class="activityContainer" width="650px">
+          <v-flex>
+            <v-card height="300px">
               <h2>Gallery</h2>
               <h3>Coming at some stage!</h3>
             </v-card>
           </v-flex>
 
-          <v-flex d-flex>
-            <v-card class="activityContainer" width="650px">
+          <v-flex>
+            <v-card height="300px">
               <h2>Updates</h2>
               <h3>Coming next month!</h3>
             </v-card>
