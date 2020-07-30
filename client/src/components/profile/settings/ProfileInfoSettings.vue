@@ -11,12 +11,12 @@
         <div
           id="adminToggle"
           v-bind:class="{ showadmin: showAdmin }"
-          v-if="user.permission_level == 2 && searchedUser.permission_level != 2 && user.profile_id != searchedUser.profile_id"
+          v-if="user.permission_level === 2 && searchedUser.permission_level !== 2 && user.profile_id !== searchedUser.profile_id"
         >
           <h2>Enable Admin Abilities</h2>
           <div
             class="togswitch"
-            :position="searchedUser.permission_level == 1 ? 'on' : 'off'"
+            :position="searchedUser.permission_level === 1 ? 'on' : 'off'"
             v-on:click="toggleAdmin()"
           >
             <div class="togswitchnob"></div>
@@ -46,63 +46,57 @@
         />
         <h2>Nickname</h2>
         <input type="text" name="nickname" id="nickName" v-model="searchedUser.nickname" placeholder="Nickname" />
-
-<!--        <h2 id="locationHeader">Location: <b>{{ location }}</b></h2>-->
-<!--        <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"-->
-<!--                v-on:click="deleteLocation()"><b>x</b></button>-->
         <div>
-          <!--          <input id="locationInput" autocomplete="on" type="text" placeholder="Search here..."-->
-          <!--                 onfocus="showLocations = true" />-->
-
           <v-combobox
-                  v-model="model"
-                  v-bind="locationCity"
-                  :items="items"
-                  :loading="isLoading"
-                  :search-input.sync="search"
-                  color="primary"
-                  no-filter
-                  hide-no-data
-                  hide-selected
-                  item-text="Description"
-                  item-value="API"
-                  label="City"
-                  placeholder="Start typing to Search"
-                  return-object
-                  id="inputCity"
-          ></v-combobox>
-
-
+              v-model="searchedUser.city"
+              :items="items"
+              :search-input.sync="search"
+              color="primary"
+              no-filter
+              hide-no-data
+              item-text="Description"
+              item-value="API"
+              label="City"
+              placeholder="Start typing to Search"
+              return-object
+              id="inputCity"
+              outlined
+              class="locationCombo"
+              dense
+          />
           <v-combobox
-                  v-bind="locationState"
-                  :items="itemsState"
-                  :search-input.sync="searchState"
-                  :loading="isLoading"
-                  color="primary"
-                  no-filter
-                  hide-no-data
-                  hide-selected
-                  item-text="Description"
-                  item-value="API"
-                  label="State"
-                  placeholder="Start typing to Search"
-                  return-object
-                  id="inputState"
-          ></v-combobox>
-
+              v-model="searchedUser.state"
+              :items="itemsState"
+              :search-input.sync="searchState"
+              color="primary"
+              no-filter
+              hide-no-data
+              hide-selected
+              item-text="Description"
+              item-value="API"
+              label="State"
+              placeholder="Start typing to Search"
+              return-object
+              id="inputState"
+              outlined
+              class="locationCombo"
+              dense
+          />
           <v-combobox
-                  v-bind="locationCountry"
-                  :items="countries_option"
-                  :loading="isLoading"
-                  color="primary"
-                  hide-no-data
-                  hide-selected
-                  item-text="Description"
-                  label="Country"
-                  placeholder="Start typing to Search"
-                  return-object
-                  id="inputCountry"
-          ></v-combobox>
+              v-model="searchedUser.country"
+              :items="countries_option"
+              color="primary"
+              hide-no-data
+              hide-selected
+              item-text="Description"
+              label="Country"
+              placeholder="Start typing to Search"
+              return-object
+              id="inputCountry"
+              outlined
+              class="locationCombo"
+              dense
+          />
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
             <div
                     v-for="(item, index) in suggestedLocations"
@@ -147,14 +141,14 @@
         <input v-model="searchedUser.date_of_birth" name="birthday" id="userBirthday" type="date" required />
         <h2>Bio</h2>
         <textarea
-          maxlength="255"
-          name="bio"
-          id="userBio"
-          v-model="searchedUser.bio"
-          placeholder="Write about yourself"
-        ></textarea>
-        <h6 class="editProfileInfoErrorMessage" id="error" hidden="true"></h6>
-        <h6 class="updateInfoSuccessMessage" id="success" hidden="true"></h6>
+            maxlength="255"
+            name="bio"
+            id="userBio"
+            v-model="searchedUser.bio"
+            placeholder="Write about yourself"
+        />
+        <h6 class="editProfileInfoErrorMessage" id="error" hidden="true"/>
+        <h6 class="updateInfoSuccessMessage" id="success" hidden="true"/>
         <button
           class="genericDeleteButton deleteProfileButton"
           @click.stop="dialog = true"
@@ -267,13 +261,13 @@ export default {
           country: document.getElementById('inputCountry').value
         };
 
-        if(l.city.length == 0){
+        if(l.city.length === 0){
           l.city = this.searchedUser.city;
         }
-        if(l.state.length == 0){
+        if(l.state.length === 0){
           l.state = this.searchedUser.state;
         }
-        if(l.country.length == 0){
+        if(l.country.length === 0){
           l.country = this.searchedUser.country;
         }
         this.searchedUser.location = l;
@@ -311,7 +305,7 @@ export default {
       was unsuccessful.
       */
       updateProfile() {
-        this.setLocation(location)
+        this.setLocation(location);
 
         this.editProfile(
                 this.searchedUser
@@ -336,9 +330,9 @@ export default {
       },
 
       toggleAdmin() {
-        if (this.searchedUser.permission_level == 1) {
+        if (this.searchedUser.permission_level === 1) {
           this.searchedUser.permission_level = 0;
-        } else if (this.searchedUser.permission_level == 0) {
+        } else if (this.searchedUser.permission_level === 0) {
           this.searchedUser.permission_level = 1;
         }
       },
@@ -350,7 +344,7 @@ export default {
         this.deleteUserAccount({'id': this.searchedUser.profile_id})
                 .then(() => {
                   if (this.user.permission_level > 0) {
-                    if (this.searchedUser.profile_id == this.user.profile_id) {
+                    if (this.searchedUser.profile_id === this.user.profile_id) {
                       location.reload();
                     } else {
                       this.$router.push("/settings/admin_dashboard");
@@ -372,13 +366,13 @@ export default {
       async loadSearchedUser() {
         if (
                 this.$route.params.profileId == null ||
-                this.$route.params.profileId == ""
+                this.$route.params.profileId === ""
         ) {
           this.$router.push("/settings/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
           var tempUserData = await this.getUserById(this.$route.params.profileId);
-          if (tempUserData == "Invalid permissions") {
+          if (tempUserData === "Invalid permissions") {
             this.$router.push("/settings/profile/" + this.user.profile_id);
             this.searchedUser = this.user;
           } else {
@@ -405,10 +399,10 @@ export default {
         // this.searchedUser.passports = this.searchedUser.passports.slice();
         this.getDataFromUrl(COUNTRIES_URL)
                 .then((response) => {
-                  const countries = []
-                  const data = response.data
+                  const countries = [];
+                  const data = response.data;
                   for (let country in data) {
-                    let country_name = data[country].name
+                    let country_name = data[country].name;
                     countries.push(country_name)
                   }
                   this.countries_option = countries
@@ -429,7 +423,7 @@ export default {
         fetch("https://photon.komoot.de/api/?q=" + val)
                 .then(res => res.json())
                 .then(res => {
-                  const { features } = res
+                  const { features } = res;
                   this.features = features
                 })
                 .catch(err => {
@@ -447,7 +441,7 @@ export default {
         fetch("https://photon.komoot.de/api/?q=" + val)
                 .then(res => res.json())
                 .then(res => {
-                  const { features } = res
+                  const { features } = res;
                   this.features = features
                 })
                 .catch(err => {

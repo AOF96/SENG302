@@ -79,6 +79,15 @@
     border-radius: 21px !important;
     border: 1px solid #d8d8d8 !important;
 }
+.v-input__slot {
+    border-radius: 21px !important;
+}
+.locationCombo {
+    margin-top: 30px !important;
+}
+#inputCity, #inputCountry, #inputState {
+    border: none !important;
+}
 .editForm textarea {
     height: 100px;
     resize: none;
