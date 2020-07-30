@@ -196,42 +196,42 @@ public class Activity {
      */
     public Set<ActivityAttribute> findActivityChanges(Activity other) {
         Set<ActivityAttribute> differences = new HashSet<>();
-        if (!this.id.equals(other.id)) {
+        if (!this.getId().equals(other.getId())) {
             differences.add(ActivityAttribute.ID);
         }
-        if (!this.name.equals(other.name)) {
+        if (!this.getName().equals(other.getName())) {
             differences.add(ActivityAttribute.NAME);
         }
-        if (!this.description.equals(other.description)) {
+        if (!this.getDescription().equals(other.getDescription())) {
             differences.add(ActivityAttribute.DESCRIPTION);
         }
-        if (!this.activityTypes.equals(other.activityTypes)) {
+        if (!this.getActivityTypes().equals(other.getActivityTypes())) {
             differences.add(ActivityAttribute.ACTIVITY_TYPES);
         }
 
-        if (this.continuous != other.continuous) {
+        if (this.isContinuous() != other.isContinuous()) {
             differences.add(ActivityAttribute.CONTINUOUS);
         }
-        if(this.startTime != null && other.startTime != null) {
-            if (!this.startTime.equals(other.startTime)) {
+        if(this.getStartTime() != null && other.getStartTime() != null) {
+            if (!this.getStartTime().equals(other.getStartTime())) {
                 differences.add(ActivityAttribute.START_TIME);
             }
         }
-        if((this.startTime != null && other.startTime == null) || (this.startTime == null && other.startTime != null)){
+        if((this.getStartTime() != null && other.getStartTime() == null) || (this.getStartTime() == null && other.getStartTime() != null)){
             differences.add(ActivityAttribute.START_TIME);
         }
-        if(this.endTime != null && other.endTime != null) {
-            if (!this.endTime.equals(other.endTime)) {
+        if(this.getEndTime() != null && other.getEndTime() != null) {
+            if (!this.getEndTime().equals(other.getEndTime())) {
                 differences.add(ActivityAttribute.END_TIME);
             }
         }
-        if((this.endTime != null && other.endTime == null) || (this.endTime == null && other.endTime != null)){
+        if((this.getEndTime() != null && other.getEndTime() == null) || (this.getEndTime() == null && other.getEndTime() != null)){
             differences.add(ActivityAttribute.END_TIME);
         }
-        if (!this.location.equals(other.location)) {
+        if (!this.getLocation().equals(other.getLocation())) {
             differences.add(ActivityAttribute.LOCATION);
         }
-        if (!this.users.equals(other.users)) {
+        if (!this.getUsers().equals(other.getUsers())) {
             differences.add(ActivityAttribute.USERS);
         }
         if (!this.getAuthor().equals(other.getAuthor())) {

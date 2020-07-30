@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,14 +24,16 @@ public class ActivityService {
     public ActivityTypeRepository activityTypeRepository;
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
+    public ActivityChangeRepository activityChangeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
-    public ActivityService(UserRepository userRepository, ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository, PassportCountryRepository countryRepository, SessionRepository sessionRepository) {
+    public ActivityService(UserRepository userRepository, ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository, PassportCountryRepository countryRepository, SessionRepository sessionRepository, ActivityChangeRepository activityChangeRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.activityChangeRepository = activityChangeRepository;
     }
 
     /**
@@ -163,13 +166,45 @@ public class ActivityService {
             activity.setStartTime(newActivity.getStartTime());
             activity.setEndTime(newActivity.getEndTime());
             activity.setLocation(newActivity.getLocation());
-
             activityRepository.save(activity);
+
             return new ResponseEntity("Activity has been updated", HttpStatus.valueOf(200));
         } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "cannot add activity");
+            ErrorHandler.printProgramException(e, "cannot edit activity");
             return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
         }
+    }
+
+    public void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
+        Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
+        System.out.println(activityChanges);
+        StringBuilder description = new StringBuilder();
+        for (ActivityAttribute attribute : activityChanges) {
+            if (attribute == ActivityAttribute.ID) {
+                description.append("Activity id changed to: ").append("\n");
+            } else if (attribute == ActivityAttribute.NAME) {
+                description.append("Activity name changed to: \"").append(newActivity.getName()).append("\"\n");
+            } else if (attribute == ActivityAttribute.DESCRIPTION) {
+                description.append("Activity description changed to: \"").append(newActivity.getDescription()).append("\"\n");
+            } else if (attribute == ActivityAttribute.ACTIVITY_TYPES) {
+                description.append("Activity activity types changed to: \"").append(newActivity.getActivityTypes().toString()).append("\"\n");
+            } else if (attribute == ActivityAttribute.CONTINUOUS) {
+                description.append("Activity continuity changed to: \"").append(newActivity.isContinuous()).append("\"\n");
+            } else if (attribute == ActivityAttribute.START_TIME) {
+                description.append("Activity starting time changed to: ").append(newActivity.getStartTime()).append("\n");
+            } else if (attribute == ActivityAttribute.END_TIME) {
+                description.append("Activity ending time changed to: ").append(newActivity.getEndTime()).append("\n");
+            } else if (attribute == ActivityAttribute.LOCATION) {
+                description.append("Activity Location changed to: \"").append(newActivity.getLocation()).append("\"\n");
+            } else if (attribute == ActivityAttribute.USERS) {
+                description.append("Activity users changed to: \"").append(newActivity.getUsers().toString()).append("\"\n");
+            }
+        }
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        ActivityChange activityChangesToAdd = new ActivityChange(description.toString(), timestamp,
+                userRepository.getOne(profileId), activityRepository.getOne(activityId));
+        activityChangeRepository.save(activityChangesToAdd);
     }
 
     /**

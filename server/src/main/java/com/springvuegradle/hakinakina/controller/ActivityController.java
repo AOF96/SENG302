@@ -73,6 +73,7 @@ public class ActivityController {
                                        @PathVariable("profileId") long profileId,
                                        @PathVariable("activityId") long activityId,
                                        @CookieValue(value = "s_id") String sessionToken) {
+        activityService.addToChangesDatabase(activity, activityRepository.getOne(activityId), profileId, activityId);
         return activityService.editActivity(activity, profileId, activityId, sessionToken);
     }
 
