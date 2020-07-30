@@ -63,21 +63,6 @@ export default {
     ...mapState(["user"]),
     ...mapGetters(["user"])
   },
-  created: async function() {
-    // Ensures only activity types from the database can be selected and cannot select ones already selected
-    await this.getActivityTypes()
-      .then(response => {
-        const activityTypes = response.data;
-
-        for (let activity of this.searchedUser.activities) {
-          const index = activityTypes.indexOf(activity);
-          if (index === -1) continue;
-          activityTypes.splice(index, 1);
-        }
-        this.activities_option = activityTypes;
-      })
-      .catch(error => console.log(error));
-  },
   mounted() {
     this.loadSearchedUser();
   },
@@ -87,6 +72,37 @@ export default {
     startUp() {
       console.log("init");
       this.searchedUser.activities = this.searchedUser.activities.slice();
+      this.replaceDashesWithSpaces(this.searchedUser.activities);
+      this.setActivityTypeOptions();
+    },
+
+    /**
+     * Loads the activity types and removes the ones that have already been selected.
+     */
+    async setActivityTypeOptions() {
+      // Ensures only activity types from the database can be selected and cannot select ones already selected
+      await this.getActivityTypes()
+              .then(response => {
+                const activityTypes = response.data;
+                this.replaceDashesWithSpaces(activityTypes);
+
+                for (let activity of this.searchedUser.activities) {
+                  const index = activityTypes.indexOf(activity);
+                  if (index === -1) continue;
+                  activityTypes.splice(index, 1);
+                }
+                this.activities_option = activityTypes;
+              })
+              .catch(error => console.log(error));
+    },
+
+    /**
+     * Takes a list of strings and replaces all dashes with spaces
+     */
+    replaceDashesWithSpaces(list) {
+      for (let i = 0; i < list.length; i++) {
+        list[i] = list[i].replace(/-/g, " ")
+      }
     },
 
     /**

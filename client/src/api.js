@@ -232,6 +232,9 @@ export const apiActivity = {
   async getActivityById(activityId) {
     let activity = await apiActivity.getActivity(activityId).then(
       (response) => {
+        for (let i = 0; i < response.data.activity_type.length; i++) {
+          response.data.activity_type[i].name = response.data.activity_type[i].name.replace(/-/g, " ")
+        }
         return response.data;
       },
       (error) => {

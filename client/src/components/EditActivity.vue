@@ -181,12 +181,15 @@ export default {
     }
   },
   created: async function() {
-    this.loadActivity();
+    await this.loadActivity();
     // Ensures only activity types from the database can be selected and cannot select ones already selected
     await apiUser
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
+        for (let i = 0; i < this.activities_option.length; i++) {
+          this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
+        }
         this.activity_types_selected.forEach(e => {
           this.activities_option.some((v, i) => {
             if (v == e) this.activities_option.splice(i, 1);
@@ -264,6 +267,10 @@ export default {
           this.description = tempActivityData.description;
           this.activity_type = tempActivityData.activity_type.slice();
           this.location = tempActivityData.location;
+
+          for (let i = 0; i < tempActivityData.activity_type.length; i++) {
+            tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
+          }
           this.activity_types_selected = tempActivityData.activity_type.map(
             e => e.name
           );
