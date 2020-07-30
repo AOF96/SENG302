@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -205,7 +206,22 @@ public class Activity {
         if (!this.getDescription().equals(other.getDescription())) {
             differences.add(ActivityAttribute.DESCRIPTION);
         }
-        if (!this.getActivityTypes().equals(other.getActivityTypes())) {
+
+        boolean sameActivityTypes = true;
+        if (!(this.getActivityTypes().size() == other.getActivityTypes().size())) {
+            sameActivityTypes = false;
+        } else {
+            ArrayList<ActivityType> otherActivities = new ArrayList<>(other.getActivityTypes());
+            ArrayList<ActivityType> thisActivities = new ArrayList<>(this.getActivityTypes());
+            for (int i = 0; i < otherActivities.size(); i++) {
+                if (!(otherActivities.get(i).getName().equals(thisActivities.get(i).getName()))) {
+                    sameActivityTypes = false;
+                    break;
+                }
+            }
+        }
+
+        if (!sameActivityTypes) {
             differences.add(ActivityAttribute.ACTIVITY_TYPES);
         }
 

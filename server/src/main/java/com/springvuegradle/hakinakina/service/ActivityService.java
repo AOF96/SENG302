@@ -113,6 +113,7 @@ public class ActivityService {
      */
     public ResponseEntity editActivity(Activity newActivity, long profileId, long activityId, String sessionToken) {
         try {
+            addToChangesDatabase(newActivity, activityRepository.getOne(activityId), profileId, activityId);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
                 return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
@@ -166,6 +167,7 @@ public class ActivityService {
             activity.setStartTime(newActivity.getStartTime());
             activity.setEndTime(newActivity.getEndTime());
             activity.setLocation(newActivity.getLocation());
+
             activityRepository.save(activity);
 
             return new ResponseEntity("Activity has been updated", HttpStatus.valueOf(200));
@@ -175,21 +177,26 @@ public class ActivityService {
         }
     }
 
-    public void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
+    /***
+     * Adds a new field to the activity change database that details the changes made to an activity
+     * @param newActivity activity containing all changes being made
+     * @param oldActivity activity to be modified
+     * @param profileId id of the user making the changes
+     * @param activityId id of the activity being changed
+     */
+    private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
         Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
         System.out.println(activityChanges);
         StringBuilder description = new StringBuilder();
         for (ActivityAttribute attribute : activityChanges) {
-            if (attribute == ActivityAttribute.ID) {
-                description.append("Activity id changed to: ").append("\n");
-            } else if (attribute == ActivityAttribute.NAME) {
+            if (attribute == ActivityAttribute.NAME) {
                 description.append("Activity name changed to: \"").append(newActivity.getName()).append("\"\n");
             } else if (attribute == ActivityAttribute.DESCRIPTION) {
                 description.append("Activity description changed to: \"").append(newActivity.getDescription()).append("\"\n");
             } else if (attribute == ActivityAttribute.ACTIVITY_TYPES) {
-                description.append("Activity activity types changed to: \"").append(newActivity.getActivityTypes().toString()).append("\"\n");
+                description.append("Activity activity types changed to: ").append(newActivity.getActivityTypes().toString()).append("\n");
             } else if (attribute == ActivityAttribute.CONTINUOUS) {
-                description.append("Activity continuity changed to: \"").append(newActivity.isContinuous()).append("\"\n");
+                description.append("Activity continuity changed to: ").append(newActivity.isContinuous()).append("\n");
             } else if (attribute == ActivityAttribute.START_TIME) {
                 description.append("Activity starting time changed to: ").append(newActivity.getStartTime()).append("\n");
             } else if (attribute == ActivityAttribute.END_TIME) {
