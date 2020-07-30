@@ -235,6 +235,9 @@ export const apiActivity = {
     return await activity;
   },
 
+  followActivity: (profileId, activityId) =>
+    instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+
   unfollowActivity: (profileId, activityId) =>
     instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`)
 };
