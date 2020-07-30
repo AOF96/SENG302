@@ -108,7 +108,8 @@ public class UserServiceTest {
     public void getIntersectionOfListOfSetsOfUsersOneSetTest() {
         User user1 = new User("John", "Doe", "john@mail.com", "", Gender.MALE, 1, "coolPassword1");
         User user2 = new User("Jane", "Doe", "jane@mail.com", "", Gender.FEMALE, 2, "coolPassword2");
-
+        user1.setUserId(2222L);
+        user2.setUserId(2323L);
         List<Set<User>> list = new ArrayList<>();
         Set<User> set1 = new HashSet<>();
         set1.add(user1);
