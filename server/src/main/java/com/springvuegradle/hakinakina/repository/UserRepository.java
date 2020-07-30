@@ -28,8 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     //ToDO Remove this once the email table has been fixed.
     @Query(value = "select primary_email from User", nativeQuery = true)
     List<String> getAllPrimaryEmails();
-
-    // Automatically generates query that finds user based on their permission level :D
+    
+    @Query(value = "select * from User where permission_level = ?1", nativeQuery = true)
     User findByPermissionLevelEquals(int permissionLevel);
 
     @Query(value = "select * from User where user_id = ?", nativeQuery = true)
