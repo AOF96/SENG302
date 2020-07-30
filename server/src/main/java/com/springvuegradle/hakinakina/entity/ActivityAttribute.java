@@ -1,5 +1,8 @@
 package com.springvuegradle.hakinakina.entity;
 
+/**
+ * An enum representing different attributes of an Activity
+ */
 public enum ActivityAttribute {
     ID,
     NAME,

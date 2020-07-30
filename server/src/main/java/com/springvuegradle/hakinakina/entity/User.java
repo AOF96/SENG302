@@ -401,6 +401,15 @@ public class User {
         return result;
     }
 
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof User){
+            User otherUser = (User) other;
+            return this.userId.equals(otherUser.userId);
+        }
+        return false;
+    }
+
     public String toJson() {
         ObjectMapper objectMapper = new ObjectMapper();
         String userStr = null;

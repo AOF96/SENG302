@@ -196,16 +196,47 @@ public class Activity {
      */
     public Set<ActivityAttribute> findActivityChanges(Activity other) {
         Set<ActivityAttribute> differences = new HashSet<>();
+        if (!this.id.equals(other.id)) {
+            differences.add(ActivityAttribute.ID);
+        }
         if (!this.name.equals(other.name)) {
             differences.add(ActivityAttribute.NAME);
         }
         if (!this.description.equals(other.description)) {
             differences.add(ActivityAttribute.DESCRIPTION);
         }
-        if (this.activityTypes.equals(other.activityTypes)) {
+        if (!this.activityTypes.equals(other.activityTypes)) {
             differences.add(ActivityAttribute.ACTIVITY_TYPES);
         }
 
+        if (this.continuous != other.continuous) {
+            differences.add(ActivityAttribute.CONTINUOUS);
+        }
+        if(this.startTime != null && other.startTime != null) {
+            if (!this.startTime.equals(other.startTime)) {
+                differences.add(ActivityAttribute.START_TIME);
+            }
+        }
+        if((this.startTime != null && other.startTime == null) || (this.startTime == null && other.startTime != null)){
+            differences.add(ActivityAttribute.START_TIME);
+        }
+        if(this.endTime != null && other.endTime != null) {
+            if (!this.endTime.equals(other.endTime)) {
+                differences.add(ActivityAttribute.END_TIME);
+            }
+        }
+        if((this.endTime != null && other.endTime == null) || (this.endTime == null && other.endTime != null)){
+            differences.add(ActivityAttribute.END_TIME);
+        }
+        if (!this.location.equals(other.location)) {
+            differences.add(ActivityAttribute.LOCATION);
+        }
+        if (!this.users.equals(other.users)) {
+            differences.add(ActivityAttribute.USERS);
+        }
+        if (!this.getAuthor().equals(other.getAuthor())) {
+            differences.add(ActivityAttribute.AUTHOR);
+        }
         return differences;
     }
 }
