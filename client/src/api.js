@@ -190,7 +190,8 @@ export const apiActivity = {
     end_time,
     description,
     location,
-    activity_types
+    activity_types,
+    visibility
   ) =>
     instance.post("/profiles/" + author_id + "/activities", {
       activity_name: name,
@@ -200,6 +201,7 @@ export const apiActivity = {
       description: description,
       location: location,
       activity_type: activitiesAddDashes(activity_types),
+      visibility: visibility
     }),
 
   editActivity: (
