@@ -47,16 +47,16 @@
         <h2>Nickname</h2>
         <input type="text" name="nickname" id="nickName" v-model="searchedUser.nickname" placeholder="Nickname" />
 
-        <h2 id="locationHeader">Location: <b>{{ location }}</b></h2>
-        <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"
-                v-on:click="deleteLocation()"><b>x</b></button>
+<!--        <h2 id="locationHeader">Location: <b>{{ location }}</b></h2>-->
+<!--        <button v-if="location !== null" class="removeLocationButton profileRemoveLocationButton"-->
+<!--                v-on:click="deleteLocation()"><b>x</b></button>-->
         <div>
           <!--          <input id="locationInput" autocomplete="on" type="text" placeholder="Search here..."-->
           <!--                 onfocus="showLocations = true" />-->
 
           <v-combobox
                   v-model="model"
-                  v-bind="location"
+                  v-bind="locationCity"
                   :items="items"
                   :loading="isLoading"
                   :search-input.sync="search"
@@ -101,6 +101,7 @@
                   label="Country"
                   placeholder="Start typing to Search"
                   return-object
+                  id="inputCountry"
           ></v-combobox>
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
             <div
@@ -237,6 +238,7 @@ export default {
         suggestedLocations: [],
         showLocations: false,
         location: null,
+        locationCity: null,
         locationState: null,
         dialog: false,
         isLoading: false,
@@ -253,20 +255,48 @@ export default {
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "deleteUserAccount", "getDataFromUrl"]),
 
-      // /**
-      //  * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
-      //  * the location input.
-      //  */
-      // setLocation(location) {
-      //   this.location = location;
-      //   const l = location.split(", ");
-      //   console.log(l)
-      //   this.searchedUser.location = {
-      //     city: l[0],
-      //     state: l[1],
-      //     country: l[2]
-      //   };
-      // },
+      /**
+       * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
+       * the location input.
+       */
+      setLocation(location) {
+        this.location = location;
+        const l = {
+          city: document.getElementById('inputCity').value,
+          state: document.getElementById('inputState').value,
+          country: document.getElementById('inputCountry').value
+        };
+
+        if(l.city.length == 0){
+          delete l.city
+        }
+        if(l.state.length == 0){
+          delete l.state
+        }
+        if(l.country.length == 0){
+          delete l.country
+        }
+        this.searchedUser.location = l;
+        // console.log("l here")
+        // console.log(l);
+        // this.searchedUser.location = {
+        //   city:this.searchedUser.city,
+        //   // state: document.getElementById('inputState').value,
+        //   // country: document.getElementById('inputCountry').value
+        // };
+        //
+        //
+        //
+        // if(document.getElementById('inputCity').value.length == 0){
+        //   console.log("in here ")
+        //   delete this.searchedUser.location.city;
+        // }
+        // this.searchedUser.location = {
+        //   city: document.getElementById('inputCity').value,
+        //   state: document.getElementById('inputState').value,
+        //   country: document.getElementById('inputCountry').value
+        // };
+      },
 
       // /**
       //  * Sets the location and each of its individual components to be null.
@@ -280,19 +310,17 @@ export default {
       //   };
       // },
 
-
-
       /**
        * This method filters the the data received from the api and only suggests cities to the user.
        *
        */
       getLocationCity(location) {
-        let city = "";
-        console.log("we here in city")
+        let city = null;
         console.log(typeof(location.properties.city));
 
         if(location.properties.city !== undefined){
           city += location.properties.city;
+          return city
         }
         return city;
       },
@@ -303,7 +331,7 @@ export default {
        *
        */
       getLocationState(location) {
-        let state = "";
+        let state = null;
         console.log("we here in state")
         state += location.properties.state;
         return state;
@@ -314,6 +342,8 @@ export default {
       was unsuccessful.
       */
       updateProfile() {
+        this.setLocation(location)
+
         this.editProfile(
                 this.searchedUser
         )
@@ -335,8 +365,6 @@ export default {
                         }
                 );
       },
-
-
 
       toggleAdmin() {
         if (this.searchedUser.permission_level == 1) {
@@ -388,15 +416,15 @@ export default {
             this.searchedUser = tempUserData;
           }
         }
-        if (this.searchedUser.city) {
-          this.setLocation(
-                  this.searchedUser.city +
-                  ", " +
-                  this.searchedUser.state +
-                  ", " +
-                  this.searchedUser.country
-          );
-        }
+        // if (this.searchedUser.city) {
+        //   this.setLocation(
+        //           this.searchedUser.city +
+        //           ", " +
+        //           this.searchedUser.state +
+        //           ", " +
+        //           this.searchedUser.country
+        //   );
+        // }
         this.showAdmin = true;
       },
 
