@@ -268,56 +268,23 @@ export default {
         };
 
         if(l.city.length == 0){
-          delete l.city
+          l.city = this.searchedUser.city;
         }
         if(l.state.length == 0){
-          delete l.state
+          l.state = this.searchedUser.state;
         }
         if(l.country.length == 0){
-          delete l.country
+          l.country = this.searchedUser.country;
         }
         this.searchedUser.location = l;
-        // console.log("l here")
-        // console.log(l);
-        // this.searchedUser.location = {
-        //   city:this.searchedUser.city,
-        //   // state: document.getElementById('inputState').value,
-        //   // country: document.getElementById('inputCountry').value
-        // };
-        //
-        //
-        //
-        // if(document.getElementById('inputCity').value.length == 0){
-        //   console.log("in here ")
-        //   delete this.searchedUser.location.city;
-        // }
-        // this.searchedUser.location = {
-        //   city: document.getElementById('inputCity').value,
-        //   state: document.getElementById('inputState').value,
-        //   country: document.getElementById('inputCountry').value
-        // };
       },
-
-      // /**
-      //  * Sets the location and each of its individual components to be null.
-      //  */
-      // deleteLocation() {
-      //   this.location = null;
-      //   this.searchedUser.location = {
-      //     city: null,
-      //     state: null,
-      //     country: null
-      //   };
-      // },
 
       /**
        * This method filters the the data received from the api and only suggests cities to the user.
        *
        */
       getLocationCity(location) {
-        let city = null;
-        console.log(typeof(location.properties.city));
-
+        let city = "";
         if(location.properties.city !== undefined){
           city += location.properties.city;
           return city
@@ -331,9 +298,11 @@ export default {
        *
        */
       getLocationState(location) {
-        let state = null;
-        console.log("we here in state")
-        state += location.properties.state;
+        let state = "";
+        if(location.properties.state !== undefined){
+          state += location.properties.state;
+          return state
+        }
         return state;
       },
 
@@ -442,11 +411,6 @@ export default {
                     let country_name = data[country].name
                     countries.push(country_name)
                   }
-                  // for(let country of this.searchedUser.passports) {
-                  //   const index = countries.indexOf(country)
-                  //   if (index === -1) continue
-                  //   countries.splice(index, 1)
-                  // }
                   this.countries_option = countries
                 })
                 .catch(error => console.log(error));
@@ -501,45 +465,6 @@ export default {
     mounted() {
       this.loadSearchedUser();
       this.loadCountries();
-      // let outer = this;
-      // let input = document.querySelector("#locationInput");
-      // // let timeout = null;
-      // if(input == null){
-      //   return;
-      // }
-      // input.addEventListener("keyup", function() {
-      //   clearTimeout(timeout);
-      //   timeout = setTimeout(function() {
-      //     const url = "https://photon.komoot.de/api/?q=" + input.value;
-      //     this.isLoading = true;
-      //     axios.get(url)
-      //       .then(response => {
-      //         //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-      //         //is only displayed when it is finished, avoiding the problem of the user being taken to the
-      //         //middle of the list instead of the top
-      //         let temp = [];
-      //         let locationSummaries = [];
-      //         for (let location in response.data.features) {
-      //           console.log("we here")
-      //           console.log(response.data.features[location].state)
-      //           if (response.data.features[location].properties.osm_value === "city" ||
-      //                   response.data.features[location].properties.osm_value === "town") {
-      //             let locationSummary = outer.getLocationSummary(
-      //               response.data.features[location]
-      //             );
-      //             if (!locationSummaries.includes(locationSummary)) {
-      //               temp.push(response.data.features[0]);
-      //               temp[temp.length - 1]["summary"] = locationSummary;
-      //               locationSummaries.push(locationSummary);
-      //             }
-      //           }
-      //         }
-      //         outer.suggestedLocations = temp;
-      //         outer.showLocations = true;
-      //       })
-      //       .catch(error => console.log(error));
-      //   }, 1000);
-      // });
     }
   };
 </script>
