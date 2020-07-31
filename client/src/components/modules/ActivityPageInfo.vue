@@ -43,10 +43,10 @@
               type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
       </button>
       <div v-if="!userFollowing">
-        <v-btn color="#1cca92" outlined rounded large>Follow</v-btn>
+        <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
       </div>
       <div v-else>
-        <v-btn color="#f06a6a" outlined rounded large>Un follow</v-btn>
+        <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
       </div>
     </div>
   </v-card>
@@ -150,6 +150,21 @@
                         this.userFollowing = false;
                     }
                 });
+        },
+        /**
+         * Makes api call to allow a user to follow current activity after follow button is pressed
+         * @returns {Promise<void>}
+         */
+        async followCurrentActivity() {
+            await apiActivity.followActivity(this.user.profile_id,  this.$route.params.activityId);
+        },
+
+        /**
+         * Makes api call to allow a user to un follow current activity after un follow button is pressed
+         * @returns {Promise<void>}
+         */
+        async unFollowCurrentActivity() {
+            await apiActivity.unfollowActivity(this.user.profile_id,  this.$route.params.activityId);
         }
     }
   }
