@@ -42,6 +42,12 @@
               class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
               type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
       </button>
+      <div v-if="!userFollowing">
+        <v-btn color="#1cca92" outlined rounded large>Follow</v-btn>
+      </div>
+      <div v-else>
+        <v-btn color="#f06a6a" outlined rounded large>Un follow</v-btn>
+      </div>
     </div>
   </v-card>
 </template>
@@ -69,6 +75,7 @@
         authorId: null,
         activityId: null,
         loadingActivity: true,
+          userFollowing: null,
       }
     },
 
@@ -76,7 +83,7 @@
       ...mapGetters(['activity']),
       ...mapGetters(['user']),
     },
-    created: function () {
+     created: function () {
       this.loadActivity();
     },
     methods: {
@@ -122,6 +129,17 @@
             this.authorId = tempActivityData.author.profile_id;
             this.loaded = true;
             this.loadingActivity = false;
+              await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
+                  .then((response) => {
+                      if (response.data.status === 200) {
+                          this.userFollowing = true;
+                      }
+                  })
+                  .catch((error) => {
+                      if (error.response.data.status === 404) {
+                          this.userFollowing = false;
+                      }
+                  });
           }
         }
       },
