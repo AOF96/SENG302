@@ -85,6 +85,7 @@
     },
      created: function () {
       this.loadActivity();
+      return this.checkFollowing();
     },
     methods: {
       ...mapActions(['updateUserDurationActivities']),
@@ -129,20 +130,27 @@
             this.authorId = tempActivityData.author.profile_id;
             this.loaded = true;
             this.loadingActivity = false;
-              await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
-                  .then((response) => {
-                      if (response.data.status === 200) {
-                          this.userFollowing = true;
-                      }
-                  })
-                  .catch((error) => {
-                      if (error.response.data.status === 404) {
-                          this.userFollowing = false;
-                      }
-                  });
           }
         }
       },
+        /**
+         * Checks if user is following current activity and sets userFollowing which is used to determine if
+         * the follow button should be for following or unfollowing
+         * @returns {Promise<void>}
+         */
+        async checkFollowing() {
+            await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
+                .then((response) => {
+                    if (response.data.status === 200) {
+                        this.userFollowing = true;
+                    }
+                })
+                .catch((error) => {
+                    if (error.response.data.status === 404) {
+                        this.userFollowing = false;
+                    }
+                });
+        }
     }
   }
 </script>
