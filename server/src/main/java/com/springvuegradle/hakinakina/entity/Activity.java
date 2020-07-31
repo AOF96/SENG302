@@ -7,9 +7,8 @@ import com.springvuegradle.hakinakina.util.ErrorHandler;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,11 +56,14 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
     private Set<User> users = new HashSet<>();
 
     @ManyToOne
     private User author;
+
+    @OneToMany(mappedBy = "activity")
+    private Set<ActivityChange> changes = new HashSet<>();
 
     protected Activity() {}
 
@@ -86,8 +88,18 @@ public class Activity {
         return users;
     }
 
+    public void addUsers(User user) {
+        user.followActivity(this);
+        users.add(user);
+    }
+
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public void removeUser(User user) {
+        user.unfollowActivity(this);
+        users.remove(user);
     }
 
     public Long getId() {
@@ -178,4 +190,69 @@ public class Activity {
         return activityStr;
     }
 
+    /**
+     * Compares this Activity with other Activity to find which attributes are different
+     * @param other The other Activity to compare to
+     * @return A Set of ActivityAttributes that changed.
+     */
+    public Set<ActivityAttribute> findActivityChanges(Activity other) {
+        Set<ActivityAttribute> differences = new HashSet<>();
+        if (!this.getId().equals(other.getId())) {
+            differences.add(ActivityAttribute.ID);
+        }
+        if (!this.getName().equals(other.getName())) {
+            differences.add(ActivityAttribute.NAME);
+        }
+        if (!this.getDescription().equals(other.getDescription())) {
+            differences.add(ActivityAttribute.DESCRIPTION);
+        }
+
+        boolean sameActivityTypes = true;
+        if (!(this.getActivityTypes().size() == other.getActivityTypes().size())) {
+            sameActivityTypes = false;
+        } else {
+            ArrayList<ActivityType> otherActivities = new ArrayList<>(other.getActivityTypes());
+            ArrayList<ActivityType> thisActivities = new ArrayList<>(this.getActivityTypes());
+            for (int i = 0; i < otherActivities.size(); i++) {
+                if (!(otherActivities.get(i).getName().equals(thisActivities.get(i).getName()))) {
+                    sameActivityTypes = false;
+                    break;
+                }
+            }
+        }
+
+        if (!sameActivityTypes) {
+            differences.add(ActivityAttribute.ACTIVITY_TYPES);
+        }
+
+        if (this.isContinuous() != other.isContinuous()) {
+            differences.add(ActivityAttribute.CONTINUOUS);
+        }
+        if(this.getStartTime() != null && other.getStartTime() != null) {
+            if (!this.getStartTime().equals(other.getStartTime())) {
+                differences.add(ActivityAttribute.START_TIME);
+            }
+        }
+        if((this.getStartTime() != null && other.getStartTime() == null) || (this.getStartTime() == null && other.getStartTime() != null)){
+            differences.add(ActivityAttribute.START_TIME);
+        }
+        if(this.getEndTime() != null && other.getEndTime() != null) {
+            if (!this.getEndTime().equals(other.getEndTime())) {
+                differences.add(ActivityAttribute.END_TIME);
+            }
+        }
+        if((this.getEndTime() != null && other.getEndTime() == null) || (this.getEndTime() == null && other.getEndTime() != null)){
+            differences.add(ActivityAttribute.END_TIME);
+        }
+        if (!this.getLocation().equals(other.getLocation())) {
+            differences.add(ActivityAttribute.LOCATION);
+        }
+        if (!this.getUsers().equals(other.getUsers())) {
+            differences.add(ActivityAttribute.USERS);
+        }
+        if (!this.getAuthor().equals(other.getAuthor())) {
+            differences.add(ActivityAttribute.AUTHOR);
+        }
+        return differences;
+    }
 }

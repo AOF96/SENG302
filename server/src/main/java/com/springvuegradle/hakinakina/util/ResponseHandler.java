@@ -65,29 +65,25 @@ public class ResponseHandler {
         return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
     }
 
-    public ResponseEntity formatGetUsers(List<User> users) {
-        String userList = "{\n\"Users\": [\n";
-        int firstCheck = 0;
-        for (User user: users) {
-            if (firstCheck == 0) {
-                userList += String.format("\"%d %s %s\"", user.getUserId(), user.getFirstName(), user.getLastName());
-                firstCheck = 1;
-            } else {
-                userList += String.format(",\n\"%d %s %s\"", user.getUserId(), user.getFirstName(), user.getLastName());
-            }
-        }
-        userList += "\n]\n}";
-        return new ResponseEntity(userList, HttpStatus.OK);
+    /**
+     * Formats a success response to return to the client
+     *
+     * @param statusCode status code of the response
+     * @param content content of the response
+     * @return ResponseEntity with response
+     */
+    public ResponseEntity<String> formatSuccessResponseString(int statusCode, String content) {
+        return new ResponseEntity<String>(content, HttpStatus.valueOf(statusCode));
     }
 
-    public ResponseEntity formatGetUser(User user) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String userStr = null;
-        try {
-            userStr = objectMapper.writeValueAsString(user);
-        } catch (Exception exception) {
-            ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
-        }
-        return new ResponseEntity(userStr, HttpStatus.OK);
+    /**
+     * Formats an error response to return to the client
+     *
+     * @param statusCode status code of the response
+     * @param error response error message
+     * @return ResponseEntity with response
+     */
+    public ResponseEntity<String> formatErrorResponseString(int statusCode, String error) {
+        return new ResponseEntity<String>(error, HttpStatus.valueOf(statusCode));
     }
 }

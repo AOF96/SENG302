@@ -23,8 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -45,6 +44,9 @@ public class UserControllerTest {
 
     @MockBean
     private PassportCountryRepository countryRepository;
+
+    @MockBean
+    private ActivityChangeRepository activityChangeRepository;
 
     @MockBean
     private EmailRepository emailRepository;
@@ -163,10 +165,10 @@ public class UserControllerTest {
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
         this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
-                .andExpect(content().string(containsString("{\"bio\":null,\"authoredActivities\":[]," +
-                        "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
+                .andExpect(content().string(containsString("{\"bio\":null,\"activities\":[],\"authoredActivities\":[]," +
+                        "\"followingList\":[]," + "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
                         "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
-                        "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
+                        "\"state\":null,\"country\":null,\"passports\":[],\"primary_email\":\"john@gmail.com\"," +
                         "\"additional_email\":[],\"permission_level\":0}")));
     }
 
@@ -619,5 +621,59 @@ public class UserControllerTest {
         this.mockMvc.perform(delete("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Successfully Deleted User")));
+    }
+
+    /***
+     * Users should be able to follow activities
+     */
+    @Test
+    public void subscribeToActivity() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.setPermissionLevel(0);
+        testSession.setUser(testUser);
+
+        Activity testActivity = new Activity("testActivity", "Used for testing", true,
+                null, null, null);
+        testActivity.setId((long) 1);
+
+        when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
+                .thenReturn(new ResponseEntity("Activity successfully subscribed to", HttpStatus.valueOf(201)));
+        this.mockMvc.perform(post("/profiles/1/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(201))
+                .andExpect(content().string(containsString("Activity successfully subscribed to")));
+    }
+
+    /***
+     * Users can't subscribe to an activity that they are already subscribed too
+     */
+    @Test
+    public void subscribeToActivityThatUserIsAlreadySubscribedToo() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.setPermissionLevel(0);
+        testSession.setUser(testUser);
+
+        Activity testActivity = new Activity("testActivity", "Used for testing", true,
+                null, null, null);
+        testActivity.setId((long) 1);
+
+        when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
+                .thenReturn(new ResponseEntity("Activity successfully subscribed to", HttpStatus.valueOf(201)));
+        this.mockMvc.perform(post("/profiles/1/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(201))
+                .andExpect(content().string(containsString("Activity successfully subscribed to")));
+        when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
+                .thenReturn(new ResponseEntity("Cannot subscribe to an activity that you have already subscribed to",
+                        HttpStatus.valueOf(403)));
+        this.mockMvc.perform(post("/profiles/1/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(403))
+                .andExpect(content().string(containsString("Cannot subscribe to an activity that you have already subscribed to")));
     }
 }
