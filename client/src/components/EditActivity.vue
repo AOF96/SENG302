@@ -17,6 +17,17 @@
             required
           />
 
+          <label class="editActivityLabel" for="time">Visibility</label>
+          <select
+                  class="editActivitySelect"
+                  id="visibility"
+                  v-model="visibility"
+          >
+            <option value="public" selected>Public</option>
+            <option value="private">Private</option>
+            <option value="restricted">Restricted</option>
+          </select>
+
           <label class="editActivityLabel" for="time">Continuous?</label>
           <select class="editActivitySelect" id="time" v-model="duration">
             <option value="continuous">Continuous</option>
@@ -134,7 +145,8 @@ export default {
       description: "",
       author_id: null,
       suggestedLocations: [],
-      showLocations: false
+      showLocations: false,
+      visibility: null
     };
   },
 
@@ -267,6 +279,7 @@ export default {
           this.description = tempActivityData.description;
           this.activity_type = tempActivityData.activity_type.slice();
           this.location = tempActivityData.location;
+          this.visibility = tempActivityData.visibility;
 
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
@@ -457,6 +470,7 @@ export default {
           this.description,
           this.location,
           this.activity_types_selected,
+          this.visibility,
           this.$route.params.activityId
         )
         .then(

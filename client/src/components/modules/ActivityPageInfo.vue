@@ -10,6 +10,9 @@
         >
           <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
           <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
+          <div id="activityPageVisibility" class="activityLocationLabel">
+            {{ "Visibility: " + visibility.replace(/\b\w/g, l => l.toUpperCase()) }}
+          </div>
           <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
           <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><h3>
             Start date: {{ start_date }}</h3></div>
@@ -109,6 +112,7 @@
         continuous: false,
         description: "",
         activity_types: [],
+        visibility: "public",
         start_date: null,
         end_date: null,
         location: "",
@@ -161,6 +165,8 @@
             this.continuous = tempActivityData.continuous;
             this.description = tempActivityData.description;
             this.activity_types = tempActivityData.activity_type;
+            // TODO: Uncomment this line once the server returns the visibility
+            //this.visibility = tempActivityData.visibility;
             this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
             this.end_date = dateUtil.getFormatDate(new Date(tempActivityData.end_time));
             this.location = tempActivityData.location;

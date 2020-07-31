@@ -213,6 +213,7 @@ export const apiActivity = {
     description,
     location,
     activity_types,
+    visibility,
     activity_id
   ) =>
     instance.put("/profiles/" + author_id + "/activities/" + activity_id, {
@@ -223,6 +224,7 @@ export const apiActivity = {
       description: description,
       location: location,
       activity_type: activitiesAddDashes(activity_types),
+      visibility: visibility,
       activity_id: activity_id,
     }),
 
