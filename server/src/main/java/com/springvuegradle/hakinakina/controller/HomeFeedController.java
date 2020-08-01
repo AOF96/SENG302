@@ -64,10 +64,8 @@ public class HomeFeedController {
                 StringBuilder outcome = new StringBuilder("{\"");
                 for (ActivityChange activityChange : test) {
                     outcome.append(activityChange.getDescription());
-                    System.out.println(activityChange.getDescription());
                 }
                 outcome.append("\"}");
-                System.out.println(outcome);
                 result = new ResponseEntity(outcome, HttpStatus.valueOf(200));
 
             }
