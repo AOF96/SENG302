@@ -30,6 +30,8 @@ public class ActivityChange {
     @ManyToOne
     private Activity activity;
 
+    protected ActivityChange() {}
+
     public ActivityChange(String description, Timestamp changeTime, User author, Activity activity) {
         this.description = description;
         this.changeTime = changeTime;

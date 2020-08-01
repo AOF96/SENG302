@@ -61,22 +61,22 @@ public class HomeFeedControllerTest {
         userRepository.deleteAll();
     }
 
-    @Test
-    public void getUserHomeFeedTest() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session session = new Session("t0k3n");
-
-        User testUser = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-
-        session.setUser(testUser);
-
-        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session);
-        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
-        when(homeFeedService.getHomeFeed(any(Long.class))).
-                thenReturn(new ResponseEntity<String>("", HttpStatus.OK));
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/profiles/1/feed").cookie(tokenCookie))
-                .andExpect(status().is(200));
-    }
+//    @Test
+//    public void getUserHomeFeedTest() throws Exception {
+//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+//        Session session = new Session("t0k3n");
+//
+//        User testUser = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
+//        testUser.setUserId((long) 1);
+//
+//        session.setUser(testUser);
+//
+//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session);
+//        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+//        when(homeFeedService.getHomeFeed(any(Long.class))).
+//                thenReturn(new ResponseEntity<String>("", HttpStatus.OK));
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/profiles/1/feed").cookie(tokenCookie))
+//                .andExpect(status().is(200));
+//    }
 }
