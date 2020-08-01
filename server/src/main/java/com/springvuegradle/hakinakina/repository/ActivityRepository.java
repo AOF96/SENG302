@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository for storing activities that the user can perform.
@@ -14,6 +15,8 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
+
+    Optional<Activity> findFirstByName(String name);
 
     @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)
     void insertActivityForUser(Long userId, Long activityId);

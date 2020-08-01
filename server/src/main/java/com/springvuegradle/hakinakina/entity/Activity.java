@@ -7,8 +7,6 @@ import com.springvuegradle.hakinakina.util.ErrorHandler;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +16,8 @@ import java.util.Set;
  */
 @Entity
 public class Activity {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "activity_id")
     private Long id;
 
@@ -32,11 +31,11 @@ public class Activity {
     private String description;
 
     @JsonProperty("activity_type")
-    @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
             name = "Activity_ActivityType",
-            joinColumns = { @JoinColumn(name = "activity_id") },
-            inverseJoinColumns = { @JoinColumn(name = "type_id") }
+            joinColumns = {@JoinColumn(name = "activity_id")},
+            inverseJoinColumns = {@JoinColumn(name = "type_id")}
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
@@ -57,13 +56,11 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
-    private Set<User> users = new HashSet<>();
+    @OneToMany(mappedBy = "activity")
+    private Set<UserActivityRole> userActivityRoles;
 
-    @ManyToOne
-    private User author;
-
-    protected Activity() {}
+    protected Activity() {
+    }
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;
@@ -80,14 +77,6 @@ public class Activity {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     public Long getId() {
@@ -146,12 +135,12 @@ public class Activity {
         this.location = location;
     }
 
-    public User getAuthor() {
-        return author;
+    public Set<UserActivityRole> getUserActivityRoles() {
+        return userActivityRoles;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
+        this.userActivityRoles = userActivityRoles;
     }
 
     @Override

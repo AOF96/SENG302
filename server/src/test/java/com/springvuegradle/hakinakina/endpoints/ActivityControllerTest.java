@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.endpoints;
 
+import com.jayway.jsonpath.JsonPath;
 import com.springvuegradle.hakinakina.controller.ActivityController;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.Cookie;
@@ -22,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -119,11 +122,16 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"users\":[],\"author\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
-        this.mockMvc.perform(get("/activities/1"))
+        MvcResult mvcResult = this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(activityStr)));
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertEquals("name", JsonPath.parse(response).read("$.activity_name"));
+
+
+
     }
 
     @Test

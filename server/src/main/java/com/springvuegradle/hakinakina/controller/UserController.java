@@ -141,7 +141,7 @@ public class UserController {
             oldUser.resetPassportCountries();
             user.setUserId(profileId);
             //System.out.println(oldUser.getStuff());
-            user.setAuthoredActivities(oldUser.getAuthoredActivities());
+            //user.setAuthoredActivities(oldUser.getAuthoredActivities());
             user.setEncryptedPassword(oldUser.getPassword());
             user.setSalt(oldUser.getSalt());
             return userService.validateEditUser(user);
