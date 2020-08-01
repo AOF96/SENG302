@@ -60,14 +60,13 @@ public class HomeFeedController {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 Page<ActivityChange> activityChanges = homeFeedService.getHomeFeed(profileId, page, size);
-                List<ActivityChange> test = activityChanges.toList();
-                StringBuilder outcome = new StringBuilder("{\"");
-                for (ActivityChange activityChange : test) {
-                    outcome.append(activityChange.getDescription());
-                    System.out.println(activityChange.getDescription());
+                List<ActivityChange> changesList = activityChanges.toList();
+                StringBuilder outcome = new StringBuilder("{\n\"");
+                for (ActivityChange activityChange : changesList) {
+                    outcome.append("[\"description\":  \"" + activityChange.getDescription() + ", \"" + "\"changeTime\": \"" + activityChange.getChangeTime() + "\"],\n");
                 }
                 outcome.append("\"}");
-                System.out.println(outcome);
+
                 result = new ResponseEntity(outcome, HttpStatus.valueOf(200));
 
             }

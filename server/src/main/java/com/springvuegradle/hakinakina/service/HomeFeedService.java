@@ -30,19 +30,11 @@ public class HomeFeedService {
      * @param profileId id of user to get feed for
      * @return home feed results
      */
-    public Page<ActivityChange> getHomeFeed(Long profileId, int page, int size) throws Exception{
+    public Page<ActivityChange> getHomeFeed(Long profileId, int page, int size) {
 
         Page<ActivityChange> result;
         result = activityChangeRepository.getUserHomeFeedById(PageRequest.of(page, size), profileId);
 
-//        try{
-//            result = activityChangeRepository.getUserHomeFeedById(profileId);
-//        } catch (Exception e) {
-//            ErrorHandler.printProgramException(e, "Could not retrieve user's feed");
-//            result = responseHandler.formatErrorResponseString(500, "An error occurred");
-//        }
         return result;
-
-
     }
 }
