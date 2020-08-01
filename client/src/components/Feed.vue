@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapState, mapActions} from "vuex";
 // import {apiUser} from "../../api";
 
 export default {
@@ -55,6 +55,10 @@ export default {
   data: function() {
     return {
       activityPosts: [],
+      defaultPage: 1,
+      currentPage: 1,
+      defaultSize: 10,
+      currentSize: 10,
     };
   },
   mounted() {
@@ -66,7 +70,8 @@ export default {
 
   },
   methods: {
-    // ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
+    ...mapActions(["getUserFeed"]),
+
   }
 };
 </script>

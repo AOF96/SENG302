@@ -185,7 +185,12 @@ export const apiUser = {
    * @param profile_id the id of the user that requires feed retrieval
    * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
    */
-  getUserFeed: (profile_id) => instance.get(`/profiles/${profile_id}/feed`),
+  getUserFeed: (profile_id, page, size) => instance.get(`/profiles/${profile_id}/feed`,
+    {params: {
+      page: page,
+      size: size
+      }
+    }),
 };
 
 export const apiActivity = {

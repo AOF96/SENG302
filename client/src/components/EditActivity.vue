@@ -186,6 +186,7 @@ export default {
     await apiUser
       .getActivityTypes()
       .then(response => {
+        console.log(response.data);
         this.activities_option = response.data;
         this.activity_types_selected.forEach(e => {
           this.activities_option.some((v, i) => {
