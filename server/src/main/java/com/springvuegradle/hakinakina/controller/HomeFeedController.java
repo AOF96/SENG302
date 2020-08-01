@@ -1,16 +1,17 @@
 package com.springvuegradle.hakinakina.controller;
 
-import com.springvuegradle.hakinakina.entity.User;
-import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.entity.ActivityChange;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.HomeFeedService;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Rest controller class for controlling requests about a user's Home Feed
@@ -45,9 +46,11 @@ public class HomeFeedController {
      * @return home feed results
      */
     @GetMapping("/profiles/{profileId}/feed")
-    public ResponseEntity<String> getHomeFeed(@PathVariable Long profileId,
-                                              @CookieValue(value = "s_id") String sessionToken) {
-        ResponseEntity<String> result;
+    public ResponseEntity getHomeFeed(@PathVariable Long profileId,
+                                      @CookieValue(value = "s_id") String sessionToken,
+                                      @RequestParam("page") int page,
+                                      @RequestParam("size") int size) {
+        ResponseEntity result;
         try{
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponseString(401, "Invalid Session");
@@ -56,7 +59,17 @@ public class HomeFeedController {
             } else if (!profileId.equals(sessionRepository.findUserIdByToken(sessionToken).getUser().getUserId())) {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
-                result = homeFeedService.getHomeFeed(profileId);
+                Page<ActivityChange> activityChanges = homeFeedService.getHomeFeed(profileId, page, size);
+                List<ActivityChange> test = activityChanges.toList();
+                StringBuilder outcome = new StringBuilder("{\"");
+                for (ActivityChange activityChange : test) {
+                    outcome.append(activityChange.getDescription());
+                    System.out.println(activityChange.getDescription());
+                }
+                outcome.append("\"}");
+                System.out.println(outcome);
+                result = new ResponseEntity(outcome, HttpStatus.valueOf(200));
+
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot get feed");

@@ -1,12 +1,9 @@
 package com.springvuegradle.hakinakina.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /** Class for handling server reponses to client using http codes */
 public class ResponseHandler {
@@ -15,7 +12,6 @@ public class ResponseHandler {
 
     /**
      * Formats a success response to return to the client
-     *
      * @param statusCode
      * @param content
      */
