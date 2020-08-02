@@ -11,7 +11,18 @@ import java.util.Optional;
 @RepositoryRestResource
 public interface UserActivityRoleRepository extends JpaRepository<UserActivityRole, UserActivityKey> {
 
-    Optional<UserActivityRole> findByIdActivityIdAndIdUserIdAndActivityRole(Long activityId, Long userId, ActivityRole activityRole);
+    /**
+     * Retrieves the role of user in certain activity.
+     * @param activityId Id of the activity your want to look at
+     * @param userId Id of an user you want to know the role for
+     * @return Optional object with UserActivityRole
+     */
+    Optional<UserActivityRole> findByIdActivityIdAndIdUserIdAndActivityRolesContains(Long activityId, Long userId, ActivityRole activityRole);
 
+    /**
+     * Delete the role of user in certain activity.
+     * @param activityId Id of the activity your want to look at
+     * @param userId Id of an user who has the role you want to delete
+     */
     void deleteByIdActivityIdAndIdUserId(Long activityId, Long userId);
 }

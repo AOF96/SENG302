@@ -87,7 +87,7 @@ public class UserActivityRoleTest {
                 new UserActivityKey(this.mayuko.getUserId(), byName.get().getId())
         );
         assertTrue(byId.isPresent());
-        assertEquals(ActivityRole.CREATOR, byId.get().getActivityRole());
+        assertTrue(byId.get().getActivityRoles().contains(ActivityRole.CREATOR));
     }
 
 
@@ -113,5 +113,4 @@ public class UserActivityRoleTest {
         byName = activityRepository.findFirstByName("Climb Mount Everest");
         assertFalse(byName.isPresent());
     }
-
 }

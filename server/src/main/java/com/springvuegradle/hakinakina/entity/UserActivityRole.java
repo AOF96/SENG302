@@ -1,10 +1,15 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * UserActivityRole class
+ * This is the relationship table between user and activity entities
+ */
 
 @Entity
 @Table(name = "User_Activity_Role")
@@ -25,15 +30,16 @@ public class UserActivityRole {
     @JsonIgnore
     private Activity activity;
 
-    private ActivityRole activityRole;
-
+    // this is the set of roles of the user in an activity(CREATOR/ORGANISER/PARTICIPANT/FOLLOWER)
+    @ElementCollection(targetClass = ActivityRole.class, fetch = FetchType.EAGER)
+    private Set<ActivityRole> activityRoles = new HashSet<>();
 
     // constructors
     public UserActivityRole() {}
 
-    public UserActivityRole(UserActivityKey userActivityKey, ActivityRole activityRole) {
+    public UserActivityRole(UserActivityKey userActivityKey, ActivityRole activityRoles) {
         this.id = userActivityKey;
-        this.activityRole = activityRole;
+        this.activityRoles.add(activityRoles);
     }
 
 
@@ -61,11 +67,19 @@ public class UserActivityRole {
         this.activity = activity;
     }
 
-    public ActivityRole getActivityRole() {
-        return activityRole;
+    public Set<ActivityRole> getActivityRoles() {
+        return activityRoles;
     }
 
-    public void setActivityRole(ActivityRole activityRole) {
-        this.activityRole = activityRole;
+    public void setActivityRoles(Set<ActivityRole> activityRole) {
+        this.activityRoles = activityRole;
+    }
+
+    public void addActivityRole(ActivityRole role) {
+        this.activityRoles.add(role);
+    }
+
+    public void removeActivityRole(ActivityRole role) {
+        this.activityRoles.remove(role);
     }
 }

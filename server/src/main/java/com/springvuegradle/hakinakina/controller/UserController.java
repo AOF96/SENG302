@@ -419,4 +419,8 @@ public class UserController {
         return userService.promoteUser(jsonString, profileId, sessionToken);
     }
 
+
+//    @PutMapping("/profiles/{profileId}/activities/{activityid}/subscriber")
+//    public ResponseEntity editUserActivityRole(@PathVariable Long profileId)
+//
 }

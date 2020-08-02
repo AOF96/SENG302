@@ -199,7 +199,7 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
 
             } else if ((profileId != session.getUser().getUserId()
-                    || userActivityRoleRepository.findByIdActivityIdAndIdUserIdAndActivityRole(profileId, activityId, ActivityRole.CREATOR).isPresent())
+                    || userActivityRoleRepository.findByIdActivityIdAndIdUserIdAndActivityRolesContains(profileId, activityId, ActivityRole.CREATOR).isPresent())
                     && session.getUser().getPermissionLevel() == 0) {
                 result = responseHandler.formatErrorResponse(403, "Invalid user");
 
