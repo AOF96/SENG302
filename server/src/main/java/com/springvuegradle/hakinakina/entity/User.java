@@ -218,7 +218,9 @@ public class User {
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
     }
-
+    public void setActivity(Set<Activity> activities) {
+        this.activity = activities;
+    }
     /**
      * Adds passport country to relation
      * @param passportCountry
