@@ -4,12 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-/**
- * UserActivityKey class
- * This is an entity that has userId and activityId
- * This is used in UserActivityRole entity as UserActivityRole key
- */
-
 @Embeddable
 public class UserActivityKey implements Serializable {
 
