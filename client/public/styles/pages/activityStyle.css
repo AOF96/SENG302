@@ -19,11 +19,8 @@
 }
 
 .activityContainer{
-    width: 60%;
-    margin: 0 auto;
-    display: block;
-    position: relative;
-    border-radius: 50px;
+    border-radius: 14px;
+    width: 450px;
 }
 
 .activityInfoContainer {
@@ -323,7 +320,7 @@
 }
 
 .activityWrap{
-    max-width: 760px;
+    max-width: 1500px;
     display: block;
     margin: 0 auto;
     position: relative;
@@ -374,4 +371,9 @@
 
 .activityPageDeleteActivityButtonSpacing {
     margin-left: 20px;
+}
+
+.activityPageCard {
+    height: 300px;
+    width: 450px;
 }
