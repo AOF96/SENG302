@@ -105,7 +105,15 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
-    private Set<Activity> activity = new HashSet<>();
+    private Set<Activity> activities = new HashSet<>();
+
+    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    @JoinTable(
+            name = "User_Activities_Shared",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "activity_id") }
+    )
+    private Set<Activity> activitiesShared = new HashSet<>();
 
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
@@ -204,7 +212,7 @@ public class User {
     }
 
     public void setActivity(Set<Activity> activities) {
-        this.activity = activities;
+        this.activities = activities;
     }
 
     /**
