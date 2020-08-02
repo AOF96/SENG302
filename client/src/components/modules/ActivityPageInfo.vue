@@ -93,11 +93,11 @@
             <v-flex>
               <v-card v-if="visibility === 'restricted'" class="activityPageCard">
                 <h2>Shared Users</h2>
-                <form>
-                  <v-col>
-                    <v-text-field class="activityPageCardTextField" label="Add email" outlined rounded clearable hide-details dense></v-text-field>
-                  </v-col>
+                <form class="activityPageCardForm">
+                    <v-text-field class="activityPageCardTextField mr-10" label="Add email" outlined rounded clearable hide-details dense></v-text-field>
+                    <v-btn class="activityPageCardButton" height="40px" color="#1cca92" outlined rounded>Add</v-btn>
                 </form>
+                <hr>
               </v-card>
             </v-flex>
 

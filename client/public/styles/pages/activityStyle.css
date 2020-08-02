@@ -376,8 +376,20 @@
 .activityPageCard {
     height: 300px;
     width: 450px;
+    padding: 15px;
 }
 
 .activityPageCardTextField {
-    width: 50%;
+    width: 70%;
+    float: left;
+    margin-right: 30px;
+}
+
+.activityPageCardButton {
+    color: #1cca92;
+    width: 20%;
+}
+
+.activityPageCardForm {
+    padding: 10px 0 20px 0;
 }
