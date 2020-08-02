@@ -87,6 +87,22 @@
 
           </v-layout>
         </v-flex>
+
+        <v-flex>
+          <v-layout row wrap>
+            <v-flex>
+              <v-card v-if="visibility === 'restricted'" class="activityPageCard">
+                <h2>Shared Users</h2>
+                <form>
+                  <v-col>
+                    <v-text-field class="activityPageCardTextField" label="Add email" outlined rounded clearable hide-details dense></v-text-field>
+                  </v-col>
+                </form>
+              </v-card>
+            </v-flex>
+
+          </v-layout>
+        </v-flex>
       </v-flex>
 
     </v-layout>
@@ -110,7 +126,7 @@
         continuous: false,
         description: "",
         activity_types: [],
-        visibility: "public",
+        visibility: "restricted",
         start_date: null,
         end_date: null,
         location: "",
@@ -118,6 +134,7 @@
         authorId: null,
         activityId: null,
         loadingActivity: true,
+        sharedUsers: []
       }
     },
 
@@ -163,8 +180,13 @@
             this.continuous = tempActivityData.continuous;
             this.description = tempActivityData.description;
             this.activity_types = tempActivityData.activity_type;
-            // TODO: Uncomment this line once the server returns the visibility
+            // TODO: Uncomment this line once the server response includes the visibility
             //this.visibility = tempActivityData.visibility;
+            if (this.visibility === "restricted") {
+              /* TODO: Add code here to make a call to api.js method to retrieve all shared users for this activity
+              and set it to sharedUsers
+               */
+            }
             this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
             this.end_date = dateUtil.getFormatDate(new Date(tempActivityData.end_time));
             this.location = tempActivityData.location;
