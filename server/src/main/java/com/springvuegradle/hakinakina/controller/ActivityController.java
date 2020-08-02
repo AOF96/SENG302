@@ -133,6 +133,24 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Handles requests for retrieving all shared users of a given activity
+     *
+     * @param activityId the activity id.
+     * @return a response entity that informs the user if retrieving an activity was successful or not.
+     */
+    @GetMapping("/activities/{activityId}/shared/")
+    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        if (activity == null) {
+            // TODO: Check to see if activity is private
+
+            return activityService.getSharedUsers(activityId);
+        } else {
+            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
+        }
+    }
+
 //     This code will be used when we have users subscribing to activities
 //    /**
 //     * Retrieves all of the continuous activities that a user is subscribed to

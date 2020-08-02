@@ -4,6 +4,7 @@ import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import net.minidev.json.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -222,6 +223,28 @@ public class ActivityService {
         }
 
         return result;
+    }
+
+    /***
+     * Retrieve users who have been shared an activity
+     * @param activityId the activity id to use in the request.
+     * @return response entity with the result of the operation.
+     */
+    public ResponseEntity getSharedUsers(long activityId) {
+        try {
+            String jsonResponse = "[";
+            List<User> sharedUsers = activityRepository.getSharedUsers(activityId);
+            for(int i = 0; i < sharedUsers.size(); i++){
+                if(i != 0){
+                    jsonResponse += ", ";
+                }
+                jsonResponse += sharedUsers.get(i).toJson();
+            }
+            jsonResponse += "]";
+            return new ResponseEntity(jsonResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return responseHandler.formatErrorResponse(500, "An error occurred");
+        }
     }
 
 }
