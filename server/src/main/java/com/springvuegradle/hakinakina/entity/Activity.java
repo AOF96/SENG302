@@ -63,6 +63,9 @@ public class Activity {
     @ManyToOne
     private User author;
 
+    @Column(name = "visibility")
+    private Visibility visibility;
+
     protected Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
@@ -80,6 +83,14 @@ public class Activity {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public Set<User> getUsers() {
