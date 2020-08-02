@@ -374,7 +374,8 @@
 }
 
 .activityPageCard {
-    height: 300px;
+    min-height: 300px;
+    height: fit-content;
     width: 450px;
     padding: 15px;
 }
@@ -388,6 +389,10 @@
 .activityPageCardButton {
     color: #1cca92;
     width: 20%;
+}
+
+.activityPageShowMoreButton {
+    color: #1cca92;
 }
 
 .activityPageCardForm {
