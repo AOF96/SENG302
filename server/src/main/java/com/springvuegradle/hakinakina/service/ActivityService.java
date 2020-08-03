@@ -228,4 +228,26 @@ public class ActivityService {
         return result;
     }
 
+    /***
+     * Retrieve participant users of an activity
+     * @param activityId the activity id to use in the request.
+     * @return response entity with the result of the operation.
+     */
+    public ResponseEntity getParticipants(long activityId) {
+        try {
+            String jsonResponse = "[";
+            List<User> participantUsers = activityRepository.getParticipants(activityId);
+            for(int i = 0; i < participantUsers.size(); i++){
+                if(i != 0){
+                    jsonResponse += ", ";
+                }
+                jsonResponse += participantUsers.get(i).toJson();
+            }
+            jsonResponse += "]";
+            return new ResponseEntity(jsonResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+    }
+
 }
