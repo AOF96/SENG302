@@ -182,10 +182,12 @@ export const apiUser = {
 
   /**
    * API call to retrieve the home feed details for a user
-   * @param profile_id the id of the user that requires feed retrieval
+   * @param profileId the id of the user that requires feed retrieval
+   * @param page the page number
+   * @param size how many posts we want for each page
    * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
    */
-  getUserFeed: (profile_id, page, size) => instance.get(`/profiles/${profile_id}/feed`,
+  getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
     {params: {
       page: page,
       size: size
