@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -249,5 +250,33 @@ public class ActivityService {
             return responseHandler.formatErrorResponse(500, "An error occurred");
         }
     }
+
+//    public ResponseEntity getActivityOrganizers(Long activityId) {
+//        ResponseEntity result;
+//        try {
+//            if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+//                result = responseHandler.formatErrorResponse(404, "Activity not found");
+//            } else {
+//                String response = "[";
+//                List<User> users = activityRepository.getOrganizers(activityId);
+////                List<SearchUserDto> userResponses = new ArrayList<>();
+//                for(int i = 0; i < users.size(); i++) {
+//                    if (i != 0) {
+//                        response += ", ";
+//                    }
+////                    SearchUserDto searchUserDto = new SearchUserDto();
+//
+//                    response += users.get(i).toJson();
+//                }
+//                response += "]";
+//                result = new ResponseEntity(response, HttpStatus.OK);
+//            }
+//        } catch (Exception e) {
+//            ErrorHandler.printProgramException(e, "Could not retrieve organizers");
+//            result = responseHandler.formatErrorResponse(500, "An error occurred");
+//        }
+//
+//        return result;
+//    }
 
 }

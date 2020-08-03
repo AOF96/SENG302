@@ -3,6 +3,7 @@ package com.springvuegradle.hakinakina.controller;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -175,4 +176,9 @@ public class ActivityController {
             return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
         }
     }
+
+//    @GetMapping("/activities/{activityId}/organizers/")
+//    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId) {
+//        return activityService.getActivityOrganizers(activityId);
+//    }
 }
