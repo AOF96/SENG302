@@ -168,6 +168,14 @@ public class Activity {
         this.author = author;
     }
 
+    public Set<User> getUsersShared() {
+        return usersShared;
+    }
+
+    public void setUsersShared(Set<User> usersShared) {
+        this.usersShared = usersShared;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +

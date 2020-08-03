@@ -1,16 +1,17 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Rest controller class for controlling requests about Activities
@@ -23,6 +24,8 @@ public class ActivityController {
     public SessionRepository sessionRepository;
     public ActivityRepository activityRepository;
     private ActivityService activityService;
+
+    private ResponseHandler responseHandler;
 
     /**
      * Contructs an Activity Controller, passing in the repositories and service so that they can be accessed.
@@ -149,6 +152,46 @@ public class ActivityController {
         } else {
             return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
         }
+    }
+
+    /**
+     * Handles the request for activity's visibility and its accessors.
+     *
+     * @param profileId  the logged in user's id.
+     * @param activityId the activity id of the activity being managed
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param request level of visibility and the set of user's email allowed to access the activity
+     * @return a response entity that informs the user that the visibility update was successful
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityid}/visibility")
+    public ResponseEntity<String> updateActivityVisibility(@PathVariable("profileId") Long profileId,
+                                                           @PathVariable("activityid") Long activityId,
+                                                           @CookieValue(value = "s_id") String sessionToken,
+                                                           @RequestBody ActivityVisibilityDto request){
+        try {
+            Activity activity = activityRepository.findActivityById(activityId);
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Optional<User> user = userRepository.findById(profileId);
+            EnumSet<Visibility> options = EnumSet.of(Visibility.PUBLIC, Visibility.PRIVATE, Visibility.RESTRICTED);
+
+            if(sessionToken == null){
+                return new ResponseEntity<String>("Invalid Session", HttpStatus.valueOf(401));
+            }
+            if (activity == null) {
+                return new ResponseEntity<String>("Activity not found", HttpStatus.NOT_FOUND);
+            }
+            if(!profileId.equals(session.getUser().getUserId()) &&  session.getUser().getPermissionLevel() == 0) {
+                return new ResponseEntity<String>("Invalid User", HttpStatus.valueOf(403));
+            }
+            if(!options.contains(request.getVisibility())){
+                return new ResponseEntity<String>("Invalid visibility type selected", HttpStatus.valueOf(403));
+            }
+
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot change the visibility status of the activity");
+        }
+        return activityService.updateActivityVisibility(profileId,activityId, sessionToken,request);
+//        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
     }
 
 //     This code will be used when we have users subscribing to activities

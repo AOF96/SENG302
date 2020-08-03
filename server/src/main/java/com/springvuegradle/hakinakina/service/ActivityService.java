@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.sql.Timestamp;
 import java.util.*;
+
+import static java.lang.Long.parseLong;
 
 @Service
 public class ActivityService {
@@ -210,6 +213,43 @@ public class ActivityService {
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
         return result;
+    }
+
+    /**
+     *
+     * @param profileId  the logged in user's id.
+     * @param activityId the activity id of the activity being managed
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param request level of visibility and the set of user's email allowed to access the activity
+     * @return
+     */
+    public ResponseEntity<String> updateActivityVisibility (Long profileId,
+                                                            Long activityId,
+                                                            String sessionToken,
+                                                            ActivityVisibilityDto request) {
+
+
+        Activity activity = activityRepository.findActivityById(activityId);
+        activity.setVisibility(request.getVisibility());
+
+        Set<User> accessors = new HashSet<User>();
+
+        if(request.getVisibility().equals(Visibility.RESTRICTED)){
+            for (String email : request.getAccessorsEmails()) {
+                String userId = userRepository.getIdByEmail(email);
+                Optional<User> optionalUser = userRepository.findById(parseLong(userId));
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    accessors.add(user);
+                }
+            }
+            activity.setUsersShared(accessors);
+        }
+        else if(request.getVisibility().equals(Visibility.PRIVATE)){
+            activity.setUsersShared(accessors);
+        }
+        activityRepository.save(activity);
+        return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
     }
 
     public List<Map<String, String>> getActivitySummaries(List<Activity> activities) {
