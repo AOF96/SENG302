@@ -141,12 +141,12 @@
         async checkFollowing() {
             await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
                 .then((response) => {
-                    if (response.data.status === 200) {
+                    if (response.status === 200) {
                         this.userFollowing = true;
                     }
                 })
                 .catch((error) => {
-                    if (error.response.data.status === 404) {
+                    if (error.response.status === 404) {
                         this.userFollowing = false;
                     }
                 });
@@ -156,7 +156,11 @@
          * @returns {Promise<void>}
          */
         async followCurrentActivity() {
-            await apiActivity.followActivity(this.user.profile_id,  this.$route.params.activityId);
+            await apiActivity.followActivity(this.user.profile_id,  this.$route.params.activityId).then(response => {
+                if (response.status === 201) {
+                    this.userFollowing = true;
+                }
+            });
         },
 
         /**
@@ -164,7 +168,11 @@
          * @returns {Promise<void>}
          */
         async unFollowCurrentActivity() {
-            await apiActivity.unfollowActivity(this.user.profile_id,  this.$route.params.activityId);
+            await apiActivity.unfollowActivity(this.user.profile_id,  this.$route.params.activityId).then(response => {
+            if (response.status === 200) {
+                this.userFollowing = false;
+            }
+            });
         }
     }
   }
