@@ -1,7 +1,7 @@
 package com.springvuegradle.hakinakina.controller;
 
-import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.entity.ActivityChange;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.HomeFeedService;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-public ActivityRepository activityRepository;
 
 /**
  * Rest controller class for controlling requests about a user's Home Feed
@@ -23,6 +22,7 @@ public class HomeFeedController {
 
     public UserRepository userRepository;
     public HomeFeedService homeFeedService;
+    public ActivityRepository activityRepository;
     public SessionRepository sessionRepository;
     private final ResponseHandler responseHandler = new ResponseHandler();
 
@@ -35,9 +35,8 @@ public class HomeFeedController {
      * @param sessionRepository  The repository containing sessions
      */
     public HomeFeedController(UserRepository userRepository,
-                              HomeFeedService homeFeedService,
-                              ActivityRepository activityRepository,
                               SessionRepository sessionRepository,
+                              ActivityRepository activityRepository,
                               HomeFeedService homeFeedService) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
