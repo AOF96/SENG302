@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.controller;
 
 import com.springvuegradle.hakinakina.entity.ActivityChange;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.HomeFeedService;
@@ -21,6 +22,7 @@ public class HomeFeedController {
 
     public UserRepository userRepository;
     public HomeFeedService homeFeedService;
+    public ActivityRepository activityRepository;
     public SessionRepository sessionRepository;
     private final ResponseHandler responseHandler = new ResponseHandler();
 
@@ -28,13 +30,16 @@ public class HomeFeedController {
      * Constructs an Activity Controller, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository     The repository containing Users
+     * @param activityRepository The repository containing Activities
      * @param homeFeedService    The service for the Home Feed
      * @param sessionRepository  The repository containing sessions
      */
     public HomeFeedController(UserRepository userRepository,
-                              HomeFeedService homeFeedService,
-                              SessionRepository sessionRepository) {
+                              SessionRepository sessionRepository,
+                              ActivityRepository activityRepository,
+                              HomeFeedService homeFeedService) {
         this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
         this.homeFeedService = homeFeedService;
         this.sessionRepository = sessionRepository;
     }

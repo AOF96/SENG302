@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.ActivityChangeRepository;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
@@ -40,6 +41,9 @@ public class ActivityServiceTest {
     @Mock
     private SessionRepository sessionRepository;
 
+    @Mock
+    private ActivityChangeRepository activityChangeRepository;
+
     @BeforeAll
     public void setUp(){
         MockitoAnnotations.initMocks(this);
@@ -49,6 +53,7 @@ public class ActivityServiceTest {
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
+        activityChangeRepository.deleteAll();
     }
 
     private Activity createTestActivity() {
@@ -251,5 +256,42 @@ public class ActivityServiceTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("false", response.getBody());
+    }
+
+    @Test
+    public void addActivityChangesTest() {
+        java.util.Date date = new java.util.Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
+        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
+        activityChanges.setId(1L);
+        List<ActivityChange> activityChangesList = new ArrayList<>();
+        activityChangesList.add(activityChanges);
+        activityChangeRepository.save(activityChanges);
+        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        assertEquals(1, activityChangesList.size());
+    }
+
+    @Test
+    public void removeActivityChangesTest() {
+        java.util.Date date = new java.util.Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
+        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
+        activityChanges.setId(1L);
+        List<ActivityChange> activityChangesList = new ArrayList<>();
+        activityChangesList.add(activityChanges);
+        activityChangeRepository.save(activityChanges);
+        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        assertEquals(1, activityChangesList.size());
+        activityChangesList.remove(activityChanges);
+        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        assertEquals(0, activityChangesList.size());
     }
 }
