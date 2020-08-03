@@ -52,6 +52,7 @@
               :items="items"
               :search-input.sync="search"
               color="primary"
+              :loading="isLoading"
               no-filter
               hide-no-data
               item-text="Description"
@@ -70,6 +71,7 @@
               :search-input.sync="searchState"
               color="primary"
               no-filter
+              :loading="stateLoading"
               hide-no-data
               hide-selected
               item-text="Description"
@@ -212,14 +214,12 @@ export default {
       items () {
         return this.features.map(entry => {
           const Description = this.getLocationCity(entry);
-
           return Object.assign({}, entry, { Description })
         })
       },
       itemsState () {
         return this.features.map(entry => {
           const Description = this.getLocationState(entry);
-
           return Object.assign({}, entry, { Description })
         })
       }
@@ -236,6 +236,7 @@ export default {
         locationState: null,
         dialog: false,
         isLoading: false,
+        stateLoading: false,
         search: null,
         searchState: null,
         model: null,
@@ -278,23 +279,22 @@ export default {
        *
        */
       getLocationCity(location) {
-        let city = "";
+        let city = "Almora";
         if(location.properties.city !== undefined){
-          city += location.properties.city;
+          city = location.properties.city;
           return city
         }
         return city;
       },
-
 
       /**
        * This method filters the the data received from the api and only suggests states to the user.
        *
        */
       getLocationState(location) {
-        let state = "";
+        let state = "Angland";
         if(location.properties.state !== undefined){
-          state += location.properties.state;
+          state = location.properties.state;
           return state
         }
         return state;
@@ -379,15 +379,6 @@ export default {
             this.searchedUser = tempUserData;
           }
         }
-        // if (this.searchedUser.city) {
-        //   this.setLocation(
-        //           this.searchedUser.city +
-        //           ", " +
-        //           this.searchedUser.state +
-        //           ", " +
-        //           this.searchedUser.country
-        //   );
-        // }
         this.showAdmin = true;
       },
 
@@ -409,12 +400,35 @@ export default {
                 })
                 .catch(error => console.log(error));
       },
+      /**
+       * The method is used to filter out the feature object without any cities
+       */
+      removeNullCities(features){
+        let featuresCity = [];
+        for(const feature of features){
+          if(feature.properties.city !== undefined) {
+            featuresCity.push(feature);
+          }
+        }
+        return featuresCity;
+      },
+      /**
+       * The method is used to filter out the feature object without any states
+       */
+      removeNullState(features){
+        let featuresState = [];
+        for(const feature of features){
+          if(feature.properties.state !== undefined) {
+            featuresState.push(feature);
+          }
+        }
+        return featuresState;
+      }
     },
 
 
     watch: {
       search (val) {
-
         if(val.length < 3){
           return
         }
@@ -424,7 +438,7 @@ export default {
                 .then(res => res.json())
                 .then(res => {
                   const { features } = res;
-                  this.features = features
+                  this.features = this.removeNullCities(features)
                 })
                 .catch(err => {
                   console.log(err)
@@ -436,18 +450,18 @@ export default {
         if(val.length < 3){
           return
         }
-        this.isLoading = true
+        this.stateLoading = true
 
         fetch("https://photon.komoot.de/api/?q=" + val)
                 .then(res => res.json())
                 .then(res => {
                   const { features } = res;
-                  this.features = features
+                  this.features = this.removeNullState(features)
                 })
                 .catch(err => {
                   console.log(err)
                 })
-                .finally(() => (this.isLoading = false))
+                .finally(() => (this.stateLoading = false))
       }
     },
 
