@@ -100,7 +100,7 @@ export default {
       }
     },
     getUserFeed() {
-      apiUser.getUserFeed(this.searchedUser.profile_id, this.currentPage, this.currentSize)
+      apiUser.getUserFeed(this.user.profile_id, this.currentPage, this.currentSize)
       .then((response) => {
         this.activityPosts = response.data;
       })
