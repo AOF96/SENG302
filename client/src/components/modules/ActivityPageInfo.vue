@@ -54,10 +54,90 @@
           <v-layout row wrap>
             <v-flex>
               <v-card class="activityPageCard">
-                <h2>Organisers/Participants</h2>
-                <h3>Coming soon!</h3>
+                <h2>Participants / Organisers</h2>
+                <v-tabs
+                        v-model="tab"
+                        fixed-tabs
+                >
+                  <v-tab
+                          v-for="item in userTabs"
+                          :key="item.tab"
+                  >
+                    {{ item.tab }}
+                  </v-tab>
+                </v-tabs>
+
+                <v-tabs-items v-model="tab">
+                  <v-tab-item
+                          v-for="item in userTabs"
+                          :key="item.tab"
+                  >
+                    <v-card flat>
+                      <v-list-item two-line v-for="user in item.content.slice(0, 3)" :key="user.profile_id" link>
+                        <v-list-item-content>
+                          <v-list-item-title v-if="user.middlename != null">
+                            {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-title v-else>
+                            {{ user.firstname + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-card>
+                  </v-tab-item>
+                </v-tabs-items>
+
+                <v-btn v-on:click="openModal()"
+                       class="activityPageShowMoreButton"
+                       height="40px" color="#1cca92"
+                       outlined rounded
+                       @click.stop="showMoreDialog = true"
+                >Show More</v-btn>
               </v-card>
             </v-flex>
+
+            <v-dialog
+              v-model="showMoreDialog"
+              max-width="450"
+            >
+              <v-tabs
+                v-model="tab"
+                fixed-tabs
+              >
+                <v-tab
+                        v-for="item in userTabs"
+                        :key="item.tab"
+                >
+                  {{ item.tab }}
+                </v-tab>
+              </v-tabs>
+
+              <v-tabs-items v-model="tab">
+                <v-tab-item
+                  v-for="item in userTabs"
+                  :key="item.tab"
+                >
+                  <div style="overflow-y: scroll; height: 500px"
+                  >
+                    <v-card flat
+                    >
+                      <v-list-item two-line v-for="user in item.content" :key="user.profile_id" link>
+                        <v-list-item-content>
+                          <v-list-item-title v-if="user.middlename != null">
+                            {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-title v-else>
+                            {{ user.firstname + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-card>
+                  </div>
+                </v-tab-item>
+              </v-tabs-items>
+            </v-dialog>
 
             <v-flex>
               <v-card class="activityPageCard">
@@ -92,46 +172,12 @@
           <v-layout row wrap>
             <v-flex>
               <v-card v-if="visibility === 'restricted'" class="activityPageCard">
-                <h2>Participants/Organisers</h2>
+                <h2>Shared Users</h2>
                 <form class="activityPageCardForm">
                     <v-text-field class="activityPageCardTextField mr-10" label="Add email" outlined rounded clearable hide-details dense></v-text-field>
                     <v-btn v-on:click="thing()" class="activityPageCardButton" height="40px" color="#1cca92" outlined rounded>Add</v-btn>
                 </form>
                 <hr>
-                <v-tabs
-                        v-model="tab"
-                        fixed-tabs
-                >
-                  <v-tab
-                          v-for="item in userTabs"
-                          :key="item.tab"
-                  >
-                    {{ item.tab }}
-                  </v-tab>
-                </v-tabs>
-
-                <v-tabs-items v-model="tab">
-                  <v-tab-item
-                          v-for="item in userTabs"
-                          :key="item.tab"
-                  >
-                    <v-card flat>
-                      <v-list-item two-line v-for="user in item.content" :key="user.profile_id" link>
-                        <v-list-item-content>
-                          <v-list-item-title v-if="user.middlename != null">
-                            {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                          </v-list-item-title>
-                          <v-list-item-title v-else>
-                            {{ user.firstname + " " + user.lastname}}
-                          </v-list-item-title>
-                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-card>
-                  </v-tab-item>
-                </v-tabs-items>
-
-                <v-btn v-on:click="openModal()" class="activityPageShowMoreButton" block height="40px" color="#1cca92" outlined rounded>Show More</v-btn>
               </v-card>
             </v-flex>
 
@@ -169,6 +215,7 @@
         activityId: null,
         loadingActivity: true,
         tab: null,
+        showMoreDialog: false,
         participants: [
           {
             "bio":"I'm a cool guy???!",
@@ -229,7 +276,307 @@
             "primary_email":"jqi26@uclive.ac.nz",
             "additional_email":["coolmail@gmail.com","radmail@mail.com"],
             "permission_level":1
-          }
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
         ],
         organisers: [
           {

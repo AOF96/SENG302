@@ -374,7 +374,7 @@
 }
 
 .activityPageCard {
-    min-height: 300px;
+    min-height: 350px;
     height: fit-content;
     width: 450px;
     padding: 15px;
@@ -384,6 +384,7 @@
     width: 70%;
     float: left;
     margin-right: 30px;
+    position: relative;
 }
 
 .activityPageCardButton {
@@ -391,8 +392,14 @@
     width: 20%;
 }
 
-.activityPageShowMoreButton {
+.activityPageShowMoreButton{
     color: #1cca92;
+    position: absolute !important;
+    bottom: 20px;
+    transform: translateX(-50%) !important;
+    min-width: 0 !important;
+    width: 50%;
+    left: 50%;
 }
 
 .activityPageCardForm {
