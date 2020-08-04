@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.springvuegradle.hakinakina.serialize.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -20,6 +22,7 @@ import java.util.Set;
  */
 @Entity
 @JsonDeserialize(using=UserDeserializer.class)
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")

@@ -59,8 +59,7 @@ public class Activity {
     @OneToMany(mappedBy = "activity")
     private Set<UserActivityRole> userActivityRoles;
 
-    protected Activity() {
-    }
+    public Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;

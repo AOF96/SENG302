@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
+/**
+ * UserActivityRole class
+ * This is the relationship table between user and activity entities
+ */
 
 @Entity
 @Table(name = "User_Activity_Role")
