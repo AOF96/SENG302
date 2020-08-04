@@ -59,8 +59,15 @@ public class Activity {
     @OneToMany(mappedBy = "activity")
     private Set<UserActivityRole> userActivityRoles;
 
-    protected Activity() {
-    }
+    @ManyToMany(mappedBy = "activitiesShared", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    private Set<User> usersShared = new HashSet<>();
+
+
+
+    @Column(name = "visibility")
+    private Visibility visibility;
+
+    protected Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;
@@ -77,6 +84,14 @@ public class Activity {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public Long getId() {
@@ -141,6 +156,14 @@ public class Activity {
 
     public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
         this.userActivityRoles = userActivityRoles;
+    }
+
+    public Set<User> getUsersShared() {
+        return usersShared;
+    }
+
+    public void setUsersShared(Set<User> usersShared) {
+        this.usersShared = usersShared;
     }
 
     @Override

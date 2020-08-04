@@ -1,11 +1,11 @@
 package com.springvuegradle.hakinakina.endpoints;
 
-import com.jayway.jsonpath.JsonPath;
 import com.springvuegradle.hakinakina.controller.ActivityController;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,16 +122,11 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
+        String activityStr = "{\"id\":1,\"users\":[],\"usersShared\":[],\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
-        MvcResult mvcResult = this.mockMvc.perform(get("/activities/1"))
+        this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
-                .andReturn();
-
-        String response = mvcResult.getResponse().getContentAsString();
-        assertEquals("name", JsonPath.parse(response).read("$.activity_name"));
-
-
-
+                .andExpect(content().string(containsString(activityStr)));
     }
 
     @Test
@@ -300,6 +295,42 @@ public class ActivityControllerTest {
 //        when(activityRepository.getParticipants((long) 1)).thenReturn(participantUsers);
 //
 //        this.mockMvc.perform(get("/activities/1/participants/")
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is(200))
+//                .andExpect(content().string(containsString(testResponse)));
+//    }
+
+    // TODO: Fix this test once blocking tasks have been completed.
+//    @Test
+//    public void getSharedUsersTest() throws Exception {
+//        User testUser = new User("John", "Smith", "john@gmail.com", null,
+//                Gender.MALE, 2, "Password1");
+//
+//        testUser.setUserId((long) 1);
+//        testUser.resetPassportCountries();
+//
+//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+//        Session testSession = new Session("t0k3n");
+//
+//        List<User> sharedUsers = new ArrayList<>();
+//        sharedUsers.add(testUser);
+//
+//        String testResponse = "[{\"bio\":null,\"authoredActivities\":[]," +
+//                "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
+//                "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
+//                "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
+//                "\"additional_email\":[],\"permission_level\":0}]";
+//
+//        Activity newActivity = activityRepository.save(createTestActivity());
+//        activityRepository.insertActivityForUser((long) 1, (long) 1);
+//
+//        testSession.setUser(testUser);
+//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+//        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+//        when(activityRepository.getSharedUsers((long) 1)).thenReturn(sharedUsers);
+//
+//        this.mockMvc.perform(get("/activities/1/shared/")
 //                .contentType(MediaType.APPLICATION_JSON))
 //                .andExpect(status().is(200))
 //                .andExpect(content().string(containsString(testResponse)));

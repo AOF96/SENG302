@@ -303,9 +303,6 @@ public class UserService {
                 // add cookie to response
                 response.addCookie(cookie);
 
-                System.out.println(cookie.getMaxAge());
-
-
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
         } else {

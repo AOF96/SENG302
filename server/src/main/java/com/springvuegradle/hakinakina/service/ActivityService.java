@@ -1,10 +1,12 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import net.minidev.json.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.*;
+
+import static java.lang.Long.parseLong;
 
 @Service
 public class ActivityService {
@@ -46,10 +50,10 @@ public class ActivityService {
      * @param sessionToken the user's token from their current session
      * @return response entity to inform user if adding an activity was successful or not
      */
-    public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
+    public ResponseEntity<String> addActivity(Activity activity, long profileId, String sessionToken) {
         try {
-            if (userRepository.getUserById(profileId).isEmpty()) {
-                return new ResponseEntity("Invalid User ID", HttpStatus.valueOf(403));
+            if(userRepository.getUserById(profileId).isEmpty()){
+                return new ResponseEntity<>("Invalid User ID", HttpStatus.valueOf(403));
             }
             if (activity.getStartTime() != null) {
                 activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
@@ -59,38 +63,38 @@ public class ActivityService {
             }
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
-                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+                return new ResponseEntity<>("Invalid Session", HttpStatus.valueOf(401));
             }
             if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
-                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+                return new ResponseEntity<>("Invalid User", HttpStatus.valueOf(403));
             }
 
             //If there are no activity types listed
             if (activity.getActivityTypes().size() == 0) {
-                return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
+                return new ResponseEntity<>("Activity must have at least one activity type", HttpStatus.valueOf(400));
             }
 
             for (ActivityType activityType : activity.getActivityTypes()) {
                 if (activityTypeRepository.findActivityTypeByName(activityType.getName()) == null) {
-                    return new ResponseEntity("Selected activity type " + activityType.getName() + " does not exist", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Selected activity type " + activityType.getName() + " does not exist", HttpStatus.valueOf(400));
                 }
             }
 
             //If activity has a duration, start time and end time must be specified
             if (!activity.isContinuous()) {
                 if (activity.getStartTime() == null || activity.getEndTime() == null) {
-                    return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
                 }
 
                 Date date = new Date();
                 Timestamp ts = new Timestamp(date.getTime());
 
                 if (!activity.getStartTime().after(ts)) {
-                    return new ResponseEntity("Activity start date and time must be in the future", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Activity start date and time must be in the future", HttpStatus.valueOf(400));
                 }
 
                 if (activity.getStartTime().after(activity.getEndTime())) {
-                    return new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
                 }
             }
 
@@ -99,10 +103,10 @@ public class ActivityService {
             UserActivityKey userActivityKey = new UserActivityKey(profileId, savedActivity.getId());
             userActivityRoleRepository.save(new UserActivityRole(userActivityKey, ActivityRole.CREATOR));
 
-            return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
+            return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
-            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
+            return new ResponseEntity<>("An error occurred", HttpStatus.valueOf(500));
         }
     }
 
@@ -169,6 +173,7 @@ public class ActivityService {
             activity.setStartTime(newActivity.getStartTime());
             activity.setEndTime(newActivity.getEndTime());
             activity.setLocation(newActivity.getLocation());
+            activity.setVisibility(newActivity.getVisibility());
 
             activityRepository.save(activity);
             return new ResponseEntity("Activity has been updated", HttpStatus.valueOf(200));
@@ -214,6 +219,43 @@ public class ActivityService {
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
         return result;
+    }
+
+    /**
+     *
+     * @param profileId  the logged in user's id.
+     * @param activityId the activity id of the activity being managed
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param request level of visibility and the set of user's email allowed to access the activity
+     * @return
+     */
+    public ResponseEntity<String> updateActivityVisibility (Long profileId,
+                                                            Long activityId,
+                                                            String sessionToken,
+                                                            ActivityVisibilityDto request) {
+
+
+        Activity activity = activityRepository.findActivityById(activityId);
+        activity.setVisibility(request.getVisibility());
+
+        Set<User> accessors = new HashSet<User>();
+
+        if(request.getVisibility().equals(Visibility.RESTRICTED)){
+            for (String email : request.getAccessorsEmails()) {
+                String userId = userRepository.getIdByEmail(email);
+                Optional<User> optionalUser = userRepository.findById(parseLong(userId));
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    accessors.add(user);
+                }
+            }
+            activity.setUsersShared(accessors);
+        }
+        else if(request.getVisibility().equals(Visibility.PRIVATE)){
+            activity.setUsersShared(accessors);
+        }
+        activityRepository.save(activity);
+        return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
     }
 
     public List<Map<String, String>> getActivitySummaries(List<Activity> activities) {
@@ -278,5 +320,27 @@ public class ActivityService {
 //
 //        return result;
 //    }
+
+    /***
+     * Retrieve users who have been shared an activity
+     * @param activityId the activity id to use in the request.
+     * @return response entity with the result of the operation.
+     */
+    public ResponseEntity getSharedUsers(long activityId) {
+        try {
+            String jsonResponse = "[";
+            List<User> sharedUsers = activityRepository.getSharedUsers(activityId);
+            for(int i = 0; i < sharedUsers.size(); i++){
+                if(i != 0){
+                    jsonResponse += ", ";
+                }
+                jsonResponse += sharedUsers.get(i).toJson();
+            }
+            jsonResponse += "]";
+            return new ResponseEntity(jsonResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+    }
 
 }

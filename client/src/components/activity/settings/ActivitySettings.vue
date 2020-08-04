@@ -10,6 +10,17 @@
                     <label class="editActivityLabel" for="name">Activity Name</label>
                     <input class="editActivityInput" type="text" id="name" v-model="name" placeholder="Activity Name" required />
 
+                    <label class="editActivityLabel" for="time">Visibility</label>
+                    <select
+                            class="editActivitySelect"
+                            id="visibility"
+                            v-model="visibility"
+                    >
+                        <option value="public" selected>Public</option>
+                        <option value="private">Private</option>
+                        <option value="restricted">Restricted</option>
+                    </select>
+
                     <label class="editActivityLabel" for="time">Continuous?</label>
                     <select
                         class="editActivitySelect"
@@ -113,7 +124,8 @@ export default {
             combinedStartTime: null,
             combinedEndTime: null,
             suggestedLocations: [],
-            showLocations: false
+            showLocations: false,
+            visibility: "public"
         };
     },
 
@@ -355,7 +367,7 @@ export default {
 
             // Send a create request
             apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
-                this.combinedEndTime, this.description, this.location, this.activity_types_selected)
+                this.combinedEndTime, this.description, this.location, this.activity_types_selected, this.visibility)
                 .then(
                     response => {
                         document.getElementById("activity_success").hidden = false;
