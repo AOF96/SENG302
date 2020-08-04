@@ -8,6 +8,15 @@ var instance = axios.create({
   withCredentials: true,
 });
 
+function activitiesAddDashes(activities){
+  // Replace all spaces in each activity type with "-" to support the json spec
+  let parsedActivityTypes = [];
+  for(let i = 0; i < activities.length; i++){
+    parsedActivityTypes.push(activities[i].split(' ').join('-'));
+  }
+  return parsedActivityTypes;
+}
+
 export const apiUser = {
   // Update the user's password
   changePassword: (profile_id, old_password, new_password, repeat_password) =>
@@ -119,7 +128,7 @@ export const apiUser = {
       {params: {
           [searchType]: searchTerm,
           method: method,
-          activity: activityTypes,
+          activity: activitiesAddDashes(activityTypes).join(" "),
           page: page,
           size: size,
         }
@@ -145,32 +154,52 @@ export const apiUser = {
   },
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
+  
   /**
    * Request to get all activity types from the server
    */
   getActivityTypes: () => instance.get('/activity-types'),
+
   /**
    * Request to update activity types
    */
   editUserActivityTypes: (profile_id, activities) =>
-    instance.put("/profiles/" + profile_id + "/activity-types", {
-      activities: activities,
-    }),
+  instance.put("/profiles/" + profile_id + "/activity-types", {
+    activities: activitiesAddDashes(activities),
+  }),
 
-    /***
-     * API call to promote an user with permission level 0 to admin.
-     * @param profile_id the id of the user being promoted.
-     * @returns {Promise<AxiosResponse<any>>}
-     */
-    promoteToAdmin: (profile_id) =>
-    instance.put("/profiles/" + profile_id + "/role", {
-        "role": "admin"
-    }),
+  /***
+   * API call to promote an user with permission level 0 to admin.
+   * @param profile_id the id of the user being promoted.
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  promoteToAdmin: (profile_id) =>
+  instance.put("/profiles/" + profile_id + "/role", {
+      "role": "admin"
+  }),
+
+  // Request to delete a user account
+  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
+
 
     // Request to delete a user account
     deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
     //
     isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId)
+    
+  /**
+   * API call to retrieve the home feed details for a user
+   * @param profileId the id of the user that requires feed retrieval
+   * @param page the page number
+   * @param size how many posts we want for each page
+   * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
+   */
+  getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
+    {params: {
+      page: page,
+      size: size
+      }
+    }),
 };
 
 export const apiActivity = {
@@ -191,7 +220,7 @@ export const apiActivity = {
       end_time: end_time,
       description: description,
       location: location,
-      activity_type: activity_types,
+      activity_type: activitiesAddDashes(activity_types),
     }),
 
   editActivity: (
@@ -212,7 +241,7 @@ export const apiActivity = {
       end_time: end_time,
       description: description,
       location: location,
-      activity_type: activity_types,
+      activity_type: activitiesAddDashes(activity_types),
       activity_id: activity_id,
     }),
 

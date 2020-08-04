@@ -90,6 +90,10 @@ public class SearchController {
         if (!method.equals("or") && !method.equals("and")) {
             return new ResponseEntity("Method must either be 'or' or 'and'", HttpStatus.valueOf(400));
         }
+
+        if(page < 0 || size < 1) {
+            return new ResponseEntity("Invalid page or size value", HttpStatus.valueOf(400));
+        }
         Set<ActivityType> activityTypes = getActivityTypesSet(activity);
         Page<SearchUserDto> resultPage;
         if(activityTypes.size() == 0){

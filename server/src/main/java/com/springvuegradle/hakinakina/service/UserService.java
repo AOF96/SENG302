@@ -2,16 +2,19 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.entity.ActivityType;
-import com.springvuegradle.hakinakina.entity.Email;
-import com.springvuegradle.hakinakina.entity.Session;
-import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
+import com.springvuegradle.hakinakina.specification.UserSpecification;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ import java.util.*;
 public class UserService {
 
     private UserRepository userRepository;
+    public ActivityRepository activityRepository;
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
     private SessionRepository sessionRepository;
@@ -38,10 +42,15 @@ public class UserService {
     private SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
-    public UserService(UserRepository userRepository, EmailRepository emailRepository,
-                       PassportCountryRepository countryRepository, SessionRepository sessionRepository,
-                       ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository) {
+    public UserService(UserRepository userRepository,
+                       EmailRepository emailRepository,
+                       PassportCountryRepository countryRepository,
+                       SessionRepository sessionRepository,
+                       ActivityTypeRepository activityTypeRepository,
+                       ActivityRepository activityRepository,
+                       SearchRepository searchRepository) {
         this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
@@ -582,6 +591,74 @@ public class UserService {
     }
 
 
+    /**
+     * Deals with pagination where you can search users with email, full name and last name
+     *
+     * @param page     number of a page you want to be at
+     * @param size     how many results you want on a page
+     * @param email    email of the user you want to search
+     * @param fullname full name of the user you want to search
+     * @param lastname last name of the user you want to search
+     * @param activityTypes activityTypes of the user you want to search
+     * @param method
+     * @return Page object with list SearchUserResponse object with user's email, full name, nickname
+     */
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
+        Page<User> userPage;
+        if (activityTypes != null) {
+            if (method.equals("or")) {
+                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+            } else {
+                 userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                }
+        } else {
+            userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
+        }
+        return userPageToSearchResponsePage(userPage);
+    }
+
+    /**
+     * Finds the intersection of a List of Sets of Users. Much of this code was adapted from
+     * https://stackoverflow.com/questions/37749559/conversion-of-list-to-page-in-spring
+     * @param listOfUserSets A List of Sets of User objects
+     * @return The intersection of these Sets as a List
+     */
+    public List<User> getIntersectionOfListOfSetsOfUsers(List<Set<User>> listOfUserSets) {
+        List<User> result = new ArrayList<>();
+        if (!listOfUserSets.isEmpty()) {
+            Set<User> userCross = listOfUserSets.get(0);
+            for (int i = 1; i < listOfUserSets.size(); i++) {
+                userCross.retainAll(listOfUserSets.get(i));
+            }
+            for (User user : userCross) {
+                result.add(user);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Helper function used in findPaginated and findPaginatedByQuery,
+     * creates SearchUserResponse object which has user email, full name and nickname details
+     * from the list of users in page object returned by the query
+     *
+     * @param users Page object that contains list of users found by the query
+     * @return Page object with list of SearchUserResponse object
+     */
+    private Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+        List<SearchUserDto> userResponses = new ArrayList<>();
+        for (User user : users) {
+            SearchUserDto searchUserDto = new SearchUserDto();
+            searchUserDto.setEmail(user.getPrimaryEmail());
+            searchUserDto.setFirstname(user.getFirstName());
+            searchUserDto.setLastname(user.getLastName());
+            searchUserDto.setMiddlename(user.getMiddleName());
+            searchUserDto.setNickname(user.getNickName());
+            searchUserDto.setActivityTypes(user.getActivityTypes());
+            userResponses.add(searchUserDto);
+        }
+        return new PageImpl<>(userResponses);
+    }
 
     /***
      * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
@@ -626,4 +703,74 @@ public class UserService {
         return result;
     }
 
+    /***
+     * Checks that both user and activity exist and checks if the user follows the activity already or not before
+     * allowing the user to follow the activity
+     * @param profileId id of the user that wishes to follow the activity
+     * @param activityId id of the activity that the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return response entity with status code depending on wither it was successful or not
+     */
+    public ResponseEntity subscribeToActivity(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity result;
+
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if (!profileId.equals(session.getUser().getUserId())
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else {
+                Optional<User> user = userRepository.getUserById(profileId);
+                Optional<Activity> activity = activityRepository.getActivityById(activityId);
+                if (user.isPresent() && activity.isPresent()) {
+                    User validUser = user.get();
+                    Set<Activity> validUserFollowingList = validUser.getFollowingList();
+                    if (validUserFollowingList.contains(activity.get())) {
+                        result = responseHandler.formatErrorResponse(403,
+                                "User already follows this activity");
+                    } else {
+                        validUser.followActivity(activity.get());
+                        activity.get().addUsers(validUser);
+                        userRepository.save(validUser);
+                        activityRepository.save(activity.get());
+                        result = responseHandler.formatSuccessResponse(201, "User " + profileId
+                                + " now follows activity " + activityId);
+                    }
+                } else {
+                    if (user.isEmpty()) {
+                        result = responseHandler.formatErrorResponse(404, "No user with id "
+                                + profileId);
+                    } else {
+                        result = responseHandler.formatErrorResponse(404, "No activity with id "
+                                + activityId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not subscribe to activity");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
+
+    /***
+     * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
+     * @param lastName last name of the user you are searching
+     * @param fullName full name of the user you are searching
+     * @param email email of the user you are searching
+     * @return specification object with User search request (WHERE part of a query)
+     */
+    private Specification<User> generateSpecification(String lastName, String fullName, String email) {
+        return Specification.where(UserSpecification.searchByLastName(lastName))
+                .and(
+                        UserSpecification.searchByFullName(fullName))
+                .and(
+                        UserSpecification.searchByEmail(email))
+                .and(
+                        UserSpecification.searchIsNotAdmin()
+                );
+    }
 }
