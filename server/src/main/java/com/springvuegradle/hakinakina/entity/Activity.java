@@ -67,7 +67,7 @@ public class Activity {
     @Column(name = "visibility")
     private Visibility visibility;
 
-    protected Activity() {}
+    public Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;
