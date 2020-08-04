@@ -203,7 +203,7 @@ public class Activity {
         if (!this.getName().equals(other.getName())) {
             differences.add(ActivityAttribute.NAME);
         }
-        if (!this.getDescription().equals(other.getDescription())) {
+        if (this.getDescription() != null && !this.getDescription().equals(other.getDescription())) {
             differences.add(ActivityAttribute.DESCRIPTION);
         }
 
@@ -244,7 +244,7 @@ public class Activity {
         if((this.getEndTime() != null && other.getEndTime() == null) || (this.getEndTime() == null && other.getEndTime() != null)){
             differences.add(ActivityAttribute.END_TIME);
         }
-        if (!this.getLocation().equals(other.getLocation())) {
+        if (this.getLocation() != null && !this.getLocation().equals(other.getLocation())) {
             differences.add(ActivityAttribute.LOCATION);
         }
         if (!this.getUsers().equals(other.getUsers())) {
