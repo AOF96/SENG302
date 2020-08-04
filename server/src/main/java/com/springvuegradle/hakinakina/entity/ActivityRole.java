@@ -1,19 +1,26 @@
 package com.springvuegradle.hakinakina.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * An enum to represent a User's role in an activity
  */
 public enum ActivityRole {
 
-    @JsonProperty("Creator")
-    CREATOR,
-    @JsonProperty("Organiser")
-    ORGANISER,
-    @JsonProperty("Participant")
-    PARTICIPANT,
-    @JsonProperty("Follower")
-    FOLLOWER
+    CREATOR("creator"),
+    ORGANISER("organiser"),
+    PARTICIPANT("participant"),
+    FOLLOWER("follower");
+
+    private String role;
+
+    ActivityRole(String text) {
+        this.role = text;
+    }
+
+    @JsonValue
+    public String getRole() {
+        return role;
+    }
 
 }

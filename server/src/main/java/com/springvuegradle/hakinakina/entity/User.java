@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.springvuegradle.hakinakina.serialize.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -139,7 +141,7 @@ public class User {
     )
     private Set<Session> sessions = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     private Set<UserActivityRole> userActivityRoles;
 
     public User() {}
