@@ -250,10 +250,26 @@ public class Activity {
         if (this.getLocation() != null && !this.getLocation().equals(other.getLocation())) {
             differences.add(ActivityAttribute.LOCATION);
         }
-        if (!this.getUsers().equals(other.getUsers())) {
+
+        boolean sameUsers = true;
+        if (!(this.getUsers().size() == other.getUsers().size())) {
+            sameUsers = false;
+        } else {
+            ArrayList<User> otherUsers = new ArrayList<>(other.getUsers());
+            ArrayList<User> thisUsers = new ArrayList<>(this.getUsers());
+            for (int i = 0; i < otherUsers.size(); i++) {
+                if (!(otherUsers.get(i).getUserId().equals(thisUsers.get(i).getUserId()))) {
+                    sameUsers = false;
+                    break;
+                }
+            }
+        }
+
+        if (!sameUsers) {
             differences.add(ActivityAttribute.USERS);
         }
-        if (!this.getAuthor().equals(other.getAuthor())) {
+
+        if (!this.getAuthor().getUserId().equals(other.getAuthor().getUserId())) {
             differences.add(ActivityAttribute.AUTHOR);
         }
         return differences;
