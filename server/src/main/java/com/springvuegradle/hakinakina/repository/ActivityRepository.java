@@ -1,8 +1,12 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -19,9 +23,10 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
 
-    @Modifying
+//    @Modifying
     Optional<Activity> findFirstByName(String name);
 
+    @Modifying
     @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)
     void insertActivityForUser(Long userId, Long activityId);
 
@@ -41,9 +46,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     List<User> getSharedUsers(Long activityId);
     @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activity_Role WHERE c.activity_id = ? AND c.activityRole = '0')", nativeQuery = true)
     List<User> getParticipants(Long activityId);
-
-    @Query(value = "SELECT u.user_id, u.first_name, u.last_name From User u WHERE u.user_id IN (SELECT c.user_id FROM User_Activity_Role c WHERE c.activity_id = ? AND c.activityRole = 1)", nativeQuery = true)
-    List<User> getOrganizers(Long activityId);
 
 
 //    SearchUserDto organizers = (SearchUserDto)

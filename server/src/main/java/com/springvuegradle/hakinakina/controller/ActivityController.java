@@ -238,8 +238,8 @@ public class ActivityController {
         }
     }
 
-//    @GetMapping("/activities/{activityId}/organizers/")
-//    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId) {
-//        return activityService.getActivityOrganizers(activityId);
-//    }
+    @GetMapping("/activities/{activityId}/organizers/")
+    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityOrganizers(activityId, page, size);
+    }
 }

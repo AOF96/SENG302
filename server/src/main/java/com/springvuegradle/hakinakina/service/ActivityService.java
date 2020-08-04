@@ -2,11 +2,14 @@ package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import net.minidev.json.JSONArray;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ public class ActivityService {
     public ActivityTypeRepository activityTypeRepository;
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
+    public SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
 
@@ -33,12 +37,14 @@ public class ActivityService {
                            ActivityTypeRepository activityTypeRepository,
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
-                           UserActivityRoleRepository userActivityRoleRepository) {
+                           UserActivityRoleRepository userActivityRoleRepository,
+                           SearchRepository searchRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
     }
 
@@ -293,33 +299,23 @@ public class ActivityService {
         }
     }
 
-//    public ResponseEntity getActivityOrganizers(Long activityId) {
-//        ResponseEntity result;
-//        try {
-//            if (activityId == null || activityRepository.findActivityById(activityId) == null) {
-//                result = responseHandler.formatErrorResponse(404, "Activity not found");
-//            } else {
-//                String response = "[";
-//                List<User> users = activityRepository.getOrganizers(activityId);
-////                List<SearchUserDto> userResponses = new ArrayList<>();
-//                for(int i = 0; i < users.size(); i++) {
-//                    if (i != 0) {
-//                        response += ", ";
-//                    }
-////                    SearchUserDto searchUserDto = new SearchUserDto();
-//
-//                    response += users.get(i).toJson();
-//                }
-//                response += "]";
-//                result = new ResponseEntity(response, HttpStatus.OK);
-//            }
-//        } catch (Exception e) {
-//            ErrorHandler.printProgramException(e, "Could not retrieve organizers");
-//            result = responseHandler.formatErrorResponse(500, "An error occurred");
-//        }
-//
-//        return result;
-//    }
+    public ResponseEntity getActivityOrganizers(Long activityId, int page, int size) {
+        ResponseEntity result;
+        try {
+            System.out.println(activityId);
+            if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<Object> users = searchRepository.getOrganizers(PageRequest.of(page, size), activityId);
+                result = new ResponseEntity(users, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not retrieve organizers");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
+    }
 
     /***
      * Retrieve users who have been shared an activity
