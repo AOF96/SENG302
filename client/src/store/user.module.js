@@ -271,6 +271,15 @@ const actions = {
   async getIdByEmail(data, {'email': email}) {
     return await apiUser.getIdByEmail(email);
   },
+  async isUserFollowingActivitiy(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.isUserFollowingActivitiy(userId, activityId);
+  },
+  async followActivity(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.followActivity(userId, activityId);
+  },
+  async unfollowActivity(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.unfollowActivity(userId, activityId);
+  },
   async refreshUserData(data, userId) {
     return await apiUser.refreshUserData(userId);
   },
