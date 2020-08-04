@@ -4,15 +4,15 @@
     <v-col>
       <v-list>
         <v-list-item
-          v-for="post in activityPosts"
-          :key="post"
+          v-for="(post, index) in activityPosts"
+          :key="index"
         >
-          <v-card class="mx-auto" rounded>
+          <v-card class="mx-auto" rounded style="width:100%;max-width: 800px;margin-bottom:20px;">
             <v-card-text>
               <div>Activity Updated</div>
-              <h2 class="text--primary py-2" style="font-weight:500;">{{ post.description }}</h2>
+              <h2 class="text--primary py-2" style="font-weight:500;">{{ post.textContext }}</h2>
               <h3 class="text--primary">
-                {{ post.textContent }}
+                {{ post.dateTime }}
               </h3>
             </v-card-text>
             <v-card-actions>
@@ -24,13 +24,13 @@
                   ></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>{{ post.userName }}</v-list-item-title>
+                  <v-list-item-title>{{ post.authorName }}</v-list-item-title>
                 </v-list-item-content>
                 <v-row
                   align="center"
                   justify="end"
                 >
-                  <v-btn class="px-3" text color="#00C853">View Changes</v-btn>
+                  <v-btn class="px-3" :to="'/activity/'+post.activityId" text color="#00C853">View Changes</v-btn>
                 </v-row>
               </v-list-item>
             </v-card-actions>
@@ -101,7 +101,7 @@ export default {
     getUsersFeed() {
       this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
         this.activityPosts = response.data;
       })
       .catch((error) => {

@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.entity.ActivityChange;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,13 +68,19 @@ public class HomeFeedController {
             } else {
                 Page<ActivityChange> activityChanges = homeFeedService.getHomeFeed(profileId, page, size);
                 List<ActivityChange> changesList = activityChanges.toList();
-                StringBuilder outcome = new StringBuilder("{\n\"");
+                List<FeedPostDto> posts = new ArrayList<>();
                 for (ActivityChange activityChange : changesList) {
-                    outcome.append("[\"description\":  \"" + activityChange.getDescription() + ", \"" + "\"changeTime\": \"" + activityChange.getChangeTime() + "\"],\n");
+                    FeedPostDto newPost = new FeedPostDto();
+                    newPost.activityId = activityChange.getActivity().getId();
+                    newPost.activityName = activityChange.getActivity().getName();
+                    newPost.authorName = activityChange.getAuthor().getFirstName()+" "+activityChange.getAuthor().getLastName();
+                    newPost.dateTime = activityChange.getChangeTime();
+                    newPost.postType = "activityUpdate";
+                    newPost.textContext = activityChange.getDescription();
+                    posts.add(newPost);
                 }
-                outcome.append("\"}");
 
-                result = new ResponseEntity(outcome, HttpStatus.valueOf(200));
+                result = new ResponseEntity(posts, HttpStatus.valueOf(200));
 
             }
         } catch (Exception e) {
