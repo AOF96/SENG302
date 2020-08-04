@@ -22,7 +22,6 @@ import java.util.Set;
  */
 @Entity
 @JsonDeserialize(using=UserDeserializer.class)
-@OnDelete(action = OnDeleteAction.CASCADE)
 public class User {
     @Id @GeneratedValue
     @JsonProperty("profile_id")
@@ -123,7 +122,7 @@ public class User {
     )
     private Set<Session> sessions = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     private Set<UserActivityRole> userActivityRoles;
 
     public User() {}
