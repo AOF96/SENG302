@@ -57,7 +57,7 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 

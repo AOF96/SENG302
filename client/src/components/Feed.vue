@@ -101,7 +101,7 @@ export default {
     getUsersFeed() {
       this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
       .then((response) => {
-        console.log(response.data);
+        console.log(response);
         this.activityPosts = response.data;
       })
       .catch((error) => {

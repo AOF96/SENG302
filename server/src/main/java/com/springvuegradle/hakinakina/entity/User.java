@@ -89,7 +89,7 @@ public class User {
     )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
-    @JsonProperty("activityTypes")
+    @JsonProperty("activities")
     @JsonSerialize(using= ActivityTypeSerializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
@@ -99,7 +99,7 @@ public class User {
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
-    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
+    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     @JoinTable(
             name = "User_Activities",
             joinColumns = { @JoinColumn(name = "user_id") },
