@@ -141,9 +141,7 @@
         async checkFollowing() {
             await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
                 .then((response) => {
-                    if (response.status === 200) {
-                        this.userFollowing = true;
-                    }
+                  this.userFollowing = response.data !== false;
                 })
                 .catch((error) => {
                     if (error.response.status === 404) {

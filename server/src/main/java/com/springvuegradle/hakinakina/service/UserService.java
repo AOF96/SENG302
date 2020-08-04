@@ -716,36 +716,32 @@ public class UserService {
 
         try {
             Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
             if (sessionToken == null) {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
             } else if (!profileId.equals(session.getUser().getUserId())
                     && session.getUser().getPermissionLevel() == 0) {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
             } else {
                 Optional<User> user = userRepository.getUserById(profileId);
-                Optional<Activity> activity = activityRepository.getActivityById(activityId);
-                if (user.isPresent() && activity.isPresent()) {
+                if (user.isPresent()) {
                     User validUser = user.get();
-                    Set<Activity> validUserFollowingList = validUser.getFollowingList();
-                    if (validUserFollowingList.contains(activity.get())) {
+                    Set<Activity> validUserFollowingList = validUser.getActivities();
+                    if (validUserFollowingList.contains(activity)) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
-                        validUser.followActivity(activity.get());
-                        activity.get().addUsers(validUser);
+                        activity.addUsers(validUser);
                         userRepository.save(validUser);
-                        activityRepository.save(activity.get());
+                        activityRepository.save(activity);
                         result = responseHandler.formatSuccessResponse(201, "User " + profileId
                                 + " now follows activity " + activityId);
                     }
                 } else {
-                    if (user.isEmpty()) {
-                        result = responseHandler.formatErrorResponse(404, "No user with id "
-                                + profileId);
-                    } else {
-                        result = responseHandler.formatErrorResponse(404, "No activity with id "
-                                + activityId);
-                    }
+                    result = responseHandler.formatErrorResponse(404, "No user with id "
+                            + profileId);
                 }
             }
         } catch (Exception e) {

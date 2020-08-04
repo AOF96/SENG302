@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -56,7 +57,8 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
 
     @ManyToOne
@@ -84,6 +86,7 @@ public class Activity {
         this.activityTypes = activityTypes;
     }
 
+    @JsonIgnore
     public Set<User> getUsers() {
         return users;
     }
@@ -185,7 +188,7 @@ public class Activity {
         try {
             activityStr = objectMapper.writeValueAsString(this);
         } catch (Exception exception) {
-            ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
+            ErrorHandler.printProgramException(exception, "Could not map activity to JSON string");
         }
         return activityStr;
     }

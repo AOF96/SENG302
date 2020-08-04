@@ -89,7 +89,7 @@ public class User {
     )
     private Set<PassportCountry> passportCountries = new HashSet<>();
 
-    @JsonProperty("activities")
+    @JsonProperty("activityTypes")
     @JsonSerialize(using= ActivityTypeSerializer.class)
     @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
@@ -99,12 +99,13 @@ public class User {
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
-    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(
             name = "User_Activities",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
+    @JsonIgnore
     private Set<Activity> activities = new HashSet<>();
 
     @OneToMany
@@ -195,11 +196,11 @@ public class User {
     }
 
     public void followActivity(Activity activity) {
-        activity.addUsers(this);
         activities.add(activity);
     }
 
-    public Set<Activity> getFollowingList() {
+    @JsonIgnore
+    public Set<Activity> getActivities() {
         return activities;
     }
 

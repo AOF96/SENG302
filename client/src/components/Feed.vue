@@ -4,13 +4,13 @@
     <v-col>
       <v-list>
         <v-list-item
-          v-for="post in activityPostsTemplate"
+          v-for="post in activityPosts"
           :key="post"
         >
           <v-card class="mx-auto" rounded>
             <v-card-text>
               <div>Activity Updated</div>
-              <h2 class="text--primary py-2" style="font-weight:500;">{{ post.activityName }}</h2>
+              <h2 class="text--primary py-2" style="font-weight:500;">{{ post.description }}</h2>
               <h3 class="text--primary">
                 {{ post.textContent }}
               </h3>
@@ -45,7 +45,6 @@
 
 <script>
 import {mapGetters, mapState, mapActions} from "vuex";
-import {apiUser} from "../api";
 
 export default {
   name: "Feed",
@@ -87,7 +86,7 @@ export default {
   },
   mounted() {
     this.checkLogin();
-    this.getUserFeed();
+    this.getUsersFeed();
   },
   watch: {
 
@@ -99,9 +98,10 @@ export default {
         this.$router.push('/login');
       }
     },
-    getUserFeed() {
-      apiUser.getUserFeed(this.user.profile_id, this.currentPage, this.currentSize)
+    getUsersFeed() {
+      this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
       .then((response) => {
+        console.log(response.data);
         this.activityPosts = response.data;
       })
       .catch((error) => {

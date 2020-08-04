@@ -181,11 +181,8 @@ export const apiUser = {
   // Request to delete a user account
   deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
 
-
-    // Request to delete a user account
-    deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
     //
-    isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId)
+    isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
     
   /**
    * API call to retrieve the home feed details for a user
