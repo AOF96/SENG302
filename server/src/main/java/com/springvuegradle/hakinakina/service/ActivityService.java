@@ -49,10 +49,10 @@ public class ActivityService {
      * @param sessionToken the user's token from their current session
      * @return response entity to inform user if adding an activity was successful or not
      */
-    public ResponseEntity addActivity(Activity activity, long profileId, String sessionToken) {
+    public ResponseEntity<String> addActivity(Activity activity, long profileId, String sessionToken) {
         try {
             if(userRepository.getUserById(profileId).isEmpty()){
-                return new ResponseEntity("Invalid User ID", HttpStatus.valueOf(403));
+                return new ResponseEntity<>("Invalid User ID", HttpStatus.valueOf(403));
             }
             if (activity.getStartTime() != null) {
                 activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
@@ -62,38 +62,38 @@ public class ActivityService {
             }
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
-                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+                return new ResponseEntity<>("Invalid Session", HttpStatus.valueOf(401));
             }
             if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
-                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+                return new ResponseEntity<>("Invalid User", HttpStatus.valueOf(403));
             }
 
             //If there are no activity types listed
             if (activity.getActivityTypes().size() == 0) {
-                return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
+                return new ResponseEntity<>("Activity must have at least one activity type", HttpStatus.valueOf(400));
             }
 
             for (ActivityType activityType : activity.getActivityTypes()) {
                 if (activityTypeRepository.findActivityTypeByName(activityType.getName()) == null) {
-                    return new ResponseEntity("Selected activity type " + activityType.getName() + " does not exist", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Selected activity type " + activityType.getName() + " does not exist", HttpStatus.valueOf(400));
                 }
             }
 
             //If activity has a duration, start time and end time must be specified
             if (!activity.isContinuous()) {
                 if (activity.getStartTime() == null || activity.getEndTime() == null) {
-                    return new ResponseEntity("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Activity with a duration must specify start time and end time", HttpStatus.valueOf(400));
                 }
 
                 Date date = new Date();
                 Timestamp ts=new Timestamp(date.getTime());
 
                 if (!activity.getStartTime().after(ts)) {
-                    return new ResponseEntity("Activity start date and time must be in the future", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Activity start date and time must be in the future", HttpStatus.valueOf(400));
                 }
 
                 if (activity.getStartTime().after(activity.getEndTime())) {
-                    return new ResponseEntity("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
+                    return new ResponseEntity<>("Activity end date and time must be after the start date and time", HttpStatus.valueOf(400));
                 }
             }
 
@@ -101,10 +101,10 @@ public class ActivityService {
             activity.setAuthor(userRepository.getUserById(profileId).get());
             activityRepository.save(activity);
 
-            return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
+            return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
-            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
+            return new ResponseEntity<>("An error occurred", HttpStatus.valueOf(500));
         }
     }
 
@@ -171,6 +171,7 @@ public class ActivityService {
             activity.setStartTime(newActivity.getStartTime());
             activity.setEndTime(newActivity.getEndTime());
             activity.setLocation(newActivity.getLocation());
+            activity.setVisibility(newActivity.getVisibility());
 
             activityRepository.save(activity);
             return new ResponseEntity("Activity has been updated", HttpStatus.valueOf(200));

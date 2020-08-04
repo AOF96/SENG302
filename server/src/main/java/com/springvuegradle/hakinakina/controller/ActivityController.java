@@ -55,7 +55,7 @@ public class ActivityController {
      * @return response entity to inform user if adding an activity was successful or not
      */
     @PostMapping("/profiles/{profileId}/activities")
-    public ResponseEntity addActivity(@Valid @RequestBody Activity activity,
+    public ResponseEntity<String> addActivity(@Valid @RequestBody Activity activity,
                                       @PathVariable("profileId") long profileId,
                                       @CookieValue(value = "s_id") String sessionToken) {
         return activityService.addActivity(activity, profileId, sessionToken);
