@@ -33,7 +33,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "SELECT * FROM Activity a WHERE a.continuous = ? AND author_user_id = ?", nativeQuery = true)
     List<Activity> getActivitiesForAuthorOfType(boolean isContinuous, Long id);
 
-    @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activity_Shared WHERE c.activity_id = ?)", nativeQuery = true)
+    @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activities_Shared c WHERE c.activity_id = ?)", nativeQuery = true)
     List<User> getSharedUsers(Long activityId);
 
 }

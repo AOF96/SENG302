@@ -60,22 +60,22 @@ public class ActivityVisibilityTest {
     @Autowired
     private UserRepository userRepository;
 
-    @MockBean
+    @Autowired
     private PassportCountryRepository countryRepository;
 
-    @MockBean
+    @Autowired
     private EmailRepository emailRepository;
 
     @Autowired
     private SessionRepository sessionRepository;
 
-    @MockBean
+    @Autowired
     private ActivityTypeRepository activityTypeRepository;
 
-    @MockBean
+    @Autowired
     private SearchRepository searchRepository;
 
-    @MockBean
+    @Autowired
     private UserService userService;
 
     private User testUser;
@@ -159,8 +159,9 @@ public class ActivityVisibilityTest {
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Activity Visibility Status Updated")));
 
-
         Assertions.assertEquals(activityRepository.findActivityById(newActivity.getId()).getVisibility(), Visibility.RESTRICTED);
+
+
         activityVisibilityDto.setVisibility(Visibility.PRIVATE);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
                 .cookie(new Cookie("s_id", "t0k3n"))
@@ -169,8 +170,9 @@ public class ActivityVisibilityTest {
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Activity Visibility Status Updated")));
         Assertions.assertEquals(activityRepository.findActivityById(newActivity.getId()).getVisibility(), Visibility.PRIVATE);
+
         // Still need to write tests to check if the accessors list of emails gets populated. The getSharedUsers(newActivity.getId()) is not working.
-//        Assertions.assertEquals(activityRepository.getSharedUsers(newActivity.getId()), testUser2.getUserId());
+//        Assertions.assertEquals(activityRepository.getSharedUsers(newActivity.getId()).get(0), testUser2.getUserId());
 
     }
 
