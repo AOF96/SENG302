@@ -267,4 +267,41 @@ public class ActivityControllerTest {
                 .andExpect(content().string(containsString("Activity successfully deleted")));
 
     }
+
+
+// TODO: Fix this test once blocking tasks have been completed.
+//    @Test
+//    public void getParticipantUsersTest() throws Exception {
+//        User testUser = new User("John", "Smith", "john@gmail.com", null,
+//                Gender.MALE, 2, "Password1");
+//
+//        testUser.setUserId((long) 1);
+//        testUser.resetPassportCountries();
+//
+//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+//        Session testSession = new Session("t0k3n");
+//
+//        List<User> participantUsers = new ArrayList<>();
+//        participantUsers.add(testUser);
+//
+//        String testResponse = "[{\"bio\":null,\"authoredActivities\":[]," +
+//                "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
+//                "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
+//                "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
+//                "\"additional_email\":[],\"permission_level\":0}]";
+//
+//        Activity newActivity = activityRepository.save(createTestActivity());
+//        activityRepository.insertActivityForUser((long) 1, (long) 1);
+//
+//        testSession.setUser(testUser);
+//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+//        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+//        when(activityRepository.getParticipants((long) 1)).thenReturn(participantUsers);
+//
+//        this.mockMvc.perform(get("/activities/1/participants/")
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is(200))
+//                .andExpect(content().string(containsString(testResponse)));
+//    }
 }
