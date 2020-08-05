@@ -56,7 +56,7 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @OneToMany(mappedBy = "activity")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "activity")
     private Set<UserActivityRole> userActivityRoles;
 
     @ManyToMany(mappedBy = "activitiesShared", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
