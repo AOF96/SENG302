@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.Gender;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.entity.Visibility;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.UserActivityRoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,8 +27,12 @@ public class ActivityTests {
     @Autowired
     ActivityRepository activityRepository;
 
+    @Autowired
+    UserActivityRoleRepository userActivityRoleRepository;
+
     @BeforeEach
     public void setUp() {
+        userActivityRoleRepository.deleteAll();
         activityRepository.deleteAll();
     }
 
