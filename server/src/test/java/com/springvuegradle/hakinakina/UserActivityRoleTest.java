@@ -103,12 +103,13 @@ public class UserActivityRoleTest {
         activity1.setActivityTypes(activityTypes);
 
 
-        activityService.addActivity(activity1, this.mayuko.getUserId(), "Mayuko");
+        ResponseEntity<String> response = activityService.addActivity(activity1, this.mayuko.getUserId(), "Mayuko");
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         Optional<Activity> byName = activityRepository.findFirstByName("Climb Mount Everest");
         assertTrue(byName.isPresent());
 
-        ResponseEntity response = activityService.removeActivity(mayuko.getUserId(), byName.get().getId(), "Mayuko");
+        response = activityService.removeActivity(this.mayuko.getUserId(), byName.get().getId(), "Mayuko");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         byName = activityRepository.findFirstByName("Climb Mount Everest");
         assertFalse(byName.isPresent());

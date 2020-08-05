@@ -51,10 +51,9 @@ public class ActivityTests {
     public void addVisibilityToActivityTest() {
         Activity activity = createActivity();
         activity.setVisibility(Visibility.PUBLIC);
-        activity.setId((long) 2);
 
         activityRepository.save(activity);
 
-        assertEquals(Visibility.PUBLIC, activityRepository.findActivityById((long) 2).getVisibility());
+        assertEquals(Visibility.PUBLIC, activityRepository.findActivityById(activity.getId()).getVisibility());
     }
 }
