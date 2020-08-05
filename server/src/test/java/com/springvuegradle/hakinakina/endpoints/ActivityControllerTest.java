@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -276,7 +277,7 @@ public class ActivityControllerTest {
 //        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
 //        Session testSession = new Session("t0k3n");
 //
-//        List<User> participantUsers = new ArrayList<>();
+//        Page<Object> participantUsers = new Page<>();
 //        participantUsers.add(testUser);
 //
 //        String testResponse = "[{\"bio\":null,\"authoredActivities\":[]," +

@@ -44,9 +44,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activity_Shared WHERE c.activity_id = ?)", nativeQuery = true)
     List<User> getSharedUsers(Long activityId);
-    @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activity_Role WHERE c.activity_id = ? AND c.activityRole = '0')", nativeQuery = true)
-    List<User> getParticipants(Long activityId);
-
 
 //    SearchUserDto organizers = (SearchUserDto)
 }

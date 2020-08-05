@@ -227,15 +227,8 @@ public class ActivityController {
      * @return a response entity that informs the user if retrieving participants was successful or not.
      */
     @GetMapping("/activities/{activityId}/participants/")
-    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId) {
-        Activity activity = activityRepository.findActivityById(activityId);
-        if (activity == null) {
-            // TODO: Check to see if activity is private
-
-            return activityService.getParticipants(activityId);
-        } else {
-            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
-        }
+    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityParticipants(activityId, page, size);
     }
 
     @GetMapping("/activities/{activityId}/organizers/")
