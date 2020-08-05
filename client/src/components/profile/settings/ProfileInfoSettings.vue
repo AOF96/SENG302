@@ -300,7 +300,7 @@ export default {
         return state;
       },
 
-      /*
+      /**
       Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
       was unsuccessful.
       */
