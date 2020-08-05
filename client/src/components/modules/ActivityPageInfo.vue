@@ -88,7 +88,7 @@
                   </v-tab-item>
                 </v-tabs-items>
 
-                <v-btn v-on:click="openModal()"
+                <v-btn
                        class="activityPageShowMoreButton"
                        height="40px" color="#1cca92"
                        outlined rounded
@@ -174,13 +174,18 @@
               <v-card v-if="visibility === 'restricted'" class="activityPageCard">
                 <h2>Shared Users</h2>
                 <form class="activityPageCardForm">
-                    <v-text-field class="activityPageCardTextField mr-10" label="Add email" outlined rounded clearable hide-details dense></v-text-field>
-                    <v-btn v-on:click="thing()" class="activityPageCardButton" height="40px" color="#1cca92" outlined rounded>Add</v-btn>
+                    <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
+                                  outlined rounded clearable hide-details dense></v-text-field>
+                    <v-select class="activityPageCardSelect mr-10" v-model="newRole"
+                              :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
+                              rounded></v-select>
+                    <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
+                           outlined rounded>Add</v-btn>
+                    <h6 class="activityPageErrorMessage" v-if="displayInvalidEmailError">{{ invalidEmailErrorMessage }}
+                    </h6>
                 </form>
-                <hr>
               </v-card>
             </v-flex>
-
           </v-layout>
         </v-flex>
       </v-flex>
@@ -216,6 +221,15 @@
         loadingActivity: true,
         tab: null,
         showMoreDialog: false,
+        newRole: "participant",
+        emailsToAdd: "",
+        roleOptions: [
+            { value: "participant", text: "Participant" },
+            { value: "organiser", text: "Organiser"},
+            { value: "follower", text: "Follower"}
+        ],
+        displayInvalidEmailError: false,
+        invalidEmailErrorMessage: "",
         participants: [
           {
             "bio":"I'm a cool guy???!",
@@ -620,12 +634,38 @@
       ...mapActions(['updateUserDurationActivities']),
       ...mapActions(['updateUserContinuousActivities']),
 
-      thing() {
-        console.log(this.userTabs[0].content)
+      /**
+       * Parses the list of emails the user entered by splitting them and removing any extra spaces. Checks each one is
+       * valid by calling validateEmail, and displays an error message stating which email is invalid if any.
+       */
+      parseEmails() {
+        this.displayInvalidEmailError = false;
+        const separators = [' ', ';'];
+        let emails = this.emailsToAdd.split(new RegExp(separators.join('|'), 'g'));
+        for (let i = 0; i < emails.length; i++) {
+            if (emails[i] === "") {
+                emails.splice(i, 1);
+                i--;
+            }
+        }
+        for (let email of emails) {
+            if (!this.validateEmail(email)) {
+              this.invalidEmailErrorMessage = "'" + email + "' is an invalid email address.";
+              this.displayInvalidEmailError = true;
+              break; // So that the first invalid email is displayed
+            }
+        }
       },
 
-      openModal() {
-
+      /**
+       * Checks if an email address is valid. Adapted from
+       * https://www.w3resource.com/javascript/form/email-validation.php
+       */
+      validateEmail(mail) {
+        if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+          return true;
+        }
+        return false;
       },
 
       /**
