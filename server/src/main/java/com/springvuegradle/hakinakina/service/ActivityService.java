@@ -282,21 +282,22 @@ public class ActivityService {
      * @param activityId the activity id to use in the request.
      * @return response entity with the result of the operation.
      */
-    public ResponseEntity getParticipants(long activityId) {
+    public ResponseEntity getActivityParticipants(Long activityId, int page, int size) {
+        ResponseEntity result;
         try {
-            String jsonResponse = "[";
-            List<User> participantUsers = activityRepository.getParticipants(activityId);
-            for(int i = 0; i < participantUsers.size(); i++){
-                if(i != 0){
-                    jsonResponse += ", ";
-                }
-                jsonResponse += participantUsers.get(i).toJson();
+            System.out.println(activityId);
+            if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<Object> users = searchRepository.getParticipants(PageRequest.of(page, size), activityId);
+                result = new ResponseEntity(users, HttpStatus.OK);
             }
-            jsonResponse += "]";
-            return new ResponseEntity(jsonResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return responseHandler.formatErrorResponse(500, "An error occurred");
+            ErrorHandler.printProgramException(e, "Could not retrieve participants");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
+
+        return result;
     }
 
     /***
