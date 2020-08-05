@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
+import io.cucumber.java.en_old.Ac;
 import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -334,5 +335,26 @@ public class ActivityControllerTest {
 //                .contentType(MediaType.APPLICATION_JSON))
 //                .andExpect(status().is(200))
 //                .andExpect(content().string(containsString(testResponse)));
+//    }
+
+//    @Test
+//    public void getActivityOrganizersTest() throws Exception {
+//        Activity activity = createTestActivity();
+//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+//        Session session1 = new Session("t0k3n");
+//
+//        User user1 = new User("Jack", "Ryan", "jack@gmail.com", null, Gender.MALE, 2, "Password1");
+//        user1.setUserId((long) 1);
+//
+//        session1.setUser(user1);
+//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
+////        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+//        when(service.getActivityOrganizers(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(any(String.class), HttpStatus.OK));
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/organizers/?page=0&size=3").cookie(tokenCookie))
+//                .andExpect(status().is(200))
+//                .andExpect(content().string(containsString(any(String.class))));
+//
 //    }
 }

@@ -238,6 +238,15 @@ public class ActivityController {
         }
     }
 
+    /***
+     * Controller endpoint that receives requests to get activity organizers from the database. Calls the service method
+     * where all the logic is handled.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
+     * organizers.
+     */
     @GetMapping("/activities/{activityId}/organizers/")
     public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
         return activityService.getActivityOrganizers(activityId, page, size);

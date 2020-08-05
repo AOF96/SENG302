@@ -86,6 +86,6 @@ public interface SearchRepository extends JpaRepository<User, Long>, JpaSpecific
             "OR u.lastName = ?3")
     Page<User> findAllByQueryWithQuotation(Pageable pageable, String email, String fullname, String lastname);
 
-    @Query(value = "SELECT u.first_name, u.last_name FROM User_Activity_Role r INNER JOIN User u ON u.user_id = r.user_id WHERE r.activity_id = :activityId", nativeQuery = true)
+    @Query(value = "SELECT u.user_id ,u.first_name, u.last_name FROM User_Activity_Role r INNER JOIN User u ON u.user_id = r.user_id WHERE r.activity_id = :activityId", nativeQuery = true)
     Page<Object> getOrganizers(Pageable pageable , Long activityId);
 }

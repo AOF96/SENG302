@@ -299,10 +299,17 @@ public class ActivityService {
         }
     }
 
+    /***
+     * Retrieves a list of organizers from the given activity with paginated results.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
+     * organizers.
+     */
     public ResponseEntity getActivityOrganizers(Long activityId, int page, int size) {
         ResponseEntity result;
         try {
-            System.out.println(activityId);
             if (activityId == null || activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
