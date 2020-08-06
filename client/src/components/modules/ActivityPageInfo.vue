@@ -180,12 +180,22 @@
             </v-flex>
 
             <v-flex>
-              <v-card class="activityPageCard">
-                <h2>Updates</h2>
-                <h3>Coming next month!</h3>
+              <v-card class="activityPageCard" style="min-height:0;">
+                <h2 style="padding-bottom:10px;">Updates</h2>
+                <v-timeline dense clipped>
+                  <v-timeline-item
+                    class="mb-4"
+                    icon-color="grey lighten-2"
+                    small
+                  >
+                    <v-row justify="space-between">
+                      <v-col cols="7">This order was archived.</v-col>
+                      <v-col class="text-right" cols="5">15:26 EDT</v-col>
+                    </v-row>
+                  </v-timeline-item>
+                </v-timeline>
               </v-card>
             </v-flex>
-
           </v-layout>
         </v-flex>
 
@@ -1021,6 +1031,9 @@
     computed: {
       ...mapGetters(['activity']),
       ...mapGetters(['user']),
+    },
+    mounted: function () {
+
     },
     created: function () {
       this.loadActivity();
