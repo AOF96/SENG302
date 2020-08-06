@@ -45,13 +45,6 @@
 
                     <label class="editActivityLabel">Location: <b>{{ location }}</b></label>
                     <div>
-<!--                        <input id="locationInput" autocomplete="off" class="editActivityInput" type="text"-->
-<!--                               placeholder="Search here..." onfocus="showLocations = true"/>-->
-<!--                        <div v-if="showLocations && suggestedLocations.length > 0" class="dropdown" >-->
-<!--                            <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">-->
-<!--                                <p v-on:click="setLocation(item.summary)">{{item.summary}}</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
                       <v-combobox
                           v-model="city"
                           :items="items"
@@ -288,7 +281,7 @@ export default {
         let city = "Almora";
         if(location.properties.city !== undefined){
           city = location.properties.city;
-          return city
+          return city;
         }
         return city;
       },
@@ -505,7 +498,7 @@ export default {
 
             // Sets duration to a boolean for the request
             var tempIsDuration = this.duration !== "duration";
-            this.setLocation(location)
+            this.setLocation(location);
 
             // Send a create request
             apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
