@@ -138,24 +138,6 @@ public class ActivityController {
     }
 
     /**
-     * Handles requests for retrieving all shared users of a given activity
-     *
-     * @param activityId the activity id.
-     * @return a response entity that informs the user if retrieving an activity was successful or not.
-     */
-    @GetMapping("/activities/{activityId}/shared/")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId) {
-        Activity activity = activityRepository.findActivityById(activityId);
-        if (activity == null) {
-            // TODO: Check to see if activity is private
-
-            return activityService.getSharedUsers(activityId);
-        } else {
-            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
-        }
-    }
-
-    /**
      * Handles the request for activity's visibility and its accessors.
      *
      * @param profileId  the logged in user's id.
@@ -220,11 +202,14 @@ public class ActivityController {
 //        return new ResponseEntity(result, HttpStatus.valueOf(200));
 //    }
 
-    /**
-     * Handles requests for retrieving all participant users of a given activity
-     *
-     * @param activityId the activity id.
-     * @return a response entity that informs the user if retrieving participants was successful or not.
+    /***
+     * Controller endpoint that receives requests to get activity participants from the database. Calls the service method
+     * where all the logic is handled.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
+     * participants.
      */
     @GetMapping("/activities/{activityId}/participants/")
     public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {

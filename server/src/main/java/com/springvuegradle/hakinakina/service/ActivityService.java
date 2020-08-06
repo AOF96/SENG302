@@ -278,9 +278,12 @@ public class ActivityService {
     }
 
     /***
-     * Retrieve participant users of an activity
-     * @param activityId the activity id to use in the request.
-     * @return response entity with the result of the operation.
+     * Retrieves a list of participants from the given activity with paginated results.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
+     * participants.
      */
     public ResponseEntity getActivityParticipants(Long activityId, int page, int size) {
         ResponseEntity result;
@@ -323,28 +326,6 @@ public class ActivityService {
         }
 
         return result;
-    }
-
-    /***
-     * Retrieve users who have been shared an activity
-     * @param activityId the activity id to use in the request.
-     * @return response entity with the result of the operation.
-     */
-    public ResponseEntity getSharedUsers(long activityId) {
-        try {
-            String jsonResponse = "[";
-            List<User> sharedUsers = activityRepository.getSharedUsers(activityId);
-            for(int i = 0; i < sharedUsers.size(); i++){
-                if(i != 0){
-                    jsonResponse += ", ";
-                }
-                jsonResponse += sharedUsers.get(i).toJson();
-            }
-            jsonResponse += "]";
-            return new ResponseEntity(jsonResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            return responseHandler.formatErrorResponse(500, "An error occurred");
-        }
     }
 
 }
