@@ -65,7 +65,7 @@ public class ActivityService {
             }
 
             //If there are no activity types listed
-            if (activity.getActivityTypes().size() == 0) {
+            if (activity.getActivityTypes().isEmpty()) {
                 return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
             }
 
