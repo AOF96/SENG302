@@ -338,24 +338,86 @@ public class ActivityControllerTest {
 //                .andExpect(content().string(containsString(testResponse)));
 //    }
 
-//    @Test
-//    public void getActivityOrganizersTest() throws Exception {
-//        Activity activity = createTestActivity();
-//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-//        Session session1 = new Session("t0k3n");
-//
-//        User user1 = new User("Jack", "Ryan", "jack@gmail.com", null, Gender.MALE, 2, "Password1");
-//        user1.setUserId((long) 1);
-//
-//        session1.setUser(user1);
-//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
-//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
-////        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
-//        when(service.getActivityOrganizers(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(any(String.class), HttpStatus.OK));
-//
-//        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/organizers/?page=0&size=3").cookie(tokenCookie))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString(any(String.class))));
-//
-//    }
+    @Test
+    public void getActivityOrganizersTest() throws Exception {
+        Activity activity = createTestActivity();
+
+        User user1 = new User("Jack", "Ryan", "jack@gmail.com", null, Gender.MALE, 2, "Password1");
+        user1.setUserId((long) 1);
+
+        User user2 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        user2.setUserId((long) 2);
+
+                String testResponse = "{\n" +
+                        "    \"content\": [\n" +
+                        "        [\n" +
+                        "            1,\n" +
+                        "            \"Jack\",\n" +
+                        "            \"Ryan\"\n" +
+                        "        ],\n" +
+                        "        [\n" +
+                        "            2,\n" +
+                        "            \"John\",\n" +
+                        "            \"Smith\"\n" +
+                        "        ]\n" +
+                        "    ],\n" +
+                        "    \"pageable\": {\n" +
+                        "        \"sort\": {\n" +
+                        "            \"sorted\": false,\n" +
+                        "            \"unsorted\": true,\n" +
+                        "            \"empty\": true\n" +
+                        "        },\n" +
+                        "        \"pageNumber\": 0,\n" +
+                        "        \"pageSize\": 3,\n" +
+                        "        \"offset\": 0,\n" +
+                        "        \"paged\": true,\n" +
+                        "        \"unpaged\": false\n" +
+                        "    },\n" +
+                        "    \"totalPages\": 1,\n" +
+                        "    \"totalElements\": 2,\n" +
+                        "    \"last\": true,\n" +
+                        "    \"first\": true,\n" +
+                        "    \"sort\": {\n" +
+                        "        \"sorted\": false,\n" +
+                        "        \"unsorted\": true,\n" +
+                        "        \"empty\": true\n" +
+                        "    },\n" +
+                        "    \"number\": 0,\n" +
+                        "    \"numberOfElements\": 2,\n" +
+                        "    \"size\": 3,\n" +
+                        "    \"empty\": false\n" +
+                        "}";
+
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
+        when(userRepository.findById((long) 2)).thenReturn(Optional.of(user2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(activity);
+        when(service.getActivityOrganizers(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(testResponse, HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/organizers/?page= +" + 0 + "&size=" + 3))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString(testResponse)));
+
+    }
+
+    @Test
+    void testGettingOrganizersWithInvalidPageSize() throws Exception {
+        Activity activity = createTestActivity();
+        mockMvc.perform(get("/activities/" + activity.getId() + "/organizers/?page= +" + -1 + "&size=" + 3)
+                .param("page", "-1")
+                .param("size", "3"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void testGettingOrganizersWithInvalidPageAndSize() throws Exception {
+        Activity activity = createTestActivity();
+        activity.setId((long) 2);
+        mockMvc.perform(get("/activities/" + activity.getId() + "/organizers/?page= +" + -1 + "&size=" + -1)
+                .param("page", "-1")
+                .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+
+    }
+
 }

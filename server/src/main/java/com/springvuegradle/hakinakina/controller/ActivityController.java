@@ -222,8 +222,8 @@ public class ActivityController {
      * @param activityId the id of the activity.
      * @param page the requested page to return.
      * @param size the number of result that the page will contain.
-     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
-     * organizers.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the organizers.
      */
     @GetMapping("/activities/{activityId}/organizers/")
     public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
