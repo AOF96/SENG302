@@ -265,79 +265,6 @@ public class ActivityControllerTest {
 
     }
 
-
-// TODO: Fix this test once blocking tasks have been completed.
-//    @Test
-//    public void getParticipantUsersTest() throws Exception {
-//        User testUser = new User("John", "Smith", "john@gmail.com", null,
-//                Gender.MALE, 2, "Password1");
-//
-//        testUser.setUserId((long) 1);
-//        testUser.resetPassportCountries();
-//
-//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-//        Session testSession = new Session("t0k3n");
-//
-//        Page<Object> participantUsers = new Page<>();
-//        participantUsers.add(testUser);
-//
-//        String testResponse = "[{\"bio\":null,\"authoredActivities\":[]," +
-//                "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
-//                "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
-//                "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
-//                "\"additional_email\":[],\"permission_level\":0}]";
-//
-//        Activity newActivity = activityRepository.save(createTestActivity());
-//        activityRepository.insertActivityForUser((long) 1, (long) 1);
-//
-//        testSession.setUser(testUser);
-//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-//        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
-//        when(activityRepository.getParticipants((long) 1)).thenReturn(participantUsers);
-//
-//        this.mockMvc.perform(get("/activities/1/participants/")
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString(testResponse)));
-//    }
-
-    // TODO: Fix this test once blocking tasks have been completed.
-//    @Test
-//    public void getSharedUsersTest() throws Exception {
-//        User testUser = new User("John", "Smith", "john@gmail.com", null,
-//                Gender.MALE, 2, "Password1");
-//
-//        testUser.setUserId((long) 1);
-//        testUser.resetPassportCountries();
-//
-//        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-//        Session testSession = new Session("t0k3n");
-//
-//        List<User> sharedUsers = new ArrayList<>();
-//        sharedUsers.add(testUser);
-//
-//        String testResponse = "[{\"bio\":null,\"authoredActivities\":[]," +
-//                "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
-//                "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
-//                "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
-//                "\"additional_email\":[],\"permission_level\":0}]";
-//
-//        Activity newActivity = activityRepository.save(createTestActivity());
-//        activityRepository.insertActivityForUser((long) 1, (long) 1);
-//
-//        testSession.setUser(testUser);
-//        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-//        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-//        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
-//        when(activityRepository.getSharedUsers((long) 1)).thenReturn(sharedUsers);
-//
-//        this.mockMvc.perform(get("/activities/1/shared/")
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString(testResponse)));
-//    }
-
     @Test
     public void getActivityOrganizersTest() throws Exception {
         Activity activity = createTestActivity();
@@ -414,6 +341,88 @@ public class ActivityControllerTest {
         Activity activity = createTestActivity();
         activity.setId((long) 2);
         mockMvc.perform(get("/activities/" + activity.getId() + "/organizers/?page= +" + -1 + "&size=" + -1)
+                .param("page", "-1")
+                .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void getActivityParticipantsTest() throws Exception {
+        Activity activity = createTestActivity();
+
+        User user1 = new User("Jack", "Ryan", "jack@gmail.com", null, Gender.MALE, 2, "Password1");
+        user1.setUserId((long) 1);
+
+        User user2 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        user2.setUserId((long) 2);
+
+        String testResponse = "{\n" +
+                "    \"content\": [\n" +
+                "        [\n" +
+                "            1,\n" +
+                "            \"Jack\",\n" +
+                "            \"Ryan\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            2,\n" +
+                "            \"John\",\n" +
+                "            \"Smith\"\n" +
+                "        ]\n" +
+                "    ],\n" +
+                "    \"pageable\": {\n" +
+                "        \"sort\": {\n" +
+                "            \"sorted\": false,\n" +
+                "            \"unsorted\": true,\n" +
+                "            \"empty\": true\n" +
+                "        },\n" +
+                "        \"pageNumber\": 0,\n" +
+                "        \"pageSize\": 3,\n" +
+                "        \"offset\": 0,\n" +
+                "        \"paged\": true,\n" +
+                "        \"unpaged\": false\n" +
+                "    },\n" +
+                "    \"totalPages\": 1,\n" +
+                "    \"totalElements\": 2,\n" +
+                "    \"last\": true,\n" +
+                "    \"first\": true,\n" +
+                "    \"sort\": {\n" +
+                "        \"sorted\": false,\n" +
+                "        \"unsorted\": true,\n" +
+                "        \"empty\": true\n" +
+                "    },\n" +
+                "    \"number\": 0,\n" +
+                "    \"numberOfElements\": 2,\n" +
+                "    \"size\": 3,\n" +
+                "    \"empty\": false\n" +
+                "}";
+
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
+        when(userRepository.findById((long) 2)).thenReturn(Optional.of(user2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(activity);
+        when(service.getActivityParticipants(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(testResponse, HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/participants/?page= +" + 0 + "&size=" + 3))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString(testResponse)));
+
+    }
+
+    @Test
+    void testGettingParticipantsWithInvalidPageSize() throws Exception {
+        Activity activity = createTestActivity();
+        mockMvc.perform(get("/activities/" + activity.getId() + "/participants/?page= +" + -1 + "&size=" + 3)
+                .param("page", "-1")
+                .param("size", "3"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void testGettingParticipantsWithInvalidPageAndSize() throws Exception {
+        Activity activity = createTestActivity();
+        activity.setId((long) 2);
+        mockMvc.perform(get("/activities/" + activity.getId() + "/participants/?page= +" + -1 + "&size=" + -1)
                 .param("page", "-1")
                 .param("size", "-1"))
                 .andExpect(status().isBadRequest());
