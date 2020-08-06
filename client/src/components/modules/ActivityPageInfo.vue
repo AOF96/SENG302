@@ -73,7 +73,7 @@
                           :key="item.tab"
                   >
                     <v-card flat>
-                      <v-list-item two-line v-for="user in item.content.slice(0, 3)" :key="user.profile_id" link>
+                      <v-list-item two-line v-for="user in item.content.slice(0, 3)" :key="user.profile_id" link @click.stop="">
                         <v-list-item-content>
                           <v-list-item-title v-if="user.middlename != null">
                             {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -83,6 +83,27 @@
                           </v-list-item-title>
                           <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
                         </v-list-item-content>
+                        <v-menu
+                                transition="slide-y-transition"
+                                bottom
+                                right
+                                :close-on-click="false"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  icon
+                            >
+                              <v-icon>mdi-dots-vertical</v-icon>
+                            </v-btn>
+                          </template>
+                          <v-card>
+                            <v-card-text>Change Role</v-card-text>
+                            <v-switch></v-switch>
+                          </v-card>
+                        </v-menu>
+
                       </v-list-item>
                     </v-card>
                   </v-tab-item>
