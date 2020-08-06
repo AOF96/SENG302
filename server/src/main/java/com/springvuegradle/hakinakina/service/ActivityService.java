@@ -229,11 +229,22 @@ public class ActivityService {
      * @param activityId The ID of the activity to modify
      * @param sessionToken The user's token from their current session.
      * @param visibility The new visibility value
-     * @param emails A List of emails of Users that the Activity is shared with. Is null if the Activity is not being
-     *               set to restricted.
+     * @param emails A List of Maps containing information about the email and role of Users that the Activity is shared
+     *               with. Is null if the Activity is not being set to restricted.
      * @return A ResponseEntity object
      */
-    public ResponseEntity setVisibility(long activityId, String sessionToken, String visibility, List<String> emails) {
+    public ResponseEntity setVisibility(long profileId, long activityId, String sessionToken, String visibility, List<Map<String, String>> emails) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+        }
+        if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
+            return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+        }
+
+        Activity activity = activityRepository.getOne(activityId);
+
+
         return null;
     }
 }

@@ -148,7 +148,8 @@ public class ActivityController {
                                         @CookieValue(value = "s_id") String sessionToken) {
         Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
         String visibility = (String) json.get("visibility");
-        List accessors = null;
+        List accessorsObjects = null;
+        List accessorPairs = null;
         Set<String> visibilityValues = new HashSet<>(Arrays.asList("public", "private", "restricted"));
 
         if (!visibilityValues.contains(visibility)) {
@@ -156,13 +157,20 @@ public class ActivityController {
         }
 
         if (visibility.equals("restricted")) {
-            accessors = (List) json.get("accessors");
-            if (accessors == null) {
+            accessorsObjects = (List) json.get("accessors");
+            if (accessorsObjects == null) {
                 return new ResponseEntity("Must include accessors list if setting to restricted.",
                         HttpStatus.valueOf(400));
             }
+            accessorPairs = new ArrayList<String>();
+        }
+        if (accessorsObjects != null) {
+            for (Object accessor : accessorsObjects) {
+                Map<String, String> pair = (Map<String, String>) accessor;
+                accessorPairs.add(pair);
+            }
         }
 
-        return activityService.setVisibility(activityId, sessionToken, visibility, accessors);
+        return activityService.setVisibility(profileId, activityId, sessionToken, visibility, accessorPairs);
     }
 }
