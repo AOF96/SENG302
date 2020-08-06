@@ -117,6 +117,7 @@ public class ActivityService {
      * @return response entity to inform user if adding an activity was successful or not
      */
     public ResponseEntity editActivity(Activity newActivity, long profileId, long activityId, String sessionToken) {
+        EnumSet<Visibility> options = EnumSet.of(Visibility.PUBLIC, Visibility.PRIVATE, Visibility.RESTRICTED);
         try {
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
@@ -154,7 +155,9 @@ public class ActivityService {
             if (newActivity.getActivityTypes().size() == 0) {
                 return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
             }
-
+            if(!options.contains(newActivity.getVisibility())){
+                return new ResponseEntity("Activity visibility must in the type selected", HttpStatus.valueOf(400));
+            }
 
             // check the user has given activity
             Activity activity = activityRepository.findActivityById(activityId);

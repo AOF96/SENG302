@@ -119,6 +119,13 @@ public class ActivityController {
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
+        // get the list of all the activites for that user and themn loop nd that list and check the visibility of each activity
+//        for(Activity a: activities){
+//
+//        }
+        // if restricted then do a query that a shared table contain the activity id ssociated with the perosn who is logged in and get his id from the seession
+        // if they exist the querry should return a list of (user, activityid ) with the length of 1 atleast
+        //
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
