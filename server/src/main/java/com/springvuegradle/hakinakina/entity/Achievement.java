@@ -23,6 +23,14 @@ public class Achievement {
     @ManyToOne(fetch = FetchType.LAZY)
     private Activity activity;
 
+    protected Achievement() {}
+
+    public Achievement(String name, String description, ResultType resultType) {
+        this.name = name;
+        this.description = description;
+        this.resultType = resultType;
+    }
+
     public Long getId() {
         return id;
     }
