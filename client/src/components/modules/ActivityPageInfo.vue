@@ -182,15 +182,17 @@
             <v-flex>
               <v-card class="activityPageCard" style="min-height:0;">
                 <h2 style="padding-bottom:10px;">Updates</h2>
-                <v-timeline dense clipped>
+                <v-timeline dense clipped v-for="(update, i) in activityChanges" :key="i">
                   <v-timeline-item
                     class="mb-4"
                     icon-color="grey lighten-2"
                     small
                   >
                     <v-row justify="space-between">
-                      <v-col cols="7">This order was archived.</v-col>
-                      <v-col class="text-right" cols="5">15:26 EDT</v-col>
+                      <v-col cols="7">
+                        <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.date)}}</h2>
+                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.description}}</h2>
+                      </v-col>
                     </v-row>
                   </v-timeline-item>
                 </v-timeline>
@@ -257,6 +259,7 @@
         continuous: false,
         description: "",
         activity_types: [],
+        activityChanges: [{"description": "this is a test", "date": "2020-08-04 15:19:00"}],
         visibility: "restricted",
         start_date: null,
         end_date: null,
@@ -1033,7 +1036,7 @@
       ...mapGetters(['user']),
     },
     mounted: function () {
-
+      //this.activityChanges = this.getActivityUpdates(this.$route.params.activityId).data;
     },
     created: function () {
       this.loadActivity();
@@ -1041,8 +1044,7 @@
       this.userTabs[1].content = this.organisers;
     },
     methods: {
-      ...mapActions(['updateUserDurationActivities']),
-      ...mapActions(['updateUserContinuousActivities']),
+      ...mapActions(['updateUserDurationActivities','updateUserContinuousActivities','getActivityUpdates']),
 
       /**
        * Parses the list of emails the user entered by splitting them and removing any extra spaces. Checks each one is
@@ -1078,6 +1080,16 @@
        */
       validateEmail(mail) {
         return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail);
+      },
+
+      /**
+       * Formats the datetime string to the form Aug 4 2020
+       */
+      formatDate(datetime) {
+        let newDate = new Date(datetime);
+        let dateString = newDate.toDateString();
+        dateString = dateString.slice(4);
+        return dateString;
       },
 
       /**
