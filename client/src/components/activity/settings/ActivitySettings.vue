@@ -69,6 +69,7 @@
                           outlined
                           class="locationCombo"
                           dense
+                          style="margin: 0 20px;"
                       />
                       <v-combobox
                           v-model="state"
@@ -88,6 +89,7 @@
                           outlined
                           class="locationCombo"
                           dense
+                          style="margin: 0 20px;"
                       />
                       <v-combobox
                           v-model="country"
@@ -103,6 +105,7 @@
                           outlined
                           class="locationCombo"
                           dense
+                          style="margin: 0 20px;"
                       />
                     </div>
 
