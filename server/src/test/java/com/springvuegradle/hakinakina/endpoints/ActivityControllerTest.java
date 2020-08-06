@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +120,7 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"users\":[],\"author\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        String activityStr = "{\"id\":1,\"users\":[],\"usersShared\":[],\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
@@ -282,5 +283,87 @@ public class ActivityControllerTest {
                 .content(body))
                 .andExpect(status().is(400))
                 .andExpect(content().string("Must include accessors list if setting to restricted."));
+    }
+
+    @Test
+    public void getSharedUsersTest() throws Exception {
+        Activity activity = createTestActivity();
+
+        User user1 = new User("Jack", "Ryan", "jack@gmail.com", null, Gender.MALE, 2, "Password1");
+        user1.setUserId((long) 1);
+
+        User user2 = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        user2.setUserId((long) 2);
+
+        String testResponse = "{\n" +
+                "    \"content\": [\n" +
+                "        [\n" +
+                "            1,\n" +
+                "            \"Jack\",\n" +
+                "            \"Ryan\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            2,\n" +
+                "            \"John\",\n" +
+                "            \"Smith\"\n" +
+                "        ]\n" +
+                "    ],\n" +
+                "    \"pageable\": {\n" +
+                "        \"sort\": {\n" +
+                "            \"sorted\": false,\n" +
+                "            \"unsorted\": true,\n" +
+                "            \"empty\": true\n" +
+                "        },\n" +
+                "        \"pageNumber\": 0,\n" +
+                "        \"pageSize\": 3,\n" +
+                "        \"offset\": 0,\n" +
+                "        \"paged\": true,\n" +
+                "        \"unpaged\": false\n" +
+                "    },\n" +
+                "    \"totalPages\": 1,\n" +
+                "    \"totalElements\": 2,\n" +
+                "    \"last\": true,\n" +
+                "    \"first\": true,\n" +
+                "    \"sort\": {\n" +
+                "        \"sorted\": false,\n" +
+                "        \"unsorted\": true,\n" +
+                "        \"empty\": true\n" +
+                "    },\n" +
+                "    \"number\": 0,\n" +
+                "    \"numberOfElements\": 2,\n" +
+                "    \"size\": 3,\n" +
+                "    \"empty\": false\n" +
+                "}";
+
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
+        when(userRepository.findById((long) 2)).thenReturn(Optional.of(user2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(activity);
+        when(service.getSharedUsers(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(testResponse, HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/shared/?page= +" + 0 + "&size=" + 3))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString(testResponse)));
+
+    }
+
+    @Test
+    void testGettingSharedUsersWithInvalidPageSize() throws Exception {
+        Activity activity = createTestActivity();
+        mockMvc.perform(get("/activities/" + activity.getId() + "/shared/?page= +" + -1 + "&size=" + 3)
+                .param("page", "-1")
+                .param("size", "3"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void testGettingSharedUsersWithInvalidPageAndSize() throws Exception {
+        Activity activity = createTestActivity();
+        activity.setId((long) 2);
+        mockMvc.perform(get("/activities/" + activity.getId() + "/shared/?page= +" + -1 + "&size=" + -1)
+                .param("page", "-1")
+                .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+
     }
 }

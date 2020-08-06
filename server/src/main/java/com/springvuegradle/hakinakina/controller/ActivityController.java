@@ -1,9 +1,12 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import org.springframework.boot.json.JacksonJsonParser;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,8 @@ public class ActivityController {
     public SessionRepository sessionRepository;
     public ActivityRepository activityRepository;
     private ActivityService activityService;
+
+    private ResponseHandler responseHandler;
 
     /**
      * Contructs an Activity Controller, passing in the repositories and service so that they can be accessed.
@@ -51,7 +56,7 @@ public class ActivityController {
      * @return response entity to inform user if adding an activity was successful or not
      */
     @PostMapping("/profiles/{profileId}/activities")
-    public ResponseEntity addActivity(@Valid @RequestBody Activity activity,
+    public ResponseEntity<String> addActivity(@Valid @RequestBody Activity activity,
                                       @PathVariable("profileId") long profileId,
                                       @CookieValue(value = "s_id") String sessionToken) {
         return activityService.addActivity(activity, profileId, sessionToken);
@@ -115,6 +120,13 @@ public class ActivityController {
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
+        // get the list of all the activites for that user and themn loop nd that list and check the visibility of each activity
+//        for(Activity a: activities){
+//
+//        }
+        // if restricted then do a query that a shared table contain the activity id ssociated with the perosn who is logged in and get his id from the seession
+        // if they exist the querry should return a list of (user, activityid ) with the length of 1 atleast
+        //
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
@@ -132,6 +144,81 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Handles requests for retrieving all shared users of a given activity
+     *
+     * @param activityId the activity id.
+     * @return a response entity that contains a page object filled with shared users
+     */
+    @GetMapping("/activities/{activityId}/shared/")
+    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getSharedUsers(activityId, page, size);
+    }
+
+    /**
+     * Handles the request for activity's visibility and its accessors.
+     *
+     * @param profileId  the logged in user's id.
+     * @param activityId the activity id of the activity being managed
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param request level of visibility and the set of user's email allowed to access the activity
+     * @return a response entity that informs the user that the visibility update was successful
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityid}/visibility")
+    public ResponseEntity<String> updateActivityVisibility(@PathVariable("profileId") Long profileId,
+                                                           @PathVariable("activityid") Long activityId,
+                                                           @CookieValue(value = "s_id") String sessionToken,
+                                                           @RequestBody ActivityVisibilityDto request){
+        try {
+            Activity activity = activityRepository.findActivityById(activityId);
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Optional<User> user = userRepository.findById(profileId);
+            EnumSet<Visibility> options = EnumSet.of(Visibility.PUBLIC, Visibility.PRIVATE, Visibility.RESTRICTED);
+
+            if(sessionToken == null){
+                return new ResponseEntity<String>("Invalid Session", HttpStatus.valueOf(401));
+            }
+            if (activity == null) {
+                return new ResponseEntity<String>("Activity not found", HttpStatus.NOT_FOUND);
+            }
+            if(!profileId.equals(session.getUser().getUserId()) &&  session.getUser().getPermissionLevel() == 0) {
+                return new ResponseEntity<String>("Invalid User", HttpStatus.valueOf(403));
+            }
+            if(!options.contains(request.getVisibility())){
+                return new ResponseEntity<String>("Invalid visibility type selected", HttpStatus.valueOf(403));
+            }
+
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot change the visibility status of the activity");
+        }
+        return activityService.updateActivityVisibility(profileId,activityId, sessionToken,request);
+//        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
+    }
+
+//     This code will be used when we have users subscribing to activities
+//    /**
+//     * Retrieves all of the continuous activities that a user is subscribed to
+//     * @param profileId The ID of the user
+//     * @return A response entity with the result and a status code
+//     */
+//    @GetMapping("/profiles/{profileId}/activities/continuous")
+//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
+//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
+//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+//        return new ResponseEntity(result, HttpStatus.valueOf(200));
+//    }
+//
+//    /**
+//     * Retrieves all of the duration activities that a user is subscribed to
+//     * @param profileId The ID of the user
+//     * @return A response entity with the result and a status code
+//     */
+//    @GetMapping("/profiles/{profileId}/activities/duration")
+//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
+//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
+//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+//        return new ResponseEntity(result, HttpStatus.valueOf(200));
+//    }
     /**
      * Handles requests for setting the visibility of an activity and the shared users if it is being set to restricted.
      *

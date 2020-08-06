@@ -57,11 +57,17 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    @ManyToMany(mappedBy = "activitiesShared", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    private Set<User> usersShared = new HashSet<>();
 
     @ManyToOne
     private User author;
+
+    @Column(name = "visibility")
+    private Visibility visibility;
 
     protected Activity() {}
 
@@ -80,6 +86,14 @@ public class Activity {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public Set<User> getUsers() {
@@ -152,6 +166,14 @@ public class Activity {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public Set<User> getUsersShared() {
+        return usersShared;
+    }
+
+    public void setUsersShared(Set<User> usersShared) {
+        this.usersShared = usersShared;
     }
 
     @Override

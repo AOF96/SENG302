@@ -109,5 +109,4 @@ public class UserTests {
         assertEquals("Texas", testUser.getState());
         assertEquals("U.S.A", testUser.getCountry());
     }
-
 }
