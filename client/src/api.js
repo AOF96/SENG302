@@ -249,4 +249,28 @@ export const apiActivity = {
     );
     return await activity;
   },
+
+    /***
+     * Makes a request to set the number of people that can view a restricted activity.
+     * @param emails: the emails of the users that can view the activity.
+     * @param role: the role the users have in that activity.
+     * @param profileId: the id of the creator of the activity.
+     * @param activityId: the activity.
+     * @returns a status code saying if the update was successful or was rejected for some reason.
+     */
+    async setActivityMembers(emails, role, profileId, activityId) {
+      let membersList = [];
+      for (let email of emails) {
+          let userDetails = {"email": email, "role": role};
+          membersList.push(userDetails);
+      }
+      profileId = activityId
+      // let result = await instance.put(`/profiles/${profileId}/activities/${activityId}/visibility`, {
+      //     "visibility": "restricted",
+      //     "accessors": membersList
+      //     }
+      //     );
+      // return result;
+  }
+
 };

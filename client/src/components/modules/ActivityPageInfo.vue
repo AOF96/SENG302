@@ -1018,6 +1018,7 @@
         this.displayInvalidEmailError = false;
         const separators = [' ', ';'];
         let emails = this.emailsToAdd.split(new RegExp(separators.join('|'), 'g'));
+        let emailsAreCorrect = true;
         for (let i = 0; i < emails.length; i++) {
             if (emails[i] === "") {
                 emails.splice(i, 1);
@@ -1028,8 +1029,12 @@
             if (!this.validateEmail(email)) {
               this.invalidEmailErrorMessage = "'" + email + "' is an invalid email address.";
               this.displayInvalidEmailError = true;
+              emailsAreCorrect = false;
               break; // So that the first invalid email is displayed
             }
+        }
+        if (emailsAreCorrect) {
+          apiActivity.setActivityMembers(emails, this.newRole, this.authorId, this.activityId);
         }
       },
 
@@ -1038,10 +1043,7 @@
        * https://www.w3resource.com/javascript/form/email-validation.php
        */
       validateEmail(mail) {
-        if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-          return true;
-        }
-        return false;
+        return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail);
       },
 
       /**
