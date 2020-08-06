@@ -224,4 +224,16 @@ public class ActivityService {
         return result;
     }
 
+    /**
+     * Sets the visibility of an activity and which users it is shared with if it is being set to restricted
+     * @param activityId The ID of the activity to modify
+     * @param sessionToken The user's token from their current session.
+     * @param visibility The new visibility value
+     * @param emails A List of emails of Users that the Activity is shared with. Is null if the Activity is not being
+     *               set to restricted.
+     * @return A ResponseEntity object
+     */
+    public ResponseEntity setVisibility(long activityId, String sessionToken, String visibility, List<String> emails) {
+        return null;
+    }
 }

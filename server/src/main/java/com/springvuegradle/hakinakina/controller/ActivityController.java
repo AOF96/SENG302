@@ -3,14 +3,13 @@ package com.springvuegradle.hakinakina.controller;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Rest controller class for controlling requests about Activities
@@ -133,29 +132,37 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
-//     This code will be used when we have users subscribing to activities
-//    /**
-//     * Retrieves all of the continuous activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/continuous")
-//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
-//
-//    /**
-//     * Retrieves all of the duration activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/duration")
-//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
+    /**
+     * Handles requests for setting the visibility of an activity and the shared users if it is being set to restricted.
+     *
+     * @param profileId The id of the user who owns the activity
+     * @param activityId The id of the activity being modified
+     * @param jsonString The request body
+     * @param sessionToken The user's token from the cookie for their current session.
+     * @return A ResponseEntity object passed from the service method.
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityid}/visibility")
+    public ResponseEntity setVisibility(@PathVariable("profileId") long profileId,
+                                        @PathVariable("activityid") long activityId,
+                                        @RequestBody String jsonString,
+                                        @CookieValue(value = "s_id") String sessionToken) {
+        Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
+        String visibility = (String) json.get("visibility");
+        List accessors = null;
+        Set<String> visibilityValues = new HashSet<>(Arrays.asList("public", "private", "restricted"));
 
+        if (!visibilityValues.contains(visibility)) {
+            return new ResponseEntity("'" + visibility + "' is not a valid visibility.", HttpStatus.valueOf(400));
+        }
+
+        if (visibility.equals("restricted")) {
+            accessors = (List) json.get("accessors");
+            if (accessors == null) {
+                return new ResponseEntity("Must include accessors list if setting to restricted.",
+                        HttpStatus.valueOf(400));
+            }
+        }
+
+        return activityService.setVisibility(activityId, sessionToken, visibility, accessors);
+    }
 }

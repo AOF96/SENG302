@@ -204,6 +204,21 @@
                            outlined rounded>Add</v-btn>
                     <h6 class="activityPageErrorMessage" v-if="displayInvalidEmailError">{{ invalidEmailErrorMessage }}
                     </h6>
+                  <div class="activityPageCardDiv">
+                    <v-card flat>
+                      <v-list-item two-line v-for="user in sharedUsers" :key="user.profile_id">
+                        <v-list-item-content>
+                          <v-list-item-title v-if="user.middlename != null">
+                            {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-title v-else>
+                            {{ user.firstname + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-card>
+                  </div>
                 </form>
               </v-card>
             </v-flex>
@@ -638,7 +653,368 @@
         userTabs: [
           { tab: 'Participants', content: null },
           { tab: 'Organisers', content: null },
-        ]
+        ],
+        sharedUsers: [
+        {
+          "bio":"I'm a cool guy???!",
+          "authoredActivities":[],
+          "profile_id":23010,
+          "firstname":"Jackie",
+          "lastname":"Qiu",
+          "middlename":"J",
+          "gender":"Male",
+          "nickname":"JackDog",
+          "date_of_birth":"1999-10-21",
+          "fitness":2,
+          "city":null,
+          "state":null,
+          "country":null,
+          "passports":["New Zealand","Australia"],
+          "activities":["Team-Sport","Fun","Relaxing"],
+          "primary_email":"jqi26@uclive.ac.nz",
+          "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+          "permission_level":1
+        },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },
+          {
+            "bio":"I'm a cool guy???!",
+            "authoredActivities":[],
+            "profile_id":23010,
+            "firstname":"Jackie",
+            "lastname":"Qiu",
+            "middlename":"J",
+            "gender":"Male",
+            "nickname":"JackDog",
+            "date_of_birth":"1999-10-21",
+            "fitness":2,
+            "city":null,
+            "state":null,
+            "country":null,
+            "passports":["New Zealand","Australia"],
+            "activities":["Team-Sport","Fun","Relaxing"],
+            "primary_email":"jqi26@uclive.ac.nz",
+            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
+            "permission_level":1
+          },]
       }
     },
 
@@ -663,6 +1039,7 @@
         this.displayInvalidEmailError = false;
         const separators = [' ', ';'];
         let emails = this.emailsToAdd.split(new RegExp(separators.join('|'), 'g'));
+        let emailsAreCorrect = true;
         for (let i = 0; i < emails.length; i++) {
             if (emails[i] === "") {
                 emails.splice(i, 1);
@@ -673,8 +1050,12 @@
             if (!this.validateEmail(email)) {
               this.invalidEmailErrorMessage = "'" + email + "' is an invalid email address.";
               this.displayInvalidEmailError = true;
+              emailsAreCorrect = false;
               break; // So that the first invalid email is displayed
             }
+        }
+        if (emailsAreCorrect) {
+          apiActivity.setActivityMembers(emails, this.newRole, this.authorId, this.activityId);
         }
       },
 
@@ -683,10 +1064,7 @@
        * https://www.w3resource.com/javascript/form/email-validation.php
        */
       validateEmail(mail) {
-        if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-          return true;
-        }
-        return false;
+        return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail);
       },
 
       /**
