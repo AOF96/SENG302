@@ -6,6 +6,8 @@ import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import net.minidev.json.JSONArray;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,18 +29,21 @@ public class ActivityService {
     public ActivityTypeRepository activityTypeRepository;
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
+    public SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public ActivityService(UserRepository userRepository,
                            ActivityRepository activityRepository,
                            ActivityTypeRepository activityTypeRepository,
                            PassportCountryRepository countryRepository,
-                           SessionRepository sessionRepository) {
+                           SessionRepository sessionRepository,
+                           SearchRepository searchRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.searchRepository = searchRepository;
     }
 
     /**
@@ -270,25 +275,26 @@ public class ActivityService {
     }
 
     /***
-     * Retrieve users who have been shared an activity
+     * Retrieve shared users of an activity
      * @param activityId the activity id to use in the request.
      * @return response entity with the result of the operation.
      */
-    public ResponseEntity getSharedUsers(long activityId) {
+    public ResponseEntity getSharedUsers(Long activityId, int page, int size) {
+        ResponseEntity result;
         try {
-            String jsonResponse = "[";
-            List<User> sharedUsers = activityRepository.getSharedUsers(activityId);
-            for(int i = 0; i < sharedUsers.size(); i++){
-                if(i != 0){
-                    jsonResponse += ", ";
-                }
-                jsonResponse += sharedUsers.get(i).toJson();
+            System.out.println(activityId);
+            if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<Object> users = searchRepository.getSharedUsers(PageRequest.of(page, size), activityId);
+                result = new ResponseEntity(users, HttpStatus.OK);
             }
-            jsonResponse += "]";
-            return new ResponseEntity(jsonResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return responseHandler.formatErrorResponse(500, "An error occurred");
+            ErrorHandler.printProgramException(e, "Could not retrieve shared users");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
+
+        return result;
     }
 
 }

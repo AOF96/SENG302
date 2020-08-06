@@ -147,18 +147,11 @@ public class ActivityController {
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
-     * @return a response entity that informs the user if retrieving an activity was successful or not.
+     * @return a response entity that contains a page object filled with shared users
      */
     @GetMapping("/activities/{activityId}/shared/")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId) {
-        Activity activity = activityRepository.findActivityById(activityId);
-        if (activity == null) {
-            // TODO: Check to see if activity is private
-
-            return activityService.getSharedUsers(activityId);
-        } else {
-            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
-        }
+    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getSharedUsers(activityId, page, size);
     }
 
     /**
