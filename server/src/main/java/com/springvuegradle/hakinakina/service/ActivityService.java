@@ -275,15 +275,20 @@ public class ActivityService {
     }
 
     /***
-     * Retrieve shared users of an activity
-     * @param activityId the activity id to use in the request.
-     * @return response entity with the result of the operation.
+     * Retrieves a list of shared users from the given activity with paginated results.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the shared users.
      */
     public ResponseEntity getSharedUsers(Long activityId, int page, int size) {
         ResponseEntity result;
         try {
-            System.out.println(activityId);
-            if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+            if (page < 0 || size < 0) {
+                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
+            }
+            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
                 Page<Object> users = searchRepository.getSharedUsers(PageRequest.of(page, size), activityId);
