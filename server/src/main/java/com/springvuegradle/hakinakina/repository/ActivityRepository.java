@@ -1,13 +1,19 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository for storing activities that the user can perform.
@@ -16,6 +22,9 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
+
+//    @Modifying
+    Optional<Activity> findFirstByName(String name);
 
     @Modifying
     @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)

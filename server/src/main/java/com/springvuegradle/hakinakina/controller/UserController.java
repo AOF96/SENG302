@@ -3,6 +3,7 @@ package com.springvuegradle.hakinakina.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.EditActivityRoleDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.PassportCountry;
 import com.springvuegradle.hakinakina.entity.Session;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.*;
 
 
@@ -141,7 +143,7 @@ public class UserController {
             oldUser.resetPassportCountries();
             user.setUserId(profileId);
             //System.out.println(oldUser.getStuff());
-            user.setAuthoredActivities(oldUser.getAuthoredActivities());
+            //user.setAuthoredActivities(oldUser.getAuthoredActivities());
             user.setEncryptedPassword(oldUser.getPassword());
             user.setSalt(oldUser.getSalt());
             return userService.validateEditUser(user);
@@ -419,4 +421,22 @@ public class UserController {
         return userService.promoteUser(jsonString, profileId, sessionToken);
     }
 
+    /***
+     * Endpoint to edit role of an user in an activity, if role does not exist, create new role and save
+     * @param profileId id of person who is changing the role of some user
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param activityId id of the activity the user is changing the role of
+     * @param dto DTO of subscriber request which contains email of user changing the role and what role to change to
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityId}/subscriber")
+    public ResponseEntity<Void> editUserActivityRole(@PathVariable Long profileId,
+                                                     @CookieValue(value = "s_id") String sessionToken,
+                                                     @PathVariable Long activityId,
+                                               @Valid @RequestBody EditActivityRoleDto dto){
+
+
+        userService.editUserActivityRole(profileId, activityId, dto, sessionToken);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -7,6 +7,7 @@ import com.springvuegradle.hakinakina.service.ActivityService;
 import org.springframework.boot.json.JacksonJsonParser;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -148,11 +149,18 @@ public class ActivityController {
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
-     * @return a response entity that contains a page object filled with shared users
+     * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
     @GetMapping("/activities/{activityId}/shared/")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
-        return activityService.getSharedUsers(activityId, page, size);
+    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        if (activity == null) {
+            // TODO: Check to see if activity is private
+
+            return activityService.getSharedUsers(activityId);
+        } else {
+            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
+        }
     }
 
     /**
@@ -193,5 +201,58 @@ public class ActivityController {
         }
         return activityService.updateActivityVisibility(profileId,activityId, sessionToken,request);
 //        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
+    }
+
+//     This code will be used when we have users subscribing to activities
+//    /**
+//     * Retrieves all of the continuous activities that a user is subscribed to
+//     * @param profileId The ID of the user
+//     * @return A response entity with the result and a status code
+//     */
+//    @GetMapping("/profiles/{profileId}/activities/continuous")
+//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
+//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
+//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+//        return new ResponseEntity(result, HttpStatus.valueOf(200));
+//    }
+//
+//    /**
+//     * Retrieves all of the duration activities that a user is subscribed to
+//     * @param profileId The ID of the user
+//     * @return A response entity with the result and a status code
+//     */
+//    @GetMapping("/profiles/{profileId}/activities/duration")
+//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
+//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
+//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+//        return new ResponseEntity(result, HttpStatus.valueOf(200));
+//    }
+
+    /***
+     * Controller endpoint that receives requests to get activity participants from the database. Calls the service method
+     * where all the logic is handled.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
+     * participants.
+     */
+    @GetMapping("/activities/{activityId}/participants/")
+    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityParticipants(activityId, page, size);
+    }
+
+    /***
+     * Controller endpoint that receives requests to get activity organizers from the database. Calls the service method
+     * where all the logic is handled.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the organizers.
+     */
+    @GetMapping("/activities/{activityId}/organizers/")
+    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityOrganizers(activityId, page, size);
     }
 }

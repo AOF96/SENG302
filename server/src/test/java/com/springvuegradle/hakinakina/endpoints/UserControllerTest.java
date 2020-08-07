@@ -3,6 +3,7 @@ package com.springvuegradle.hakinakina.endpoints;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.springvuegradle.hakinakina.controller.UserController;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -161,13 +163,12 @@ public class UserControllerTest {
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
-        this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
+        MvcResult mvcResult = this.mockMvc.perform(get("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
-                .andExpect(content().string(containsString("{\"bio\":null,\"authoredActivities\":[]," +
-                        "\"profile_id\":1,\"firstname\":\"John\",\"lastname\":\"Smith\",\"middlename\":null," +
-                        "\"gender\":\"Male\",\"nickname\":null,\"date_of_birth\":null,\"fitness\":2,\"city\":null," +
-                        "\"state\":null,\"country\":null,\"passports\":[],\"activities\":[],\"primary_email\":\"john@gmail.com\"," +
-                        "\"additional_email\":[],\"permission_level\":0}")));
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertEquals("john@gmail.com", JsonPath.parse(response).read("$.primary_email"));
     }
 
     @Test

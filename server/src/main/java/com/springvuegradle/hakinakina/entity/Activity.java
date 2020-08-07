@@ -7,8 +7,6 @@ import com.springvuegradle.hakinakina.util.ErrorHandler;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +16,8 @@ import java.util.Set;
  */
 @Entity
 public class Activity {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "activity_id")
     private Long id;
 
@@ -32,11 +31,11 @@ public class Activity {
     private String description;
 
     @JsonProperty("activity_type")
-    @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
             name = "Activity_ActivityType",
-            joinColumns = { @JoinColumn(name = "activity_id") },
-            inverseJoinColumns = { @JoinColumn(name = "type_id") }
+            joinColumns = {@JoinColumn(name = "activity_id")},
+            inverseJoinColumns = {@JoinColumn(name = "type_id")}
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
@@ -57,19 +56,18 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
-    private Set<User> users = new HashSet<>();
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "activity")
+    private Set<UserActivityRole> userActivityRoles;
 
     @ManyToMany(mappedBy = "activitiesShared", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
     private Set<User> usersShared = new HashSet<>();
 
-    @ManyToOne
-    private User author;
+
 
     @Column(name = "visibility")
     private Visibility visibility;
 
-    protected Activity() {}
+    public Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;
@@ -94,14 +92,6 @@ public class Activity {
 
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     public Long getId() {
@@ -160,12 +150,12 @@ public class Activity {
         this.location = location;
     }
 
-    public User getAuthor() {
-        return author;
+    public Set<UserActivityRole> getUserActivityRoles() {
+        return userActivityRoles;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
+        this.userActivityRoles = userActivityRoles;
     }
 
     public Set<User> getUsersShared() {
