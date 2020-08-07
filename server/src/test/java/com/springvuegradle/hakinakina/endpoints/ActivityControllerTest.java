@@ -262,30 +262,6 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void setVisibilityInvalidVisibilityTest() throws Exception {
-        String body = "{ \"visibility\": \"invisible\" }";
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-
-        this.mockMvc.perform(put("/profiles/1/activities/1/visibility").cookie(tokenCookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andExpect(status().is(400))
-                .andExpect(content().string("'invisible' is not a valid visibility."));
-    }
-
-    @Test
-    public void setVisibilityInvalidMissingAccessorsTest() throws Exception {
-        String body = "{ \"visibility\": \"restricted\" }";
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-
-        this.mockMvc.perform(put("/profiles/1/activities/1/visibility").cookie(tokenCookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andExpect(status().is(400))
-                .andExpect(content().string("Must include accessors list if setting to restricted."));
-    }
-
-    @Test
     public void getSharedUsersTest() throws Exception {
         Activity activity = createTestActivity();
 

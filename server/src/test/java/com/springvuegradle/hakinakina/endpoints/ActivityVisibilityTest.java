@@ -81,7 +81,7 @@ public class ActivityVisibilityTest {
     private User testUser;
     private User testUser2;
     private User testUser3;
-    private Set<String> emails;
+    private List<Map<String, String>> accessors;
     private ActivityVisibilityDto activityVisibilityDto;
 
 
@@ -96,7 +96,7 @@ public class ActivityVisibilityTest {
         testUser3 = new User("Jake", "Smith", "jake@gmail.com", null, Gender.NON_BINARY, 2, "Password3");
         userRepository.save(testUser3);
 
-        emails = new HashSet<String>();
+        accessors = new ArrayList<Map<String, String>>();
         activityVisibilityDto = new ActivityVisibilityDto();
 
     }
@@ -141,10 +141,11 @@ public class ActivityVisibilityTest {
     public void updateUserActivityVisibilityTest() throws Exception{
         Session testSession = new Session("t0k3n");
 
-
-        emails.add("shivin@gmail.com");
+        Map<String, String> accessors = new HashMap<>();
+        accessors.put("email", "shivin@gmail.com");
+        accessors.put("role", "follower");
         activityVisibilityDto.setVisibility(Visibility.RESTRICTED);
-        activityVisibilityDto.setAccessorsEmails(emails);
+        activityVisibilityDto.setAccessors(Arrays.asList(accessors));
 
 
         Activity newActivity = activityRepository.save(createTestActivity());

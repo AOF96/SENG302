@@ -244,8 +244,8 @@ public class ActivityService {
         Set<User> accessors = new HashSet<User>();
 
         if(request.getVisibility().equals(Visibility.RESTRICTED)){
-            for (String email : request.getAccessorsEmails()) {
-                String userId = userRepository.getIdByEmail(email);
+            for (Map<String, String> accessor : request.getAccessors()) {
+                String userId = userRepository.getIdByEmail(accessor.get("email"));
                 Optional<User> optionalUser = userRepository.findById(parseLong(userId));
                 if (optionalUser.isPresent()) {
                     User user = optionalUser.get();
