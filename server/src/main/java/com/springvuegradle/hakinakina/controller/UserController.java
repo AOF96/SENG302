@@ -198,7 +198,7 @@ public class UserController {
         if (session == null) {
             return responseHandler.formatErrorResponse(401, "User not currently logged in");
         }
-        String userId = userRepository.getIdByEmail(email);
+        Long userId = userRepository.getIdByEmail(email);
         return new ResponseEntity("{\"id\": \"" + userId + "\"}", HttpStatus.valueOf(200));
     }
 

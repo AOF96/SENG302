@@ -36,7 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Optional<User> getUserById(long profileId);
 
     @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
-    String getIdByEmail(String email);
+    Long getIdByEmail(String email);
 
     @Query(value = "delete from User where user_id = ?", nativeQuery = true)
     void deleteUserById(Long profileId);

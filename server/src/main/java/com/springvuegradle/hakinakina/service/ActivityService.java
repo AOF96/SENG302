@@ -255,19 +255,15 @@ public class ActivityService {
 
         if(request.getVisibility().equals(Visibility.RESTRICTED)){
             for (Map<String, String> accessor : request.getAccessors()) {
-                String userId = userRepository.getIdByEmail(accessor.get("email"));
-                Optional<User> optionalUser = userRepository.findById(parseLong(userId));
-                if (optionalUser.isPresent()) {
-                    User user = optionalUser.get();
-                    accessors.add(user);
-                }
+                Long userId = userRepository.getIdByEmail(accessor.get("email"));
+                UserActivityKey newKey = new UserActivityKey(userId, activityId);
+                UserActivityRole newRelationship = new UserActivityRole(newKey, ActivityRole.valueOf(accessor.get("role")));
+                System.out.println(newRelationship);
             }
-            activity.setUsersShared(accessors);
         }
         else if(request.getVisibility().equals(Visibility.PRIVATE)){
             activity.setUsersShared(accessors);
         }
-        activityRepository.save(activity);
         return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
     }
 

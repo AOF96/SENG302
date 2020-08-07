@@ -28,6 +28,7 @@ import java.util.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -317,10 +318,10 @@ public class ActivityControllerTest {
 
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
         when(userRepository.findById((long) 2)).thenReturn(Optional.of(user2));
-        when(activityRepository.findActivityById((long) 1)).thenReturn(activity);
+        when(activityRepository.getOne(anyLong())).thenReturn(activity);
         when(service.getSharedUsers(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(testResponse, HttpStatus.OK));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/shared/?page= +" + 0 + "&size=" + 3))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/shared/?page= +" + 0 + "&size=" + 3))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString(testResponse)));
 

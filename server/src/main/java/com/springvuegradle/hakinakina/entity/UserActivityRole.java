@@ -72,4 +72,14 @@ public class UserActivityRole {
     public void setActivityRole(ActivityRole activityRole) {
         this.activityRole = activityRole;
     }
+
+    @Override
+    public String toString() {
+        return "UserActivityRole{" +
+                "id=" + id +
+                ", user=" + user +
+                ", activity=" + activity +
+                ", activityRole=" + activityRole +
+                '}';
+    }
 }

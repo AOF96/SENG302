@@ -264,7 +264,7 @@ public class UserControllerTest {
         String input = "{\"email\": \"john@gmail.com\"}";
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(userRepository.getIdByEmail("john@gmail.com")).thenReturn("1");
+        when(userRepository.getIdByEmail("john@gmail.com")).thenReturn(Long.valueOf("1"));
         this.mockMvc.perform(get("/email/id/").cookie(tokenCookie)
                 .param("email", "john@gmail.com")
                 .contentType(MediaType.APPLICATION_JSON))
