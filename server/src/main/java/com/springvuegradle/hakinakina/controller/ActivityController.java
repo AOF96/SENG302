@@ -111,35 +111,81 @@ public class ActivityController {
     }
 
     /**
-     * Handles requests for retrieving the continuous activities of a user
+     * Handles requests for retrieving the continuous activities of a user and checks if the user have access to it.
      *
      * @param profileId the user's id
      * @return a response entity that informs the user if retrieving a user's continuous activities was successful or not
      */
     @GetMapping("/profiles/{profileId}/activities/continuous")
-    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
+    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId,
+                                                  @CookieValue(value = "s_id") String sessionToken) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
-        // get the list of all the activites for that user and themn loop nd that list and check the visibility of each activity
-//        for(Activity a: activities){
-//
-//        }
-        // if restricted then do a query that a shared table contain the activity id ssociated with the perosn who is logged in and get his id from the seession
-        // if they exist the querry should return a list of (user, activityid ) with the length of 1 atleast
-        //
-        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+        List<Activity> newActivities = new ArrayList<Activity>();
+        Session loggedInUserSession = sessionRepository.findUserIdByToken(sessionToken);
+        for(Activity a: activities){
+            if(a.getVisibility() == Visibility.PRIVATE) {
+                if(loggedInUserSession.getUser().getUserId() == profileId){
+                    newActivities.add(a);
+                }
+            }
+            if(a.getVisibility() == Visibility.RESTRICTED){
+                //if the current logged in User is the owner of the activity
+                if(loggedInUserSession.getUser().getUserId() == profileId){
+                    newActivities.add(a);
+                }
+                else {
+                    //if the current logged in user is added to list of people who can access the activities
+                    List<Activity> sharedActivity  = activityRepository.getSharedActivitiesForAuthorOfType(a.getId(), loggedInUserSession.getUser().getUserId());
+                    if(sharedActivity.size() > 0 ){
+                        newActivities.add(a);
+                    }
+                }
+            }
+            if(a.getVisibility() == Visibility.PUBLIC){
+                newActivities.add(a);
+            }
+        }
+        List<Map<String, String>> result = activityService.getActivitySummaries(newActivities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
     /**
-     * Handles requests for retrieving the duration activities of a user
+     * Handles requests for retrieving the duration activities of a user and checks if the user have access to it.
      *
      * @param profileId the user's id
      * @return a response entity that informs the user if retrieving a user's duration activities was successful or not
      */
     @GetMapping("/profiles/{profileId}/activities/duration")
-    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
+    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId,
+                                                @CookieValue(value = "s_id") String sessionToken) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(false, profileId);
-        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
+        List<Activity> newActivities = new ArrayList<Activity>();
+        Session loggedInUserSession = sessionRepository.findUserIdByToken(sessionToken);
+        for(Activity a: activities){
+            if(a.getVisibility() == Visibility.PRIVATE) {
+                if(loggedInUserSession.getUser().getUserId() == profileId){
+                    newActivities.add(a);
+                }
+            }
+            if(a.getVisibility() == Visibility.RESTRICTED){
+                //if the current logged in User is the owner of the activity
+                if(loggedInUserSession.getUser().getUserId() == profileId){
+                    newActivities.add(a);
+                }
+                else {
+                    //if the current logged in user is added to list of people who can access the activities
+                    List<Activity> sharedActivity  = activityRepository.getSharedActivitiesForAuthorOfType(a.getId(), loggedInUserSession.getUser().getUserId());
+                    if(sharedActivity.size() > 0 ){
+                        newActivities.add(a);
+                    }
+                }
+            }
+            if(a.getVisibility() == Visibility.PUBLIC){
+                newActivities.add(a);
+            }
+        }
+
+        List<Map<String, String>> result = activityService.getActivitySummaries(newActivities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
@@ -163,11 +209,11 @@ public class ActivityController {
      * @param request level of visibility and the set of user's email allowed to access the activity
      * @return a response entity that informs the user that the visibility update was successful
      */
-    @PutMapping("/profiles/{profileId}/activities/{activityid}/visibility")
-    public ResponseEntity<String> updateActivityVisibility(@PathVariable("profileId") Long profileId,
-                                                           @PathVariable("activityid") Long activityId,
-                                                           @CookieValue(value = "s_id") String sessionToken,
-                                                           @RequestBody ActivityVisibilityDto request){
+    @PutMapping("/profiles/{profileId}/activities/{activityId}/visibility")
+    public ResponseEntity<String> updateActivityVisibility( @CookieValue(value = "s_id") String sessionToken,
+                                                            @PathVariable("profileId") Long profileId,
+                                                            @PathVariable("activityId") Long activityId,
+                                                            @RequestBody ActivityVisibilityDto request){
         try {
             Activity activity = activityRepository.findActivityById(activityId);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
