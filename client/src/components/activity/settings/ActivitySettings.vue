@@ -45,13 +45,6 @@
 
                     <label class="editActivityLabel">Location: <b>{{ location }}</b></label>
                     <div>
-<!--                        <input id="locationInput" autocomplete="off" class="editActivityInput" type="text"-->
-<!--                               placeholder="Search here..." onfocus="showLocations = true"/>-->
-<!--                        <div v-if="showLocations && suggestedLocations.length > 0" class="dropdown" >-->
-<!--                            <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">-->
-<!--                                <p v-on:click="setLocation(item.summary)">{{item.summary}}</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
                       <v-combobox
                           v-model="city"
                           :items="items"
@@ -144,7 +137,6 @@
 import { mapGetters, mapActions } from "vuex";
 import { apiUser, apiActivity } from "../../../api";
 import router from "../../../router";
-// import axios from "axios";
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
 
@@ -182,41 +174,11 @@ export default {
     },
 
     /**
-     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-     * duplicate summaries are removed.
+     * On start-up, the mounted function calls the rest countries api which populates the dropdown for the user to select
+     * the country of their choice
      */
     mounted: function() {
-        // let outer = this;
-        // let input = document.querySelector('#locationInput');
-        // let timeout = null;
-        // input.addEventListener('keyup', function () {
-        //     clearTimeout(timeout);
-        //     timeout = setTimeout(function () {
-        //         const url = "https://photon.komoot.de/api/?q=" + input.value;
-        //         axios.get(url)
-        //             .then((response) => {
-        //                 //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-        //                 //is only displayed when it is finished, avoiding the problem of the user being taken to the
-        //                 //middle of the list instead of the top
-        //                 let temp = [];
-        //                 let locationSummaries = [];
-        //                 for(let location in response.data.features) {
-        //                     let locationSummary = outer.getLocationSummary(response.data.features[location]);
-        //                     if (!locationSummaries.includes(locationSummary)) {
-        //                         temp.push(response.data.features[location]);
-        //                         temp[temp.length - 1]["summary"] = locationSummary;
-        //                         locationSummaries.push(locationSummary);
-        //                     }
-        //                 }
-        //                 outer.suggestedLocations = temp;
-        //                 outer.showLocations = true;
-        //             })
-        //             .catch(error => console.log(error));
-        //     }, 1000);
-        // });
       this.loadCountries();
-      console.log(this.countries_option)
     },
 
     computed: {
@@ -251,31 +213,6 @@ export default {
         ...mapActions(["createActivity"]),
         ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
         ...mapActions(["updateUserDurationActivities"]),
-
-
-        /**
-         * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
-         * function.
-         */
-        // getLocationSummary(location) {
-        //     let result = "";
-        //
-        //     result += location.properties.name;
-        //     if ("street" in location.properties) {
-        //         result += ", " + location.properties.street;
-        //     }
-        //     if ("city" in location.properties) {
-        //         result += ", " + location.properties.city;
-        //     }
-        //     if ("state" in location.properties) {
-        //         result += ", " + location.properties.state;
-        //     }
-        //     if ("country" in location.properties) {
-        //         result += ", " + location.properties.country;
-        //     }
-        //
-        //     return result;
-        // },
 
       /**
        * This method filters the the data received from the api and only suggests cities to the user.
