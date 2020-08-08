@@ -278,7 +278,6 @@ export default {
           this.state = document.getElementById('inputState').value,
           this.country = document.getElementById('inputCountry').value
       this.location = this.city + ',' + this.state + ',' + this.country
-      console.log(this.location);
     },
 
     /*
