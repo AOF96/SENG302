@@ -178,39 +178,10 @@ export default {
     },
 
     /**
-     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-     * duplicate summaries are removed.
+     * On start-up, the mounted function calls the rest api countries and updates the select drop down with the list of
+     * countries for the user to choose.
      */
     mounted: function() {
-        // let outer = this;
-        // let input = document.querySelector('#locationInput');
-        // let timeout = null;
-        // input.addEventListener('keyup', function () {
-        //     clearTimeout(timeout);
-        //     timeout = setTimeout(function () {
-        //         const url = "https://photon.komoot.de/api/?q=" + input.value;
-        //         axios.get(url)
-        //             .then((response) => {
-        //                 //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-        //                 //is only displayed when it is finished, avoiding the problem of the user being taken to the
-        //                 //middle of the list instead of the top
-        //                 let temp = [];
-        //                 let locationSummaries = [];
-        //                 for(let location in response.data.features) {
-        //                     let locationSummary = outer.getLocationSummary(response.data.features[location]);
-        //                     if (!locationSummaries.includes(locationSummary)) {
-        //                         temp.push(response.data.features[location]);
-        //                         temp[temp.length - 1]["summary"] = locationSummary;
-        //                         locationSummaries.push(locationSummary);
-        //                     }
-        //                 }
-        //                 outer.suggestedLocations = temp;
-        //                 outer.showLocations = true;
-        //             })
-        //             .catch(error => console.log(error));
-        //     }, 1000);
-        // });
       this.loadCountries();
       console.log(this.countries_option)
     },
@@ -247,31 +218,6 @@ export default {
         ...mapActions(["createActivity"]),
         ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
         ...mapActions(["updateUserDurationActivities"]),
-
-
-        /**
-         * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
-         * function.
-         */
-        // getLocationSummary(location) {
-        //     let result = "";
-        //
-        //     result += location.properties.name;
-        //     if ("street" in location.properties) {
-        //         result += ", " + location.properties.street;
-        //     }
-        //     if ("city" in location.properties) {
-        //         result += ", " + location.properties.city;
-        //     }
-        //     if ("state" in location.properties) {
-        //         result += ", " + location.properties.state;
-        //     }
-        //     if ("country" in location.properties) {
-        //         result += ", " + location.properties.country;
-        //     }
-        //
-        //     return result;
-        // },
 
       /**
        * This method filters the the data received from the api and only suggests cities to the user.
@@ -535,6 +481,11 @@ export default {
         }
     },
   watch: {
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * cities
+     * @param val of the city set in the vuetify component
+     */
     search (val) {
       if(val.length < 3){
         return
@@ -552,6 +503,11 @@ export default {
           })
           .finally(() => (this.isLoading = false))
     },
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * states
+     * @param val of the state set in the vuetify component
+     */
     searchState (val) {
 
       if(val.length < 3){

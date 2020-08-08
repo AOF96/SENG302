@@ -46,19 +46,6 @@
             v-model="description"
             placeholder="Activity Description"
           ></textarea>
-
-<!--          <label class="editActivityLabel">Location: <b>{{ location }}</b></label>-->
-<!--          <button v-if="location !== null" class="removeLocationButton" v-on:click="location = null"><b>x</b></button>-->
-<!--          <div>-->
-<!--            <input id="locationInput" autocomplete="off" class="editActivityInput" type="text"-->
-<!--                   placeholder="Search here..." onfocus="showLocations = true"/>-->
-<!--            <div v-if="showLocations && suggestedLocations.length > 0" class="dropdown" >-->
-<!--              <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">-->
-<!--                <p v-on:click="setLocation(item.summary)">{{item.summary}}</p>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-
           <label class="editActivityLabel">Location</label>
           <div>
             <v-combobox
@@ -211,40 +198,11 @@ export default {
   },
 
   /**
-   * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-   * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-   * duplicate summaries are removed.
+   * On start-up, the mounted function calls the rest api countries and updates the select drop down with the list of
+   * countries for the user to choose.
    */
   mounted: function() {
     this.loadCountries();
-    // let outer = this;
-    // let input = document.querySelector('#locationInput');
-    // let timeout = null;
-    // input.addEventListener('keyup', function () {
-    //   clearTimeout(timeout);
-    //   timeout = setTimeout(function () {
-    //     const url = "https://photon.komoot.de/api/?q=" + input.value;
-    //     axios.get(url)
-    //             .then((response) => {
-    //               //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-    //               //is only displayed when it is finished, avoiding the problem of the user being taken to the
-    //               //middle of the list instead of the top
-    //               let temp = [];
-    //               let locationSummaries = [];
-    //               for(let location in response.data.features) {
-    //                 let locationSummary = outer.getLocationSummary(response.data.features[location]);
-    //                 if (!locationSummaries.includes(locationSummary)) {
-    //                   temp.push(response.data.features[location]);
-    //                   temp[temp.length - 1]["summary"] = locationSummary;
-    //                   locationSummaries.push(locationSummary);
-    //                 }
-    //               }
-    //               outer.suggestedLocations = temp;
-    //               outer.showLocations = true;
-    //             })
-    //             .catch(error => console.log(error));
-    //   }, 1000);
-    // });
   },
 
   computed: {
@@ -645,6 +603,11 @@ export default {
     }
   },
   watch: {
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * cities
+     * @param val of the city set in the vuetify component
+     */
     search (val) {
       if(val.length < 3){
         return
@@ -662,6 +625,11 @@ export default {
           })
           .finally(() => (this.isLoading = false))
     },
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * states
+     * @param val of the state set in the vuetify component
+     */
     searchState (val) {
 
       if(val.length < 3){
