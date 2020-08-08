@@ -100,7 +100,7 @@
                           </template>
                           <v-card>
                             <v-card-text>Change Role</v-card-text>
-                            <v-switch></v-switch>
+                            <v-switch v-model="roleSwitch"></v-switch>
                           </v-card>
                         </v-menu>
 

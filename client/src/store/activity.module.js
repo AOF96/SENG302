@@ -76,6 +76,12 @@ const actions = {
     },
     async deleteActivity(data, {'userId': userId, 'activityId': activityId}) {
         return await apiActivity.deleteActivity(userId, activityId);
+    },
+    async getParticipants(data, {'activityId': activityId}) {
+        return await apiActivity.getParticipants(activityId);
+    },
+    async getOrganisers(data, {'activityId': activityId}) {
+        return await apiActivity.getParticipants(activityId);
     }
 };
 

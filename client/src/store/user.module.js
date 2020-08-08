@@ -286,6 +286,9 @@ const actions = {
   },
   async deleteUserAccount(data, {'id': id}) {
     return await apiUser.deleteUserAccount(id);
+  },
+  async editUserRoleForActivity(data, {'id': id, 'activityId': activityId, 'email': email, 'activityRole': activityRole}) {
+    return await apiUser.editUserRoleForActivity(id, activityId, email, activityRole);
   }
 };
 

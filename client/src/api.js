@@ -8,10 +8,10 @@ var instance = axios.create({
   withCredentials: true,
 });
 
-function activitiesAddDashes(activities){
+function activitiesAddDashes(activities) {
   // Replace all spaces in each activity type with "-" to support the json spec
   let parsedActivityTypes = [];
-  for(let i = 0; i < activities.length; i++){
+  for (let i = 0; i < activities.length; i++) {
     parsedActivityTypes.push(activities[i].split(' ').join('-'));
   }
   return parsedActivityTypes;
@@ -106,10 +106,11 @@ export const apiUser = {
     }),
   //Get all emails
   getAllEmails: () => instance.get('/emails'),
-  getIdByEmail: (email) => instance.get('/email/id/', {params:
-        {email:email}
+  getIdByEmail: (email) => instance.get('/email/id/', {
+    params:
+      {email: email}
   }),
-  getUserSessionToken: (profile_id)  => instance.get('/token/' + profile_id),
+  getUserSessionToken: (profile_id) => instance.get('/token/' + profile_id),
   getUserByToken: () => instance.get('validateLogin'),
   async getUserById(profile_id) {
     let searchedUser = await apiUser.refreshUserData(profile_id).then(
@@ -124,15 +125,16 @@ export const apiUser = {
     );
     return searchedUser;
   },
-  searchUsers: (searchTerm, searchType, activityTypes,  method, page, size) => instance.get('/profiles/',
-      {params: {
-          [searchType]: searchTerm,
-          method: method,
-          activity: activitiesAddDashes(activityTypes).join(" "),
-          page: page,
-          size: size,
-        }
-      }),
+  searchUsers: (searchTerm, searchType, activityTypes, method, page, size) => instance.get('/profiles/',
+    {
+      params: {
+        [searchType]: searchTerm,
+        method: method,
+        activity: activitiesAddDashes(activityTypes).join(" "),
+        page: page,
+        size: size,
+      }
+    }),
   searchedUser(searchedTerm, searchFilter) {
     let filter = {};
     filter[searchFilter] = searchedTerm;
@@ -140,17 +142,17 @@ export const apiUser = {
     filter['page'] = 0;
     filter['size'] = 3;
 
-    let searchedUserTerm =  apiUser.searchUsers(filter).then(
-        response => {
-          return response.data;
-        },
-        error => {
-          if(error){
-            return "Invalid permissions";
-          }
+    let searchedUserTerm = apiUser.searchUsers(filter).then(
+      response => {
+        return response.data;
+      },
+      error => {
+        if (error) {
+          return "Invalid permissions";
         }
+      }
     );
-    return  searchedUserTerm;
+    return searchedUserTerm;
   },
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
@@ -163,9 +165,9 @@ export const apiUser = {
    * Request to update activity types
    */
   editUserActivityTypes: (profile_id, activities) =>
-  instance.put("/profiles/" + profile_id + "/activity-types", {
-    activities: activitiesAddDashes(activities),
-  }),
+    instance.put("/profiles/" + profile_id + "/activity-types", {
+      activities: activitiesAddDashes(activities),
+    }),
 
   /***
    * API call to promote an user with permission level 0 to admin.
@@ -173,12 +175,27 @@ export const apiUser = {
    * @returns {Promise<AxiosResponse<any>>}
    */
   promoteToAdmin: (profile_id) =>
-  instance.put("/profiles/" + profile_id + "/role", {
+    instance.put("/profiles/" + profile_id + "/role", {
       "role": "admin"
-  }),
+    }),
 
   // Request to delete a user account
-  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`)
+  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
+
+  /**
+   * Makes a request to update a user's role for an activity
+   * @param profileId the id of the user
+   * @param activityId the id of the activity
+   * @param email the email of the user whose role requires updating
+   * @param activityRole the user's role for the activity ie follower, participant, organiser or creator
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  editUserRoleForActivity: (profileId, activityId, email, activityRole) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`,
+      {
+        email: email,
+        activityRole: activityRole
+      }),
 };
 
 export const apiActivity = {
@@ -235,6 +252,12 @@ export const apiActivity = {
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
 
+  getParticipants: (activityId) =>
+    instance.get(`/activities/${activityId}/participants/`),
+
+  getOrganisers: (activityId) =>
+    instance.get(`/activities/${activityId}/organizers/`),
+
   async getActivityById(activityId) {
     let activity = await apiActivity.getActivity(activityId).then(
       (response) => {
@@ -252,27 +275,27 @@ export const apiActivity = {
     return await activity;
   },
 
-    /***
-     * Makes a request to set the number of people that can view a restricted activity.
-     * @param emails: the emails of the users that can view the activity.
-     * @param role: the role the users have in that activity.
-     * @param profileId: the id of the creator of the activity.
-     * @param activityId: the activity.
-     * @returns a status code saying if the update was successful or was rejected for some reason.
-     */
-    async setActivityMembers(emails, role, profileId, activityId) {
-      let membersList = [];
-      for (let email of emails) {
-          let userDetails = {"email": email, "role": role};
-          membersList.push(userDetails);
-      }
-      profileId = activityId
-      // let result = await instance.put(`/profiles/${profileId}/activities/${activityId}/visibility`, {
-      //     "visibility": "restricted",
-      //     "accessors": membersList
-      //     }
-      //     );
-      // return result;
+  /***
+   * Makes a request to set the number of people that can view a restricted activity.
+   * @param emails: the emails of the users that can view the activity.
+   * @param role: the role the users have in that activity.
+   * @param profileId: the id of the creator of the activity.
+   * @param activityId: the activity.
+   * @returns a status code saying if the update was successful or was rejected for some reason.
+   */
+  async setActivityMembers(emails, role, profileId, activityId) {
+    let membersList = [];
+    for (let email of emails) {
+      let userDetails = {"email": email, "role": role};
+      membersList.push(userDetails);
+    }
+    profileId = activityId
+    // let result = await instance.put(`/profiles/${profileId}/activities/${activityId}/visibility`, {
+    //     "visibility": "restricted",
+    //     "accessors": membersList
+    //     }
+    //     );
+    // return result;
   }
 
 };
