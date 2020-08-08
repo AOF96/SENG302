@@ -159,7 +159,6 @@
 import { mapGetters, mapActions } from "vuex";
 import { apiUser, apiActivity } from "../api";
 import router from "../router";
-// import axios from "axios";
 
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
