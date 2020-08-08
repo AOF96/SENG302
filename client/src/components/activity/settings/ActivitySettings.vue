@@ -62,6 +62,7 @@
                           outlined
                           class="locationCombo"
                           dense
+                          style="margin: 0 20px;"
                       />
                       <v-combobox
                           v-model="state"
@@ -81,6 +82,7 @@
                           outlined
                           class="locationCombo"
                           dense
+                          style="margin: 0 20px;"
                       />
                       <v-combobox
                           v-model="country"
@@ -96,6 +98,7 @@
                           outlined
                           class="locationCombo"
                           dense
+                          style="margin: 0 20px;"
                       />
                     </div>
 
@@ -174,8 +177,8 @@ export default {
     },
 
     /**
-     * On start-up, the mounted function calls the rest countries api which populates the dropdown for the user to select
-     * the country of their choice
+     * On start-up, the mounted function calls the rest api countries and updates the select drop down with the list of
+     * countries for the user to choose.
      */
     mounted: function() {
       this.loadCountries();
@@ -222,7 +225,7 @@ export default {
         let city = "Almora";
         if(location.properties.city !== undefined){
           city = location.properties.city;
-          return city
+          return city;
         }
         return city;
       },
@@ -439,7 +442,7 @@ export default {
 
             // Sets duration to a boolean for the request
             var tempIsDuration = this.duration !== "duration";
-            this.setLocation(location)
+            this.setLocation(location);
 
             // Send a create request
             apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
@@ -476,6 +479,11 @@ export default {
         }
     },
   watch: {
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * cities
+     * @param val of the city set in the vuetify component
+     */
     search (val) {
       if(val.length < 3){
         return
@@ -493,6 +501,11 @@ export default {
           })
           .finally(() => (this.isLoading = false))
     },
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * states
+     * @param val of the state set in the vuetify component
+     */
     searchState (val) {
 
       if(val.length < 3){
