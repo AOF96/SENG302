@@ -8,6 +8,15 @@ var instance = axios.create({
   withCredentials: true,
 });
 
+function activitiesAddDashes(activities){
+  // Replace all spaces in each activity type with "-" to support the json spec
+  let parsedActivityTypes = [];
+  for(let i = 0; i < activities.length; i++){
+    parsedActivityTypes.push(activities[i].split(' ').join('-'));
+  }
+  return parsedActivityTypes;
+}
+
 export const apiUser = {
   // Update the user's password
   changePassword: (profile_id, old_password, new_password, repeat_password) =>
@@ -119,7 +128,7 @@ export const apiUser = {
       {params: {
           [searchType]: searchTerm,
           method: method,
-          activity: activityTypes,
+          activity: activitiesAddDashes(activityTypes).join(" "),
           page: page,
           size: size,
         }
@@ -149,26 +158,27 @@ export const apiUser = {
    * Request to get all activity types from the server
    */
   getActivityTypes: () => instance.get('/activity-types'),
+
   /**
    * Request to update activity types
    */
   editUserActivityTypes: (profile_id, activities) =>
-    instance.put("/profiles/" + profile_id + "/activity-types", {
-      activities: activities,
-    }),
+  instance.put("/profiles/" + profile_id + "/activity-types", {
+    activities: activitiesAddDashes(activities),
+  }),
 
-    /***
-     * API call to promote an user with permission level 0 to admin.
-     * @param profile_id the id of the user being promoted.
-     * @returns {Promise<AxiosResponse<any>>}
-     */
-    promoteToAdmin: (profile_id) =>
-    instance.put("/profiles/" + profile_id + "/role", {
-        "role": "admin"
-    }),
+  /***
+   * API call to promote an user with permission level 0 to admin.
+   * @param profile_id the id of the user being promoted.
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  promoteToAdmin: (profile_id) =>
+  instance.put("/profiles/" + profile_id + "/role", {
+      "role": "admin"
+  }),
 
-    // Request to delete a user account
-    deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`)
+  // Request to delete a user account
+  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`)
 };
 
 export const apiActivity = {
@@ -189,7 +199,7 @@ export const apiActivity = {
       end_time: end_time,
       description: description,
       location: location,
-      activity_type: activity_types,
+      activity_type: activitiesAddDashes(activity_types),
     }),
 
   editActivity: (
@@ -210,7 +220,7 @@ export const apiActivity = {
       end_time: end_time,
       description: description,
       location: location,
-      activity_type: activity_types,
+      activity_type: activitiesAddDashes(activity_types),
       activity_id: activity_id,
     }),
 
@@ -222,6 +232,9 @@ export const apiActivity = {
   async getActivityById(activityId) {
     let activity = await apiActivity.getActivity(activityId).then(
       (response) => {
+        for (let i = 0; i < response.data.activity_type.length; i++) {
+          response.data.activity_type[i].name = response.data.activity_type[i].name.replace(/-/g, " ")
+        }
         return response.data;
       },
       (error) => {

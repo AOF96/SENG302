@@ -6,40 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.transaction.annotation.Transactional;
 
-
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
- * Repository for storing users
+ * Repository that holds queries related to searching functionality.
  */
 @RepositoryRestResource
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-    @Query(value = "Select * from User u where u.primary_email = ?1", nativeQuery = true)
-    User findUserByEmail(String email);
-
-    //ToDO Remove this once the email table has been fixed.
-    @Query(value = "select primary_email from User", nativeQuery = true)
-    List<String> getAllPrimaryEmails();
-
-    // Automatically generates query that finds user based on their permission level :D
-    User findByPermissionLevelEquals(int permissionLevel);
-
-    @Query(value = "select * from User where user_id = ?", nativeQuery = true)
-    Optional<User> getUserById(long profileId);
-
-    @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
-    String getIdByEmail(String email);
-
-    @Query(value = "delete from User where user_id = ?", nativeQuery = true)
-    void deleteUserById(Long profileId);
+public interface SearchRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     /**
      * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match any
@@ -72,7 +48,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @param activityTypes set of activities of user you are searching for
      * @return Page object with list of users with the query search
      */
-   @Query(value = "SELECT DISTINCT(a.user_id) FROM User_ActivityTypes a "
+    @Query(value = "SELECT DISTINCT(a.user_id) FROM User_ActivityTypes a "
             + "INNER JOIN User u ON a.user_id = u.user_id "
             + "WHERE a.user_id NOT IN (SELECT user_id "
             + "FROM ( "
@@ -88,16 +64,25 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + "AND u.permission_level < 2 ", nativeQuery = true)
     Page<User> getUsersWithActivityTypeAnd(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
 
-    /***
-     * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
-     * @param userID the id of the user being promoted
+    /**
+     * Retrieves users based on the following query parameters
+     * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
+     * @param pageable abstract interface for pagination information, if provided page object is sent back
+     * @param email email of the user you are searching for
+     * @param fullname full name of the user you are searching for
+     * @param lastname last name of the user you are searching for
+     * @return Page object with list of users with the query search
      */
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE User SET permission_level = 1 WHERE user_id = ?", nativeQuery = true)
-    void grantAdminRights(Long userID);
+    @Query(value = "FROM User u " +
+            "WHERE u.permissionLevel < 2" +
+            "AND (u.primaryEmail like %:email% " +
+            "OR concat(u.firstName, ' ', u.lastName) like %:fullname% " +
+            "OR u.lastName like %:lastname%)")
+    Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
+
+    @Query(value = "FROM User u " +
+            "WHERE u.primaryEmail = ?1 " +
+            "OR concat(u.firstName, ' ', u.lastName) like ?2 " +
+            "OR u.lastName = ?3")
+    Page<User> findAllByQueryWithQuotation(Pageable pageable, String email, String fullname, String lastname);
 }
-
-
-
-

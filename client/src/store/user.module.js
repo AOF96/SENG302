@@ -121,10 +121,20 @@ const mutations = {
     state.user.fitness = data.fitness;
   },
   setUserActivity(state, data) {
-    state.user.activities = data.activities;
+    let activityTypes = data.activities;
+    for (let i = 0; i < activityTypes.length; i++) {
+      activityTypes[i] = activityTypes[i].replace(/-/g, " ")
+    }
+    state.user.activities = activityTypes;
+    console.log(state.user.activities);
+
   },
   setUserTmpActivity(state, data) {
-    state.user.tmp_activities = data.tmp_activities;
+    let activityTypes = data.tmp_activities;
+    for (let i = 0; i < activityTypes.length; i++) {
+      activityTypes[i] = activityTypes[i].replace(/-/g, " ")
+    }
+    state.user.tmp_activities = activityTypes;
   },
   setUserIsLogin(state, data) {
     if (data.isLogin != "") {

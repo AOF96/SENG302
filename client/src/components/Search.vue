@@ -169,7 +169,7 @@ export default {
       this.disabled = true;
 
       /* Search for users */
-      apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
+      apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.filterMethod, page - 1, size).then(
         (response) => {
           if (response.data.content.length === 0) {
             this.disabled = true;
@@ -216,21 +216,6 @@ export default {
             path: "/profile/" + response.data.id
           })
         })
-    },
-
-    /**
-     * The method changes a list of activity type to a string, which is appended to the URL for searching users
-     */
-    activityListToString() {
-      if(this.activity_types_selected.length === 0){
-        return null;
-      }
-      let activityString = "";
-      for (let activity of this.activity_types_selected) {
-        activityString += activity + ' ';
-      }
-      return activityString.slice(0, activityString.length - 1);
-
     },
 
     /**
@@ -290,7 +275,7 @@ export default {
       if (this.searchedTerm.trim().length === 0) {
         searchTermInt = null
       }
-      apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+      apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
         (response) => {
           if (response.data.content.size === 0) {
             this.disabled = true;
@@ -337,6 +322,9 @@ export default {
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
+        for (let i = 0; i < this.activities_option.length; i++) {
+          this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
+        }
       })
       .catch(error => console.log(error));
   },

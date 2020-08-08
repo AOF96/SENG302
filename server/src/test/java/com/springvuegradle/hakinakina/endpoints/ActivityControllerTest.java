@@ -57,6 +57,9 @@ public class ActivityControllerTest {
     private ActivityTypeRepository activityTypeRepository;
 
     @MockBean
+    private SearchRepository searchRepository;
+
+    @MockBean
     private UserService userService;
 
 
