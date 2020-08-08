@@ -29,6 +29,7 @@ public class UserActivityRole {
     @JsonIgnore
     private Activity activity;
 
+    @Enumerated(EnumType.STRING)
     private ActivityRole activityRole;
 
 

@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.ActivityRole;
 import com.springvuegradle.hakinakina.entity.UserActivityKey;
 import com.springvuegradle.hakinakina.entity.UserActivityRole;
@@ -28,4 +29,6 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
      * @param userId Id of an user who has the role you want to delete
      */
     void deleteByIdActivityIdAndIdUserId(Long activityId, Long userId);
+
+    void deleteByActivity(Activity activity);
 }

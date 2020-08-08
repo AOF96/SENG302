@@ -59,7 +59,12 @@ public class Activity {
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "activity")
     private Set<UserActivityRole> userActivityRoles;
 
-    @ManyToMany(mappedBy = "activitiesShared", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @JoinTable(
+            name = "User_Activities_Shared",
+            joinColumns = { @JoinColumn(name = "activity_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
     private Set<User> usersShared = new HashSet<>();
 
 

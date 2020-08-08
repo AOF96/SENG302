@@ -8,6 +8,7 @@ import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -235,36 +236,69 @@ public class ActivityService {
     }
 
     /**
+     * Updates the Visibility of an Activity. Also sets the Activity's shared users and organisers/participants if the
+     * Activity is RESTRICTED and the request contains a list of accessors. If so, then firstly iterates through the request's
+     * accessors and creates relationships between Users by ANY email and the Activity along with the associated role.
+     * Then deletes all existing relationships and saves the new ones. Returns an error response if an email does not
+     * exist or a role is invalid. The shared users is set to an empty set if the Activity is being set to PUBLIC or
+     * PRIVATE.
      *
      * @param profileId  the logged in user's id.
-     * @param activityId the activity id of the activity being managed
+     * @param activityId the activity id of the activity being managed.
      * @param sessionToken the user's token from the cookie for their current session.
-     * @param request level of visibility and the set of user's email allowed to access the activity
-     * @return
+     * @param request level of visibility and the set of user's email allowed to access the activity.
+     * @return A ResponseEntity with a success or error code.
      */
+    @Transactional
     public ResponseEntity<String> updateActivityVisibility (Long profileId,
                                                             Long activityId,
                                                             String sessionToken,
                                                             ActivityVisibilityDto request) {
-
-
         Activity activity = activityRepository.findActivityById(activityId);
         activity.setVisibility(request.getVisibility());
 
         Set<User> accessors = new HashSet<User>();
+        Map<String, String> errors = new HashMap<>();
+        // Store these in a list and save at the end so that we avoid deleting all existing ones if there is an error.
+        List<UserActivityRole> newRelationships = new ArrayList<>();
 
-        if(request.getVisibility().equals(Visibility.RESTRICTED)){
+        if (request.getVisibility().equals(Visibility.RESTRICTED) && request.getAccessors() != null){
             for (Map<String, String> accessor : request.getAccessors()) {
-                Long userId = userRepository.getIdByEmail(accessor.get("email"));
+                String email = accessor.get("email");
+                ActivityRole role;
+                try {
+                    role = ActivityRole.valueOf(accessor.get("role").toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    errors.put("message", "No such role as: " + accessor.get("role"));
+                    return new ResponseEntity<String>(JSONObject.toJSONString(errors), HttpStatus.valueOf(400));
+                }
+                Long userId = userRepository.getIdByAnyEmail(accessor.get("email"));
+                if (userId == null) {
+                    errors.put("message", "No user with email: " + email);
+                    return new ResponseEntity<String>(JSONObject.toJSONString(errors), HttpStatus.valueOf(400));
+                }
+                User user = userRepository.getOne(userId);
+                accessors.add(user);
                 UserActivityKey newKey = new UserActivityKey(userId, activityId);
-                UserActivityRole newRelationship = new UserActivityRole(newKey, ActivityRole.valueOf(accessor.get("role")));
-                System.out.println(newRelationship);
+                UserActivityRole newRelationship = new UserActivityRole(newKey, role);
+                newRelationships.add(newRelationship);
             }
+            userActivityRoleRepository.deleteByActivity(activity);
         }
-        else if(request.getVisibility().equals(Visibility.PRIVATE)){
-            activity.setUsersShared(accessors);
-        }
+
+        saveRelationships(newRelationships);
+        activity.setUsersShared(accessors);
         return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
+    }
+
+    /**
+     * A helper method to save each UserActivityRole object to the UserActivityRoleRepository
+     * @param newRelationships A List of UserActivityRoles
+     */
+    private void saveRelationships(List<UserActivityRole> newRelationships) {
+        for (UserActivityRole relationship : newRelationships) {
+            userActivityRoleRepository.save(relationship);
+        }
     }
 
     public List<Map<String, String>> getActivitySummaries(List<Activity> activities) {

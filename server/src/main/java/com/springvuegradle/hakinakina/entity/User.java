@@ -108,12 +108,7 @@ public class User {
     )
     private Set<Activity> activities = new HashSet<>();
 
-    @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
-    @JoinTable(
-            name = "User_Activities_Shared",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "activity_id") }
-    )
+    @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     private Set<Activity> activitiesShared = new HashSet<>();
 
     @OneToMany
