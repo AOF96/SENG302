@@ -292,7 +292,10 @@ public class ActivityService {
                 return new ResponseEntity("Achievement result type must be provided", HttpStatus.valueOf(400));
             }
 
-            Achievement achievement = achievementRepository.getOne(achievementId);
+            Achievement achievement = achievementRepository.findAchievementById(achievementId);
+            if (achievement == null) {
+                return new ResponseEntity("Achievement couldn't be found", HttpStatus.valueOf(404));
+            }
 
             achievement.setName(newAchievement.getName());
             achievement.setDescription(newAchievement.getDescription());
@@ -305,5 +308,42 @@ public class ActivityService {
             ErrorHandler.printProgramException(e, "Cannot edit achievement");
             return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
         }
+    }
+
+    /**
+     * Handles requests to delete an achievement
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param achievementId id of the achievement that is to be deleted
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    public ResponseEntity deleteAchievement(long profileId, long activityId, long achievementId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Achievement achievementToDelete = achievementRepository.findAchievementById(achievementId);
+
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+
+            } else if (achievementToDelete == null) {
+                result = responseHandler.formatErrorResponse(404, "Achievement not found");
+
+            } else if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+
+            } else {
+                Activity activity = activityRepository.getOne(activityId);
+                activity.removeAchievement(achievementToDelete);
+                achievementRepository.delete(achievementToDelete);
+                activityRepository.save(activity);
+                result = responseHandler.formatSuccessResponse(200, "Achievement successfully deleted");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete achievement");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
     }
 }

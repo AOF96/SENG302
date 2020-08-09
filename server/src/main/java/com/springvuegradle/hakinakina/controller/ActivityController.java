@@ -167,6 +167,22 @@ public class ActivityController {
         return activityService.editAchievement(achievement, profileId, activityId, achievementId, sessionToken);
     }
 
+    /**
+     * Handles requests to delete an achievement
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param achievementId id of the achievement that is to be deleted
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @DeleteMapping("/profiles/{profileId}/activities/{activityId}/achievements/{achievementId}")
+    public ResponseEntity deleteAchievement(@PathVariable("profileId") long profileId,
+                                            @PathVariable("activityId") long activityId,
+                                            @PathVariable("achievementId") long achievementId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.deleteAchievement(profileId, activityId, achievementId, sessionToken);
+    }
+
 //     This code will be used when we have users subscribing to activities
 //    /**
 //     * Retrieves all of the continuous activities that a user is subscribed to

@@ -82,6 +82,10 @@ public class Activity {
         achievement.setActivity(this);
     }
 
+    public void removeAchievement(Achievement achievement) {
+        this.achievements.remove(achievement);
+    }
+
     public Set<Achievement> getAchievements() {
         return achievements;
     }
