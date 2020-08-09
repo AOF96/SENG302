@@ -211,7 +211,10 @@ public class UserController {
      * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @CookieValue(value = "s_id") String sessionToken) {
+       if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+           return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         Optional<User> optional = userRepository.getUserById(profileId);
         if (optional.isPresent() && optional.get().getPermissionLevel() != 2) {
             User user = optional.get();
@@ -338,7 +341,12 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/activity-types")
     public ResponseEntity editActivityTypes(@RequestBody String jsonString,
-                                            @PathVariable Long profileId) throws JsonProcessingException {
+                                            @PathVariable Long profileId,
+                                            @CookieValue(value = "s_id") String sessionToken) throws JsonProcessingException {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -377,8 +385,13 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/location")
     public ResponseEntity editLocation(@RequestBody String jsonString,
-                                       @PathVariable Long profileId)
+                                       @PathVariable Long profileId,
+                                       @CookieValue(value = "s_id") String sessionToken)
             throws JsonProcessingException {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         ObjectMapper mapper = new ObjectMapper();
         JsonNode locationNode = mapper.readTree(jsonString).get("location");
         String city = locationNode.get("city").asText();
@@ -434,8 +447,6 @@ public class UserController {
                                                      @CookieValue(value = "s_id") String sessionToken,
                                                      @PathVariable Long activityId,
                                                @Valid @RequestBody EditActivityRoleDto dto){
-
-
         userService.editUserActivityRole(profileId, activityId, dto, sessionToken);
         return ResponseEntity.ok().build();
     }
