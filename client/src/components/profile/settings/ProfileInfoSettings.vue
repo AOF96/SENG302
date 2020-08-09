@@ -318,43 +318,47 @@ export default {
    * duplicate summaries are removed.
    */
   mounted() {
-    this.loadSearchedUser();
-    let outer = this;
-    let input = document.querySelector("#locationInput");
-    let timeout = null;
-    if(input == null){
-      return;
-    }
-    input.addEventListener("keyup", function() {
-      clearTimeout(timeout);
-      timeout = setTimeout(function() {
-        const url = "https://photon.komoot.de/api/?q=" + input.value;
-        axios.get(url)
-          .then(response => {
-            //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-            //is only displayed when it is finished, avoiding the problem of the user being taken to the
-            //middle of the list instead of the top
-            let temp = [];
-            let locationSummaries = [];
-            for (let location in response.data.features) {
-              if (response.data.features[location].properties.osm_value === "city" ||
-                      response.data.features[location].properties.osm_value === "town") {
-                let locationSummary = outer.getLocationSummary(
-                  response.data.features[location]
-                );
-                if (!locationSummaries.includes(locationSummary)) {
-                  temp.push(response.data.features[location]);
-                  temp[temp.length - 1]["summary"] = locationSummary;
-                  locationSummaries.push(locationSummary);
-                }
-              }
-            }
-            outer.suggestedLocations = temp;
-            outer.showLocations = true;
-          })
-          .catch(error => console.log(error));
-      }, 1000);
-    });
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.loadSearchedUser();
+          let outer = this;
+          let input = document.querySelector("#locationInput");
+          let timeout = null;
+          if (input == null) {
+              return;
+          }
+          input.addEventListener("keyup", function () {
+              clearTimeout(timeout);
+              timeout = setTimeout(function () {
+                  const url = "https://photon.komoot.de/api/?q=" + input.value;
+                  axios.get(url)
+                      .then(response => {
+                          //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                          //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                          //middle of the list instead of the top
+                          let temp = [];
+                          let locationSummaries = [];
+                          for (let location in response.data.features) {
+                              if (response.data.features[location].properties.osm_value === "city" ||
+                                  response.data.features[location].properties.osm_value === "town") {
+                                  let locationSummary = outer.getLocationSummary(
+                                      response.data.features[location]
+                                  );
+                                  if (!locationSummaries.includes(locationSummary)) {
+                                      temp.push(response.data.features[location]);
+                                      temp[temp.length - 1]["summary"] = locationSummary;
+                                      locationSummaries.push(locationSummary);
+                                  }
+                              }
+                          }
+                          outer.suggestedLocations = temp;
+                          outer.showLocations = true;
+                      })
+                      .catch(error => console.log(error));
+              }, 1000);
+          });
+      }
   }
 };
 </script>

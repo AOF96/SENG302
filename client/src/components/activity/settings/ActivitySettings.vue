@@ -135,34 +135,38 @@ export default {
      * duplicate summaries are removed.
      */
     mounted: function() {
-        let outer = this;
-        let input = document.querySelector('#locationInput');
-        let timeout = null;
-        input.addEventListener('keyup', function () {
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
-                const url = "https://photon.komoot.de/api/?q=" + input.value;
-                axios.get(url)
-                    .then((response) => {
-                        //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-                        //is only displayed when it is finished, avoiding the problem of the user being taken to the
-                        //middle of the list instead of the top
-                        let temp = [];
-                        let locationSummaries = [];
-                        for(let location in response.data.features) {
-                            let locationSummary = outer.getLocationSummary(response.data.features[location]);
-                            if (!locationSummaries.includes(locationSummary)) {
-                                temp.push(response.data.features[location]);
-                                temp[temp.length - 1]["summary"] = locationSummary;
-                                locationSummaries.push(locationSummary);
+        if (!this.user.isLogin) {
+            this.$router.push('/login');
+        } else {
+            let outer = this;
+            let input = document.querySelector('#locationInput');
+            let timeout = null;
+            input.addEventListener('keyup', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    const url = "https://photon.komoot.de/api/?q=" + input.value;
+                    axios.get(url)
+                        .then((response) => {
+                            //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
+                            //is only displayed when it is finished, avoiding the problem of the user being taken to the
+                            //middle of the list instead of the top
+                            let temp = [];
+                            let locationSummaries = [];
+                            for (let location in response.data.features) {
+                                let locationSummary = outer.getLocationSummary(response.data.features[location]);
+                                if (!locationSummaries.includes(locationSummary)) {
+                                    temp.push(response.data.features[location]);
+                                    temp[temp.length - 1]["summary"] = locationSummary;
+                                    locationSummaries.push(locationSummary);
+                                }
                             }
-                        }
-                        outer.suggestedLocations = temp;
-                        outer.showLocations = true;
-                    })
-                    .catch(error => console.log(error));
-            }, 1000);
-        });
+                            outer.suggestedLocations = temp;
+                            outer.showLocations = true;
+                        })
+                        .catch(error => console.log(error));
+                }, 1000);
+            });
+        }
     },
 
     computed: {
