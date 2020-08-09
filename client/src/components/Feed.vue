@@ -78,8 +78,8 @@ export default {
           textContent: 'Activity activity types changed to: [Fun]',
         }
       ],
-      defaultPage: 1,
-      currentPage: 1,
+      defaultPage: 0,
+      currentPage: 0,
       defaultSize: 10,
       currentSize: 10,
     };

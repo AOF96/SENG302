@@ -65,10 +65,12 @@ public class Activity {
     @ManyToOne
     private User author;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "activity")
     private Set<UserActivityRole> userActivityRoles;
 
     @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @JsonIgnore
     @JoinTable(
             name = "User_Activities_Shared",
             joinColumns = { @JoinColumn(name = "activity_id") },
@@ -79,8 +81,6 @@ public class Activity {
 
     @OneToMany(mappedBy = "activity")
     private Set<ActivityChange> changes = new HashSet<>();
-
-    protected Activity() {}
 
     @Column(name = "visibility")
     private Visibility visibility;
@@ -107,6 +107,7 @@ public class Activity {
     @JsonIgnore
     public Set<User> getUsers() {
         return users;
+    }
 
     public Visibility getVisibility() {
         return visibility;
@@ -114,6 +115,7 @@ public class Activity {
 
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
+    }
 
     public void addUsers(User user) {
         user.followActivity(this);

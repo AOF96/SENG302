@@ -75,6 +75,7 @@
                 id="inputCity"
                 outlined
                 class="locationCombo"
+                autocomplete="new"
                 dense
                 style="margin: 0 20px;"
             />
@@ -95,6 +96,7 @@
                 id="inputState"
                 outlined
                 class="locationCombo"
+                autocomplete="new"
                 dense
                 style="margin: 0 20px;"
             />
@@ -111,6 +113,7 @@
                 id="inputCountry"
                 outlined
                 class="locationCombo"
+                autocomplete="new"
                 dense
                 style="margin: 0 20px;"
             />
@@ -195,7 +198,6 @@ export default {
       suggestedLocations: [],
       showLocations: false,
       visibility: null,
-      showLocations: false,
       city: null,
       country: null,
       state: null,
@@ -332,15 +334,17 @@ export default {
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
           }
-          let cityStateCountry = this.location.split(",");
-          if(typeof cityStateCountry[0] !== 'undefined'){
-            this.city = cityStateCountry[0];
-          }
-          if(typeof cityStateCountry[1] !== 'undefined'){
-            this.state = cityStateCountry[1];
-          }
-          if(typeof cityStateCountry[2] !== 'undefined'){
-            this.country = cityStateCountry[2];
+          if(typeof this.location !== 'undefined' & this.location != null){
+            let cityStateCountry = this.location.split(",");
+            if(typeof cityStateCountry[0] !== 'undefined'){
+              this.city = cityStateCountry[0];
+            }
+            if(typeof cityStateCountry[1] !== 'undefined'){
+              this.state = cityStateCountry[1];
+            }
+            if(typeof cityStateCountry[2] !== 'undefined'){
+              this.country = cityStateCountry[2];
+            }
           }
           this.activity_types_selected = tempActivityData.activity_type.map(
             e => e.name

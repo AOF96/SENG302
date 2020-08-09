@@ -63,6 +63,7 @@
               id="inputCity"
               outlined
               class="locationCombo"
+              autocomplete="new"
               dense
           />
           <v-combobox
@@ -82,6 +83,7 @@
               id="inputState"
               outlined
               class="locationCombo"
+              autocomplete="new"
               dense
           />
           <v-combobox
@@ -97,6 +99,7 @@
               id="inputCountry"
               outlined
               class="locationCombo"
+              autocomplete="new"
               dense
           />
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">

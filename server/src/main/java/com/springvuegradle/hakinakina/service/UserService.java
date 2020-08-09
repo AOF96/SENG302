@@ -50,8 +50,7 @@ public class UserService {
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
                        ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
                        UserActivityRoleRepository userActivityRoleRepository,
-                       ActivityRepository activityRepository,
-                       SearchRepository searchRepository) {
+                       ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;

@@ -71,6 +71,7 @@
                           id="inputCity"
                           outlined
                           class="locationCombo"
+                          autocomplete="new"
                           dense
                           style="margin: 0 20px;"
                       />
@@ -91,6 +92,7 @@
                           id="inputState"
                           outlined
                           class="locationCombo"
+                          autocomplete="new"
                           dense
                           style="margin: 0 20px;"
                       />
@@ -107,6 +109,7 @@
                           id="inputCountry"
                           outlined
                           class="locationCombo"
+                          autocomplete="new"
                           dense
                           style="margin: 0 20px;"
                       />
@@ -172,7 +175,6 @@ export default {
             suggestedLocations: [],
             showLocations: false,
             visibility: "public",
-            showLocations: false,
             city: null,
             country: null,
             state: null,

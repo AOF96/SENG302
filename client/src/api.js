@@ -324,8 +324,7 @@ export const apiActivity = {
     //     }
     //     );
     // return result;
-  }
-
+  },
 
   followActivity: (profileId, activityId) =>
     instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),

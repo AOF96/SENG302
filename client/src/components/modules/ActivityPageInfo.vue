@@ -1,5 +1,4 @@
 <template>
-
   <v-container fluid grid-list-md fill-height fill-width>
     <v-layout row wrap width="600px">
       <v-flex>
@@ -713,9 +712,9 @@
     },
     created: function () {
       this.loadActivity();
-      return this.checkFollowing();
       this.userTabs[0].content = this.participants;
       this.userTabs[1].content = this.organisers;
+      return this.checkFollowing();
     },
     methods: {
       ...mapActions(['updateUserDurationActivities','updateUserContinuousActivities','getActivityUpdates', 'getParticipants', 'getOrganisers']),
