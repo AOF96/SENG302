@@ -470,15 +470,16 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": [\n" +
                 "    \"Relaxing\",\n" +
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong()))
+        when(service.editActivityTypes(anyList(), anyLong(), anyString()))
                 .thenReturn(new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200)));
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Successfully updated activity types")));
@@ -486,15 +487,16 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesNonExistentUserTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": [\n" +
                 "    \"Relaxing\",\n" +
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong()))
+        when(service.editActivityTypes(anyList(), anyLong(), eq("t0k3n")))
                 .thenReturn(new ResponseEntity("No user with that ID", HttpStatus.valueOf(401)));
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(401))
                 .andExpect(content().string(containsString("No user with that ID")));
@@ -502,15 +504,16 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesNonExistentActivityTypeTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": [\n" +
                 "    \"Relaxing\",\n" +
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong()))
+        when(service.editActivityTypes(anyList(), anyLong(), eq("t0k3n")))
                 .thenReturn(new ResponseEntity("Activity type doesn't exist", HttpStatus.valueOf(400)));
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Activity type doesn't exist")));
@@ -518,10 +521,11 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesNotListTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": \"Relaxing\"\n" +
                 "}";
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Must send a list of activities")));

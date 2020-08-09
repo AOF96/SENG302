@@ -492,7 +492,12 @@ public class UserService {
      * @param id            The Long ID of the User to modify
      * @return ResponseEntity of result
      */
-    public ResponseEntity editActivityTypes(List<String> activityTypes, long id) {
+    public ResponseEntity editActivityTypes(List<String> activityTypes, long id, String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
+
         boolean result = false;
         HashSet<ActivityType> newActivityTypes = new HashSet<>();
 

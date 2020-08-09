@@ -417,13 +417,10 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the participants.
      */
-    public ResponseEntity getActivityParticipants(Long activityId, int page, int size, String sessionToken) {
+    public ResponseEntity getActivityParticipants(Long activityId, int page, int size) {
         ResponseEntity result;
         try {
-            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            }
-            else if (page < 0 || size < 0) {
+            if (page < 0 || size < 0) {
                 result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
             }
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
@@ -448,13 +445,10 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the organizers.
      */
-    public ResponseEntity getActivityOrganizers(Long activityId, int page, int size, String sessionToken) {
+    public ResponseEntity getActivityOrganizers(Long activityId, int page, int size) {
         ResponseEntity result;
         try {
-            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            }
-            else if (page < 0 || size < 0) {
+            if (page < 0 || size < 0) {
                 result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
             }
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {

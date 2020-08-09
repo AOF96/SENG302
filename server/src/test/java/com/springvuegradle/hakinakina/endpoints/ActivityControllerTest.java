@@ -313,6 +313,8 @@ public class ActivityControllerTest {
 
     @Test
     public void getSharedUsersTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+
         Activity activity = createTestActivity();
 
         User user1 = new User("Jack", "Ryan", "jack@gmail.com", null, Gender.MALE, 2, "Password1");
@@ -366,7 +368,7 @@ public class ActivityControllerTest {
         when(activityRepository.getOne(anyLong())).thenReturn(activity);
         when(service.getSharedUsers(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(testResponse, HttpStatus.OK));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/shared/?page= +" + 0 + "&size=" + 3))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/shared/?page= +" + 0 + "&size=" + 3).cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString(testResponse)));
 

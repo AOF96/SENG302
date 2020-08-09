@@ -343,10 +343,7 @@ public class UserController {
     public ResponseEntity editActivityTypes(@RequestBody String jsonString,
                                             @PathVariable Long profileId,
                                             @CookieValue(value = "s_id") String sessionToken) throws JsonProcessingException {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
-        }
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -357,7 +354,7 @@ public class UserController {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
 
-        return userService.editActivityTypes(activities, profileId);
+        return userService.editActivityTypes(activities, profileId, sessionToken);
     }
 
     /**

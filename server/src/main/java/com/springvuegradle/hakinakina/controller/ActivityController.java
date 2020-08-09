@@ -103,10 +103,7 @@ public class ActivityController {
      * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
     @GetMapping("/activities/{activityId}")
-    public ResponseEntity getOneActivity(@PathVariable("activityId") long activityId, @CookieValue(value = "s_id") String sessionToken) {
-        if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-        }
+    public ResponseEntity getOneActivity(@PathVariable("activityId") long activityId) {
         Optional<Activity> optional = activityRepository.findById(activityId);
         if (optional.isPresent()) {
             Activity activity = optional.get();
@@ -123,10 +120,7 @@ public class ActivityController {
      * @return a response entity that informs the user if retrieving a user's continuous activities was successful or not
      */
     @GetMapping("/profiles/{profileId}/activities/continuous")
-    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
-        if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-        }
+    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
         // get the list of all the activites for that user and themn loop nd that list and check the visibility of each activity
 //        for(Activity a: activities){
@@ -146,10 +140,8 @@ public class ActivityController {
      * @return a response entity that informs the user if retrieving a user's duration activities was successful or not
      */
     @GetMapping("/profiles/{profileId}/activities/duration")
-    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId, @CookieValue(value = "s_id") String sessionToken) {
-        if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-        }
+    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
+
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(false, profileId);
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
@@ -177,9 +169,6 @@ public class ActivityController {
     @GetMapping("/activities/{activityId}/shared/")
     public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId,
                                          @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-        }
         Activity activity = activityRepository.getOne(activityId);
         if (activity != null) {
             // TODO: Check to see if activity is private
@@ -278,8 +267,8 @@ public class ActivityController {
      * participants.
      */
     @GetMapping("/activities/{activityId}/participants/")
-    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        return activityService.getActivityParticipants(activityId, page, size, sessionToken);
+    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityParticipants(activityId, page, size);
     }
 
     /***
@@ -292,7 +281,7 @@ public class ActivityController {
      * otherwise it returns a 200 code with a list of the organizers.
      */
     @GetMapping("/activities/{activityId}/organizers/")
-    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        return activityService.getActivityOrganizers(activityId, page, size, sessionToken);
+    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityOrganizers(activityId, page, size);
     }
 }
