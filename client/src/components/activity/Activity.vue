@@ -1,4 +1,3 @@
-np
 <template>
     <div>
         <div class="profileBanner">

@@ -228,6 +228,7 @@ export default {
     await apiUser
       .getActivityTypes()
       .then(response => {
+        console.log(response.data);
         this.activities_option = response.data;
         for (let i = 0; i < this.activities_option.length; i++) {
           this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
