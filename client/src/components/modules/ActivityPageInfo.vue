@@ -706,9 +706,13 @@
       ...mapGetters(['user']),
     },
     mounted: function () {
-      //this.activityChanges = this.getActivityUpdates(this.$route.params.activityId).data;
-      this.getParticipants();
-      this.getOrganisers();
+        if (!this.user.isLogin) {
+            this.$router.push('/login');
+        } else {
+            //this.activityChanges = this.getActivityUpdates(this.$route.params.activityId).data;
+            this.getParticipants();
+            this.getOrganisers();
+        }
     },
     created: function () {
       this.loadActivity();

@@ -86,7 +86,11 @@ public class SearchController {
             @RequestParam(required = false) String activity,
             @RequestParam("method") String method,
             @RequestParam("page") int page,
-            @RequestParam("size") int size) {
+            @RequestParam("size") int size,
+            @CookieValue(value = "s_id") String sessionToken) {
+        if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         if (!method.equals("or") && !method.equals("and")) {
             return new ResponseEntity("Method must either be 'or' or 'and'", HttpStatus.valueOf(400));
         }

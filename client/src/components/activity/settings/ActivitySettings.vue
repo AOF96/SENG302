@@ -53,7 +53,7 @@
                         placeholder="Activity Description">
                     </textarea>
 
-                    <label class="editActivityLabel">Location: <b>{{ location }}</b></label>
+                    <label class="editActivityLabel">Location</label>
                     <div>
                       <v-combobox
                           v-model="city"
@@ -193,7 +193,11 @@ export default {
      * countries for the user to choose.
      */
     mounted: function() {
-      this.loadCountries();
+        if (!this.user.isLogin) {
+            this.$router.push('/login');
+        } else {
+            this.loadCountries();
+        }
     },
 
     computed: {
