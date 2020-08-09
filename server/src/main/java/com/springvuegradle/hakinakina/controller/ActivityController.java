@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.controller;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
@@ -8,6 +9,8 @@ import org.springframework.boot.json.JacksonJsonParser;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -252,7 +255,25 @@ public class ActivityController {
      */
     @GetMapping("/activities/{activityId}/participants/")
     public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        return activityService.getActivityParticipants(activityId, page, size, sessionToken);
+        ResponseEntity result;
+        try {
+            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            }
+            else if (page < 0 || size < 0) {
+                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
+            }
+            else if (activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<SearchUserDto> users = activityService.getActivityParticipants(activityId, page, size, sessionToken);
+                result = new ResponseEntity(users, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not retrieve participants");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
     }
 
     /***

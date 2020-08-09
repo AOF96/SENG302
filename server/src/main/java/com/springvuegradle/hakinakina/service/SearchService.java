@@ -98,7 +98,7 @@ public class SearchService {
      * @param users Page object that contains list of users found by the query
      * @return Page object with list of SearchUserResponse object
      */
-    private Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+    Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
         List<SearchUserDto> userResponses = new ArrayList<>();
         for (User user : users) {
             SearchUserDto searchUserDto = new SearchUserDto();

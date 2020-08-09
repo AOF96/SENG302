@@ -92,6 +92,9 @@ public interface SearchRepository extends JpaRepository<User, Long>, JpaSpecific
     @Query(value = "SELECT u.user_id ,u.first_name, u.last_name FROM User_Activity_Role r INNER JOIN User u ON u.user_id = r.user_id WHERE r.activity_id = :activityId", nativeQuery = true)
     Page<Object> getOrganizers(Pageable pageable , Long activityId);
 
-    @Query(value = "SELECT u.user_id, u.first_name, u.last_name FROM User u INNER JOIN User_Activity_Role r ON u.user_id = r.user_id WHERE r.activity_id = :activityId AND activityRole = 0", nativeQuery = true)
-    Page<Object> getParticipants(Pageable pageable , Long activityId);
+    @Query(value = "SELECT DISTINCT(u.user_id) FROM User u " +
+            "INNER JOIN User_Activity_Role r ON u.user_id = r.user_id " +
+            "WHERE r.activity_id = :activityId " +
+            "AND activityRole = 0", nativeQuery = true)
+    Page<User> getParticipants(Pageable pageable, Long activityId);
 }

@@ -253,7 +253,7 @@ export const apiActivity = {
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
 
   getParticipants: (activityId, page, size) =>
-    instance.get(`/activities/${activityId}/participants`, {
+    instance.get(`/activities/${activityId}/participants/`, {
       params: {
         page: page,
         size: size
@@ -261,7 +261,7 @@ export const apiActivity = {
     }),
 
   getOrganisers: (activityId, page, size) =>
-    instance.get(`/activities/${activityId}/organizers`, {
+    instance.get(`/activities/${activityId}/organizers/`, {
       params: {
         page: page,
         size: size

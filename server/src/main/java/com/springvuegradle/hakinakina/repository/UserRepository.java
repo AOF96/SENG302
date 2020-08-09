@@ -92,6 +92,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + "AND u.permission_level < 2 ", nativeQuery = true)
     Page<User> getUsersWithActivityTypeAnd(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
 
+    @Query(value = "SELECT DISTINCT(u.user_id) FROM User u " +
+            "INNER JOIN User_Activity_Role r ON u.user_id = r.user_id " +
+            "WHERE r.activity_id = :activityId " +
+            "AND activityRole = 0", nativeQuery = true)
+    Page<User> getParticipants(Pageable pageable, Long activityId);
+
     /***
      * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
      * @param userID the id of the user being promoted

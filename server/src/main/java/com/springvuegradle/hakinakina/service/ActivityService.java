@@ -2,12 +2,10 @@ package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
-import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +21,6 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static java.lang.Long.parseLong;
-
 @Service
 public class ActivityService {
 
@@ -36,6 +32,7 @@ public class ActivityService {
     public SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
+    private SearchService searchService;
 
     public ActivityService(UserRepository userRepository,
                            ActivityRepository activityRepository,
@@ -43,7 +40,8 @@ public class ActivityService {
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
-                           SearchRepository searchRepository) {
+                           SearchRepository searchRepository,
+                           SearchService searchService) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
@@ -51,6 +49,7 @@ public class ActivityService {
         this.sessionRepository = sessionRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
+        this.searchService = searchService;
     }
 
     /**
@@ -374,27 +373,9 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the participants.
      */
-    public ResponseEntity getActivityParticipants(Long activityId, int page, int size, String sessionToken) {
-        ResponseEntity result;
-        try {
-            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            }
-            else if (page < 0 || size < 0) {
-                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
-            }
-            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
-                result = responseHandler.formatErrorResponse(404, "Activity not found");
-            } else {
-                Page<Object> users = searchRepository.getParticipants(PageRequest.of(page, size), activityId);
-                result = new ResponseEntity(users, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not retrieve participants");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-
-        return result;
+    public Page<SearchUserDto> getActivityParticipants(Long activityId, int page, int size, String sessionToken) {
+        Page<User> userPage = searchRepository.getParticipants(PageRequest.of(page, size), activityId);
+        return searchService.userPageToSearchResponsePage(userPage);
     }
 
     /***
