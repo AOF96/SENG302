@@ -439,4 +439,17 @@ public class UserController {
         userService.editUserActivityRole(profileId, activityId, dto, sessionToken);
         return ResponseEntity.ok().build();
     }
+
+    /***
+     * Endpoint to allow a user to follow and activity. Calls userService to do authenticity checks.
+     * @param profileId The id of the user who wishes to follow the activity
+     * @param activityId The id of the activity the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return The response code to determine the status of the operation
+     */
+    @PostMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity subscribeToActivity(@PathVariable Long profileId, @PathVariable Long activityId,
+                                              @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.subscribeToActivity(profileId, activityId, sessionToken);
+    }
 }

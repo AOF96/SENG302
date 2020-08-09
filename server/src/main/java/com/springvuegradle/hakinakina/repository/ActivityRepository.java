@@ -26,6 +26,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 //    @Modifying
     Optional<Activity> findFirstByName(String name);
 
+    @Query(value = "select * from Activity where activity_id = ?", nativeQuery = true)
+    Optional<Activity> getActivityById(long activityId);
+
     @Modifying
     @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)
     void insertActivityForUser(Long userId, Long activityId);

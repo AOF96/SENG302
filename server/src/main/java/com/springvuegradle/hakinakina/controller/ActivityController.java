@@ -1,6 +1,5 @@
 package com.springvuegradle.hakinakina.controller;
 
-import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -146,6 +146,19 @@ public class ActivityController {
     }
 
     /**
+     * Endpoint for unfollowing an activity
+     * @param profileId id of user that is unfollowing
+     * @param activityId activity to unfollow
+     * @param sessionToken session id of the user
+     * @return response entity with the result of the operation.
+     */
+    @DeleteMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity<String> unFollow(@PathVariable Long profileId, @PathVariable Long activityId,
+                                   @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.unFollow(profileId, activityId, sessionToken);
+    }
+
+    /**
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
@@ -228,6 +241,19 @@ public class ActivityController {
 //        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
 //        return new ResponseEntity(result, HttpStatus.valueOf(200));
 //    }
+
+    /**
+     * Returns if the given user is following the given activity
+     * @param profileId user requested
+     * @param activityId activity to check
+     * @param sessionToken session token of the requesting user
+     * @return formatted response with result
+     */
+    @GetMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity<String> getIfFollowing(@PathVariable Long profileId, @PathVariable Long activityId,
+                                                 @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.checkFollowing(profileId, activityId, sessionToken);
+    }
 
     /***
      * Controller endpoint that receives requests to get activity participants from the database. Calls the service method

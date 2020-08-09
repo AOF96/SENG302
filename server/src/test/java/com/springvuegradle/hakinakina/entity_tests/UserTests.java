@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina;
+package com.springvuegradle.hakinakina.entity_tests;
 
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
@@ -109,4 +109,35 @@ public class UserTests {
         assertEquals("Texas", testUser.getState());
         assertEquals("U.S.A", testUser.getCountry());
     }
+
+    @Test
+    public void testOverrideNotEqualsMethod() {
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        testUser.setUserId(1212L);
+        User testUser2 = new User("Maurice", "Benson", "jacky12@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        testUser2.setUserId(9898L);
+        assertFalse(testUser.equals(testUser2));
+    }
+
+    @Test
+    public void testOverrideEqualsMethod() {
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        testUser.setUserId(1212L);
+        User testUser2 = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        testUser2.setUserId(1212L);
+        assertTrue(testUser.equals(testUser2));
+    }
+
 }

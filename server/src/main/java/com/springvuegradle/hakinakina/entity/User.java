@@ -106,6 +106,7 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
+    @JsonIgnore
     private Set<Activity> activities = new HashSet<>();
 
     @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
@@ -113,6 +114,9 @@ public class User {
 
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
+
+    @OneToMany(mappedBy = "author")
+    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -195,6 +199,19 @@ public class User {
     public void removeSession(Session session) {
         sessions.remove(session);
         session.setUser(null);
+    }
+
+    public void followActivity(Activity activity) {
+        activities.add(activity);
+    }
+
+    @JsonIgnore
+    public Set<Activity> getActivities() {
+        return activities;
+    }
+
+    public void unfollowActivity(Activity activity) {
+        activities.remove(activity);
     }
 
     public Set<PassportCountry> getPassportCountries() {
@@ -368,12 +385,28 @@ public class User {
         this.permissionLevel = permissionLevel;
     }
 
+    public Set<Activity> getAuthoredActivities() {
+        return authoredActivities;
+    }
+
+    public void setAuthoredActivities(Set<Activity> authoredActivities) {
+        this.authoredActivities = authoredActivities;
+    }
+
+    public void addAuthoredActivities(Activity authoredActivity) {
+        this.authoredActivities.add(authoredActivity);
+    }
+
     public Set<UserActivityRole> getUserActivityRoles() {
         return userActivityRoles;
     }
 
     public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
         this.userActivityRoles = userActivityRoles;
+    }
+
+    public void setActivities(Set<Activity> participateActivities) {
+        this.activities = participateActivities;
     }
 
     @Override
@@ -385,6 +418,15 @@ public class User {
                 "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
                 "\nPrimary Email: " + getPrimaryEmail();
         return result;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof User){
+            User otherUser = (User) other;
+            return this.userId.equals(otherUser.userId);
+        }
+        return false;
     }
 
     public String toJson() {
