@@ -117,6 +117,7 @@ public class ActivityService {
      * @return response entity to inform user if adding an activity was successful or not
      */
     public ResponseEntity editActivity(Activity newActivity, long profileId, long activityId, String sessionToken) {
+        System.out.println(sessionToken);
         try {
             addToChangesDatabase(newActivity, activityRepository.getOne(activityId), profileId, activityId);
             Session session = sessionRepository.findUserIdByToken(sessionToken);

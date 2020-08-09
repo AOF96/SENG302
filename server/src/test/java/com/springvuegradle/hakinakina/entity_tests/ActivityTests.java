@@ -54,8 +54,6 @@ public class ActivityTests {
         expected.add(ActivityAttribute.NAME);
         expected.add(ActivityAttribute.DESCRIPTION);
         expected.add(ActivityAttribute.LOCATION);
-        expected.add(ActivityAttribute.AUTHOR);
-        expected.add(ActivityAttribute.ID);
         activity2.setContinuous(true);
         expected.add(ActivityAttribute.CONTINUOUS);
         activity.setStartTime(new Timestamp(1));
@@ -79,7 +77,6 @@ public class ActivityTests {
         expected.add(ActivityAttribute.END_TIME);
         expected.add(ActivityAttribute.CONTINUOUS);
         expected.add(ActivityAttribute.LOCATION);
-        expected.add(ActivityAttribute.ID);
         assertEquals(expected, activity2.findActivityChanges(activity4));
     }
 

@@ -22,6 +22,10 @@ public class Activity {
     @Column(name = "activity_id")
     private Long id;
 
+    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @JsonIgnore
+    private Set<User> users = new HashSet<>();
+
     @JsonProperty("activity_name")
     @Column(name = "activity_name")
     @NotBlank(message = "Activity name is mandatory")
@@ -56,10 +60,6 @@ public class Activity {
     @JsonProperty("location")
     @Column(name = "location")
     private String location;
-
-    @ManyToMany(mappedBy = "activities", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
-    @JsonIgnore
-    private Set<User> users = new HashSet<>();
 
     @ManyToOne
     private User author;
@@ -200,9 +200,6 @@ public class Activity {
      */
     public Set<ActivityAttribute> findActivityChanges(Activity other) {
         Set<ActivityAttribute> differences = new HashSet<>();
-        if (!this.getId().equals(other.getId())) {
-            differences.add(ActivityAttribute.ID);
-        }
         if (!this.getName().equals(other.getName())) {
             differences.add(ActivityAttribute.NAME);
         }
@@ -269,9 +266,6 @@ public class Activity {
             differences.add(ActivityAttribute.USERS);
         }
 
-        if (!this.getAuthor().getUserId().equals(other.getAuthor().getUserId())) {
-            differences.add(ActivityAttribute.AUTHOR);
-        }
         return differences;
     }
 }
