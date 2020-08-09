@@ -263,4 +263,47 @@ public class ActivityService {
         return result;
     }
 
+    /**
+     * Handles requests to edit achievements
+     * @param newAchievement valid json containing new values for an existing achievement
+     * @param profileId id of the user performing the edit
+     * @param activityId id of the activity that the achievement being edited belongs too
+     * @param achievementId id of the achievement that is being edited
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    public ResponseEntity editAchievement(Achievement newAchievement, long profileId, long activityId, long achievementId, String sessionToken) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+            }
+            if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null)
+                            && session.getUser().getPermissionLevel() == 0) {
+                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+            }
+            if (newAchievement.getName() == null) {
+                return new ResponseEntity("Achievement name must be provided", HttpStatus.valueOf(400));
+            }
+            if (newAchievement.getDescription() == null) {
+                return new ResponseEntity("Achievement description must be provided", HttpStatus.valueOf(400));
+            }
+            if (newAchievement.getResultType() == null) {
+                return new ResponseEntity("Achievement result type must be provided", HttpStatus.valueOf(400));
+            }
+
+            Achievement achievement = achievementRepository.getOne(achievementId);
+
+            achievement.setName(newAchievement.getName());
+            achievement.setDescription(newAchievement.getDescription());
+            achievement.setResultType(newAchievement.getResultType());
+
+            achievementRepository.save(achievement);
+
+            return new ResponseEntity("Achievement has been successfully updated", HttpStatus.valueOf(200));
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot edit achievement");
+            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
+        }
+    }
 }

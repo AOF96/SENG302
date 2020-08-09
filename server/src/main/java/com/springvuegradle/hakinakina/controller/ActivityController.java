@@ -149,6 +149,24 @@ public class ActivityController {
         return activityService.addAchievement(achievement, profileId, activityId, sessionToken);
     }
 
+    /**
+     * Handles requests to edit achievements
+     * @param achievement valid json containing new values for an existing achievement
+     * @param profileId id of the user performing the edit
+     * @param activityId id of the activity that the achievement being edited belongs too
+     * @param achievementId id of the achievement that is being edited
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityId}/achievements/{achievementId}")
+    public ResponseEntity editAchievement(@Valid @RequestBody Achievement achievement,
+                                          @PathVariable("profileId") long profileId,
+                                          @PathVariable("activityId") long activityId,
+                                          @PathVariable("achievementId") long achievementId,
+                                          @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.editAchievement(achievement, profileId, activityId, achievementId, sessionToken);
+    }
+
 //     This code will be used when we have users subscribing to activities
 //    /**
 //     * Retrieves all of the continuous activities that a user is subscribed to
