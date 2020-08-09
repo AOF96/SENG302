@@ -206,13 +206,16 @@ export default {
       ) {
         this.$router.push("/profile/" + this.user.profile_id);
         this.searchedUser = this.user;
+        this.replaceDashesWithSpaces(this.searchedUser.activities);
       } else {
         var tempUserData = await this.getUserById(this.$route.params.profileId);
         if (tempUserData === "Invalid permissions") {
           this.$router.push("/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
+          this.replaceDashesWithSpaces(this.searchedUser.activities);
         } else {
           this.searchedUser = tempUserData;
+          this.replaceDashesWithSpaces(this.searchedUser.activities);
         }
         this.loadingProfileInfo = false;
         await this.getUserContinuousActivities(this.$route.params.profileId)
@@ -229,6 +232,16 @@ export default {
       this.startUp();
       this.componentKey++;
     },
+
+    /**
+     * Takes a list of strings and replaces all dashes with spaces
+     */
+    replaceDashesWithSpaces(list) {
+      for (let i = 0; i < list.length; i++) {
+        list[i] = list[i].replace(/-/g, " ")
+      }
+    },
+
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
       this.getDataFromUrl(COUNTRIES_URL)

@@ -3,7 +3,7 @@ package com.springvuegradle.hakinakina;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.UserRepository;
-import com.springvuegradle.hakinakina.service.UserService;
+import com.springvuegradle.hakinakina.service.SearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ public class UserSearchTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService service;
+    private SearchService service;
 
     @BeforeEach
     public void setUp() {
@@ -67,6 +67,54 @@ public class UserSearchTest {
 
 
     @Test
+    public void testUserSearchWithExistingEmailInQuotationShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                "\"fabian@acnh.com\"",
+                null,
+                null,
+                null,
+                "and"
+        );
+        List<SearchUserDto> content = page.getContent();
+        assertEquals("Fabian", content.get(0).getFirstname());
+    }
+
+
+    @Test
+    public void testUserSearchForEmailWithLetterShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                "i",
+                null,
+                null,
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount); // should get fabian
+    }
+
+
+    @Test
+    public void testUserSearchForEmailWithLetterInQuotationShouldReturnNoUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                "\"i\"",
+                null,
+                null,
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(0, resultCount);
+    }
+
+
+    @Test
     public void testUserSearchWithExistingLastNameShouldReturnUser() {
         Page<SearchUserDto> page = service.findPaginatedByQuery(
                 0,
@@ -83,6 +131,86 @@ public class UserSearchTest {
 
 
     @Test
+    public void testUserSearchWithLastNameInQuotationShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                null,
+                "\"Gilson\"",
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchWithLastNameInSingleQuotationShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                null,
+                "\'Gilson\'",
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchForLastNameWithLetterShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                null,
+                "a",
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(2, resultCount); // should find mayuko and walter
+    }
+
+
+    @Test
+    public void testUserSearchForLastNameWithLetterInQuotationShouldReturnNoUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                null,
+                "\"a\"",
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(0, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchWithLastNameShouldReturnNoUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                null,
+                "Golson",
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(0, resultCount);
+    }
+
+
+    @Test
     public void testUserSearchWithExistingFullNameShouldReturnUser() {
         Page<SearchUserDto> page = service.findPaginatedByQuery(
                 0,
@@ -93,9 +221,88 @@ public class UserSearchTest {
                 null,
                 "and"
         );
-
         long resultCount = page.getTotalElements();
         assertEquals(1, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchWithQuotationExistingFullNameShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "\"Mayuko Williams\"",
+                null,
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchWithExistingFullNameWithMiddleNameShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "Fabian Scrum Gilson",
+                null,
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchWithQuotationExistingFullNameWithMiddleNameShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "\"Fabian Scrum Gilson\"",
+                null,
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
+    }
+
+
+    @Test
+    public void testUserSearchForFullNameWithLetterShouldReturnUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                null,
+                "a",
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(2, resultCount); // should find mayuko and walter
+    }
+
+
+    @Test
+    public void testUserSearchForFullNameWithLetterInQuotationShouldReturnNoUser() {
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "\"a\"",
+                null,
+                null,
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(0, resultCount); // there is nobody with fullname of "a"
     }
 
 
@@ -107,7 +314,7 @@ public class UserSearchTest {
                     10,
                     null,
                     null,
-                    "Lambkins",
+                    "Williams",
                     null,
                     null
             );
@@ -125,7 +332,7 @@ public class UserSearchTest {
                     -5,
                     null,
                     null,
-                    "Lambkins",
+                    "Williams",
                     null,
                     null
             );
@@ -133,6 +340,7 @@ public class UserSearchTest {
         } catch (IllegalArgumentException e) {
         }
     }
+
 
     @Test
     public void testSearchDefaultAdminShouldReturnNoUser() {
@@ -145,10 +353,7 @@ public class UserSearchTest {
                 null,
                 "and"
         );
-
         long resultCount = page.getTotalElements();
         assertEquals(0, resultCount);
     }
-
-
 }

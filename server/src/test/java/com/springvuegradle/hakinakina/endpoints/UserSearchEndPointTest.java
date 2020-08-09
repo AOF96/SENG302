@@ -110,6 +110,22 @@ public class UserSearchEndPointTest {
 
 
     @Test
+    void testUserSearchWithFullNameWithMiddleNameReturnsUser() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/profiles")
+                .cookie(new Cookie("s_id", "Mayuko"))
+                .param("page", "0")
+                .param("fullname", "Mayuko Middle Williams")
+                .param("method", "and")
+                .param("size", "10"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertEquals("Mayuko", JsonPath.parse(response).read("$.content[0].firstname"));
+    }
+
+
+    @Test
     void testUserSearchWithInvalidPageShouldThrowError() throws Exception {
         mockMvc.perform(get("/profiles")
                 .cookie(new Cookie("s_id", "Fabian"))
