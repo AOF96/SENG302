@@ -77,11 +77,11 @@ const actions = {
     async deleteActivity(data, {'userId': userId, 'activityId': activityId}) {
         return await apiActivity.deleteActivity(userId, activityId);
     },
-    async getParticipants(data, {'activityId': activityId}) {
-        return await apiActivity.getParticipants(activityId);
+    async getParticipants(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
     },
-    async getOrganisers(data, {'activityId': activityId}) {
-        return await apiActivity.getParticipants(activityId);
+    async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
     }
 };
 

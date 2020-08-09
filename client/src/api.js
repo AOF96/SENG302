@@ -252,11 +252,21 @@ export const apiActivity = {
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
 
-  getParticipants: (activityId) =>
-    instance.get(`/activities/${activityId}/participants/`),
+  getParticipants: (activityId, page, size) =>
+    instance.get(`/activities/${activityId}/participants`, {
+      params: {
+        page: page,
+        size: size
+      }
+    }),
 
-  getOrganisers: (activityId) =>
-    instance.get(`/activities/${activityId}/organizers/`),
+  getOrganisers: (activityId, page, size) =>
+    instance.get(`/activities/${activityId}/organizers`, {
+      params: {
+        page: page,
+        size: size
+      }
+    }),
 
   async getActivityById(activityId) {
     let activity = await apiActivity.getActivity(activityId).then(
