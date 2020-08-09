@@ -23,18 +23,21 @@ public class ActivityService {
     public ActivityTypeRepository activityTypeRepository;
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
+    public AchievementRepository achievementRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public ActivityService(UserRepository userRepository,
                            ActivityRepository activityRepository,
                            ActivityTypeRepository activityTypeRepository,
                            PassportCountryRepository countryRepository,
-                           SessionRepository sessionRepository) {
+                           SessionRepository sessionRepository,
+                           AchievementRepository achievementRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.achievementRepository = achievementRepository;
     }
 
     /**
@@ -221,6 +224,42 @@ public class ActivityService {
             result.add(activityMap);
         }
 
+        return result;
+    }
+
+    /**
+     * Handles requests for adding achievements to an activity
+     * @param achievement valid json containing achievement data
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+    public ResponseEntity addAchievement(Achievement achievement, long profileId, long activityId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if ((profileId != session.getUser().getUserId()
+                    || activityRepository.validateAuthor(profileId, activityId) == null)
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+            } else {
+                Achievement achievementToAdd = new Achievement(achievement.getName(),
+                                                               achievement.getDescription(),
+                                                               achievement.getResultType());
+                Activity activityToUpdate = activityRepository.getOne(activityId);
+                activityToUpdate.addAchievement(achievementToAdd);
+                activityRepository.save(activityToUpdate);
+                achievementRepository.save(achievementToAdd);
+
+                result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot add achievement");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
         return result;
     }
 

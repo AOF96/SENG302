@@ -133,6 +133,22 @@ public class ActivityController {
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
 
+    /**
+     * Handles requests for adding achievements to an activity
+     * @param achievement valid json containing achievement data
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+    @PostMapping("/profiles/{profileId}/activities/{activityId}/achievements")
+    public ResponseEntity addAchievement(@Valid @RequestBody Achievement achievement,
+                                         @PathVariable("profileId") long profileId,
+                                         @PathVariable("activityId") long activityId,
+                                         @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.addAchievement(achievement, profileId, activityId, sessionToken);
+    }
+
 //     This code will be used when we have users subscribing to activities
 //    /**
 //     * Retrieves all of the continuous activities that a user is subscribed to
