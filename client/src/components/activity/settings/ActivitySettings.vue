@@ -16,9 +16,9 @@
                             id="visibility"
                             v-model="visibility"
                     >
-                        <option value="PUBLIC" selected>Public</option>
-                        <option value="RESTRICTED">Restricted</option>
-                        <option value="PRIVATE">Private</option>
+                        <option value="public" selected>Public</option>
+                        <option value="restricted">Restricted</option>
+                        <option value="private">Private</option>
                     </select>
 
                     <label class="editActivityLabel" for="time">Continuous?</label>
@@ -125,7 +125,7 @@ export default {
             combinedEndTime: null,
             suggestedLocations: [],
             showLocations: false,
-            visibility: "PUBLIC"
+            visibility: "public"
         };
     },
 
