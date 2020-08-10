@@ -2,17 +2,16 @@ package com.springvuegradle.hakinakina.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.EditActivityRoleDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
-import com.springvuegradle.hakinakina.entity.ActivityType;
-import com.springvuegradle.hakinakina.entity.Email;
-import com.springvuegradle.hakinakina.entity.Session;
-import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.specification.UserSpecification;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.apache.coyote.Response;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -37,22 +37,29 @@ import java.util.*;
 public class UserService {
 
     private UserRepository userRepository;
+    public ActivityRepository activityRepository;
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
     private SessionRepository sessionRepository;
     private ActivityTypeRepository activityTypeRepository;
     private SearchRepository searchRepository;
+    private UserActivityRoleRepository userActivityRoleRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
-                       ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository) {
+                       ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
+                       UserActivityRoleRepository userActivityRoleRepository,
+                       ActivityRepository activityRepository) {
+        this.activityRepository = activityRepository;
         this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.searchRepository = searchRepository;
+        this.userActivityRoleRepository = userActivityRoleRepository;
     }
 
     /**
@@ -303,9 +310,6 @@ public class UserService {
                 // add cookie to response
                 response.addCookie(cookie);
 
-                System.out.println(cookie.getMaxAge());
-
-
                 return new ResponseEntity("[" + user.toJson() + ", {\"sessionToken\": \"" + sessionToken + "\"}]", HttpStatus.valueOf(201));
             }
         } else {
@@ -488,7 +492,12 @@ public class UserService {
      * @param id            The Long ID of the User to modify
      * @return ResponseEntity of result
      */
-    public ResponseEntity editActivityTypes(List<String> activityTypes, long id) {
+    public ResponseEntity editActivityTypes(List<String> activityTypes, long id, String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
+
         boolean result = false;
         HashSet<ActivityType> newActivityTypes = new HashSet<>();
 
@@ -676,5 +685,113 @@ public class UserService {
         return result;
     }
 
+    /***
+     * Checks that both user and activity exist and checks if the user follows the activity already or not before
+     * allowing the user to follow the activity
+     * @param profileId id of the user that wishes to follow the activity
+     * @param activityId id of the activity that the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return response entity with status code depending on wither it was successful or not
+     */
+    public ResponseEntity subscribeToActivity(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity result;
 
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if (!profileId.equals(session.getUser().getUserId())
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else {
+                Optional<User> user = userRepository.getUserById(profileId);
+                if (user.isPresent()) {
+                    User validUser = user.get();
+                    Set<Activity> validUserFollowingList = validUser.getActivities();
+                    if (validUserFollowingList.contains(activity)) {
+                        result = responseHandler.formatErrorResponse(403,
+                                "User already follows this activity");
+                    } else {
+                        activity.addUsers(validUser);
+                        userRepository.save(validUser);
+                        activityRepository.save(activity);
+                        result = responseHandler.formatSuccessResponse(201, "User " + profileId
+                                + " now follows activity " + activityId);
+                    }
+                } else {
+                    result = responseHandler.formatErrorResponse(404, "No user with id "
+                            + profileId);
+                }
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not subscribe to activity");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
+    /***
+     * Edit role of an user in an activity, if role does not exist, create new role and save
+     * @param profileId id of person who is changing the role of some user (mayuko)
+     * @param activityId id of the activity the user is changing the role of (mayuko's activity)
+     * @param token the user's token from the cookie for their current session
+     * @param dto DTO of subscriber request which contains email of user changing the role and what role to change to (fabian)
+     */
+    public void editUserActivityRole(Long profileId, Long activityId, EditActivityRoleDto dto, String token) {
+
+        // check whether the user changing the role exists (mayuko)
+        Optional<User> user = userRepository.findById(profileId);
+        if(user.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Creator not found");
+        }
+
+        // check whether the activity exists (mayukosActivity)
+        activityRepository.findById(activityId).orElseThrow(() -> {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Activity " + activityId + " not found");
+        });
+
+        // check whether the user who is getting the role changed exists (fabian)
+        User dtoUser = userRepository.findUserByEmail(dto.getSubscriber().getEmail());
+        if(dtoUser == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "User not found");
+        }
+
+        // key to set UserActivityRole (mayuko)
+        UserActivityKey key = new UserActivityKey(profileId, activityId);
+
+        // check if the user changing the role is a creator
+        userActivityRoleRepository
+                .findByIdAndActivityRole(key, ActivityRole.CREATOR)
+                .orElseThrow(() -> {
+                    throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "You must be a creator to change roles");
+        });
+
+        // check user's session
+        Session session = sessionRepository.findUserIdByToken(token);
+        if (session == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Session");
+        }
+
+        // key to set UserActivityRole (fabian)
+        UserActivityKey dtoKey = new UserActivityKey(dtoUser.getUserId(), activityId);
+
+        // if this person has role already change it, if not create new one
+        Optional<UserActivityRole> byId = userActivityRoleRepository.findById(dtoKey);
+        if (byId.isPresent()) {
+            UserActivityRole rowEntry = byId.get();
+            rowEntry.setActivityRole(dto.getSubscriber().getRole());
+            userActivityRoleRepository.save(rowEntry);
+        } else {
+            userActivityRoleRepository.save(
+                    new UserActivityRole(key, dto.getSubscriber().getRole())
+            );
+        }
+    }
 }

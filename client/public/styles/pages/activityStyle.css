@@ -381,15 +381,15 @@
 }
 
 .activityPageCardTextField {
-    width: 70%;
-    float: left;
     margin-right: 30px;
     position: relative;
 }
 
 .activityPageCardButton {
+    position: absolute;
+    right: -43px;
+    width: 40%;
     color: #1cca92;
-    width: 20%;
 }
 
 .activityPageShowMoreButton{
@@ -404,4 +404,23 @@
 
 .activityPageCardForm {
     padding: 10px 0 20px 0;
+}
+
+.activityPageCardSelect {
+    float: left;
+    width: 40%;
+}
+
+.activityPageErrorMessage {
+    font-weight: 600;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-top: 12px;
+    margin-left: 14px;
+}
+
+.activityPageCardDiv {
+    overflow-y: scroll;
+    height: 300px;
+    margin-top: 10px
 }

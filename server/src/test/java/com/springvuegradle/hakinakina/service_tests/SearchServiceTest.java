@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina;
+package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.entity.Gender;
 import com.springvuegradle.hakinakina.entity.User;
@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SearchServiceTest {
-
     @Mock
     private SearchRepository searchRepository;
 
@@ -66,7 +65,8 @@ public class SearchServiceTest {
     public void getIntersectionOfListOfSetsOfUsersOneSetTest() {
         User user1 = new User("John", "Doe", "john@mail.com", "", Gender.MALE, 1, "coolPassword1");
         User user2 = new User("Jane", "Doe", "jane@mail.com", "", Gender.FEMALE, 2, "coolPassword2");
-
+        user1.setUserId(2222L);
+        user2.setUserId(2323L);
         List<Set<User>> list = new ArrayList<>();
         Set<User> set1 = new HashSet<>();
         set1.add(user1);

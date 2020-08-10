@@ -66,13 +66,22 @@ const actions = {
         await apiActivity.addActivity(id, name, duration, startTime, endTime, description, location, activityTypes);
     },
     async getActivityById(data, id) {
-        return await apiActivity.getActivityById(id)
+        return await apiActivity.getActivityById(id);
+    },
+    async getActivityUpdates(data, id) {
+        return await apiActivity.getActivityUpdates(id);
     },
     async editActivity(data, {'userId': userId, 'name': name, 'duration': duration, 'startTime': startTime, 'endTime': endTime, 'description': description, 'location': location, 'activityTypes': activityTypes, 'activityId': activityId}) {
         return await apiActivity.editActivity(userId, name, duration, startTime, endTime,description, location, activityTypes, activityId);
     },
     async deleteActivity(data, {'userId': userId, 'activityId': activityId}) {
         return await apiActivity.deleteActivity(userId, activityId);
+    },
+    async getParticipants(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
+    },
+    async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
     }
 };
 

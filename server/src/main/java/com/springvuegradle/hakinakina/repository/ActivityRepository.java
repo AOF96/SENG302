@@ -1,11 +1,19 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.Activity;
+import com.springvuegradle.hakinakina.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository for storing activities that the user can perform.
@@ -15,6 +23,13 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
 
+//    @Modifying
+    Optional<Activity> findFirstByName(String name);
+
+    @Query(value = "select * from Activity where activity_id = ?", nativeQuery = true)
+    Optional<Activity> getActivityById(long activityId);
+
+    @Modifying
     @Query(value = "INSERT INTO User_Activities (user_id, activity_id) values (?, ?);", nativeQuery = true)
     void insertActivityForUser(Long userId, Long activityId);
 
@@ -30,5 +45,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "SELECT * FROM Activity a WHERE a.continuous = ? AND author_user_id = ?", nativeQuery = true)
     List<Activity> getActivitiesForAuthorOfType(boolean isContinuous, Long id);
 
+    @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activities_Shared c WHERE c.activity_id = ?)", nativeQuery = true)
+    List<User> getSharedUsers(Long activityId);
 
 }
