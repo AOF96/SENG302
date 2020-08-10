@@ -407,9 +407,8 @@
         if (this.$route.params.activityId == null || this.$route.params.activityId === "") {
           this.$router.push('/profile');
         } else {
-          var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+          let tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
           this.activityChanges = await apiActivity.getActivityUpdates(this.$route.params.activityId, 0, 5);
-          console.log(this.activityChanges.data[1].textContext)
           if (tempActivityData === "Invalid permissions") {
             this.$router.push('/profile');
           } else {
