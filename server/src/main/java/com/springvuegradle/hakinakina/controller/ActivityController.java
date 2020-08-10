@@ -284,4 +284,17 @@ public class ActivityController {
     public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
         return activityService.getActivityOrganizers(activityId, page, size);
     }
+
+    /**
+     * Controller endpoint that receives requests to get a list of activity changes.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the changes.
+     */
+    @GetMapping("/activities/{activityId}/changes/")
+    public ResponseEntity getChanges(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityChanges(activityId, page, size);
+    }
 }

@@ -13,5 +13,6 @@ public enum ActivityAttribute {
     END_TIME,
     LOCATION,
     USERS,
-    AUTHOR
+    AUTHOR,
+    VISIBILITY
 }

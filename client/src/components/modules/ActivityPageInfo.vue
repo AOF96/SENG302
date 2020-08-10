@@ -186,17 +186,17 @@
 
             <v-flex>
               <v-card class="activityPageCard" style="min-height:0;">
-                <h2 style="padding-bottom:10px;">Updates</h2>
-                <v-timeline dense clipped v-for="(update, i) in activityChanges" :key="i">
+                <h2 style="padding-bottom:10px;">Latest Changes</h2>
+                <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
                   <v-timeline-item
-                    class="mb-4"
                     icon-color="grey lighten-2"
                     small
                   >
                     <v-row justify="space-between">
-                      <v-col cols="7">
-                        <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.date)}}</h2>
-                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.description}}</h2>
+                      <v-col>
+                        <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
+                        <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j" style="font-size:16px;color:rgba(0,0,0,0.85);"><li>{{updateText}}</li></h2>
+<!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
                       </v-col>
                     </v-row>
                   </v-timeline-item>
@@ -262,7 +262,7 @@
         continuous: false,
         description: "",
         activity_types: [],
-        activityChanges: [{"description": "this is a test", "date": "2020-08-04 15:19:00"}],
+        activityChanges: [],
         visibility: "",
         start_date: null,
         end_date: null,
@@ -289,50 +289,6 @@
         currentPage: 1,
         defaultSize: 10,
         currentSize: 10,
-        // participants: [
-        //   {
-        //     "bio":"I'm a cool guy???!",
-        //     "authoredActivities":[],
-        //     "profile_id":23010,
-        //     "firstname":"Jackie",
-        //     "lastname":"Qiu",
-        //     "middlename":"J",
-        //     "gender":"Male",
-        //     "nickname":"JackDog",
-        //     "date_of_birth":"1999-10-21",
-        //     "fitness":2,
-        //     "city":null,
-        //     "state":null,
-        //     "country":null,
-        //     "passports":["New Zealand","Australia"],
-        //     "activities":["Team-Sport","Fun","Relaxing"],
-        //     "primary_email":"jqi26@uclive.ac.nz",
-        //     "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-        //     "permission_level":1
-        //   },
-        // ],
-        // organisers: [
-        //   {
-        //     "bio":"I'm a cool guy???!",
-        //     "authoredActivities":[],
-        //     "profile_id":23010,
-        //     "firstname":"Jackie",
-        //     "lastname":"Qiu",
-        //     "middlename":"J",
-        //     "gender":"Male",
-        //     "nickname":"JackDog",
-        //     "date_of_birth":"1999-10-21",
-        //     "fitness":2,
-        //     "city":null,
-        //     "state":null,
-        //     "country":null,
-        //     "passports":["New Zealand","Australia"],
-        //     "activities":["Team-Sport","Fun","Relaxing"],
-        //     "primary_email":"jqi26@uclive.ac.nz",
-        //     "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-        //     "permission_level":1
-        //   }
-        // ],
         userTabs: [
           { tab: 'Participants', content: null },
           { tab: 'Organisers', content: null },
@@ -349,7 +305,6 @@
         if (!this.user.isLogin) {
             this.$router.push('/login');
         } else {
-            //this.activityChanges = this.getActivityUpdates(this.$route.params.activityId).data;
             this.getParticipants();
             this.getOrganisers();
         }
@@ -448,8 +403,8 @@
           this.$router.push('/profile');
         } else {
           var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
-          var tempAcvitivyUpdateData = await apiActivity.getActivityUpdates(this.$route.params.activityId);
-          console.log(tempAcvitivyUpdateData);
+          this.activityChanges = await apiActivity.getActivityUpdates(this.$route.params.activityId, 0, 5);
+          console.log(this.activityChanges.data[1].textContext)
           if (tempActivityData === "Invalid permissions") {
             this.$router.push('/profile');
           } else {

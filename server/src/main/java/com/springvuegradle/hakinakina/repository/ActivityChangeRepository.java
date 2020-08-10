@@ -19,4 +19,7 @@ public interface ActivityChangeRepository extends JpaRepository<ActivityChange, 
 
     @Query(value = "SELECT * FROM Activity_Change WHERE author_user_id = ? ORDER BY activity_change_id DESC", nativeQuery = true)
     Page<ActivityChange> getUserHomeFeedById(Pageable pageable, Long profileId);
+
+    @Query(value = "SELECT * FROM Activity_Change WHERE activity_activity_id = :activityId ORDER BY activity_change_id DESC", nativeQuery = true)
+    Page<ActivityChange> getChangesForActivity(Pageable pageable, Long activityId);
 }

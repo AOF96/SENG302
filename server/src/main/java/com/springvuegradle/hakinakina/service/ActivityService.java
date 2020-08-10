@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
+import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.*;
@@ -217,25 +218,28 @@ public class ActivityService {
      */
     private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
         Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
-        System.out.println(activityChanges);
         StringBuilder description = new StringBuilder();
         for (ActivityAttribute attribute : activityChanges) {
             if (attribute == ActivityAttribute.NAME) {
-                description.append("Activity name changed to: \"").append(newActivity.getName()).append("\"\n");
+                description.append("*Activity name was changed.");
             } else if (attribute == ActivityAttribute.DESCRIPTION) {
-                description.append("Activity description changed to: \"").append(newActivity.getDescription()).append("\"\n");
-            } else if (attribute == ActivityAttribute.ACTIVITY_TYPES) {
-                description.append("Activity activity types changed to: ").append(newActivity.getActivityTypes().toString()).append("\n");
+                description.append("*Description was updated.");
+            } else if (attribute == ActivityAttribute.ACTIVITY_TYPES && newActivity.getActivityTypes().size() != 0) {
+                description.append("*Activity types were updated.");
             } else if (attribute == ActivityAttribute.CONTINUOUS) {
-                description.append("Activity continuity changed to: ").append(newActivity.isContinuous()).append("\n");
+                if(newActivity.isContinuous()){
+                    description.append("*Activity changed to continuous.");
+                }else{
+                    description.append("*Activity changed to duration.");
+                }
             } else if (attribute == ActivityAttribute.START_TIME) {
-                description.append("Activity starting time changed to: ").append(newActivity.getStartTime()).append("\n");
-            } else if (attribute == ActivityAttribute.END_TIME) {
-                description.append("Activity ending time changed to: ").append(newActivity.getEndTime()).append("\n");
+                description.append("*Start time changed to ").append(newActivity.getStartTime()).append("\n");
+            } else if (attribute == ActivityAttribute.VISIBILITY) {
+                description.append("*Activity Visibility was changed.");
+            }  else if (attribute == ActivityAttribute.END_TIME) {
+                description.append("*End time changed to: ").append(newActivity.getEndTime()).append("\n");
             } else if (attribute == ActivityAttribute.LOCATION) {
-                description.append("Activity Location changed to: \"").append(newActivity.getLocation()).append("\"\n");
-            } else if (attribute == ActivityAttribute.USERS) {
-                description.append("Activity users changed to: \"").append(newActivity.getUsers().toString()).append("\"\n");
+                description.append("*Location was updated.");
             }
         }
         Date date = new Date();
@@ -449,6 +453,43 @@ public class ActivityService {
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Could not retrieve organizers");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
+    }
+
+    /***
+     * Retrieves a list of changes from the given activity with paginated results.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the changes.
+     */
+    public ResponseEntity getActivityChanges(Long activityId, int page, int size) {
+        ResponseEntity result;
+        try {
+            if (page < 0 || size < 0) {
+                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
+            }
+            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<ActivityChange> activityChanges = activityChangeRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
+                List<ActivityChange> changesList = activityChanges.toList();
+                List<FeedPostDto> posts = new ArrayList<>();
+                for (ActivityChange activityChange : changesList) {
+
+                    FeedPostDto newPost = new FeedPostDto();
+                    newPost.setContent(activityChange);
+                    System.out.println(newPost.dateTime);
+                    posts.add(newPost);
+                }
+                result = new ResponseEntity(posts, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not retrieve changes");
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
 

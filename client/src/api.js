@@ -265,7 +265,12 @@ export const apiActivity = {
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`),
 
-  getActivityUpdates: (activityId) => instance.get(`/activities/${activityId}/changes`),
+  getActivityUpdates: (activityId, page, size) => instance.get(`/activities/${activityId}/changes/`, {
+      params: {
+          page: page,
+          size: size
+      }
+  }),
 
 
   deleteActivity: (authorId, activityId) =>

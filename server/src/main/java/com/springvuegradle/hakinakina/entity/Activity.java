@@ -289,7 +289,9 @@ public class Activity {
         if (this.getLocation() != null && !this.getLocation().equals(other.getLocation())) {
             differences.add(ActivityAttribute.LOCATION);
         }
-
+        if (this.getVisibility() != null && !this.getVisibility().equals(other.getVisibility())) {
+            differences.add(ActivityAttribute.VISIBILITY);
+        }
         boolean sameUsers = true;
         if (!(this.getUsers().size() == other.getUsers().size())) {
             sameUsers = false;
