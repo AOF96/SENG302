@@ -43,6 +43,7 @@ public class RegisterTest {
         u = new User("Mayuko", "Williams",
                 "mwi@williams.com", "1970-01-01", Gender.FEMALE,
                 3, "P@ssw0rd!123");
+        u.setUserId(-1L);
     }
 
     @Test
@@ -114,6 +115,7 @@ public class RegisterTest {
     @Test
     void testRegistrationWithInvalidEmailFormatShouldFail() throws Exception {
         u.setPrimaryEmail("meow.com");
+        System.out.println(u.toJson());
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(u.toJson()))
