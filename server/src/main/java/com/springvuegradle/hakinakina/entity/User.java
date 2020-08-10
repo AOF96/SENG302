@@ -2,18 +2,19 @@ package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.springvuegradle.hakinakina.serialize.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.springvuegradle.hakinakina.serialize.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -137,9 +138,11 @@ public class User {
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL
-//            orphanRemoval = true
     )
     private Set<Session> sessions = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
+    private Set<UserActivityRole> userActivityRoles;
 
     public User() {}
 
@@ -370,16 +373,12 @@ public class User {
         this.permissionLevel = permissionLevel;
     }
 
-    public Set<Activity> getAuthoredActivities() {
-        return authoredActivities;
+    public Set<UserActivityRole> getUserActivityRoles() {
+        return userActivityRoles;
     }
 
-    public void setAuthoredActivities(Set<Activity> authoredActivities) {
-        this.authoredActivities = authoredActivities;
-    }
-
-    public void addAuthoredActivities(Activity authoredActivity) {
-        this.authoredActivities.add(authoredActivity);
+    public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
+        this.userActivityRoles = userActivityRoles;
     }
 
     @Override

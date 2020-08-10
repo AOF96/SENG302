@@ -43,8 +43,6 @@ public class UserSearchEndPointTest {
         setupUser(miguel, "Miguel", "Morales","Turton", "turton@acnh.com");
         User fabian = new User();
         setupUser(fabian, "Fabian", null,"Gibson", "gibson@acnh.com");
-
-
     }
 
     void setupUser(User user, String fName, String mName, String lName, String email) {

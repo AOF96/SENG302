@@ -1,6 +1,8 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -12,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -31,12 +30,14 @@ public class ActivityService {
     public SessionRepository sessionRepository;
     public SearchRepository searchRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
+    private UserActivityRoleRepository userActivityRoleRepository;
 
     public ActivityService(UserRepository userRepository,
                            ActivityRepository activityRepository,
                            ActivityTypeRepository activityTypeRepository,
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
+                           UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
@@ -44,6 +45,7 @@ public class ActivityService {
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.searchRepository = searchRepository;
+        this.userActivityRoleRepository = userActivityRoleRepository;
     }
 
     /**
@@ -91,7 +93,7 @@ public class ActivityService {
                 }
 
                 Date date = new Date();
-                Timestamp ts=new Timestamp(date.getTime());
+                Timestamp ts = new Timestamp(date.getTime());
 
                 if (!activity.getStartTime().after(ts)) {
                     return new ResponseEntity<>("Activity start date and time must be in the future", HttpStatus.valueOf(400));
@@ -103,8 +105,9 @@ public class ActivityService {
             }
 
             //TODO Validate activity location in U9
-            activity.setAuthor(userRepository.getUserById(profileId).get());
-            activityRepository.save(activity);
+            Activity savedActivity = activityRepository.save(activity);
+            UserActivityKey userActivityKey = new UserActivityKey(profileId, savedActivity.getId());
+            userActivityRoleRepository.save(new UserActivityRole(userActivityKey, ActivityRole.CREATOR));
 
             return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
@@ -116,7 +119,7 @@ public class ActivityService {
     /**
      * Edits an activity for the user
      *
-     * @param newActivity     the activity the user wants to add
+     * @param newActivity  the activity the user wants to add
      * @param profileId    the user's id
      * @param sessionToken the user's token from their current session
      * @return response entity to inform user if adding an activity was successful or not
@@ -139,7 +142,7 @@ public class ActivityService {
                 }
 
                 Date date = new Date();
-                Timestamp ts=new Timestamp(date.getTime());
+                Timestamp ts = new Timestamp(date.getTime());
 
                 if (!newActivity.getStartTime().after(ts)) {
                     return new ResponseEntity("Activity start date and time must be in the future", HttpStatus.valueOf(400));
@@ -196,6 +199,7 @@ public class ActivityService {
      * @param sessionToken the user's token from their current session.
      * @return response entity with the result of the operation.
      */
+    @Transactional
     public ResponseEntity removeActivity(long profileId, long activityId, String sessionToken) {
 
         ResponseEntity result;
@@ -209,11 +213,13 @@ public class ActivityService {
             } else if (activityToDelete == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
 
-            } else if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) && session.getUser().getPermissionLevel() == 0) {
+            } else if ((profileId != session.getUser().getUserId()
+                    || userActivityRoleRepository.findByIdActivityIdAndIdUserIdAndActivityRole(profileId, activityId, ActivityRole.CREATOR).isPresent())
+                    && session.getUser().getPermissionLevel() == 0) {
                 result = responseHandler.formatErrorResponse(403, "Invalid user");
 
             } else {
-                activityRepository.deleteActivityForUser(profileId, activityId);
+                userActivityRoleRepository.deleteByIdActivityIdAndIdUserId(activityId, profileId);
                 activityRepository.delete(activityToDelete);
                 result = responseHandler.formatSuccessResponse(200, "Activity successfully deleted");
             }
@@ -296,6 +302,34 @@ public class ActivityService {
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Could not retrieve shared users");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
+    }
+
+    /***
+     * Retrieves a list of organizers from the given activity with paginated results.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the organizers.
+     */
+    public ResponseEntity getActivityOrganizers(Long activityId, int page, int size) {
+        ResponseEntity result;
+        try {
+            if (page < 0 || size < 0) {
+                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
+            }
+            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<Object> users = searchRepository.getOrganizers(PageRequest.of(page, size), activityId);
+                result = new ResponseEntity(users, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not retrieve organizers");
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
 

@@ -6,6 +6,7 @@ import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -265,4 +266,31 @@ public class ActivityController {
 //        return new ResponseEntity(result, HttpStatus.valueOf(200));
 //    }
 
+    /***
+     * Controller endpoint that receives requests to get activity participants from the database. Calls the service method
+     * where all the logic is handled.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, otherwise it returns a 200 code with a list of the
+     * participants.
+     */
+    @GetMapping("/activities/{activityId}/participants/")
+    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityParticipants(activityId, page, size);
+    }
+
+    /***
+     * Controller endpoint that receives requests to get activity organizers from the database. Calls the service method
+     * where all the logic is handled.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the organizers.
+     */
+    @GetMapping("/activities/{activityId}/organizers/")
+    public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityOrganizers(activityId, page, size);
+    }
 }
