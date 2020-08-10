@@ -270,24 +270,8 @@ public class ActivityController {
      * participants.
      */
     @GetMapping("/activities/{activityId}/participants/")
-    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        ResponseEntity result;
-        try {
-            if (page < 0 || size < 0) {
-                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
-            }
-            else if (activityRepository.findActivityById(activityId) == null) {
-                result = responseHandler.formatErrorResponse(404, "Activity not found");
-            } else {
-                Page<SearchUserDto> users = activityService.getActivityParticipants(activityId, page, size);
-                result = new ResponseEntity(users, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not retrieve participants");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-
-        return result;
+    public ResponseEntity getParticipants(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityParticipants(activityId, page, size);
     }
 
     /***

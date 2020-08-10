@@ -9,11 +9,13 @@ import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +73,7 @@ public class ActivityControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
+    @Mock
     private SearchService searchService;
 
     @BeforeEach
@@ -528,15 +530,12 @@ public class ActivityControllerTest {
                 "    \"empty\": false\n" +
                 "}";
 
-        List<SearchUserDto> userResponses = new ArrayList<>();
-        Page<SearchUserDto> pagedResponse = new PageImpl(userResponses);
-
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(user1));
         when(userRepository.findById((long) 2)).thenReturn(Optional.of(user2));
         when(activityRepository.findActivityById((long) 1)).thenReturn(activity);
-        when(service.getActivityParticipants(any(Long.class), any(int.class), any(int.class))).thenReturn(pagedResponse);
+        when(service.getActivityParticipants(any(Long.class), any(int.class), any(int.class))).thenReturn(new ResponseEntity(testResponse, HttpStatus.OK));
 
-        this.mockMvc.perform(get("/activities/" + activity.getId() + "/participants/?page= +" + 0 + "&size=" + 3))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/" + activity.getId() + "/participants/?page= +" + 0 + "&size=" + 3))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString(testResponse)));
     }
