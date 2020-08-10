@@ -323,13 +323,11 @@ export const apiActivity = {
       let userDetails = {"email": email, "role": role};
       membersList.push(userDetails);
     }
-    profileId = activityId
-    // let result = await instance.put(`/profiles/${profileId}/activities/${activityId}/visibility`, {
-    //     "visibility": "restricted",
-    //     "accessors": membersList
-    //     }
-    //     );
-    // return result;
+      return await instance.put(`/profiles/${profileId}/activities/${activityId}/visibility`, {
+            "visibility": "restricted",
+            "accessors": membersList
+        }
+    );
   },
 
   followActivity: (profileId, activityId) =>

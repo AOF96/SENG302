@@ -219,7 +219,9 @@
                               rounded></v-select>
                     <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
                            outlined rounded>Add</v-btn>
-                    <h6 class="activityPageErrorMessage" v-if="displayInvalidEmailError">{{ invalidEmailErrorMessage }}
+                    <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage }}
+                    </h6>
+                    <h6 class="editSuccessMessage" v-if="displaySharedUsersSuccessMsg">{{ sharedUsersStatusMsg }}
                     </h6>
                   <div class="activityPageCardDiv">
                     <v-card flat>
@@ -281,8 +283,8 @@
             { value: "organiser", text: "Organiser"},
             { value: "follower", text: "Follower"}
         ],
-        displayInvalidEmailError: false,
-        invalidEmailErrorMessage: "",
+        displayInvalidInputError: false,
+        invalidInputErrorMessage: "",
         participants: [],
         organisers: [],
         defaultPage: 1,
@@ -293,7 +295,10 @@
           { tab: 'Participants', content: null },
           { tab: 'Organisers', content: null },
         ],
-        sharedUsers: []
+        sharedUsers: [],
+        displaySharedUsersSuccessMsg: false,
+        displaySharedUsersErrorMsg: false,
+        sharedUsersStatusMsg: ""
       }
     },
 
@@ -321,28 +326,39 @@
       /**
        * Parses the list of emails the user entered by splitting them and removing any extra spaces. Checks each one is
        * valid by calling validateEmail, and displays an error message stating which email is invalid if any.
-       */
-      parseEmails() {
-        this.displayInvalidEmailError = false;
+       */ async parseEmails() {
+        this.displayInvalidInputError = false;
         const separators = [' ', ';'];
         let emails = this.emailsToAdd.split(new RegExp(separators.join('|'), 'g'));
         let emailsAreCorrect = true;
         for (let i = 0; i < emails.length; i++) {
-            if (emails[i] === "") {
-                emails.splice(i, 1);
-                i--;
-            }
+          if (emails[i] === "") {
+            emails.splice(i, 1);
+            i--;
+          }
         }
         for (let email of emails) {
-            if (!this.validateEmail(email)) {
-              this.invalidEmailErrorMessage = "'" + email + "' is an invalid email address.";
-              this.displayInvalidEmailError = true;
-              emailsAreCorrect = false;
-              break; // So that the first invalid email is displayed
-            }
+          if (!this.validateEmail(email)) {
+            this.invalidInputErrorMessage = "'" + email + "' is an invalid email address.";
+            this.displayInvalidInputError = true;
+            this.displaySharedUsersSuccessMsg = false;
+            emailsAreCorrect = false;
+            break; // So that the first invalid email is displayed
+          }
         }
         if (emailsAreCorrect) {
-          apiActivity.setActivityMembers(emails, this.newRole, this.authorId, this.activityId);
+          await apiActivity.setActivityMembers(emails, this.newRole, this.authorId, this.activityId)
+          .then(response => {
+            this.sharedUsersStatusMsg = response.data;
+            this.displaySharedUsersSuccessMsg = true;
+          })
+          .catch(error => {
+            console.log(error);
+            this.displaySharedUsersSuccessMsg = false;
+            this.invalidInputErrorMessage = "Something went wrong, please check the information provided is correct.";
+            this.displayInvalidInputError = true;
+          })
+
         }
       },
 
@@ -404,7 +420,7 @@
         } else {
           var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
           this.activityChanges = await apiActivity.getActivityUpdates(this.$route.params.activityId, 0, 5);
-          console.log(this.activityChanges.data[1].textContext)
+          // console.log(this.activityChanges.data[1].textContext)
           if (tempActivityData === "Invalid permissions") {
             this.$router.push('/profile');
           } else {
