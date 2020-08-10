@@ -310,7 +310,6 @@
       this.loadActivity();
       this.getParticipants();
       this.getOrganisers();
-      this.userTabs[1].content = this.organisers;
       return this.checkFollowing();
     },
     methods: {
@@ -361,6 +360,9 @@
         dateString = dateString.slice(4);
         return dateString;
       },
+      /**
+       * Retrieves participants for the activity
+       */
       async getParticipants() {
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.currentPage, this.currentSize);
@@ -370,10 +372,14 @@
           console.error(err)
         }
       },
+      /**
+       * Retrieves organisers for the activity
+       */
       async getOrganisers() {
         try {
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.currentPage, this.currentSize);
-          this.organisers = response.data;
+          this.organisers = response.data.content;
+          this.userTabs[1].content = this.organisers;
         } catch (err) {
           console.error(err)
         }

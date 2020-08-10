@@ -419,7 +419,7 @@ public class ActivityService {
             else if (activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
-                Page<User> userPage = userRepository.getParticipants(PageRequest.of(page, size), activityId, ActivityRole.PARTICIPANT);
+                Page<User> userPage = userRepository.getParticipantsOROrganisers(PageRequest.of(page, size), activityId, ActivityRole.PARTICIPANT);
                 Page<SearchUserDto> users = searchService.userPageToSearchResponsePage(userPage);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
@@ -448,7 +448,8 @@ public class ActivityService {
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
-                Page<Object> users = searchRepository.getOrganizers(PageRequest.of(page, size), activityId);
+                Page<User> userPage = userRepository.getParticipantsOROrganisers(PageRequest.of(page, size), activityId, ActivityRole.ORGANISER);
+                Page<SearchUserDto> users = searchService.userPageToSearchResponsePage(userPage);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
         } catch (Exception e) {

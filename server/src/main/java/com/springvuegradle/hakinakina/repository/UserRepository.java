@@ -98,7 +98,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
            "INNER JOIN UserActivityRole r ON u.userId = r.user.userId " +
            "WHERE r.activity.id = :activityId " +
            "AND r.activityRole = :role")
-   Page<User> getParticipants(Pageable pageable, Long activityId, ActivityRole role);
+   Page<User> getParticipantsOROrganisers(Pageable pageable, Long activityId, ActivityRole role);
 
     /***
      * Query that updated the database to set the permission level to 1 of the user being promoted to admin.
