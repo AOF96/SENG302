@@ -76,6 +76,9 @@ public class ActivityVisibilityTest {
     private SearchRepository searchRepository;
 
     @Autowired
+    private ActivityChangeRepository activityChangeRepository;
+
+    @Autowired
     private UserService userService;
 
     private User testUser;
