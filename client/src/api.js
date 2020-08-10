@@ -331,5 +331,12 @@ export const apiActivity = {
     instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
 
   unfollowActivity: (profileId, activityId) =>
-    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`)
+    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+
+  getSharedUsers: (activityId) => instance.get(`/activities/${activityId}/shared`,{
+      params: {
+          page: 0,
+          size: 10
+      }
+  })
 };

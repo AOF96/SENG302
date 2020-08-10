@@ -67,8 +67,11 @@ public class ActivityService {
      */
     public ResponseEntity<String> addActivity(Activity activity, long profileId, String sessionToken) {
         try {
-            if(userRepository.getUserById(profileId).isEmpty()){
+            Optional<User> author = userRepository.getUserById(profileId);
+            if (author.isEmpty()){
                 return new ResponseEntity<>("Invalid User ID", HttpStatus.valueOf(403));
+            } else {
+                activity.setAuthor(author.get());
             }
             if (activity.getStartTime() != null) {
                 activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
