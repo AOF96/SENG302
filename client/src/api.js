@@ -264,10 +264,9 @@ export const apiActivity = {
     }),
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`),
+
   getActivityUpdates: (activityId) => instance.get(`/activities/${activityId}/changes`),
 
-
-  getActivityUpdates: (activityId) => instance.get(`/activities/${activityId}/updates`),
 
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),

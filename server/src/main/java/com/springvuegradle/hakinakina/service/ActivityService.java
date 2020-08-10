@@ -114,9 +114,11 @@ public class ActivityService {
             }
 
             //TODO Validate activity location in U9
+            activity.setAuthor(userRepository.getUserById(profileId).get());
             Activity savedActivity = activityRepository.save(activity);
             UserActivityKey userActivityKey = new UserActivityKey(profileId, savedActivity.getId());
             userActivityRoleRepository.save(new UserActivityRole(userActivityKey, ActivityRole.CREATOR));
+
 
             return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
@@ -346,6 +348,12 @@ public class ActivityService {
             userActivityRoleRepository.save(relationship);
         }
     }
+
+    /**
+     * The function maps the activity to its id, name and description.
+     * @param activities list of activities
+     * @return a mapped list of activities to its id, name and description
+     */
 
     public List<Map<String, String>> getActivitySummaries(List<Activity> activities) {
         List<Map<String, String>> result = new ArrayList<>();
