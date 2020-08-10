@@ -58,6 +58,9 @@ public class HomeFeedControllerTest {
     @MockBean
     private SearchRepository searchRepository;
 
+    @MockBean
+    private UserActivityRoleRepository userActivityRoleRepository;
+
     @BeforeEach
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();

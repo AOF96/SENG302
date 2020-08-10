@@ -122,9 +122,15 @@ export default {
     }
   },
   mounted() {
-    this.initialiser();
-    const element = this.$el.querySelector('#searchQueryInput');
-    if (element) this.$nextTick(() => { element.focus() });
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.initialiser();
+          const element = this.$el.querySelector('#searchQueryInput');
+          if (element) this.$nextTick(() => {
+              element.focus()
+          });
+      }
   },
   watch: {
     "$route.params": {

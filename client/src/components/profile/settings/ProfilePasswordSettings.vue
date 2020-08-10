@@ -191,7 +191,11 @@ export default {
     }
   },
   mounted() {
-    this.loadSearchedUser();
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.loadSearchedUser();
+      }
   }
 };
 </script>

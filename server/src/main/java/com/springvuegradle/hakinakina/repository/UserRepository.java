@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.entity.ActivityRole;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,11 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Optional<User> getUserById(long profileId);
 
     @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
-    String getIdByEmail(String email);
+    Long getIdByEmail(String email);
+
+    @Query(value = "select user_id from User where primary_email = ?1 UNION " +
+            "(select user_user_id from Email where email = ?1)", nativeQuery = true)
+    Long getIdByAnyEmail(String email);
 
     @Query(value = "delete from User where user_id = ?", nativeQuery = true)
     void deleteUserById(Long profileId);
@@ -87,6 +92,13 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + "AND (:lastname IS NULL OR u.last_name like :lastname%) "
             + "AND u.permission_level < 2 ", nativeQuery = true)
     Page<User> getUsersWithActivityTypeAnd(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
+
+
+   @Query(value = "SELECT u FROM User u " +
+           "INNER JOIN UserActivityRole r ON u.userId = r.user.userId " +
+           "WHERE r.activity.id = :activityId " +
+           "AND r.activityRole = :role")
+   Page<User> getParticipantsOROrganisers(Pageable pageable, Long activityId, ActivityRole role);
 
     /***
      * Query that updated the database to set the permission level to 1 of the user being promoted to admin.

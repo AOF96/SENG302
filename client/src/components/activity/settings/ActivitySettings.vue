@@ -9,6 +9,16 @@
                 <form class="CreateActivityFormContainer">
                     <label class="editActivityLabel" for="name">Activity Name</label>
                     <input class="editActivityInput" type="text" id="name" v-model="name" placeholder="Activity Name" required />
+                    <label class="editActivityLabel" for="time">Visibility</label>
+                    <select
+                            class="editActivitySelect"
+                            id="visibility"
+                            v-model="visibility"
+                    >
+                        <option value="public" selected>Public</option>
+                        <option value="restricted">Restricted</option>
+                        <option value="private">Private</option>
+                    </select>
 
                     <label class="editActivityLabel" for="time">Continuous?</label>
                     <select
@@ -43,7 +53,7 @@
                         placeholder="Activity Description">
                     </textarea>
 
-                    <label class="editActivityLabel">Location: <b>{{ location }}</b></label>
+                    <label class="editActivityLabel">Location</label>
                     <div>
                       <v-combobox
                           v-model="city"
@@ -61,6 +71,7 @@
                           id="inputCity"
                           outlined
                           class="locationCombo"
+                          autocomplete="new"
                           dense
                           style="margin: 0 20px;"
                       />
@@ -81,6 +92,7 @@
                           id="inputState"
                           outlined
                           class="locationCombo"
+                          autocomplete="new"
                           dense
                           style="margin: 0 20px;"
                       />
@@ -97,6 +109,7 @@
                           id="inputCountry"
                           outlined
                           class="locationCombo"
+                          autocomplete="new"
                           dense
                           style="margin: 0 20px;"
                       />
@@ -142,7 +155,6 @@ import { apiUser, apiActivity } from "../../../api";
 import router from "../../../router";
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
-
 export default {
     data() {
         return {
@@ -162,6 +174,7 @@ export default {
             combinedEndTime: null,
             suggestedLocations: [],
             showLocations: false,
+            visibility: "public",
             city: null,
             country: null,
             state: null,
@@ -172,7 +185,6 @@ export default {
             isLoading: false,
             stateLoading: false,
             features: []
-
         };
     },
 
@@ -181,7 +193,11 @@ export default {
      * countries for the user to choose.
      */
     mounted: function() {
-      this.loadCountries();
+        if (!this.user.isLogin) {
+            this.$router.push('/login');
+        } else {
+            this.loadCountries();
+        }
     },
 
     computed: {
@@ -258,7 +274,6 @@ export default {
           this.location = this.city + ',' + this.state + ',' + this.country
           console.log(this.location);
         },
-
 
         /**
          * Shows/hides date and time selection if duration is duration/continuous
@@ -357,6 +372,7 @@ export default {
             }
             return true;
         },
+
         /**
          * The method is used to populate the drop down menu, that allows user to select their current country.
          */
@@ -374,7 +390,6 @@ export default {
               })
               .catch(error => console.log(error));
         },
-
 
         /**
          * Check all activity form conditions
@@ -405,8 +420,8 @@ export default {
                 // All passed
                 return true;
             }
-
         },
+
       /**
        * The method is used to filter out the feature object without any cities
        */
@@ -431,6 +446,7 @@ export default {
         }
         return featuresState;
       },
+
         /**
          * Checks form conditions and sends create activity request if conditions pass
          */
@@ -449,7 +465,7 @@ export default {
 
             // Send a create request
             apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
-                this.combinedEndTime, this.description, this.location, this.activity_types_selected)
+                this.combinedEndTime, this.description, this.location, this.activity_types_selected, this.visibility)
                 .then(
                     response => {
                         document.getElementById("activity_success").hidden = false;

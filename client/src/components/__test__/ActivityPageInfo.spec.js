@@ -116,17 +116,17 @@ describe("test if you are author of the activity", () => {
     wrapper = mount(Activity, { store, localVue, mocks, stubs })
   });
 
-  it('should have delete button on the page if you are the author', async() => {
-    await flushPromises();
-    expect(wrapper.find('#activityPageInfoDeleteButton').exists()).toBe(true)
-  });
-
-  it('should be able to delete the activity by clicking the delete button', async() => {
-    await flushPromises();
-    await wrapper.find('#activityPageInfoDeleteButton').trigger('click');
-    await flushPromises();
-    expect(apiActivity.deleteActivity).toBeCalledWith(2, 99)
-  })
+  // it('should have delete button on the page if you are the author', async() => {
+  //   await flushPromises();
+  //   expect(wrapper.find('#activityPageInfoDeleteButton').exists()).toBe(true)
+  // });
+  //
+  // it('should be able to delete the activity by clicking the delete button', async() => {
+  //   await flushPromises();
+  //   await wrapper.find('#activityPageInfoDeleteButton').trigger('click');
+  //   await flushPromises();
+  //   expect(apiActivity.deleteActivity).toBeCalledWith(2, 99)
+  // })
 })
 
 describe('test if you are not the author of this activity', () => {
