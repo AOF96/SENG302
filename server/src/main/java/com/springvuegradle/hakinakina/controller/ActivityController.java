@@ -266,7 +266,7 @@ public class ActivityController {
             else if (activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
-                Page<SearchUserDto> users = activityService.getActivityParticipants(activityId, page, size, sessionToken);
+                Page<SearchUserDto> users = activityService.getActivityParticipants(activityId, page, size);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
         } catch (Exception e) {

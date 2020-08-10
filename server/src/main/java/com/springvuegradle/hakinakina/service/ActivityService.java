@@ -373,8 +373,8 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the participants.
      */
-    public Page<SearchUserDto> getActivityParticipants(Long activityId, int page, int size, String sessionToken) {
-        Page<User> userPage = searchRepository.getParticipants(PageRequest.of(page, size), activityId);
+    public Page<SearchUserDto> getActivityParticipants(Long activityId, int page, int size) {
+        Page<User> userPage = userRepository.getParticipants(PageRequest.of(page, size), activityId, ActivityRole.PARTICIPANT);
         return searchService.userPageToSearchResponsePage(userPage);
     }
 

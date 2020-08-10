@@ -93,7 +93,7 @@ public interface SearchRepository extends JpaRepository<User, Long>, JpaSpecific
     Page<Object> getOrganizers(Pageable pageable , Long activityId);
 
     @Query(value = "SELECT DISTINCT(u.user_id) FROM User u " +
-            "INNER JOIN User_Activity_Role r ON u.user_id = r.user_id " +
+            "INNER JOIN User_Activity_Role r ON r.user_id = u.user_id " +
             "WHERE r.activity_id = :activityId " +
             "AND activityRole = 0", nativeQuery = true)
     Page<User> getParticipants(Pageable pageable, Long activityId);

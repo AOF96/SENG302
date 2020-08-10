@@ -73,7 +73,7 @@
                           :key="item.tab"
                   >
                     <v-card flat>
-                      <v-list-item two-line v-for="user in item.content.slice(0, 3)" :key="user.profile_id" link @click.stop="">
+                      <v-list-item two-line v-for="user in item.content" :key="user.email" link @click.stop="">
                         <v-list-item-content>
                           <v-list-item-title v-if="user.middlename != null">
                             {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -81,7 +81,7 @@
                           <v-list-item-title v-else>
                             {{ user.firstname + " " + user.lastname}}
                           </v-list-item-title>
-                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                          <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-menu
                                 transition="slide-y-transition"
@@ -143,7 +143,7 @@
                   >
                     <v-card flat
                     >
-                      <v-list-item two-line v-for="user in item.content" :key="user.profile_id" link>
+                      <v-list-item two-line v-for="user in item.content" :key="user.email" link>
                         <v-list-item-content>
                           <v-list-item-title v-if="user.middlename != null">
                             {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -151,7 +151,7 @@
                           <v-list-item-title v-else>
                             {{ user.firstname + " " + user.lastname}}
                           </v-list-item-title>
-                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                          <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                         </v-list-item-content>
                       </v-list-item>
                     </v-card>
@@ -285,50 +285,6 @@
         currentPage: 0,
         defaultSize: 10,
         currentSize: 10,
-        // participants: [
-        //   {
-        //     "bio":"I'm a cool guy???!",
-        //     "authoredActivities":[],
-        //     "profile_id":23010,
-        //     "firstname":"Jackie",
-        //     "lastname":"Qiu",
-        //     "middlename":"J",
-        //     "gender":"Male",
-        //     "nickname":"JackDog",
-        //     "date_of_birth":"1999-10-21",
-        //     "fitness":2,
-        //     "city":null,
-        //     "state":null,
-        //     "country":null,
-        //     "passports":["New Zealand","Australia"],
-        //     "activities":["Team-Sport","Fun","Relaxing"],
-        //     "primary_email":"jqi26@uclive.ac.nz",
-        //     "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-        //     "permission_level":1
-        //   },
-        // ],
-        // organisers: [
-        //   {
-        //     "bio":"I'm a cool guy???!",
-        //     "authoredActivities":[],
-        //     "profile_id":23010,
-        //     "firstname":"Jackie",
-        //     "lastname":"Qiu",
-        //     "middlename":"J",
-        //     "gender":"Male",
-        //     "nickname":"JackDog",
-        //     "date_of_birth":"1999-10-21",
-        //     "fitness":2,
-        //     "city":null,
-        //     "state":null,
-        //     "country":null,
-        //     "passports":["New Zealand","Australia"],
-        //     "activities":["Team-Sport","Fun","Relaxing"],
-        //     "primary_email":"jqi26@uclive.ac.nz",
-        //     "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-        //     "permission_level":1
-        //   }
-        // ],
         userTabs: [
           { tab: 'Participants', content: null },
           { tab: 'Organisers', content: null },
@@ -704,15 +660,12 @@
     mounted: function () {
         if (!this.user.isLogin) {
             this.$router.push('/login');
-        } else {
-            //this.activityChanges = this.getActivityUpdates(this.$route.params.activityId).data;
-            this.getParticipants();
-            this.getOrganisers();
         }
     },
     created: function () {
       this.loadActivity();
-      this.userTabs[0].content = this.participants;
+      this.getParticipants();
+      this.getOrganisers();
       this.userTabs[1].content = this.organisers;
     },
     methods: {
@@ -766,10 +719,18 @@
       async getParticipants() {
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.currentPage, this.currentSize);
-          this.participants = response.data;
+          this.participants = response.data.content;
+          this.userTabs[0].content = this.participants;
         } catch (err) {
           console.error(err)
         }
+        // await apiActivity.getParticipants(this.$route.params.activityId, this.currentPage, this.currentSize)
+        //   .then((response) => {
+        //     this.participants = response.data.content[0];
+        //     console.log(this.participants[0]);
+        //   }).catch((err) => {
+        //     console.log(err);
+        //   })
       },
       async getOrganisers() {
         try {
