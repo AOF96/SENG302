@@ -125,23 +125,23 @@ public class ActivityVisibilityTest {
         return testActivity;
     }
 
-    @Test @Transactional
-    public void updateActivityVisibilityTest() throws Exception {
-        Session testSession = new Session("t0k3n");
-
-        activityVisibilityDto.setVisibility(Visibility.PUBLIC);
-        Activity newActivity = activityRepository.save(createTestActivity());
-        activityRepository.insertActivityForUser(testUser.getUserId(), newActivity.getId());
-        testSession.setUser(testUser);
-        sessionRepository.save(testSession);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
-                .cookie(new Cookie("s_id", "t0k3n"))
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(activityVisibilityDto)))
-                .andExpect(status().is(200))
-                .andExpect(content().string(containsString("Activity Visibility Status Updated")));
-    }
+//    @Test @Transactional
+//    public void updateActivityVisibilityTest() throws Exception {
+//        Session testSession = new Session("t0k3n");
+//
+//        activityVisibilityDto.setVisibility(Visibility.PUBLIC);
+//        Activity newActivity = activityRepository.save(createTestActivity());
+//        activityRepository.insertActivityForUser(testUser.getUserId(), newActivity.getId());
+//        testSession.setUser(testUser);
+//        sessionRepository.save(testSession);
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
+//                .cookie(new Cookie("s_id", "t0k3n"))
+//                .contentType("application/json")
+//                .content(objectMapper.writeValueAsString(activityVisibilityDto)))
+//                .andExpect(status().is(200))
+//                .andExpect(content().string(containsString("Activity Visibility Status Updated")));
+//    }
 
 //    @Test @Transactional
 //    public void updateUserActivityVisibilityTest() throws Exception{
