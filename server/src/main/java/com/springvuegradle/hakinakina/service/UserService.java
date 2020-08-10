@@ -37,7 +37,7 @@ import java.util.*;
 public class UserService {
 
     private UserRepository userRepository;
-    private ActivityRepository activityRepository;
+    public ActivityRepository activityRepository;
     private EmailRepository emailRepository;
     private PassportCountryRepository countryRepository;
     private SessionRepository sessionRepository;
@@ -53,6 +53,7 @@ public class UserService {
                        ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
         this.emailRepository = emailRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
@@ -491,7 +492,12 @@ public class UserService {
      * @param id            The Long ID of the User to modify
      * @return ResponseEntity of result
      */
-    public ResponseEntity editActivityTypes(List<String> activityTypes, long id) {
+    public ResponseEntity editActivityTypes(List<String> activityTypes, long id, String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
+
         boolean result = false;
         HashSet<ActivityType> newActivityTypes = new HashSet<>();
 
@@ -676,6 +682,54 @@ public class UserService {
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
 
+        return result;
+    }
+
+    /***
+     * Checks that both user and activity exist and checks if the user follows the activity already or not before
+     * allowing the user to follow the activity
+     * @param profileId id of the user that wishes to follow the activity
+     * @param activityId id of the activity that the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return response entity with status code depending on wither it was successful or not
+     */
+    public ResponseEntity subscribeToActivity(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity result;
+
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if (!profileId.equals(session.getUser().getUserId())
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else {
+                Optional<User> user = userRepository.getUserById(profileId);
+                if (user.isPresent()) {
+                    User validUser = user.get();
+                    Set<Activity> validUserFollowingList = validUser.getActivities();
+                    if (validUserFollowingList.contains(activity)) {
+                        result = responseHandler.formatErrorResponse(403,
+                                "User already follows this activity");
+                    } else {
+                        activity.addUsers(validUser);
+                        userRepository.save(validUser);
+                        activityRepository.save(activity);
+                        result = responseHandler.formatSuccessResponse(201, "User " + profileId
+                                + " now follows activity " + activityId);
+                    }
+                } else {
+                    result = responseHandler.formatErrorResponse(404, "No user with id "
+                            + profileId);
+                }
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not subscribe to activity");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
         return result;
     }
 

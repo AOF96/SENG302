@@ -68,8 +68,8 @@ const actions = {
     async getActivityById(data, id) {
         return await apiActivity.getActivityById(id);
     },
-    async getActivityUpdates(data, id) {
-        return await apiActivity.getActivityUpdates(id);
+    async getActivityUpdates(data, {'id': id, 'page': page, 'size': size}) {
+        return await apiActivity.getActivityUpdates(id, page, size);
     },
     async editActivity(data, {'userId': userId, 'name': name, 'duration': duration, 'startTime': startTime, 'endTime': endTime, 'description': description, 'location': location, 'activityTypes': activityTypes, 'activityId': activityId}) {
         return await apiActivity.editActivity(userId, name, duration, startTime, endTime,description, location, activityTypes, activityId);

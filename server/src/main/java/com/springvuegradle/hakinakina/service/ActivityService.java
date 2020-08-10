@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
+import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,7 @@ public class ActivityService {
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
     public SearchRepository searchRepository;
+    public ActivityChangeRepository activityChangeRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
     private SearchService searchService;
@@ -41,12 +44,14 @@ public class ActivityService {
                            SessionRepository sessionRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
+                           ActivityChangeRepository activityChangeRepository,
                            SearchService searchService) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.activityChangeRepository = activityChangeRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
@@ -62,8 +67,11 @@ public class ActivityService {
      */
     public ResponseEntity<String> addActivity(Activity activity, long profileId, String sessionToken) {
         try {
-            if(userRepository.getUserById(profileId).isEmpty()){
+            Optional<User> author = userRepository.getUserById(profileId);
+            if (author.isEmpty()){
                 return new ResponseEntity<>("Invalid User ID", HttpStatus.valueOf(403));
+            } else {
+                activity.setAuthor(author.get());
             }
             if (activity.getStartTime() != null) {
                 activity.getStartTime().setTime((activity.getStartTime().getTime() - (12 * 60 * 60 * 1000)));
@@ -109,9 +117,11 @@ public class ActivityService {
             }
 
             //TODO Validate activity location in U9
+            activity.setAuthor(userRepository.getUserById(profileId).get());
             Activity savedActivity = activityRepository.save(activity);
             UserActivityKey userActivityKey = new UserActivityKey(profileId, savedActivity.getId());
             userActivityRoleRepository.save(new UserActivityRole(userActivityKey, ActivityRole.CREATOR));
+
 
             return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
         } catch (Exception e) {
@@ -131,6 +141,7 @@ public class ActivityService {
     public ResponseEntity editActivity(Activity newActivity, long profileId, long activityId, String sessionToken) {
         EnumSet<Visibility> options = EnumSet.of(Visibility.PUBLIC, Visibility.PRIVATE, Visibility.RESTRICTED);
         try {
+            addToChangesDatabase(newActivity, activityRepository.getOne(activityId), profileId, activityId);
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             if (session == null) {
                 return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
@@ -189,14 +200,55 @@ public class ActivityService {
             activity.setVisibility(newActivity.getVisibility());
 
             activityRepository.save(activity);
+
             return new ResponseEntity("Activity has been updated", HttpStatus.valueOf(200));
         } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "cannot add activity");
+            ErrorHandler.printProgramException(e, "cannot edit activity");
             return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
         }
     }
 
     /***
+     * Adds a new field to the activity change database that details the changes made to an activity
+     * @param newActivity activity containing all changes being made
+     * @param oldActivity activity to be modified
+     * @param profileId id of the user making the changes
+     * @param activityId id of the activity being changed
+     */
+    private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
+        Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
+        StringBuilder description = new StringBuilder();
+        for (ActivityAttribute attribute : activityChanges) {
+            if (attribute == ActivityAttribute.NAME) {
+                description.append("*Activity name was changed.");
+            } else if (attribute == ActivityAttribute.DESCRIPTION) {
+                description.append("*Description was updated.");
+            } else if (attribute == ActivityAttribute.ACTIVITY_TYPES && newActivity.getActivityTypes().size() != 0) {
+                description.append("*Activity types were updated.");
+            } else if (attribute == ActivityAttribute.CONTINUOUS) {
+                if(newActivity.isContinuous()){
+                    description.append("*Activity changed to continuous.");
+                }else{
+                    description.append("*Activity changed to duration.");
+                }
+            } else if (attribute == ActivityAttribute.START_TIME) {
+                description.append("*Start time changed to ").append(newActivity.getStartTime()).append("\n");
+            } else if (attribute == ActivityAttribute.VISIBILITY) {
+                description.append("*Activity Visibility was changed.");
+            }  else if (attribute == ActivityAttribute.END_TIME) {
+                description.append("*End time changed to: ").append(newActivity.getEndTime()).append("\n");
+            } else if (attribute == ActivityAttribute.LOCATION) {
+                description.append("*Location was updated.");
+            }
+        }
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        ActivityChange activityChangesToAdd = new ActivityChange(description.toString(), timestamp,
+                userRepository.getOne(profileId), activityRepository.getOne(activityId));
+        activityChangeRepository.save(activityChangesToAdd);
+    }
+
+    /**
      * Removes an activity from the database if the user is authenticated.
      * @param profileId the user's profile id.
      * @param activityId the activity id to be removed.
@@ -244,14 +296,12 @@ public class ActivityService {
      *
      * @param profileId  the logged in user's id.
      * @param activityId the activity id of the activity being managed.
-     * @param sessionToken the user's token from the cookie for their current session.
      * @param request level of visibility and the set of user's email allowed to access the activity.
      * @return A ResponseEntity with a success or error code.
      */
     @Transactional
     public ResponseEntity<String> updateActivityVisibility (Long profileId,
                                                             Long activityId,
-                                                            String sessionToken,
                                                             ActivityVisibilityDto request) {
         Activity activity = activityRepository.findActivityById(activityId);
         activity.setVisibility(request.getVisibility());
@@ -276,6 +326,11 @@ public class ActivityService {
                     errors.put("message", "No user with email: " + email);
                     return new ResponseEntity<String>(JSONObject.toJSONString(errors), HttpStatus.valueOf(400));
                 }
+                if (userId.equals(activity.getAuthor().getUserId())) {
+                    errors.put("message", "Cannot add the activity author as a shared User.");
+                    return new ResponseEntity<String>(JSONObject.toJSONString(errors), HttpStatus.valueOf(400));
+                }
+
                 User user = userRepository.getOne(userId);
                 accessors.add(user);
                 UserActivityKey newKey = new UserActivityKey(userId, activityId);
@@ -294,11 +349,17 @@ public class ActivityService {
      * A helper method to save each UserActivityRole object to the UserActivityRoleRepository
      * @param newRelationships A List of UserActivityRoles
      */
-    private void saveRelationships(List<UserActivityRole> newRelationships) {
+    public void saveRelationships(List<UserActivityRole> newRelationships) {
         for (UserActivityRole relationship : newRelationships) {
             userActivityRoleRepository.save(relationship);
         }
     }
+
+    /**
+     * The function maps the activity to its id, name and description.
+     * @param activities list of activities
+     * @return a mapped list of activities to its id, name and description
+     */
 
     public List<Map<String, String>> getActivitySummaries(List<Activity> activities) {
         List<Map<String, String>> result = new ArrayList<>();
@@ -341,30 +402,6 @@ public class ActivityService {
         return result;
     }
 
-    /**
-     * Sets the visibility of an activity and which users it is shared with if it is being set to restricted
-     * @param activityId The ID of the activity to modify
-     * @param sessionToken The user's token from their current session.
-     * @param visibility The new visibility value
-     * @param emails A List of Maps containing information about the email and role of Users that the Activity is shared
-     *               with. Is null if the Activity is not being set to restricted.
-     * @return A ResponseEntity object
-     */
-    public ResponseEntity setVisibility(long profileId, long activityId, String sessionToken, String visibility, List<Map<String, String>> emails) {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-        }
-        if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
-            return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
-        }
-
-        Activity activity = activityRepository.getOne(activityId);
-
-
-        return null;
-    }
-
     /***
      * Retrieves a list of participants from the given activity with paginated results.
      * @param activityId the id of the activity.
@@ -378,6 +415,11 @@ public class ActivityService {
         return searchService.userPageToSearchResponsePage(userPage);
     }
 
+//    public Page<SearchUserDto> getActivityParticipants(Long activityId, int page, int size) {
+//        Page<User> userPage = userRepository.getParticipants(PageRequest.of(page, size), activityId, ActivityRole.PARTICIPANT);
+//        return searchService.userPageToSearchResponsePage(userPage);
+//    }
+
     /***
      * Retrieves a list of organizers from the given activity with paginated results.
      * @param activityId the id of the activity.
@@ -386,13 +428,10 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the organizers.
      */
-    public ResponseEntity getActivityOrganizers(Long activityId, int page, int size, String sessionToken) {
+    public ResponseEntity getActivityOrganizers(Long activityId, int page, int size) {
         ResponseEntity result;
         try {
-            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            }
-            else if (page < 0 || size < 0) {
+            if (page < 0 || size < 0) {
                 result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
             }
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
@@ -406,6 +445,105 @@ public class ActivityService {
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
 
+        return result;
+    }
+
+    /***
+     * Retrieves a list of changes from the given activity with paginated results.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the changes.
+     */
+    public ResponseEntity getActivityChanges(Long activityId, int page, int size) {
+        ResponseEntity result;
+        try {
+            if (page < 0 || size < 0) {
+                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
+            }
+            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
+                result = responseHandler.formatErrorResponse(404, "Activity not found");
+            } else {
+                Page<ActivityChange> activityChanges = activityChangeRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
+                List<ActivityChange> changesList = activityChanges.toList();
+                List<FeedPostDto> posts = new ArrayList<>();
+                for (ActivityChange activityChange : changesList) {
+
+                    FeedPostDto newPost = new FeedPostDto();
+                    newPost.setContent(activityChange);
+                    System.out.println(newPost.dateTime);
+                    posts.add(newPost);
+                }
+                result = new ResponseEntity(posts, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Could not retrieve changes");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+
+        return result;
+    }
+
+    /**
+     * Removes a user from following an activity.
+     * @param profileId id of user that is unfollowing
+     * @param activityId activity to unfollow
+     * @param sessionToken session id of the user
+     * @return response entity with the result of the operation.
+     */
+    public ResponseEntity<String> unFollow(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity<String> result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponseString(401, "Invalid Session");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else if (!profileId.equals(session.getUser().getUserId()) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else {
+                User user = userRepository.getUserById(profileId).get();
+                activity.removeUser(user);
+                activityRepository.save(activity);
+                userRepository.save(user);
+                result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot unfollow");
+            result = responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+        return result;
+    }
+
+    /**
+     * Returns if the given user is following the given activity
+     * @param profileId user requested
+     * @param activityId activity to check
+     * @param sessionToken session token of the requesting user
+     * @return formatted response with result
+     */
+    public ResponseEntity<String> checkFollowing(Long profileId, Long activityId, String sessionToken) {
+        ResponseEntity<String> result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Activity activity = activityRepository.findActivityById(activityId);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponseString(401, "Invalid Session");
+            } else if (activity == null) {
+                result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else if (!profileId.equals(session.getUser().getUserId()) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponseString(403, "Invalid user");
+            } else {
+                User user = userRepository.getUserById(profileId).get();
+                boolean following = activity.getUsers().contains(user);
+                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(following));
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot check following");
+            result = responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
         return result;
     }
 }

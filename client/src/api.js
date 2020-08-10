@@ -156,6 +156,7 @@ export const apiUser = {
   },
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
+
   /**
    * Request to get all activity types from the server
    */
@@ -192,10 +193,27 @@ export const apiUser = {
    */
   editUserRoleForActivity: (profileId, activityId, email, activityRole) =>
     instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`,
-      {
+    {
         email: email,
         activityRole: activityRole
-      }),
+    }),
+
+    isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
+
+    /**
+     * API call to retrieve the home feed details for a user
+     * @param profileId the id of the user that requires feed retrieval
+     * @param page the page number
+     * @param size how many posts we want for each page
+     * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
+     */
+    getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
+    {
+        params: {
+            page: page,
+            size: size
+        }
+    }),
 };
 
 export const apiActivity = {
@@ -247,7 +265,13 @@ export const apiActivity = {
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`),
 
-  getActivityUpdates: (activityId) => instance.get(`/activities/${activityId}/updates`),
+  getActivityUpdates: (activityId, page, size) => instance.get(`/activities/${activityId}/changes/`, {
+      params: {
+          page: page,
+          size: size
+      }
+  }),
+
 
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
@@ -306,6 +330,18 @@ export const apiActivity = {
     //     }
     //     );
     // return result;
-  }
+  },
 
+  followActivity: (profileId, activityId) =>
+    instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+
+  unfollowActivity: (profileId, activityId) =>
+    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+
+  getSharedUsers: (activityId) => instance.get(`/activities/${activityId}/shared`,{
+      params: {
+          page: 0,
+          size: 10
+      }
+  })
 };

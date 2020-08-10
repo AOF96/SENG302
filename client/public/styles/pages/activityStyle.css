@@ -386,7 +386,6 @@
 }
 
 .activityPageCardButton {
-    position: absolute;
     right: -43px;
     width: 40%;
     color: #1cca92;
@@ -422,5 +421,5 @@
 .activityPageCardDiv {
     overflow-y: scroll;
     height: 300px;
-    margin-top: 10px
+    margin-top: 10px;
 }

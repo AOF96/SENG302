@@ -1,5 +1,4 @@
 <template>
-
   <v-container fluid grid-list-md fill-height fill-width>
     <v-layout row wrap width="600px">
       <v-flex>
@@ -24,29 +23,35 @@
                         {{a.name}}.
                 </span>
             </span>
-          </div>
-          <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
-            <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
-          </div>
-          <div class="activityPageBottomButtons">
-            <router-link v-bind:to="'/profile/'+authorId">
-              <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
-                Back to Profile
-              </button>
-            </router-link>
-            <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
-              <button
-                      class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-                      type="button"
-              >Edit Activity
-              </button>
-            </router-link>
-            <button v-if="authorId===user.profile_id || user.permission_level > 0"
-                    class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-                    type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+        </div>
+        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
+          <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
+        </div>
+        <div class="activityPageBottomButtons">
+          <router-link v-bind:to="'/profile/'+authorId">
+            <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+              Back to Profile
             </button>
+          </router-link>
+          <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
+            <button
+                class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                type="button"
+            >Edit Activity
+            </button>
+          </router-link>
+          <button v-if="authorId===user.profile_id || user.permission_level > 0"
+                  class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+                  type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+          </button>
+          <div v-if="!userFollowing">
+            <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
           </div>
-        </v-card>
+          <div v-else>
+            <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
+          </div>
+        </div>
+      </v-card>
       </v-flex>
 
       <v-flex>
@@ -181,17 +186,17 @@
 
             <v-flex>
               <v-card class="activityPageCard" style="min-height:0;">
-                <h2 style="padding-bottom:10px;">Updates</h2>
-                <v-timeline dense clipped v-for="(update, i) in activityChanges" :key="i">
+                <h2 style="padding-bottom:10px;">Latest Changes</h2>
+                <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
                   <v-timeline-item
-                    class="mb-4"
                     icon-color="grey lighten-2"
                     small
                   >
                     <v-row justify="space-between">
-                      <v-col cols="7">
-                        <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.date)}}</h2>
-                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.description}}</h2>
+                      <v-col>
+                        <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
+                        <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j" style="font-size:16px;color:rgba(0,0,0,0.85);"><li>{{updateText}}</li></h2>
+<!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
                       </v-col>
                     </v-row>
                   </v-timeline-item>
@@ -218,13 +223,13 @@
                     </h6>
                   <div class="activityPageCardDiv">
                     <v-card flat>
-                      <v-list-item two-line v-for="user in sharedUsers" :key="user.profile_id">
+                      <v-list-item two-line v-for="user in sharedUsers" :key="user[0]">
                         <v-list-item-content>
-                          <v-list-item-title v-if="user.middlename != null">
-                            {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                          <v-list-item-title v-if="user[2] != null">
+                            {{ user[1] + " " + user[2] + " " + user[3]}}
                           </v-list-item-title>
                           <v-list-item-title v-else>
-                            {{ user.firstname + " " + user.lastname}}
+                            {{ user[1] + " " + user[3]}}
                           </v-list-item-title>
                           <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
                         </v-list-item-content>
@@ -237,9 +242,7 @@
           </v-layout>
         </v-flex>
       </v-flex>
-
     </v-layout>
-
   </v-container>
 </template>
 
@@ -259,8 +262,8 @@
         continuous: false,
         description: "",
         activity_types: [],
-        activityChanges: [{"description": "this is a test", "date": "2020-08-04 15:19:00"}],
-        visibility: "restricted",
+        activityChanges: [],
+        visibility: "",
         start_date: null,
         end_date: null,
         location: "",
@@ -268,6 +271,7 @@
         authorId: null,
         activityId: null,
         loadingActivity: true,
+        userFollowing: null,
         tab: null,
         showMoreDialog: false,
         newRole: "participant",
@@ -289,367 +293,7 @@
           { tab: 'Participants', content: null },
           { tab: 'Organisers', content: null },
         ],
-        sharedUsers: [
-        {
-          "bio":"I'm a cool guy???!",
-          "authoredActivities":[],
-          "profile_id":23010,
-          "firstname":"Jackie",
-          "lastname":"Qiu",
-          "middlename":"J",
-          "gender":"Male",
-          "nickname":"JackDog",
-          "date_of_birth":"1999-10-21",
-          "fitness":2,
-          "city":null,
-          "state":null,
-          "country":null,
-          "passports":["New Zealand","Australia"],
-          "activities":["Team-Sport","Fun","Relaxing"],
-          "primary_email":"jqi26@uclive.ac.nz",
-          "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-          "permission_level":1
-        },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },
-          {
-            "bio":"I'm a cool guy???!",
-            "authoredActivities":[],
-            "profile_id":23010,
-            "firstname":"Jackie",
-            "lastname":"Qiu",
-            "middlename":"J",
-            "gender":"Male",
-            "nickname":"JackDog",
-            "date_of_birth":"1999-10-21",
-            "fitness":2,
-            "city":null,
-            "state":null,
-            "country":null,
-            "passports":["New Zealand","Australia"],
-            "activities":["Team-Sport","Fun","Relaxing"],
-            "primary_email":"jqi26@uclive.ac.nz",
-            "additional_email":["coolmail@gmail.com","radmail@mail.com"],
-            "permission_level":1
-          },]
+        sharedUsers: []
       }
     },
 
@@ -667,6 +311,7 @@
       this.getParticipants();
       this.getOrganisers();
       this.userTabs[1].content = this.organisers;
+      return this.checkFollowing();
     },
     methods: {
       ...mapActions(['updateUserDurationActivities','updateUserContinuousActivities','getActivityUpdates', 'getParticipants', 'getOrganisers']),
@@ -724,13 +369,6 @@
         } catch (err) {
           console.error(err)
         }
-        // await apiActivity.getParticipants(this.$route.params.activityId, this.currentPage, this.currentSize)
-        //   .then((response) => {
-        //     this.participants = response.data.content[0];
-        //     console.log(this.participants[0]);
-        //   }).catch((err) => {
-        //     console.log(err);
-        //   })
       },
       async getOrganisers() {
         try {
@@ -764,6 +402,8 @@
           this.$router.push('/profile');
         } else {
           var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+          this.activityChanges = await apiActivity.getActivityUpdates(this.$route.params.activityId, 0, 5);
+          console.log(this.activityChanges.data[1].textContext)
           if (tempActivityData === "Invalid permissions") {
             this.$router.push('/profile');
           } else {
@@ -772,12 +412,12 @@
             this.continuous = tempActivityData.continuous;
             this.description = tempActivityData.description;
             this.activity_types = tempActivityData.activity_type;
-            // TODO: Uncomment this line once the server response includes the visibility
-            //this.visibility = tempActivityData.visibility;
+            this.visibility = tempActivityData.visibility;
             if (this.visibility === "restricted") {
-              /* TODO: Add code here to make a call to api.js method to retrieve all shared users for this activity
-              and set it to sharedUsers
-               */
+              apiActivity.getSharedUsers(this.activityId).then(
+                (response) => {
+                  this.sharedUsers = response.data.content;
+                })
             }
             this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
             this.end_date = dateUtil.getFormatDate(new Date(tempActivityData.end_time));
@@ -790,6 +430,45 @@
           }
         }
       },
+        /**
+         * Checks if user is following current activity and sets userFollowing which is used to determine if
+         * the follow button should be for following or unfollowing
+         * @returns {Promise<void>}
+         */
+        async checkFollowing() {
+            await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
+                .then((response) => {
+                  this.userFollowing = response.data !== false;
+                })
+                .catch((error) => {
+                    if (error.response.status === 404) {
+                        this.userFollowing = false;
+                    }
+                });
+        },
+        /**
+         * Makes api call to allow a user to follow current activity after follow button is pressed
+         * @returns {Promise<void>}
+         */
+        async followCurrentActivity() {
+            await apiActivity.followActivity(this.user.profile_id,  this.$route.params.activityId).then(response => {
+                if (response.status === 201) {
+                    this.userFollowing = true;
+                }
+            });
+        },
+
+        /**
+         * Makes api call to allow a user to un follow current activity after un follow button is pressed
+         * @returns {Promise<void>}
+         */
+        async unFollowCurrentActivity() {
+            await apiActivity.unfollowActivity(this.user.profile_id,  this.$route.params.activityId).then(response => {
+            if (response.status === 200) {
+                this.userFollowing = false;
+            }
+            });
+        }
     }
   }
 </script>

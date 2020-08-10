@@ -343,10 +343,7 @@ public class UserController {
     public ResponseEntity editActivityTypes(@RequestBody String jsonString,
                                             @PathVariable Long profileId,
                                             @CookieValue(value = "s_id") String sessionToken) throws JsonProcessingException {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
-        }
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -357,7 +354,7 @@ public class UserController {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
 
-        return userService.editActivityTypes(activities, profileId);
+        return userService.editActivityTypes(activities, profileId, sessionToken);
     }
 
     /**
@@ -449,5 +446,18 @@ public class UserController {
                                                @Valid @RequestBody EditActivityRoleDto dto){
         userService.editUserActivityRole(profileId, activityId, dto, sessionToken);
         return ResponseEntity.ok().build();
+    }
+
+    /***
+     * Endpoint to allow a user to follow and activity. Calls userService to do authenticity checks.
+     * @param profileId The id of the user who wishes to follow the activity
+     * @param activityId The id of the activity the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return The response code to determine the status of the operation
+     */
+    @PostMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity subscribeToActivity(@PathVariable Long profileId, @PathVariable Long activityId,
+                                              @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.subscribeToActivity(profileId, activityId, sessionToken);
     }
 }
