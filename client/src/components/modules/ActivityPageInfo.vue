@@ -448,6 +448,8 @@
           this.$router.push('/profile');
         } else {
           var tempActivityData = await apiActivity.getActivityById(this.$route.params.activityId);
+          var tempAcvitivyUpdateData = await apiActivity.getActivityUpdates(this.$route.params.activityId);
+          console.log(tempAcvitivyUpdateData);
           if (tempActivityData === "Invalid permissions") {
             this.$router.push('/profile');
           } else {
