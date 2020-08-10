@@ -293,4 +293,24 @@ public class ActivityController {
     public ResponseEntity getOrganizers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
         return activityService.getActivityOrganizers(activityId, page, size);
     }
+    /**
+     * Handles requests to see the visibility, whether a user is allowed to see an activity.
+     *
+     * @param activityId the activity id.
+     * @param profileId the user id.
+     * @return a response entity that contains a page object filled with shared users
+     */
+
+    @GetMapping("/activities/{activityId}/profiles/{profileId}/uservisibility")
+    public ResponseEntity<Map<String, String>> getUserActivityVisibility(@CookieValue(value = "s_id") String sessionToken,
+                                                                         @PathVariable("activityId") Long activityId,
+                                                                         @PathVariable("profileId") Long profileId) {
+
+        Session userSession = sessionRepository.findUserIdByToken(sessionToken);
+        if (userSession == null) {
+            return new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN);
+        }
+
+        return ResponseEntity.ok().body(activityService.getUserActivityVisibility(activityId, profileId));
+    }
 }

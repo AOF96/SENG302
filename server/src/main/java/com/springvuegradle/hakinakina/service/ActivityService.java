@@ -1,13 +1,14 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.exception.ActivityNotFoundException;
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
-import net.minidev.json.JSONArray;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -366,4 +367,21 @@ public class ActivityService {
         return result;
     }
 
+    /**
+     * Handles requests to see the visibility, whether a user is allowed to see an activity.
+     *
+     * @param activityId the activity id.
+     * @param profileId the user id.
+     * @return response text of user 'allowed' or 'not allowed' to see a certain activity
+     */
+    public Map<String, String> getUserActivityVisibility(long activityId, long profileId) {
+
+        activityRepository.findById(activityId).orElseThrow(ActivityNotFoundException::new);
+        userRepository.findById(profileId).orElseThrow(UserNotFoundException::new);
+
+        Map<String, String> userVisibility = new HashMap<>();
+        int counter = activityRepository.findUserActivityVisibility(profileId, activityId);
+        userVisibility.put("visibility", counter > 0 ? "allowed" : "not allowed");
+        return userVisibility;
+    }
 }

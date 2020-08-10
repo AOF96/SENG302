@@ -23,6 +23,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
 
+    @Query(nativeQuery = true, value = "SELECT count* FROM User_Activities_Shared WHERE user_id = ? AND activity_id = ?")
+    int findUserActivityVisibility(Long userId, Long activity);
+
 //    @Modifying
     Optional<Activity> findFirstByName(String name);
 
