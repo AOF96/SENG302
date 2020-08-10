@@ -215,7 +215,7 @@ public class ActivityController {
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot change the visibility status of the activity");
         }
-        return activityService.updateActivityVisibility(profileId,activityId, sessionToken,request);
+        return activityService.updateActivityVisibility(profileId, activityId, request);
 //        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
     }
 

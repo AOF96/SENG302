@@ -288,14 +288,12 @@ public class ActivityService {
      *
      * @param profileId  the logged in user's id.
      * @param activityId the activity id of the activity being managed.
-     * @param sessionToken the user's token from the cookie for their current session.
      * @param request level of visibility and the set of user's email allowed to access the activity.
      * @return A ResponseEntity with a success or error code.
      */
     @Transactional
     public ResponseEntity<String> updateActivityVisibility (Long profileId,
                                                             Long activityId,
-                                                            String sessionToken,
                                                             ActivityVisibilityDto request) {
         Activity activity = activityRepository.findActivityById(activityId);
         activity.setVisibility(request.getVisibility());
@@ -320,6 +318,11 @@ public class ActivityService {
                     errors.put("message", "No user with email: " + email);
                     return new ResponseEntity<String>(JSONObject.toJSONString(errors), HttpStatus.valueOf(400));
                 }
+                if (userId.equals(activity.getAuthor().getUserId())) {
+                    errors.put("message", "Cannot add the activity author as a shared User.");
+                    return new ResponseEntity<String>(JSONObject.toJSONString(errors), HttpStatus.valueOf(400));
+                }
+
                 User user = userRepository.getOne(userId);
                 accessors.add(user);
                 UserActivityKey newKey = new UserActivityKey(userId, activityId);
@@ -338,7 +341,7 @@ public class ActivityService {
      * A helper method to save each UserActivityRole object to the UserActivityRoleRepository
      * @param newRelationships A List of UserActivityRoles
      */
-    private void saveRelationships(List<UserActivityRole> newRelationships) {
+    public void saveRelationships(List<UserActivityRole> newRelationships) {
         for (UserActivityRole relationship : newRelationships) {
             userActivityRoleRepository.save(relationship);
         }
@@ -383,30 +386,6 @@ public class ActivityService {
         }
 
         return result;
-    }
-
-    /**
-     * Sets the visibility of an activity and which users it is shared with if it is being set to restricted
-     * @param activityId The ID of the activity to modify
-     * @param sessionToken The user's token from their current session.
-     * @param visibility The new visibility value
-     * @param emails A List of Maps containing information about the email and role of Users that the Activity is shared
-     *               with. Is null if the Activity is not being set to restricted.
-     * @return A ResponseEntity object
-     */
-    public ResponseEntity setVisibility(long profileId, long activityId, String sessionToken, String visibility, List<Map<String, String>> emails) {
-        Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
-            return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-        }
-        if (profileId != session.getUser().getUserId() && session.getUser().getPermissionLevel() == 0) {
-            return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
-        }
-
-        Activity activity = activityRepository.getOne(activityId);
-
-
-        return null;
     }
 
     /***
