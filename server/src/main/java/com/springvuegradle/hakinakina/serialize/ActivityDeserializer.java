@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.AchievementRepository;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
