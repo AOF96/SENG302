@@ -198,7 +198,7 @@ public class UserController {
         if (session == null) {
             return responseHandler.formatErrorResponse(401, "User not currently logged in");
         }
-        String userId = userRepository.getIdByEmail(email);
+        Long userId = userRepository.getIdByEmail(email);
         return new ResponseEntity("{\"id\": \"" + userId + "\"}", HttpStatus.valueOf(200));
     }
 
@@ -211,7 +211,10 @@ public class UserController {
      * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @CookieValue(value = "s_id") String sessionToken) {
+       if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+           return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         Optional<User> optional = userRepository.getUserById(profileId);
         if (optional.isPresent() && optional.get().getPermissionLevel() != 2) {
             User user = optional.get();
@@ -338,7 +341,9 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/activity-types")
     public ResponseEntity editActivityTypes(@RequestBody String jsonString,
-                                            @PathVariable Long profileId) throws JsonProcessingException {
+                                            @PathVariable Long profileId,
+                                            @CookieValue(value = "s_id") String sessionToken) throws JsonProcessingException {
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -349,7 +354,7 @@ public class UserController {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
 
-        return userService.editActivityTypes(activities, profileId);
+        return userService.editActivityTypes(activities, profileId, sessionToken);
     }
 
     /**
@@ -377,8 +382,13 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/location")
     public ResponseEntity editLocation(@RequestBody String jsonString,
-                                       @PathVariable Long profileId)
+                                       @PathVariable Long profileId,
+                                       @CookieValue(value = "s_id") String sessionToken)
             throws JsonProcessingException {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         ObjectMapper mapper = new ObjectMapper();
         JsonNode locationNode = mapper.readTree(jsonString).get("location");
         String city = locationNode.get("city").asText();
@@ -434,9 +444,20 @@ public class UserController {
                                                      @CookieValue(value = "s_id") String sessionToken,
                                                      @PathVariable Long activityId,
                                                @Valid @RequestBody EditActivityRoleDto dto){
-
-
         userService.editUserActivityRole(profileId, activityId, dto, sessionToken);
         return ResponseEntity.ok().build();
+    }
+
+    /***
+     * Endpoint to allow a user to follow and activity. Calls userService to do authenticity checks.
+     * @param profileId The id of the user who wishes to follow the activity
+     * @param activityId The id of the activity the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return The response code to determine the status of the operation
+     */
+    @PostMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity subscribeToActivity(@PathVariable Long profileId, @PathVariable Long activityId,
+                                              @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.subscribeToActivity(profileId, activityId, sessionToken);
     }
 }

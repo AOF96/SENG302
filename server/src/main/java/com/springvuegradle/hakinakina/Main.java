@@ -43,7 +43,9 @@ public class Main {
 						   SessionRepository sessionRepository,
 						   ActivityTypeRepository activityTypeRepository,
 						   ActivityRepository activityRepository,
-						   SearchRepository searchRepository
+						   SearchRepository searchRepository,
+						   ActivityChangeRepository activityChangeRepository,
+						   UserActivityRoleRepository userActivityRoleRepository
 	) {
 		return args -> {
 			URL url = new URL("https://restcountries.eu/rest/v2/all");

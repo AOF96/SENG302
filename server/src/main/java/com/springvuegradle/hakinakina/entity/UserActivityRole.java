@@ -29,6 +29,7 @@ public class UserActivityRole {
     @JsonIgnore
     private Activity activity;
 
+    @Enumerated(EnumType.STRING)
     private ActivityRole activityRole;
 
 
@@ -71,5 +72,15 @@ public class UserActivityRole {
 
     public void setActivityRole(ActivityRole activityRole) {
         this.activityRole = activityRole;
+    }
+
+    @Override
+    public String toString() {
+        return "UserActivityRole{" +
+                "id=" + id +
+                ", user=" + user +
+                ", activity=" + activity +
+                ", activityRole=" + activityRole +
+                '}';
     }
 }

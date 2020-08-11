@@ -23,9 +23,9 @@
                   id="visibility"
                   v-model="visibility"
           >
-            <option value="PUBLIC" selected>Public</option>
-            <option value="RESTRICTED">Restricted</option>
-            <option value="PRIVATE">Private</option>
+            <option value="public" selected>Public</option>
+            <option value="restricted">Restricted</option>
+            <option value="private">Private</option>
           </select>
 
           <label class="editActivityLabel" for="time">Continuous?</label>
@@ -57,17 +57,66 @@
             v-model="description"
             placeholder="Activity Description"
           ></textarea>
-
-          <label class="editActivityLabel">Location: <b>{{ location }}</b></label>
-          <button v-if="location !== null" class="removeLocationButton" v-on:click="location = null"><b>x</b></button>
+          <label class="editActivityLabel">Location</label>
           <div>
-            <input id="locationInput" autocomplete="off" class="editActivityInput" type="text"
-                   placeholder="Search here..." onfocus="showLocations = true"/>
-            <div v-if="showLocations && suggestedLocations.length > 0" class="dropdown" >
-              <div v-for="(item, index) in suggestedLocations" v-bind:key="index" class="dropdown-content">
-                <p v-on:click="setLocation(item.summary)">{{item.summary}}</p>
-              </div>
-            </div>
+            <v-combobox
+                v-model="city"
+                :items="items"
+                :search-input.sync="search"
+                color="primary"
+                :loading="isLoading"
+                no-filter
+                hide-no-data
+                item-text="Description"
+                item-value="API"
+                label="City"
+                placeholder="Start typing to Search"
+                return-object
+                id="inputCity"
+                outlined
+                class="locationCombo"
+                autocomplete="new"
+                dense
+                style="margin: 0 20px;"
+            />
+            <v-combobox
+                v-model="state"
+                :items="itemsState"
+                :search-input.sync="searchState"
+                color="primary"
+                no-filter
+                :loading="stateLoading"
+                hide-no-data
+                hide-selected
+                item-text="Description"
+                item-value="API"
+                label="State"
+                placeholder="Start typing to Search"
+                return-object
+                id="inputState"
+                outlined
+                class="locationCombo"
+                autocomplete="new"
+                dense
+                style="margin: 0 20px;"
+            />
+            <v-combobox
+                v-model="country"
+                :items="countries_option"
+                color="primary"
+                hide-no-data
+                hide-selected
+                item-text="Description"
+                label="Country"
+                placeholder="Start typing to Search"
+                return-object
+                id="inputCountry"
+                outlined
+                class="locationCombo"
+                autocomplete="new"
+                dense
+                style="margin: 0 20px;"
+            />
           </div>
 
           <label class="editActivityLabel">Activity Types</label>
@@ -124,14 +173,16 @@
 import { mapGetters, mapActions } from "vuex";
 import { apiUser, apiActivity } from "../api";
 import router from "../router";
-import axios from "axios";
+
+const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
 export default {
   data() {
     return {
       selected_activity: "Activity Type",
       activities_option: [],
-      location: "",
+      countries_option: [],
+      location: null,
       duration: "duration",
       activity_types_selected: [],
       start_date: null,
@@ -146,50 +197,48 @@ export default {
       author_id: null,
       suggestedLocations: [],
       showLocations: false,
-      visibility: null
+      visibility: null,
+      city: null,
+      country: null,
+      state: null,
+      locationCity: null,
+      locationState: null,
+      search: null,
+      searchState: null,
+      isLoading: false,
+      stateLoading: false,
+      features: []
     };
   },
 
   /**
-   * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-   * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-   * duplicate summaries are removed.
+   * On start-up, the mounted function calls the rest api countries and updates the select drop down with the list of
+   * countries for the user to choose.
    */
   mounted: function() {
-    let outer = this;
-    let input = document.querySelector('#locationInput');
-    let timeout = null;
-    input.addEventListener('keyup', function () {
-      clearTimeout(timeout);
-      timeout = setTimeout(function () {
-        const url = "https://photon.komoot.de/api/?q=" + input.value;
-        axios.get(url)
-                .then((response) => {
-                  //We use a temporary list instead of using outer.suggestedLocations immediately so that the list
-                  //is only displayed when it is finished, avoiding the problem of the user being taken to the
-                  //middle of the list instead of the top
-                  let temp = [];
-                  let locationSummaries = [];
-                  for(let location in response.data.features) {
-                    let locationSummary = outer.getLocationSummary(response.data.features[location]);
-                    if (!locationSummaries.includes(locationSummary)) {
-                      temp.push(response.data.features[location]);
-                      temp[temp.length - 1]["summary"] = locationSummary;
-                      locationSummaries.push(locationSummary);
-                    }
-                  }
-                  outer.suggestedLocations = temp;
-                  outer.showLocations = true;
-                })
-                .catch(error => console.log(error));
-      }, 1000);
-    });
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+        this.loadCountries();
+      }
   },
 
   computed: {
     ...mapGetters(["user"]),
     isDuration() {
       return this.duration == "duration";
+    },
+    items () {
+      return this.features.map(entry => {
+        const Description = this.getLocationCity(entry);
+        return Object.assign({}, entry, { Description })
+      })
+    },
+    itemsState () {
+      return this.features.map(entry => {
+        const Description = this.getLocationState(entry);
+        return Object.assign({}, entry, { Description })
+      })
     }
   },
   created: async function() {
@@ -212,40 +261,45 @@ export default {
   },
   methods: {
     ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserContinuousActivities"]),
+    ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
     ...mapActions(["updateUserDurationActivities"]),
 
     /**
-     * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted
-     * function.
+     * This method filters the the data received from the api and only suggests cities to the user.
+     *
      */
-    getLocationSummary(location) {
-      let result = "";
+    getLocationCity(location) {
+      let city = "Almora";
+      if(location.properties.city !== undefined){
+        city = location.properties.city;
+        return city;
+      }
+      return city;
+    },
 
-      result += location.properties.name;
-      if ("street" in location.properties) {
-        result += ", " + location.properties.street;
+    /**
+     * This method filters the the data received from the api and only suggests states to the user.
+     *
+     */
+    getLocationState(location) {
+      let state = "Angland";
+      if(location.properties.state !== undefined){
+        state = location.properties.state;
+        return state
       }
-      if ("city" in location.properties) {
-        result += ", " + location.properties.city;
-      }
-      if ("state" in location.properties) {
-        result += ", " + location.properties.state;
-      }
-      if ("country" in location.properties) {
-        result += ", " + location.properties.country;
-      }
-
-      return result;
+      return state;
     },
 
     /**
      * Sets the location and resets the location input after the user has selected a location from the dropdown
      * box.
      */
-    setLocation(locationSummary) {
-      this.location = locationSummary;
-      document.getElementById("locationInput").value = "";
+    setLocation() {
+      this.location = "";
+      this.city = document.getElementById('inputCity').value,
+          this.state = document.getElementById('inputState').value,
+          this.country = document.getElementById('inputCountry').value
+      this.location = this.city + ',' + this.state + ',' + this.country
     },
 
     /*
@@ -283,6 +337,18 @@ export default {
 
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
+          }
+          if(typeof this.location !== 'undefined' & this.location != null){
+            let cityStateCountry = this.location.split(",");
+            if(typeof cityStateCountry[0] !== 'undefined'){
+              this.city = cityStateCountry[0];
+            }
+            if(typeof cityStateCountry[1] !== 'undefined'){
+              this.state = cityStateCountry[1];
+            }
+            if(typeof cityStateCountry[2] !== 'undefined'){
+              this.country = cityStateCountry[2];
+            }
           }
           this.activity_types_selected = tempActivityData.activity_type.map(
             e => e.name
@@ -378,6 +444,24 @@ export default {
     },
 
     /**
+     * The method is used to populate the drop down menu, that allows user to select their current country.
+     */
+    loadCountries() {
+      console.log("in here")
+      this.getDataFromUrl(COUNTRIES_URL)
+          .then((response) => {
+            const countries = [];
+            const data = response.data;
+            for (let country in data) {
+              let country_name = data[country].name;
+              countries.push(country_name)
+            }
+            this.countries_option = countries
+          })
+          .catch(error => console.log(error));
+    },
+
+    /**
      * Checks if the datetime passes conditions. Ensures time is in the future and start is not later than end
      * @return boolean true if passes, false if fails
      */
@@ -456,6 +540,7 @@ export default {
       if (!this.checkFormConditions()) {
         return;
       }
+      this.setLocation(location);
 
       // Sets duration to a boolean for the request
       this.duration = this.duration !== "duration";
@@ -493,6 +578,33 @@ export default {
           }
         );
     },
+
+    /**
+     * The method is used to filter out the feature object without any cities
+     */
+    removeNullCities(features){
+      let featuresCity = [];
+      for(const feature of features){
+        if(feature.properties.city !== undefined) {
+          featuresCity.push(feature);
+        }
+      }
+      return featuresCity;
+    },
+
+    /**
+     * The method is used to filter out the feature object without any states
+     */
+    removeNullState(features){
+      let featuresState = [];
+      for(const feature of features){
+        if(feature.properties.state !== undefined) {
+          featuresState.push(feature);
+        }
+      }
+      return featuresState;
+    },
+
     deleteActivity() {
       apiActivity
         .deleteActivity(this.user.profile_id, this.$route.params.activityId)
@@ -520,6 +632,53 @@ export default {
       document.getElementById("activity_error").innerText = error;
       document.getElementById("activity_success").hidden = true;
     }
-  }
+  },
+  watch: {
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * cities
+     * @param val of the city set in the vuetify component
+     */
+    search (val) {
+      if(val.length < 3){
+        return
+      }
+      this.isLoading = true
+
+      fetch("https://photon.komoot.de/api/?q=" + val)
+          .then(res => res.json())
+          .then(res => {
+            const { features } = res;
+            this.features = this.removeNullCities(features)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => (this.isLoading = false))
+    },
+    /**
+     * The function starts makes a call to the photon api once the user has types at least 3 characters and suggest different
+     * states
+     * @param val of the state set in the vuetify component
+     */
+    searchState (val) {
+
+      if(val.length < 3){
+        return
+      }
+      this.stateLoading = true
+
+      fetch("https://photon.komoot.de/api/?q=" + val)
+          .then(res => res.json())
+          .then(res => {
+            const { features } = res;
+            this.features = this.removeNullState(features)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => (this.stateLoading = false))
+    }
+  },
 };
 </script>

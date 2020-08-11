@@ -1,16 +1,21 @@
 package com.springvuegradle.hakinakina.controller;
 
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
+import org.springframework.boot.json.JacksonJsonParser;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -191,14 +196,35 @@ public class ActivityController {
     }
 
     /**
+     * Endpoint for unfollowing an activity
+     * @param profileId id of user that is unfollowing
+     * @param activityId activity to unfollow
+     * @param sessionToken session id of the user
+     * @return response entity with the result of the operation.
+     */
+    @DeleteMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity<String> unFollow(@PathVariable Long profileId, @PathVariable Long activityId,
+                                   @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.unFollow(profileId, activityId, sessionToken);
+    }
+
+    /**
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
-     * @return a response entity that contains a page object filled with shared users
+     * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
-    @GetMapping("/activities/{activityId}/shared/")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
-        return activityService.getSharedUsers(activityId, page, size);
+    @GetMapping("/activities/{activityId}/shared")
+    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId,
+                                         @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
+        Activity activity = activityRepository.getOne(activityId);
+        if (activity != null) {
+            // TODO: Check to see if activity is private
+
+            return activityService.getSharedUsers(activityId, page, size);
+        } else {
+            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
+        }
     }
 
     /**
@@ -237,34 +263,21 @@ public class ActivityController {
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot change the visibility status of the activity");
         }
-        return activityService.updateActivityVisibility(profileId,activityId, sessionToken,request);
-//        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
+        return activityService.updateActivityVisibility(profileId, activityId, request);
     }
 
-//     This code will be used when we have users subscribing to activities
-//    /**
-//     * Retrieves all of the continuous activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/continuous")
-//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
-//
-//    /**
-//     * Retrieves all of the duration activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/duration")
-//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
+    /**
+     * Returns if the given user is following the given activity
+     * @param profileId user requested
+     * @param activityId activity to check
+     * @param sessionToken session token of the requesting user
+     * @return formatted response with result
+     */
+    @GetMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity<String> getIfFollowing(@PathVariable Long profileId, @PathVariable Long activityId,
+                                                 @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.checkFollowing(profileId, activityId, sessionToken);
+    }
 
     /***
      * Controller endpoint that receives requests to get activity participants from the database. Calls the service method
@@ -312,5 +325,18 @@ public class ActivityController {
         }
 
         return ResponseEntity.ok().body(activityService.getUserActivityVisibility(activityId, profileId));
+    }
+
+    /**
+     * Controller endpoint that receives requests to get a list of activity changes.
+     * @param activityId the id of the activity.
+     * @param page the requested page to return.
+     * @param size the number of result that the page will contain.
+     * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
+     * otherwise it returns a 200 code with a list of the changes.
+     */
+    @GetMapping("/activities/{activityId}/changes/")
+    public ResponseEntity getChanges(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
+        return activityService.getActivityChanges(activityId, page, size);
     }
 }

@@ -25,8 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,6 +48,9 @@ public class UserControllerTest {
     private PassportCountryRepository countryRepository;
 
     @MockBean
+    private ActivityChangeRepository activityChangeRepository;
+
+    @MockBean
     private EmailRepository emailRepository;
 
     @MockBean
@@ -62,6 +64,9 @@ public class UserControllerTest {
 
     @MockBean
     private SearchRepository searchRepository;
+
+    @MockBean
+    private UserActivityRoleRepository userActivityRoleRepository;
 
     private ResponseHandler responseHandler = new ResponseHandler();
 
@@ -264,7 +269,7 @@ public class UserControllerTest {
         String input = "{\"email\": \"john@gmail.com\"}";
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(userRepository.getIdByEmail("john@gmail.com")).thenReturn("1");
+        when(userRepository.getIdByEmail("john@gmail.com")).thenReturn(Long.valueOf("1"));
         this.mockMvc.perform(get("/email/id/").cookie(tokenCookie)
                 .param("email", "john@gmail.com")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -468,15 +473,16 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": [\n" +
                 "    \"Relaxing\",\n" +
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong()))
+        when(service.editActivityTypes(anyList(), anyLong(), anyString()))
                 .thenReturn(new ResponseEntity("Successfully updated activity types", HttpStatus.valueOf(200)));
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Successfully updated activity types")));
@@ -484,15 +490,16 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesNonExistentUserTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": [\n" +
                 "    \"Relaxing\",\n" +
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong()))
+        when(service.editActivityTypes(anyList(), anyLong(), eq("t0k3n")))
                 .thenReturn(new ResponseEntity("No user with that ID", HttpStatus.valueOf(401)));
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(401))
                 .andExpect(content().string(containsString("No user with that ID")));
@@ -500,15 +507,16 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesNonExistentActivityTypeTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": [\n" +
                 "    \"Relaxing\",\n" +
                 "    \"Fun\"\n" +
                 "  ]\n" +
                 "}";
-        when(service.editActivityTypes(anyList(), anyLong()))
+        when(service.editActivityTypes(anyList(), anyLong(), eq("t0k3n")))
                 .thenReturn(new ResponseEntity("Activity type doesn't exist", HttpStatus.valueOf(400)));
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Activity type doesn't exist")));
@@ -516,10 +524,11 @@ public class UserControllerTest {
 
     @Test
     public void editActivityTypesNotListTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         String input = "{\n" +
                 "  \"activities\": \"Relaxing\"\n" +
                 "}";
-        this.mockMvc.perform(put("/profiles/1/activity-types")
+        this.mockMvc.perform(put("/profiles/1/activity-types").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Must send a list of activities")));
@@ -620,5 +629,59 @@ public class UserControllerTest {
         this.mockMvc.perform(delete("/profiles/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("Successfully Deleted User")));
+    }
+
+    /***
+     * Users should be able to follow activities
+     */
+    @Test
+    public void subscribeToActivity() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.setPermissionLevel(0);
+        testSession.setUser(testUser);
+
+        Activity testActivity = new Activity("testActivity", "Used for testing", true,
+                null, null, null);
+        testActivity.setId((long) 1);
+
+        when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
+                .thenReturn(new ResponseEntity("Activity successfully subscribed to", HttpStatus.valueOf(201)));
+        this.mockMvc.perform(post("/profiles/1/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(201))
+                .andExpect(content().string(containsString("Activity successfully subscribed to")));
+    }
+
+    /***
+     * Users can't subscribe to an activity that they are already subscribed too
+     */
+    @Test
+    public void subscribeToActivityThatUserIsAlreadySubscribedToo() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testUser.setPermissionLevel(0);
+        testSession.setUser(testUser);
+
+        Activity testActivity = new Activity("testActivity", "Used for testing", true,
+                null, null, null);
+        testActivity.setId((long) 1);
+
+        when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
+                .thenReturn(new ResponseEntity("Activity successfully subscribed to", HttpStatus.valueOf(201)));
+        this.mockMvc.perform(post("/profiles/1/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(201))
+                .andExpect(content().string(containsString("Activity successfully subscribed to")));
+        when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
+                .thenReturn(new ResponseEntity("Cannot subscribe to an activity that you have already subscribed to",
+                        HttpStatus.valueOf(403)));
+        this.mockMvc.perform(post("/profiles/1/subscriptions/activities/1").cookie(tokenCookie))
+                .andExpect(status().is(403))
+                .andExpect(content().string(containsString("Cannot subscribe to an activity that you have already subscribed to")));
     }
 }

@@ -49,6 +49,12 @@ public class SearchControllerTest {
     private SearchRepository searchRepository;
 
     @MockBean
+    private ActivityChangeRepository activityChangeRepository;
+
+    @MockBean
+    private UserActivityRoleRepository userActivityRoleRepository;
+
+    @MockBean
     private SearchService searchService;
 
     @Test

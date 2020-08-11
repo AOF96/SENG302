@@ -4,12 +4,14 @@ import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.Visibility;
 
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ActivityVisibilityDto {
 
     private Visibility visibility;
-    private Set<String> accessorsEmails;
+    private List<Map<String, String>> accessors;
 
     public Visibility getVisibility() {
         return visibility;
@@ -19,12 +21,12 @@ public class ActivityVisibilityDto {
         this.visibility = visibility;
     }
 
-    public Set<String> getAccessorsEmails() {
-        return accessorsEmails;
+    public List<Map<String, String>> getAccessors() {
+        return accessors;
     }
 
-    public void setAccessorsEmails(Set<String> accessorsEmails) {
-        this.accessorsEmails = accessorsEmails;
+    public void setAccessors(List<Map<String, String>> accessorsEmails) {
+        this.accessors = accessorsEmails;
     }
 
 

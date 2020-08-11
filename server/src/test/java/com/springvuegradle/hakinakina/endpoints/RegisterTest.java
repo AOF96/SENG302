@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.endpoints;
 
 import com.springvuegradle.hakinakina.entity.Gender;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.UserRepository;
@@ -34,15 +35,22 @@ public class RegisterTest {
     @Autowired
     SessionRepository sessionRepo;
 
+    @Autowired
+    ActivityRepository activityRepository;
+
     private User u;
 
     @BeforeEach
     void createUser() {
+
+        activityRepository.deleteAll();
         sessionRepo.deleteAll();
         userRepo.deleteAll();
+
         u = new User("Mayuko", "Williams",
                 "mwi@williams.com", "1970-01-01", Gender.FEMALE,
                 3, "P@ssw0rd!123");
+        u.setUserId(-1L);
     }
 
     @Test
@@ -114,6 +122,7 @@ public class RegisterTest {
     @Test
     void testRegistrationWithInvalidEmailFormatShouldFail() throws Exception {
         u.setPrimaryEmail("meow.com");
+        System.out.println(u.toJson());
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(u.toJson()))
