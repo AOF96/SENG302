@@ -173,7 +173,4 @@ public class ActivityVisibilityTest {
 //        Assertions.assertEquals(activityRepository.getSharedUsers(newActivity.getId()), testUser2.getUserId());
 
     }
-
-
-
 }
