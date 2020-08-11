@@ -86,38 +86,42 @@
                           :key="item.tab"
                       >
                         <v-card flat>
-                          <v-list-item two-line v-for="user in item.content" :key="user.email" link @click.stop="">
-                            <v-list-item-content>
-                              <v-list-item-title v-if="user.middlename != null">
-                                {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                              </v-list-item-title>
-                              <v-list-item-title v-else>
-                                {{ user.firstname + " " + user.lastname}}
-                              </v-list-item-title>
-                              <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-menu
-                                transition="slide-y-transition"
-                                bottom
-                                right
-                                :close-on-click="false"
-                            >
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-btn
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    icon
-                                >
-                                  <v-icon>mdi-dots-vertical</v-icon>
-                                </v-btn>
-                              </template>
-                              <v-card>
-                                <v-card-text>Change Role</v-card-text>
-                                <v-switch v-model="roleSwitch"></v-switch>
-                              </v-card>
-                            </v-menu>
-
-                          </v-list-item>
+                          <div v-if="item.preview.length === 0">
+                            <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
+                          </div>
+                          <div v-else>
+                            <v-list-item two-line v-for="user in item.preview" :key="user.email" link @click.stop="">
+                              <v-list-item-content>
+                                <v-list-item-title v-if="user.middlename != null">
+                                  {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                                </v-list-item-title>
+                                <v-list-item-title v-else>
+                                  {{ user.firstname + " " + user.lastname}}
+                                </v-list-item-title>
+                                <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                              </v-list-item-content>
+                              <v-menu
+                                  transition="slide-y-transition"
+                                  bottom
+                                  right
+                                  :close-on-click="false"
+                              >
+                                <template v-slot:activator="{ on, attrs }">
+                                  <v-btn
+                                      v-bind="attrs"
+                                      v-on="on"
+                                      icon
+                                  >
+                                    <v-icon>mdi-dots-vertical</v-icon>
+                                  </v-btn>
+                                </template>
+                                <v-card>
+                                  <v-card-text>Change Role</v-card-text>
+                                  <v-switch v-model="roleSwitch"></v-switch>
+                                </v-card>
+                              </v-menu>
+                            </v-list-item>
+                          </div>
                         </v-card>
                       </v-tab-item>
                     </v-tabs-items>
@@ -137,7 +141,7 @@
                     max-width="450"
                 >
                   <v-tabs
-                      v-model="tab"
+                      v-model="dialogTab"
                       fixed-tabs
                   >
                     <v-tab
@@ -148,7 +152,7 @@
                     </v-tab>
                   </v-tabs>
 
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="dialogTab">
                     <v-tab-item
                         v-for="item in userTabs"
                         :key="item.tab"
@@ -157,21 +161,51 @@
                       >
                         <v-card flat
                         >
-                          <v-list-item two-line v-for="user in item.content" :key="user.email" link>
-                            <v-list-item-content>
-                              <v-list-item-title v-if="user.middlename != null">
-                                {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                              </v-list-item-title>
-                              <v-list-item-title v-else>
-                                {{ user.firstname + " " + user.lastname}}
-                              </v-list-item-title>
-                              <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
+                          <div v-if="item.preview.length === 0">
+                            <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
+                          </div>
+                          <div v-else>
+                            <v-list-item two-line v-for="user in item.content" :key="user.email" link>
+                              <v-list-item-content>
+                                <v-list-item-title v-if="user.middlename != null">
+                                  {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                                </v-list-item-title>
+                                <v-list-item-title v-else>
+                                  {{ user.firstname + " " + user.lastname}}
+                                </v-list-item-title>
+                                <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                              </v-list-item-content>
+                              <v-menu
+                                      transition="slide-y-transition"
+                                      bottom
+                                      right
+                                      :close-on-click="false"
+                              >
+                                <template v-slot:activator="{ on, attrs }">
+                                  <v-btn
+                                          v-bind="attrs"
+                                          v-on="on"
+                                          icon
+                                  >
+                                    <v-icon>mdi-dots-vertical</v-icon>
+                                  </v-btn>
+                                </template>
+                                <v-card>
+                                  <v-card-text>Change Role</v-card-text>
+                                  <v-switch v-model="roleSwitch"></v-switch>
+                                </v-card>
+                              </v-menu>
+                            </v-list-item>
+                          </div>
                         </v-card>
                       </div>
                     </v-tab-item>
                   </v-tabs-items>
+                  <v-btn
+                          height="40px" color="#1cca92"
+                          outlined rounded
+                  >More Results
+                  </v-btn>
                 </v-dialog>
 
                 <v-flex>
@@ -291,6 +325,7 @@
         loadingActivity: true,
         userFollowing: null,
         tab: null,
+        dialogTab: null,
         showMoreDialog: false,
         newRole: "participant",
         emailsToAdd: "",
@@ -301,16 +336,17 @@
         ],
         displayInvalidInputError: false,
         invalidInputErrorMessage: "",
-        participants: [],
-        organisers: [],
-        defaultPage: 0,
-        currentPage: 0,
-        defaultSize: 10,
-        currentSize: 10,
+        participantsPageInfo: {
+          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
+        },
+        organisersPageInfo: {
+          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
+        },
         userTabs: [
-          {tab: 'Participants', content: null},
-          {tab: 'Organisers', content: null},
+          {tab: 'Participants', content: null, preview: null},
+          {tab: 'Organisers', content: null, preview: null},
         ],
+        roleSwitch: null,
         sharedUsers: [],
         displaySharedUsersSuccessMsg: false,
         displaySharedUsersErrorMsg: false,
@@ -397,9 +433,11 @@
        */
       async getParticipants() {
         try {
-          let response = await apiActivity.getParticipants(this.$route.params.activityId, this.currentPage, this.currentSize);
-          this.participants = response.data.content;
-          this.userTabs[0].content = this.participants;
+          let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
+          this.userTabs[0].content = response.data.content;
+          if (this.userTabs[0].preview == null) {
+            this.userTabs[0].preview = this.userTabs[0].content.slice(0,3);
+          }
         } catch (err) {
           console.error(err)
         }
@@ -409,9 +447,11 @@
        */
       async getOrganisers() {
         try {
-          let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.currentPage, this.currentSize);
-          this.organisers = response.data.content;
-          this.userTabs[1].content = this.organisers;
+          let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
+          this.userTabs[1].content = response.data.content;
+          if (this.userTabs[1].preview == null) {
+            this.userTabs[1].preview = this.userTabs[1].content.slice(0,3);
+          }
         } catch (err) {
           console.error(err)
         }
