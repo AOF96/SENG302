@@ -280,7 +280,7 @@ export default {
             features: [],
             snackbar: false,
             snackbarText: "",
-            overlayLoader: false
+            overlayLoader: false,
             createdId: null,
             setAchievement: false
         };
