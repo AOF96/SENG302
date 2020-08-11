@@ -37,10 +37,10 @@ describe('NavBar after the login is successful', () => {
 
   })
 
-  it("Website's logo button that is on the NavBar on the click should redirects the user to profile page", () => {
+  it("Website's logo button that is on the NavBar on the click should redirects the user to the logged in user's news feed", () => {
     const wrapper = mount(NavBar, {store, localVue, router})
     wrapper.find("#appNavLogo").trigger('click')
-    expect(window.location.href).toBe('http://localhost/#/')
+    expect(window.location.href).toBe('http://localhost/#/feed/')
   })
 
   it('Global search bar exists on the top of the NavBar', () => {
