@@ -254,7 +254,7 @@ export default {
             stateLoading: false,
             features: [],
             createdId: null,
-            setAchievement: false
+            setAchievement: false,
             snackbar: false,
             snackbarText: "",
             overlayLoader: false,
