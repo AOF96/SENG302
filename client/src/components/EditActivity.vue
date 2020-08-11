@@ -1,168 +1,220 @@
 <template>
   <div @click="showLocations = false">
+    <v-snackbar
+            v-model="snackbar"
+    >
+      {{ snackbarText }}
+      <v-btn
+              color="primary"
+              text
+              @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
+    <v-overlay style="z-index: 1000" :value="overlayLoader">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <div class="createActivityContainer">
       <div class="createActivityContentContainer">
-        <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-          <button class="genericConfirmButton backButton">Back to Profile</button>
-        </router-link>
-        <h1>Edit Activity</h1>
+        <h1 id="createHeading">Edit Activity</h1>
+        <h1 id="createSubheading">Make changes to your activity.</h1>
         <form class="CreateActivityFormContainer">
-          <label class="editActivityLabel" for="name">Activity Name</label>
-          <input
-            class="editActivityInput"
-            type="text"
-            id="name"
-            v-model="activity_name"
-            placeholder="Activity Name"
-            required
-          />
+          <v-card style="margin-top:20px;border-radius:15px;" :loading="pageLoading" :disabled="pageLoading">
+            <v-tabs v-model="tabs" grow show-arrows>
+              <v-tab>
+                Basic Info*
+              </v-tab>
+              <v-tab>
+                Time/Date*
+              </v-tab>
+              <v-tab>
+                Location
+              </v-tab>
+              <v-tab>
+                Achievements
+              </v-tab>
+            </v-tabs>
 
-          <label class="editActivityLabel" for="time">Visibility</label>
-          <select
-                  class="editActivitySelect"
-                  id="visibility"
-                  v-model="visibility"
-          >
-            <option value="public" selected>Public</option>
-            <option value="restricted">Restricted</option>
-            <option value="private">Private</option>
-          </select>
+            <v-tabs-items v-model="tabs">
+              <v-tab-item>
+                <v-card flat class="py-3">
+                  <label class="editActivityLabel" for="name">Activity Name*</label>
+                  <input class="editActivityInput" type="text" id="name" v-model="activity_name" placeholder="Activity Name" required />
+                  <label class="editActivityLabel">Visibility</label>
+                  <v-row no-gutters style="margin:0 20px;">
+                    <v-radio-group v-model="visibility" row>
+                      <v-radio
+                              label="Public"
+                              color="green"
+                              value="public"
+                      ></v-radio>
+                      <v-radio
+                              label="Restricted"
+                              color="orange"
+                              value="restricted"
+                      ></v-radio>
+                      <v-radio
+                              label="Private"
+                              color="red"
+                              value="private"
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-row>
 
-          <label class="editActivityLabel" for="time">Continuous?</label>
-          <select class="editActivitySelect" id="time" v-model="duration">
-            <option value="continuous">Continuous</option>
-            <option value="duration">Duration</option>
-          </select>
+                  <label class="editActivityLabel" for="desc">Description</label>
+                  <textarea
+                          class="editActivityTextarea"
+                          maxlength="255"
+                          type="text"
+                          id="desc"
+                          v-model="description"
+                          placeholder="Activity Description">
+                  </textarea>
+                  <label class="editActivityLabel">Activity Types*</label>
+                  <v-select style="margin:0 20px;margin-top:5px;"
+                          v-model="activity_types_selected"
+                          :items="activities_option"
+                          attach
+                          chips
+                          label="Select Activity Types"
+                          multiple
+                          rounded
+                          outlined
+                          :loading="activityTypesLoading"
+                          :disabled="activityTypesLoading"
+                  ></v-select>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card flat class="py-3">
+                  <label class="editActivityLabel">Continuous?</label>
+                  <v-row no-gutters style="margin:0 20px;">
+                    <v-radio-group v-model="duration" v-on:change="setDuration" row>
+                      <v-radio
+                              label="Continuous"
+                              color="green"
+                              value="continuous"
+                      ></v-radio>
+                      <v-radio
+                              label="Duration"
+                              color="green"
+                              value="duration"
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-row>
+                  <div v-if="isDuration">
+                    <label class="editActivityLabel" id="startDateLabel" for="start_date">Start Date*</label>
+                    <input class="editActivityInput" type="date" id="start_date" v-model="start_date" />
 
-          <div v-if="isDuration">
-            <label class="editActivityLabel" id="startDateLabel" for="start_date">Start Date</label>
-            <input class="editActivityInput" type="date" id="start_date" v-model="start_date" />
+                    <label class="editActivityLabel" id="endDateLabel" for="end_date">End Date*</label>
+                    <input class="editActivityInput" type="date" id="end_date" v-model="end_date" />
 
-            <label class="editActivityLabel" id="endDateLabel" for="end_date">End Date</label>
-            <input class="editActivityInput" type="date" id="end_date" v-model="end_date" />
+                    <label class="editActivityLabel" id="startTimeLabel" for="start_time">Start Time*</label>
+                    <input class="editActivityInput" type="time" id="start_time" v-model="start_time" />
 
-            <label class="editActivityLabel" id="startTimeLabel" for="start_time">Start Time</label>
-            <input class="editActivityInput" type="time" id="start_time" v-model="start_time" />
-
-            <label class="editActivityLabel" id="endTimeLabel" for="end_time">End Time</label>
-            <input class="editActivityInput" type="time" id="end_time" v-model="end_time" />
-          </div>
-
-          <label class="editActivityLabel" for="desc">Description</label>
-          <textarea
-            class="editActivityTextarea"
-            maxlength="255"
-            type="text"
-            id="desc"
-            v-model="description"
-            placeholder="Activity Description"
-          ></textarea>
-          <label class="editActivityLabel">Location</label>
-          <div>
-            <v-combobox
-                v-model="city"
-                :items="items"
-                :search-input.sync="search"
-                color="primary"
-                :loading="isLoading"
-                no-filter
-                hide-no-data
-                item-text="Description"
-                item-value="API"
-                label="City"
-                placeholder="Start typing to Search"
-                return-object
-                id="inputCity"
-                outlined
-                class="locationCombo"
-                autocomplete="new"
-                dense
-                style="margin: 0 20px;"
-            />
-            <v-combobox
-                v-model="state"
-                :items="itemsState"
-                :search-input.sync="searchState"
-                color="primary"
-                no-filter
-                :loading="stateLoading"
-                hide-no-data
-                hide-selected
-                item-text="Description"
-                item-value="API"
-                label="State"
-                placeholder="Start typing to Search"
-                return-object
-                id="inputState"
-                outlined
-                class="locationCombo"
-                autocomplete="new"
-                dense
-                style="margin: 0 20px;"
-            />
-            <v-combobox
-                v-model="country"
-                :items="countries_option"
-                color="primary"
-                hide-no-data
-                hide-selected
-                item-text="Description"
-                label="Country"
-                placeholder="Start typing to Search"
-                return-object
-                id="inputCountry"
-                outlined
-                class="locationCombo"
-                autocomplete="new"
-                dense
-                style="margin: 0 20px;"
-            />
-          </div>
-
-          <label class="editActivityLabel">Activity Types</label>
-          <div>
-            <select
-              v-on:change="selectActivityType"
-              v-model="selected_activity"
-              name="activityType"
-              class="editActivitySelect"
-              required
-            >
-              <option selected disabled hidden>Activity Type</option>
-              <option
-                v-for="addingActivity in activities_option"
-                v-bind:key="addingActivity"
-              >{{addingActivity}}</option>
-            </select>
-          </div>
-          <div class="addedActivityTypeContainer">
-            <div
-              class="addedActivityContainer"
-              v-for="addedActivity in activity_types_selected"
-              v-bind:key="addedActivity"
-            >
-              <h4 class="addedTypeContainer">{{addedActivity}}</h4>
-              <button
-                class="deleteActivityTypeButton"
-                v-on:click="removeActivityType(addedActivity)"
-              >Remove</button>
-              <div class="floatClear"></div>
-            </div>
-          </div>
-          <h6 class="editSuccessMessage" id="activity_success" hidden="false">Saved successfully</h6>
-          <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
-          <div class="confirmButtonContainer">
-            <button
-              id="deleteActivityButton"
-              type="button"
-              v-on:click="deleteActivity()"
-            >Delete Activity</button>
-            <button
-              id="editActivityButton"
-              type="button"
-              v-on:click="saveEditedActivity()"
-            >Save Changes</button>
-          </div>
+                    <label class="editActivityLabel" id="endTimeLabel" for="end_time">End Time*</label>
+                    <input class="editActivityInput" type="time" id="end_time" v-model="end_time" />
+                  </div>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card flat class="py-3">
+                  <div>
+                    <v-combobox
+                            v-model="city"
+                            :items="items"
+                            :search-input.sync="search"
+                            color="primary"
+                            :loading="isLoading"
+                            no-filter
+                            hide-no-data
+                            item-text="Description"
+                            item-value="API"
+                            label="City"
+                            placeholder="Start typing to Search"
+                            return-object
+                            id="inputCity"
+                            outlined
+                            class="locationCombo"
+                            autocomplete="new"
+                            dense
+                            style="margin: 0 20px;"
+                    />
+                    <v-combobox
+                            v-model="state"
+                            :items="itemsState"
+                            :search-input.sync="searchState"
+                            color="primary"
+                            no-filter
+                            :loading="stateLoading"
+                            hide-no-data
+                            hide-selected
+                            item-text="Description"
+                            item-value="API"
+                            label="State"
+                            placeholder="Start typing to Search"
+                            return-object
+                            id="inputState"
+                            outlined
+                            class="locationCombo"
+                            autocomplete="new"
+                            dense
+                            style="margin: 0 20px;"
+                    />
+                    <v-combobox
+                            v-model="country"
+                            :items="countries_option"
+                            color="primary"
+                            hide-no-data
+                            hide-selected
+                            item-text="Description"
+                            label="Country"
+                            placeholder="Start typing to Search"
+                            return-object
+                            id="inputCountry"
+                            outlined
+                            class="locationCombo"
+                            autocomplete="new"
+                            dense
+                            style="margin: 0 20px;"
+                    />
+                  </div>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card flat>
+                  <!-- Your stuff here -->
+                </v-card>
+              </v-tab-item>
+            </v-tabs-items>
+            <v-divider></v-divider>
+            <v-row no-gutters>
+              <v-btn
+                      v-on:click="deleteActivity()"
+                      style="margin:15px 20px;"
+                      color="red"
+                      rounded
+                      outlined
+                      right
+                      :disabled="overlayLoader"
+              >
+                Delete Activity
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn
+                      v-on:click="saveEditedActivity"
+                      style="margin:15px 20px;"
+                      color="primary"
+                      rounded
+                      outlined
+                      right
+                      :disabled="overlayLoader"
+              >
+                Update Activity
+              </v-btn>
+            </v-row>
+          </v-card>
         </form>
       </div>
     </div>
@@ -179,6 +231,7 @@ const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 export default {
   data() {
     return {
+      tabs: null,
       selected_activity: "Activity Type",
       activities_option: [],
       countries_option: [],
@@ -207,7 +260,12 @@ export default {
       searchState: null,
       isLoading: false,
       stateLoading: false,
-      features: []
+      features: [],
+      snackbar: false,
+      snackbarText: "",
+      overlayLoader: false,
+      pageLoading: true,
+      activityTypesLoading: true
     };
   },
 
@@ -251,18 +309,13 @@ export default {
         for (let i = 0; i < this.activities_option.length; i++) {
           this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
         }
-        this.activity_types_selected.forEach(e => {
-          this.activities_option.some((v, i) => {
-            if (v == e) this.activities_option.splice(i, 1);
-          });
-        });
+        this.activityTypesLoading = false;
       })
       .catch(error => console.log(error));
   },
   methods: {
-    ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
-    ...mapActions(["updateUserDurationActivities"]),
+    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
+      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl"]),
 
     /**
      * This method filters the the data received from the api and only suggests cities to the user.
@@ -297,8 +350,8 @@ export default {
     setLocation() {
       this.location = "";
       this.city = document.getElementById('inputCity').value,
-          this.state = document.getElementById('inputState').value,
-          this.country = document.getElementById('inputCountry').value
+      this.state = document.getElementById('inputState').value,
+      this.country = document.getElementById('inputCountry').value
       this.location = this.city + ',' + this.state + ',' + this.country
     },
 
@@ -318,6 +371,7 @@ export default {
         if (tempActivityData == "Invalid permissions") {
           this.$router.push("/profile");
         } else {
+          this.pageLoading = false;
           this.activity_name = tempActivityData.activity_name;
           this.continuous = tempActivityData.continuous;
           if (this.continuous) {
@@ -447,7 +501,6 @@ export default {
      * The method is used to populate the drop down menu, that allows user to select their current country.
      */
     loadCountries() {
-      console.log("in here")
       this.getDataFromUrl(COUNTRIES_URL)
           .then((response) => {
             const countries = [];
@@ -503,25 +556,27 @@ export default {
       if (this.activity_name === null || this.activity_name.trim() === "") {
         // Name is empty
         this.displayError("Please select an activity name.");
-        return false;
-      } else if (
-        this.duration !== "duration" &&
-        this.duration !== "continuous"
-      ) {
-        // Duration is not set
-        return false;
-      } else if (
-        this.duration === "duration" &&
-        (this.start_date === null ||
-          this.end_date === null ||
-          this.start_date === "" ||
-          this.end_date === "")
-      ) {
+        this.tabs = 0;
         return false;
       } else if (this.activity_types_selected.length < 1) {
+        // No activity types selected
+        this.displayError("Please select at least one activity type.");
+        this.tabs = 0;
+        return false;
+      } else if (this.duration !== "duration" && this.duration !== "continuous") {
+        // Duration is not set
+        this.displayError("Please select a duration.");
+        this.tabs = 1;
+        return false;
+      } else if (this.duration === "duration" &&
+          (this.start_date === null || this.end_date === null || this.start_date === "" || this.end_date === "")) {
+        // Start or end date not set
+        this.displayError("Please select start and end date.");
+        this.tabs = 1;
         return false;
       } else if (this.duration === "duration" && !this.checkTimeContinuity()) {
         // Time check failed
+        this.tabs = 1;
         return false;
       } else {
         // All passed
@@ -540,6 +595,7 @@ export default {
       if (!this.checkFormConditions()) {
         return;
       }
+      this.overlayLoader = true;
       this.setLocation(location);
 
       // Sets duration to a boolean for the request
@@ -560,21 +616,25 @@ export default {
         )
         .then(
           response => {
-            console.log(response);
-            apiUser
-              .getUserContinuousActivities(this.user.profile_id)
-              .then(response => {
-                this.updateUserContinuousActivities(response.data);
-              });
-            apiUser
-              .getUserDurationActivities(this.user.profile_id)
-              .then(response => {
-                this.updateUserDurationActivities(response.data);
-              });
-            router.push("/profile/" + this.author_id);
+            if(response) {
+              apiUser
+                  .getUserContinuousActivities(this.user.profile_id)
+                  .then(response => {
+                    this.updateUserContinuousActivities(response.data);
+                  });
+              apiUser
+                  .getUserDurationActivities(this.user.profile_id)
+                  .then(response => {
+                    this.updateUserDurationActivities(response.data);
+                  });
+              router.push("/activity/" + this.$route.params.activityId);
+            }
           },
           error => {
-            console.log(error.data.error);
+              this.overlayLoader = true;
+              if(error){
+                this.displayError("An error occurred.");
+              }
           }
         );
     },
@@ -610,16 +670,6 @@ export default {
         .deleteActivity(this.user.profile_id, this.$route.params.activityId)
         .then(response => {
           console.log(response);
-          apiUser
-            .getUserContinuousActivities(this.user.profile_id)
-            .then(response => {
-              this.updateUserContinuousActivities(response.data);
-            });
-          apiUser
-            .getUserDurationActivities(this.user.profile_id)
-            .then(response => {
-              this.updateUserDurationActivities(response.data);
-            });
           router.push("/profile/" + this.author_id);
         });
     },
@@ -628,9 +678,8 @@ export default {
      * @param error
      */
     displayError(error) {
-      document.getElementById("activity_error").hidden = false;
-      document.getElementById("activity_error").innerText = error;
-      document.getElementById("activity_success").hidden = true;
+      this.snackbar = true;
+      this.snackbarText = error;
     }
   },
   watch: {

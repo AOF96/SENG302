@@ -125,13 +125,6 @@ public class ActivityController {
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
-        // get the list of all the activites for that user and themn loop nd that list and check the visibility of each activity
-//        for(Activity a: activities){
-//
-//        }
-        // if restricted then do a query that a shared table contain the activity id ssociated with the perosn who is logged in and get his id from the seession
-        // if they exist the querry should return a list of (user, activityid ) with the length of 1 atleast
-        //
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
@@ -144,7 +137,6 @@ public class ActivityController {
      */
     @GetMapping("/profiles/{profileId}/activities/duration")
     public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
-
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(false, profileId);
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
@@ -161,6 +153,56 @@ public class ActivityController {
     public ResponseEntity<String> unFollow(@PathVariable Long profileId, @PathVariable Long activityId,
                                    @CookieValue(value = "s_id") String sessionToken) {
         return activityService.unFollow(profileId, activityId, sessionToken);
+    }
+
+    /**
+     * Handles requests for adding achievements to an activity
+     * @param achievement valid json containing achievement data
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+    @PostMapping("/profiles/{profileId}/activities/{activityId}/achievements")
+    public ResponseEntity addAchievement(@Valid @RequestBody Achievement achievement,
+                                         @PathVariable("profileId") long profileId,
+                                         @PathVariable("activityId") long activityId,
+                                         @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.addAchievement(achievement, profileId, activityId, sessionToken);
+    }
+
+    /**
+     * Handles requests to edit achievements
+     * @param achievement valid json containing new values for an existing achievement
+     * @param profileId id of the user performing the edit
+     * @param activityId id of the activity that the achievement being edited belongs too
+     * @param achievementId id of the achievement that is being edited
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityId}/achievements/{achievementId}")
+    public ResponseEntity editAchievement(@Valid @RequestBody Achievement achievement,
+                                          @PathVariable("profileId") long profileId,
+                                          @PathVariable("activityId") long activityId,
+                                          @PathVariable("achievementId") long achievementId,
+                                          @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.editAchievement(achievement, profileId, activityId, achievementId, sessionToken);
+    }
+
+    /**
+     * Handles requests to delete an achievement
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param achievementId id of the achievement that is to be deleted
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @DeleteMapping("/profiles/{profileId}/activities/{activityId}/achievements/{achievementId}")
+    public ResponseEntity deleteAchievement(@PathVariable("profileId") long profileId,
+                                            @PathVariable("activityId") long activityId,
+                                            @PathVariable("achievementId") long achievementId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.deleteAchievement(profileId, activityId, achievementId, sessionToken);
     }
 
     /**
@@ -219,33 +261,8 @@ public class ActivityController {
             ErrorHandler.printProgramException(e, "Cannot change the visibility status of the activity");
         }
         return activityService.updateActivityVisibility(profileId, activityId, request);
-//        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
     }
 
-//     This code will be used when we have users subscribing to activities
-//    /**
-//     * Retrieves all of the continuous activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/continuous")
-//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
-//
-//    /**
-//     * Retrieves all of the duration activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/duration")
-//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
 
     /**
      * Returns if the given user is following the given activity

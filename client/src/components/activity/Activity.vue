@@ -255,6 +255,10 @@
                     </form>
                   </v-card>
                 </v-flex>
+
+                <v-flex>
+                    <AchievementsCard/>
+                </v-flex>
               </v-layout>
             </v-flex>
           </v-flex>
@@ -269,9 +273,13 @@
   import dateUtil from "@/util/date";
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../api";
+  import AchievementsCard from "./modules/AchievementsCard";
 
   export default {
     name: "ActivityPageInfo",
+    components: {
+        AchievementsCard,
+    },
     data() {
       return {
         activity_name: "",
