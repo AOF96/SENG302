@@ -125,13 +125,6 @@ public class ActivityController {
     @GetMapping("/profiles/{profileId}/activities/continuous")
     public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
         List<Activity> activities = activityRepository.getActivitiesForAuthorOfType(true, profileId);
-        // get the list of all the activites for that user and themn loop nd that list and check the visibility of each activity
-//        for(Activity a: activities){
-//
-//        }
-        // if restricted then do a query that a shared table contain the activity id ssociated with the perosn who is logged in and get his id from the seession
-        // if they exist the querry should return a list of (user, activityid ) with the length of 1 atleast
-        //
         List<Map<String, String>> result = activityService.getActivitySummaries(activities);
         return new ResponseEntity(result, HttpStatus.valueOf(200));
     }
@@ -268,33 +261,8 @@ public class ActivityController {
             ErrorHandler.printProgramException(e, "Cannot change the visibility status of the activity");
         }
         return activityService.updateActivityVisibility(profileId, activityId, request);
-//        return new ResponseEntity<String>("Successfully updated visibility", HttpStatus.OK);
     }
 
-//     This code will be used when we have users subscribing to activities
-//    /**
-//     * Retrieves all of the continuous activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/continuous")
-//    public ResponseEntity getContinuousActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(true, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
-//
-//    /**
-//     * Retrieves all of the duration activities that a user is subscribed to
-//     * @param profileId The ID of the user
-//     * @return A response entity with the result and a status code
-//     */
-//    @GetMapping("/profiles/{profileId}/activities/duration")
-//    public ResponseEntity getDurationActivities(@PathVariable("profileId") long profileId) {
-//        List<Activity> activities = activityRepository.getActivitiesForUserOfType(false, profileId);
-//        List<Map<String, String>> result = activityService.getActivitySummaries(activities);
-//        return new ResponseEntity(result, HttpStatus.valueOf(200));
-//    }
 
     /**
      * Returns if the given user is following the given activity

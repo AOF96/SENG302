@@ -70,10 +70,10 @@ public class ActivityControllerTest {
     private SearchRepository searchRepository;
 
     @MockBean
-    private AchievementRepository achievementRepository;
+    private UserActivityRoleRepository userActivityRoleRepository;
 
     @MockBean
-    private UserActivityRoleRepository userActivityRoleRepository;
+    private AchievementRepository achievementRepository;
 
     @MockBean
     private UserService userService;

@@ -236,7 +236,7 @@ public class ActivityService {
             } else if (attribute == ActivityAttribute.START_TIME) {
                 description.append("*Start time changed to ").append(newActivity.getStartTime()).append("\n");
             } else if (attribute == ActivityAttribute.VISIBILITY) {
-                description.append("*Activity Visibility was changed.");
+                description.append("*Visibility was changed.");
             }  else if (attribute == ActivityAttribute.END_TIME) {
                 description.append("*End time changed to: ").append(newActivity.getEndTime()).append("\n");
             } else if (attribute == ActivityAttribute.LOCATION) {

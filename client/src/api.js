@@ -287,8 +287,7 @@ export const apiActivity = {
       result_type: result_type
   }),
 
-
- deleteActivityAchievement: (profileId, activityId, achievementId) =>
+  deleteActivityAchievement: (profileId, activityId, achievementId) =>
     instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
 
   deleteActivity: (authorId, activityId) =>
