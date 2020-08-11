@@ -204,8 +204,35 @@
               >
                 Create Activity
               </v-btn>
+              <v-dialog
+                      v-model="dialog"
+                      max-width="290"
+              >
+                <v-card>
+                  <v-card-title class="headline">Add Achievements</v-card-title>
+                  <v-card-text>
+                    Would you like to add achievements to this activity?
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <button
+                            @click="dialog = false"
+                            v-on:click="navigateToCreateAchievement"
+                            class="genericConfirmButton updateProfileButton"
+                    >
+                      Yes
+                    </button>
+                    <button
+                            class="genericDeleteButton deleteProfileButton"
+                            @click="dialog = false"
+                            v-on:click="addActivity"
+                    >
+                      No
+                    </button>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-row>
-
           </v-card>
         </form>
       </div>
@@ -241,6 +268,7 @@ export default {
             showLocations: false,
             visibility: "public",
             city: null,
+            dialog: false,
             country: null,
             state: null,
             locationCity: null,
@@ -253,6 +281,8 @@ export default {
             snackbar: false,
             snackbarText: "",
             overlayLoader: false
+            createdId: null,
+            setAchievement: false
         };
     },
 
@@ -338,6 +368,19 @@ export default {
           this.location ="";
           this.location = this.city.Description + ', ' + this.state.Description + ', ' + this.country;
         },
+
+      /**
+       * Navigates the user to the Edit Achievement component page if they would like
+       * to add achievements to the their activities.
+       */
+       navigateToCreateAchievement(){
+        this.setAchievement = true;
+        this.addActivity()
+        if(this.setAchievement === true) {
+          this.$router.push({path: '/activity/achievement_setting/' + this.createdId});
+        }
+       },
+
 
         /**
          * Shows/hides date and time selection if duration is duration/continuous
@@ -441,7 +484,6 @@ export default {
          * The method is used to populate the drop down menu, that allows user to select their current country.
          */
         loadCountries() {
-          console.log("in here");
           this.getDataFromUrl(COUNTRIES_URL)
               .then((response) => {
                 const countries = [];
@@ -535,6 +577,7 @@ export default {
                 .then(
                     response => {
                       if(response){
+                        this.createdId = response.data;
                         apiUser.getUserContinuousActivities(this.user.profile_id)
                             .then(response => {
                               this.updateUserContinuousActivities(response.data);
@@ -543,7 +586,9 @@ export default {
                             .then(response => {
                               this.updateUserDurationActivities(response.data);
                             });
-                        router.push("/profile/"+this.$route.params.profileId);
+                        if(this.setAchievement === false) {
+                          router.push("/profile/"+this.$route.params.profileId);
+                        }
                       }
                     },
                     error => {

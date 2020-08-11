@@ -125,8 +125,7 @@ public class ActivityService {
             UserActivityKey userActivityKey = new UserActivityKey(profileId, savedActivity.getId());
             userActivityRoleRepository.save(new UserActivityRole(userActivityKey, ActivityRole.CREATOR));
 
-
-            return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
+            return new ResponseEntity(activity.getId(), HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
             return new ResponseEntity<>("An error occurred", HttpStatus.valueOf(500));
