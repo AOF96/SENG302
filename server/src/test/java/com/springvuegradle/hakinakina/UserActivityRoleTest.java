@@ -93,6 +93,7 @@ public class UserActivityRoleTest {
 
     @Test
     public void testIfActivityDeletedShouldDeleteRoleAsWell() {
+        System.out.println("@@@@@@@@@@@@ - working");
 
         Date startDate1 = new Date(2021, 10, 10);
         Date endDate1 = new Date(2021, 10, 12);

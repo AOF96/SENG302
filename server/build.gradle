@@ -26,6 +26,9 @@ repositories {
 }
 
 dependencies {
+	runtimeOnly 'com.h2database:h2'
+
+	compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.2.0'
 
 	testImplementation 'io.cucumber:cucumber-java:5.6.0'
 	testImplementation 'io.cucumber:cucumber-junit:5.6.0'
@@ -38,10 +41,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.h2database:h2'
-
-	compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.2.0'
-
+	
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -49,16 +49,29 @@ dependencies {
 }
 
 
-task cucumber(type: Test) {
-   description = "Runs JUnit 4 tests (cucumber tests)"
-   testLogging.showStandardStreams = true
-   useJUnit()
+task cucumber() {
+	dependsOn assemble, compileTestJava
+	String selectedTags = findProperty("tags") ?: ""
+
+	doLast {
+		javaexec {
+			main = "io.cucumber.core.cli.Main"
+			classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+			args = [
+					'--plugin', 'pretty', // How to format test report, "pretty" is good for human eyes
+					'--glue', 'com.springvuegradle.hakinakina.acceptance_tests.steps', // Where to look for your tests' steps
+					'src/test/resources/com.springvuegradle.hakinakina.features/', // Where to look for your features
+					'--strict', // Causes cucumber to fail if any step definitions are still undefined
+					'--tags', selectedTags // Only runs certain tagged scenarios of tags arg is given
+			]
+		}
+	}
 }
 
 test {
-   description = "Runs JUnit 5/Jupiter tests (unit tests)"
-   testLogging.showStandardStreams = true
-   useJUnitPlatform()
+	testLogging.showStandardStreams = true
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
 
 // Jacoco test coverage configuration
