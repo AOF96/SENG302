@@ -26,6 +26,9 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
     @Autowired
     ActivityTypeRepository activityTypeRepository;
 
+    @Autowired
+    AchievementRepository achievementRepository;
+
     public ActivityDeserializer() {
         this(null);
     }
@@ -48,9 +51,10 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         String startTime = getValueString(node, "start_time");
         String endTime = getValueString(node, "end_time");
         String location = getValueString(node, "location");
+        Set<Achievement> achievements = getAchievements(node, "achievements");
         Visibility visibility = getVisibility(getValueString(node, "visibility"));
 
-        String city ;
+        String city;
         String state;
         String country;
         List<String> locationSplit = Arrays.asList(location.split("\\s*,\\s*"));
@@ -70,6 +74,7 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
 
         activity.setActivityTypes(activityTypes);
         activity.setVisibility(visibility);
+        activity.setAchievements(achievements);
         return activity;
     }
 
@@ -124,6 +129,19 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
                 userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
             }
             return userActivityTypes;
+        }
+    }
+
+    public Set<Achievement> getAchievements(JsonNode node, String field) {
+        JsonNode achievementsNodes = node.get(field);
+        if (achievementsNodes == null) {
+            return new HashSet<>();
+        } else {
+            Set<Achievement> achievements = new HashSet<>();
+            for (JsonNode achievementNode : achievementsNodes) {
+                achievements.add(achievementRepository.findById(achievementNode.asLong()).get());
+            }
+            return achievements;
         }
     }
 }
