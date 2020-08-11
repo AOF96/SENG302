@@ -104,7 +104,7 @@
                                   transition="slide-y-transition"
                                   bottom
                                   right
-                                  :close-on-click="false"
+                                  :close-on-click="true"
                               >
                                 <template v-slot:activator="{ on, attrs }">
                                   <v-btn
@@ -116,8 +116,16 @@
                                   </v-btn>
                                 </template>
                                 <v-card>
-                                  <v-card-text>Change Role</v-card-text>
-                                  <v-switch v-model="roleSwitch"></v-switch>
+                                  <v-card>
+                                    <v-list-item link>
+                                      <div v-if="item.tab === 'Participants'">
+                                        <v-list-item-title>Move to Organiser</v-list-item-title>
+                                      </div>
+                                      <div v-else>
+                                        <v-list-item-title>Move to Participants</v-list-item-title>
+                                      </div>
+                                    </v-list-item>
+                                  </v-card>
                                 </v-card>
                               </v-menu>
                             </v-list-item>
@@ -179,7 +187,7 @@
                                       transition="slide-y-transition"
                                       bottom
                                       right
-                                      :close-on-click="false"
+                                      :close-on-click="true"
                               >
                                 <template v-slot:activator="{ on, attrs }">
                                   <v-btn
@@ -191,8 +199,14 @@
                                   </v-btn>
                                 </template>
                                 <v-card>
-                                  <v-card-text>Change Role</v-card-text>
-                                  <v-switch v-model="roleSwitch"></v-switch>
+                                  <v-list-item link>
+                                    <div v-if="item.tab === 'Participants'">
+                                      <v-list-item-title>Move to Organiser</v-list-item-title>
+                                    </div>
+                                    <div v-else>
+                                      <v-list-item-title>Move to Participants</v-list-item-title>
+                                    </div>
+                                  </v-list-item>
                                 </v-card>
                               </v-menu>
                             </v-list-item>
@@ -204,6 +218,7 @@
                   <v-btn
                           height="40px" color="#1cca92"
                           outlined rounded
+                          v-on:click="getMoreResults()"
                   >More Results
                   </v-btn>
                 </v-dialog>
@@ -337,10 +352,10 @@
         displayInvalidInputError: false,
         invalidInputErrorMessage: "",
         participantsPageInfo: {
-          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
+          defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
         },
         organisersPageInfo: {
-          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
+          defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
         },
         userTabs: [
           {tab: 'Participants', content: null, preview: null},
@@ -454,6 +469,23 @@
           }
         } catch (err) {
           console.error(err)
+        }
+      },
+      /**
+       *
+       */
+      async getMoreResults() {
+        try {
+          if (this.dialogTab === 0) {
+            let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage + 1, this.participantsPageInfo.currentSize);
+            this.userTabs[0].content = this.userTabs[0].content.concat(response.data.content);
+          }
+          if (this.dialogTab === 1) {
+            let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage + 1, this.organisersPageInfo.currentSize);
+            this.userTabs[1].content = this.userTabs[1].content.concat(response.data.content);
+          }
+        } catch (err) {
+          console.log(err);
         }
       },
       /**
