@@ -104,7 +104,7 @@ public class ActivityService {
             activity.setAuthor(userRepository.getUserById(profileId).get());
             activityRepository.save(activity);
 
-            return new ResponseEntity("Activity has been created", HttpStatus.valueOf(201));
+            return new ResponseEntity(activity.getId(), HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
             return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));

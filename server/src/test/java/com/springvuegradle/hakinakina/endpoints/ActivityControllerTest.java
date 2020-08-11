@@ -151,12 +151,12 @@ public class ActivityControllerTest {
         // and lets have some FUN
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));
+        when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("1", HttpStatus.CREATED));
         this.mockMvc.perform(post("/profiles/1/activities").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(INPUT))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("Activity has been created")));
+                .andExpect(content().string(containsString("1")));
     }
 
     @Test

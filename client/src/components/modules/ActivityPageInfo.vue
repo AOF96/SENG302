@@ -132,8 +132,9 @@
       return this.checkFollowing();
     },
     methods: {
-      ...mapActions(['updateUserDurationActivities']),
-      ...mapActions(['updateUserContinuousActivities']),
+      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', "addActivityAchievement",
+        "editActivityAchievement", "deleteActivityAchievement"]),
+
       /**
        * Deletes the current activity
        */
