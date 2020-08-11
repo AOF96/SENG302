@@ -21,15 +21,15 @@
         <h1 id="createSubheading">Create your own activity.</h1>
         <form class="CreateActivityFormContainer">
           <v-card style="margin-top:20px;border-radius:15px;">
-            <v-tabs v-model="tabs" grow >
+            <v-tabs v-model="tabs" grow show-arrows>
               <v-tab>
-                Basic Info
+                Basic Info*
+              </v-tab>
+              <v-tab>
+                Time/Date*
               </v-tab>
               <v-tab>
                 Location
-              </v-tab>
-              <v-tab>
-                Time/Date
               </v-tab>
               <v-tab>
                 Achievements
@@ -39,7 +39,7 @@
             <v-tabs-items v-model="tabs">
               <v-tab-item>
                 <v-card flat class="py-3">
-                  <label class="editActivityLabel" for="name">Activity Name</label>
+                  <label class="editActivityLabel" for="name">Activity Name*</label>
                   <input class="editActivityInput" type="text" id="name" v-model="name" placeholder="Activity Name" required />
                   <label class="editActivityLabel">Visibility</label>
                   <v-row no-gutters style="margin:0 20px;">
@@ -71,7 +71,7 @@
                         v-model="description"
                         placeholder="Activity Description">
                   </textarea>
-                  <label class="editActivityLabel" style="">Activity Types</label>
+                  <label class="editActivityLabel" style="">Activity Types*</label>
                   <v-select
                           style="margin:0 20px;margin-top:5px;"
                           v-model="activity_types_selected"
@@ -83,6 +83,37 @@
                           rounded
                           outlined
                   ></v-select>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card flat class="py-3">
+                  <label class="editActivityLabel">Continuous?</label>
+                  <v-row no-gutters style="margin:0 20px;">
+                    <v-radio-group v-model="duration" v-on:change="setDuration" row>
+                      <v-radio
+                              label="Continuous"
+                              color="green"
+                              value="continuous"
+                      ></v-radio>
+                      <v-radio
+                              label="Duration"
+                              color="green"
+                              value="duration"
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-row>
+
+                  <label class="editActivityLabel" id="startDateLabel" for="start_date">Start Date*</label>
+                  <input class="editActivityInput" type="date" id="start_date" v-model="start_date" />
+
+                  <label class="editActivityLabel" id="endDateLabel" for="end_date">End Date*</label>
+                  <input class="editActivityInput" type="date" id="end_date" v-model="end_date" />
+
+                  <label class="editActivityLabel" id="startTimeLabel" for="start_time">Start Time*</label>
+                  <input class="editActivityInput" type="time" id="start_time" v-model="start_time" />
+
+                  <label class="editActivityLabel" id="endTimeLabel" for="end_time">End Time*</label>
+                  <input class="editActivityInput" type="time" id="end_time" v-model="end_time" />
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -150,37 +181,6 @@
                 </v-card>
               </v-tab-item>
               <v-tab-item>
-                <v-card flat class="py-3">
-                  <label class="editActivityLabel">Continuous?</label>
-                  <v-row no-gutters style="margin:0 20px;">
-                    <v-radio-group v-model="duration" v-on:change="setDuration" row>
-                      <v-radio
-                               label="Continuous"
-                               color="green"
-                               value="continuous"
-                      ></v-radio>
-                      <v-radio
-                              label="Duration"
-                              color="green"
-                              value="duration"
-                      ></v-radio>
-                    </v-radio-group>
-                  </v-row>
-
-                  <label class="editActivityLabel" id="startDateLabel" for="start_date">Start Date</label>
-                  <input class="editActivityInput" type="date" id="start_date" v-model="start_date" />
-
-                  <label class="editActivityLabel" id="endDateLabel" for="end_date">End Date</label>
-                  <input class="editActivityInput" type="date" id="end_date" v-model="end_date" />
-
-                  <label class="editActivityLabel" id="startTimeLabel" for="start_time">Start Time</label>
-                  <input class="editActivityInput" type="time" id="start_time" v-model="start_time" />
-
-                  <label class="editActivityLabel" id="endTimeLabel" for="end_time">End Time</label>
-                  <input class="editActivityInput" type="time" id="end_time" v-model="end_time" />
-                </v-card>
-              </v-tab-item>
-              <v-tab-item>
                 <v-card flat>
                   <!-- Your stuff here -->
                 </v-card>
@@ -188,8 +188,15 @@
             </v-tabs-items>
             <v-divider></v-divider>
             <v-row no-gutters>
+              <v-btn :disabled="tabs <= 0" v-on:click="tabs -= 1" text rounded color="black" style="margin: 15px;padding:0 10px;">
+                <v-icon style="padding-right:5px;">mdi-arrow-left</v-icon> Back
+              </v-btn>
               <v-spacer></v-spacer>
+              <v-btn v-if="tabs < 3" v-on:click="tabs += 1" text rounded color="black" style="margin: 15px;padding:0 10px;">
+                Next <v-icon style="padding-left:5px;">mdi-arrow-right</v-icon>
+              </v-btn>
               <v-btn
+                      v-if="tabs >= 3"
                       v-on:click="addActivity"
                       style="margin:15px 20px;"
                       color="primary"
@@ -200,34 +207,6 @@
               >
                 Create Activity
               </v-btn>
-              <v-dialog
-                      v-model="dialog"
-                      max-width="300"
-              >
-                <v-card>
-                  <v-card-title class="headline">Add Achievements</v-card-title>
-                  <v-card-text>
-                    Would you like to add achievements to this activity?
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <button
-                            @click="dialog = false"
-                            v-on:click="navigateToCreateAchievement"
-                            class="genericConfirmButton updateProfileButton"
-                    >
-                      Yes
-                    </button>
-                    <button
-                            class="genericDeleteButton deleteProfileButton"
-                            @click="dialog = false"
-                            v-on:click="addActivity"
-                    >
-                      No
-                    </button>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
             </v-row>
           </v-card>
         </form>
@@ -277,8 +256,7 @@ export default {
             snackbar: false,
             snackbarText: "",
             overlayLoader: false,
-            createdId: null,
-            setAchievement: false
+            createdId: null
         };
     },
 
@@ -364,19 +342,6 @@ export default {
           this.location = "";
           this.location = this.city.Description + ', ' + this.state.Description + ', ' + this.country;
         },
-
-      /**
-       * Navigates the user to the Edit Achievement component page if they would like
-       * to add achievements to the their activities.
-       */
-       navigateToCreateAchievement(){
-        this.setAchievement = true;
-        this.addActivity()
-        if(this.setAchievement === true) {
-          this.$router.push({path: '/activity/achievement_setting/' + this.createdId});
-        }
-       },
-
 
         /**
          * Shows/hides date and time selection if duration is duration/continuous
@@ -501,22 +466,27 @@ export default {
             if (this.name === null || this.name.trim() === "") {
                 // Name is empty
                 this.displayError("Please select an activity name.");
+                this.tabs = 0;
                 return false;
+            } else if (this.activity_types_selected.length < 1) {
+              // No activity types selected
+              this.displayError("Please select at least one activity type.");
+              this.tabs = 0;
+              return false;
             } else if (this.duration !== "duration" && this.duration !== "continuous") {
                 // Duration is not set
                 this.displayError("Please select a duration.");
+                this.tabs = 1;
                 return false;
             } else if (this.duration === "duration" &&
                 (this.start_date === null || this.end_date === null || this.start_date === "" || this.end_date === "")) {
                 // Start or end date not set
                 this.displayError("Please select start and end date.");
-                return false;
-            } else if (this.activity_types_selected.length < 1) {
-                // No activity types selected
-                this.displayError("Please select at least one activity type.");
+                this.tabs = 1;
                 return false;
             } else if (this.duration === "duration" && !this.checkTimeContinuity()) {
                 // Time check failed
+                this.tabs = 1;
                 return false;
             } else {
                 // All passed
@@ -582,9 +552,7 @@ export default {
                             .then(response => {
                               this.updateUserDurationActivities(response.data);
                             });
-                        if(this.setAchievement === false) {
-                          router.push("/profile/"+this.$route.params.profileId);
-                        }
+                        router.push("/activity/"+this.createdId);
                       }
                     },
                     error => {
