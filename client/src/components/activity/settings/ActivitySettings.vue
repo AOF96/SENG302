@@ -2,19 +2,15 @@
   <div @click="showLocations = false">
     <v-snackbar
             v-model="snackbar"
-            bottom
     >
       {{ snackbarText }}
-
-      <template v-slot:action="{ attrs }">
-        <v-btn
-                text
-                v-bind="attrs"
-                @click="snackbar = false"
-        >
-          Close
-        </v-btn>
-      </template>
+      <v-btn
+              color="primary"
+              text
+              @click="snackbar = false"
+      >
+        Close
+      </v-btn>
     </v-snackbar>
     <v-overlay style="z-index: 1000" :value="overlayLoader">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -206,7 +202,7 @@
               </v-btn>
               <v-dialog
                       v-model="dialog"
-                      max-width="290"
+                      max-width="300"
               >
                 <v-card>
                   <v-card-title class="headline">Add Achievements</v-card-title>
@@ -267,10 +263,10 @@ export default {
             suggestedLocations: [],
             showLocations: false,
             visibility: "public",
-            city: null,
+            city: "",
             dialog: false,
-            country: null,
-            state: null,
+            country: "",
+            state: "",
             locationCity: null,
             locationState: null,
             search: null,
@@ -365,7 +361,7 @@ export default {
          * box.
          */
         setLocation() {
-          this.location ="";
+          this.location = "";
           this.location = this.city.Description + ', ' + this.state.Description + ', ' + this.country;
         },
 
