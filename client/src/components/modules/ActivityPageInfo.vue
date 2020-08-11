@@ -1,5 +1,4 @@
 <template>
-
   <v-container fluid grid-list-md fill-height fill-width>
     <v-layout row wrap width="600px">
       <v-flex d-flex xs12 sm6 md4>
@@ -25,29 +24,35 @@
                         {{a.name}}.
                 </span>
             </span>
-          </div>
-          <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
-            <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
-          </div>
-          <div class="activityPageBottomButtons">
-            <router-link v-bind:to="'/profile/'+authorId">
-              <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
-                Back to Profile
-              </button>
-            </router-link>
-            <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
-              <button
-                      class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-                      type="button"
-              >Edit Activity
-              </button>
-            </router-link>
-            <button v-if="authorId===user.profile_id || user.permission_level > 0"
-                    class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-                    type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+        </div>
+        <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
+          <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
+        </div>
+        <div class="activityPageBottomButtons">
+          <router-link v-bind:to="'/profile/'+authorId">
+            <button class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+              Back to Profile
             </button>
+          </router-link>
+          <router-link v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId">
+            <button
+                class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                type="button"
+            >Edit Activity
+            </button>
+          </router-link>
+          <button v-if="authorId===user.profile_id || user.permission_level > 0"
+                  class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+                  type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+          </button>
+          <div v-if="!userFollowing">
+            <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
           </div>
-        </v-card>
+          <div v-else>
+            <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
+          </div>
+        </div>
+      </v-card>
       </v-flex>
 
       <v-flex d-flex xs12 sm3 md3>
@@ -87,9 +92,7 @@
 
         </v-layout>
       </v-flex>
-
     </v-layout>
-
   </v-container>
 </template>
 
@@ -116,6 +119,7 @@
         authorId: null,
         activityId: null,
         loadingActivity: true,
+        userFollowing: null,
       }
     },
 
@@ -125,6 +129,7 @@
     },
     created: function () {
       this.loadActivity();
+      return this.checkFollowing();
     },
     methods: {
       ...mapActions(['updateUserDurationActivities']),
@@ -172,6 +177,45 @@
           }
         }
       },
+        /**
+         * Checks if user is following current activity and sets userFollowing which is used to determine if
+         * the follow button should be for following or unfollowing
+         * @returns {Promise<void>}
+         */
+        async checkFollowing() {
+            await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
+                .then((response) => {
+                  this.userFollowing = response.data !== false;
+                })
+                .catch((error) => {
+                    if (error.response.status === 404) {
+                        this.userFollowing = false;
+                    }
+                });
+        },
+        /**
+         * Makes api call to allow a user to follow current activity after follow button is pressed
+         * @returns {Promise<void>}
+         */
+        async followCurrentActivity() {
+            await apiActivity.followActivity(this.user.profile_id,  this.$route.params.activityId).then(response => {
+                if (response.status === 201) {
+                    this.userFollowing = true;
+                }
+            });
+        },
+
+        /**
+         * Makes api call to allow a user to un follow current activity after un follow button is pressed
+         * @returns {Promise<void>}
+         */
+        async unFollowCurrentActivity() {
+            await apiActivity.unfollowActivity(this.user.profile_id,  this.$route.params.activityId).then(response => {
+            if (response.status === 200) {
+                this.userFollowing = false;
+            }
+            });
+        }
     }
   }
 </script>

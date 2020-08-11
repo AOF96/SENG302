@@ -132,8 +132,16 @@ describe("Check user's edit profile page", () => {
         expect(wrapper.find("#nickName").exists()).toBe(true);
     })
 
-    it("should have an input field for user to set their current location", () => {
-        expect(wrapper.find("#locationInput").exists()).toBe(true);
+    it("should have an input field for user to set their current city", () => {
+        expect(wrapper.find("#inputCity").exists()).toBe(true);
+    })
+
+    it("should have an input field for user to set their current state", () => {
+        expect(wrapper.find("#inputState").exists()).toBe(true);
+    })
+
+    it("should have an input field for user to set their current country", () => {
+        expect(wrapper.find("#inputCountry").exists()).toBe(true);
     })
 
     it("should have a drop down field for user to set their gender", () => {

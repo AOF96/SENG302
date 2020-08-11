@@ -105,10 +105,14 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
-    private Set<Activity> activity = new HashSet<>();
+    @JsonIgnore
+    private Set<Activity> activities = new HashSet<>();
 
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
+
+    @OneToMany(mappedBy = "author")
+    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -191,6 +195,19 @@ public class User {
         session.setUser(null);
     }
 
+    public void followActivity(Activity activity) {
+        activities.add(activity);
+    }
+
+    @JsonIgnore
+    public Set<Activity> getActivities() {
+        return activities;
+    }
+
+    public void unfollowActivity(Activity activity) {
+        activities.remove(activity);
+    }
+
     public Set<PassportCountry> getPassportCountries() {
         return passportCountries;
     }
@@ -201,10 +218,6 @@ public class User {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
-    }
-
-    public void setActivity(Set<Activity> activities) {
-        this.activity = activities;
     }
 
     /**
@@ -374,6 +387,10 @@ public class User {
         this.authoredActivities.add(authoredActivity);
     }
 
+    public void setActivities(Set<Activity> participateActivities) {
+        this.activities = participateActivities;
+    }
+
     @Override
     public String toString() {
         String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
@@ -383,6 +400,15 @@ public class User {
                 "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
                 "\nPrimary Email: " + getPrimaryEmail();
         return result;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof User){
+            User otherUser = (User) other;
+            return this.userId.equals(otherUser.userId);
+        }
+        return false;
     }
 
     public String toJson() {

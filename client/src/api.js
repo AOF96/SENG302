@@ -154,6 +154,7 @@ export const apiUser = {
   },
   getUserContinuousActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/continuous'),
   getUserDurationActivities: (profile_id) => instance.get('/profiles/' + profile_id + '/activities/duration'),
+  
   /**
    * Request to get all activity types from the server
    */
@@ -178,7 +179,24 @@ export const apiUser = {
   }),
 
   // Request to delete a user account
-  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`)
+  deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
+
+    //
+    isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
+    
+  /**
+   * API call to retrieve the home feed details for a user
+   * @param profileId the id of the user that requires feed retrieval
+   * @param page the page number
+   * @param size how many posts we want for each page
+   * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
+   */
+  getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
+    {params: {
+      page: page,
+      size: size
+      }
+    }),
 };
 
 export const apiActivity = {
@@ -263,4 +281,10 @@ export const apiActivity = {
     );
     return await activity;
   },
+
+  followActivity: (profileId, activityId) =>
+    instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+
+  unfollowActivity: (profileId, activityId) =>
+    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`)
 };

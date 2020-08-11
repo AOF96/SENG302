@@ -44,6 +44,7 @@ public class Main {
 						   ActivityTypeRepository activityTypeRepository,
 						   ActivityRepository activityRepository,
 						   SearchRepository searchRepository,
+						   ActivityChangeRepository activityChangeRepository,
 						   AchievementRepository achievementRepository
 	) {
 		return args -> {
