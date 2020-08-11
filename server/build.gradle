@@ -26,7 +26,6 @@ repositories {
 }
 
 dependencies {
-	testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
 
 	testImplementation 'io.cucumber:cucumber-java:5.6.0'
 	testImplementation 'io.cucumber:cucumber-junit:5.6.0'
@@ -39,7 +38,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+	runtimeOnly 'com.h2database:h2'
+
+	compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.2.0'
+
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
