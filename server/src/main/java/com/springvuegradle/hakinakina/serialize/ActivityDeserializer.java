@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.repository.AchievementRepository;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
 
     @Autowired
     ActivityTypeRepository activityTypeRepository;
+
+    @Autowired
+    AchievementRepository achievementRepository;
 
     public ActivityDeserializer() {
         this(null);
@@ -49,8 +53,9 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         String endTime = getValueString(node, "end_time");
         String location = getValueString(node, "location");
         Visibility visibility = getVisibility(getValueString(node, "visibility"));
+        Set<Achievement> achievements = getAchievements(node, "achievements");
 
-        String city ;
+        String city;
         String state;
         String country;
         List<String> locationSplit = Arrays.asList(location.split("\\s*,\\s*"));
@@ -70,6 +75,7 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
 
         activity.setActivityTypes(activityTypes);
         activity.setVisibility(visibility);
+        activity.setAchievements(achievements);
         return activity;
     }
 
@@ -124,6 +130,19 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
                 userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
             }
             return userActivityTypes;
+        }
+    }
+
+    public Set<Achievement> getAchievements(JsonNode node, String field) {
+        JsonNode achievementsNodes = node.get(field);
+        if (achievementsNodes == null) {
+            return new HashSet<>();
+        } else {
+            Set<Achievement> achievements = new HashSet<>();
+            for (JsonNode achievementNode : achievementsNodes) {
+                achievements.add(achievementRepository.findById(achievementNode.asLong()).get());
+            }
+            return achievements;
         }
     }
 }

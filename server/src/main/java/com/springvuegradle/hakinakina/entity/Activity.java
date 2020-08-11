@@ -62,6 +62,12 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
+//    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+//    private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Achievement> achievements = new HashSet<>();
+
     @ManyToOne
     private User author;
 
@@ -94,6 +100,23 @@ public class Activity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
+    }
+
+    public void addAchievement(Achievement achievement) {
+        this.achievements.add(achievement);
+        achievement.setActivity(this);
+    }
+
+    public void removeAchievement(Achievement achievement) {
+        this.achievements.remove(achievement);
+    }
+
+    public Set<Achievement> getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(Set<Achievement> achievements) {
+        this.achievements = achievements;
     }
 
     public Set<ActivityType> getActivityTypes() {

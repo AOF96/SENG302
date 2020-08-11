@@ -273,6 +273,24 @@ export const apiActivity = {
   }),
 
 
+  addActivityAchievement: (profileId, activityId, name, description, result_type) =>
+      instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`,{
+      name: name,
+      description: description,
+      result_type: result_type
+  }),
+
+  editActivityAchievement: (profileId, activityId, achievementId, name, description, result_type) =>
+      instance.put(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`, {
+      name: name,
+      description: description,
+      result_type: result_type
+  }),
+
+
+ deleteActivityAchievement: (profileId, activityId, achievementId) =>
+    instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
+
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
 

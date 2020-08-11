@@ -260,9 +260,8 @@ export default {
       .catch(error => console.log(error));
   },
   methods: {
-    ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
-    ...mapActions(["updateUserDurationActivities"]),
+    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
+      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl"]),
 
     /**
      * This method filters the the data received from the api and only suggests cities to the user.
