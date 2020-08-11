@@ -199,9 +199,8 @@ export default {
       .catch(error => console.log(error));
   },
   methods: {
-    ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserContinuousActivities"]),
-    ...mapActions(["updateUserDurationActivities"]),
+    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
+      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement"]),
 
     /**
      * Adds the street and city if they exist, adds name, state and country and returns the result to the mounted

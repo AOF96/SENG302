@@ -73,7 +73,17 @@ const actions = {
     },
     async deleteActivity(data, {'userId': userId, 'activityId': activityId}) {
         return await apiActivity.deleteActivity(userId, activityId);
-    }
+    },
+    async addActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'name': name, 'description': description, 'result_type': result_type }) {
+        return await apiActivity.addActivityAchievement(userId, activityId, name, description, result_type);
+    },
+    async editActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId, 'name': name, 'description': description, 'result_type': result_type }) {
+        return await apiActivity.addActivityAchievement(userId, activityId, achievementId, name, description, result_type);
+    },
+    async deleteActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId }) {
+        return await apiActivity.deleteActivity(userId, activityId, achievementId);
+    },
+
 };
 
 export default {
