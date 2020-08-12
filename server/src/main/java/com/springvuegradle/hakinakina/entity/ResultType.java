@@ -7,5 +7,6 @@ public enum ResultType {
     WORD,
     QUANTITY,
     TIME,
-    MONEY
+    MONEY,
+    DISTANCE
 }

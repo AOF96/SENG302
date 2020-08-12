@@ -423,3 +423,31 @@
     height: 300px;
     margin-top: 10px;
 }
+
+.achievementText {
+    margin-top: 10px;
+}
+
+.achievementSaveButton {
+    margin-top: 2px;
+    border-radius: 21px !important;
+}
+
+.v-text-field__details {
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.achievementCol {
+    padding: 5px 12px !important;
+}
+
+.achievementCard {
+    margin-bottom: 5px;
+}
+
+.achievementsContainer {
+    overflow-y: scroll;
+    height: 300px;
+}
