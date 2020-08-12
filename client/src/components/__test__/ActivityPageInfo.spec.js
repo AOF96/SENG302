@@ -1,10 +1,11 @@
 /* eslint-env jest*/
-import { mount, createLocalVue } from "@vue/test-utils";
+import {mount, createLocalVue, shallowMount} from "@vue/test-utils";
 import Activity from "../activity/Activity.vue";
 import Vuex from "vuex";
 import { apiActivity, } from "../../api";
 import flushPromises from "flush-promises";
 import {expect} from "@jest/globals";
+import ProfileSettingsMenu from "../profile/settings/ProfileSettingsMenu";
 
 
 const localVue = createLocalVue();
@@ -190,4 +191,95 @@ describe('test if you are not the author of this activity', () => {
     await flushPromises();
     expect(wrapper.find('#activityPageInfoDeleteButton').exists()).toBe(false)
   })
+
+  // it('should have an add participants button', async() => {
+  //   await flushPromises();
+  //   expect(wrapper.find('.activityPageCardButton').exists().toBe(true))
+  // })
+});
+
+describe('test if an activity has restricted visibility', () => {
+  let store;
+  let wrapper;
+  let getters = {
+    user: () => ({
+      firstname: "John",
+      lastname: "Doe",
+      middlename: "James",
+      nickname: "Jimmy",
+      gender: "Male",
+      primary_email: "john@uclive.ac.nz",
+      additional_email: [],
+      date_of_birth: "1985-01-11",
+      bio: "Testing officer",
+      isLogin: true,
+      fitness: 3,
+      profile_id: 5000,
+      password: null,
+      passports: [],
+      tmp_passports: [],
+      permission_level: 0,
+      activities: [],
+      tmp_activities: [],
+      cont_activities: [],
+      dur_activities: [],
+      location: {
+        city: null,
+        state: null,
+        county: null,
+      },
+    }),
+
+    activity: () => ({
+      author_id: 5000,
+      name: null,
+      continuous: null,
+      start_time: null,
+      end_time: null,
+      description: null,
+      location: null,
+      activity_types: [],
+      activity_id: 1000,
+      visibility: 1,
+      emailsToAdd: "test@mail.com"
+    }),
+  };
+
+  beforeEach(() => {
+    store = new Vuex.Store({
+      getters,
+      actions: {
+        updateUserContinuousActivities: jest.fn(),
+        updateUserDurationActivities: jest.fn(),
+      }
+    });
+    wrapper = mount(Activity, { store, localVue, mocks, stubs })
+  });
+
+  it('should have an add participants page section', async() => {
+    await flushPromises();
+    expect(wrapper.find('.activityPageCard').exists()).toBe(true)
+  });
+
+  // it('should have an input field to type emails', async() => {
+  //   // await flushPromises();
+  //   const wrapper = shallowMount(Activity, { store, localVue, mocks, stubs });
+  //   expect(wrapper.find('.activityPageCardTextField').exists()).toBe(true)
+  // })
+
+  test('the user provides an invalid email', () => {
+    expect(Activity.methods.validateEmail("invalid@email")).toBe(false)
+  });
+
+  test('the user provides an valid email', () => {
+    expect(Activity.methods.validateEmail("valid@email.com")).toBe(true)
+  });
+
+  // test('User is added as an activity participant', () => {
+  //   let email = [];
+  //   email.push("new_member@mail.com");
+  //   return apiActivity.setActivityMembers(email, "follower", 5000, 1000).then(data => {
+  //     expect(data.status).toBe(200);
+  //   });
+  // });
 });
