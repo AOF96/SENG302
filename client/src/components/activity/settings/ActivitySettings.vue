@@ -403,11 +403,11 @@ export default {
   methods: {
     ...mapActions(["createActivity"]),
     ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
-    ...mapActions(["updateUserDurationActivities"]),
+    ...mapActions(["updateUserDurationActivities", "addActivityAchievement"]),
 
     addNewAchievement(title, description, type) {
       this.addAchievement = false;
-      this.achievements.push({'title': title, 'description': description, 'type': type});
+      this.achievements.push({'name': title, 'description': description, 'resultType': type});
     },
 
     /**
@@ -654,6 +654,13 @@ export default {
                       .then(response => {
                         this.updateUserDurationActivities(response.data);
                       });
+                  if (this.achievements.length > 0) {
+                      for (let i = 0; i < this.achievements.length; i++) {
+                          apiActivity.addActivityAchievement(this.user.profile_id, this.createdId, this.achievements[i].name,
+                              this.achievements[i].description, this.achievements[i].resultType.toUpperCase())
+                      }
+
+                  }
                   router.push("/activity/"+this.createdId);
                 }
               },
