@@ -1,13 +1,16 @@
 /* eslint-env jest*/
-import {mount, createLocalVue, shallowMount} from "@vue/test-utils";
+import Vue from "vue";
+import { createLocalVue, mount } from "@vue/test-utils";
 import Activity from "../activity/Activity.vue";
 import Vuex from "vuex";
-import { apiActivity, } from "../../api";
+import { apiActivity, apiUser } from "../../api";
 import flushPromises from "flush-promises";
-import {expect} from "@jest/globals";
-import ProfileSettingsMenu from "../profile/settings/ProfileSettingsMenu";
+import { expect } from "@jest/globals";
+import Vuetify from "vuetify";
 
+Vue.use(Vuetify);
 
+// creates Vue environment
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
@@ -29,41 +32,152 @@ const mocks = {
 //make the test igonre router-link when found
 const stubs = ["router-link"];
 
+// mocking getActivityById by stating what is returned by this method if loading is successful
 apiActivity.getActivityById.mockResolvedValue({
-    id: 4,
-    users: [],
-    author: {
-      bio: "nanana",
-      authoredActivities: [],
-      profile_id: 2,
-      firstname: "Mayuko",
-      lastname: "Williams",
-      middlename: "hi",
-      gender: "Female",
-      nickname: "hi",
-      date_of_birth: "1995-01-11",
-      fitness: 1,
-      city: null,
-      state: null,
-      country: null,
-      passports: [],
-      activities: [],
-      primary_email: "mwi67@uclive.ac.nz",
-      additional_email: [],
-      permission_level: 0,
-    },
-    activity_name: "Create shortcut",
-    description: "You go to nano bashrc first",
-    activity_type: [{ name: "Extreme", users: [] }],
-    continuous: false,
-    start_time: 1593680400000,
-    end_time: 1594159200000,
-    location: null,
+  id: 4,
+  users: [],
+  author: {
+    bio: "nanana",
+    authoredActivities: [],
+    profile_id: 2,
+    firstname: "Mayuko",
+    lastname: "Williams",
+    middlename: "hi",
+    gender: "Female",
+    nickname: "hi",
+    date_of_birth: "1995-01-11",
+    fitness: 1,
+    city: null,
+    state: null,
+    country: null,
+    passports: [],
+    activities: [],
+    primary_email: "mwi67@uclive.ac.nz",
+    additional_email: [],
+    permission_level: 0,
+  },
+  activity_name: "Create shortcut",
+  description: "You go to nano bashrc first",
+  activity_type: [{ name: "Extreme", users: [] }],
+  continuous: false,
+  start_time: 1593680400000,
+  end_time: 1594159200000,
+  location: null,
+  visibility: "public",
 });
 
+apiActivity.getActivityUpdates.mockResolvedValue([]);
+
+apiActivity.getParticipants.mockResolvedValue({
+  data: {
+    content: [
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+    ],
+    pageable: "INSTANCE",
+    last: true,
+    totalPages: 1,
+    totalElements: 0,
+    size: 0,
+    number: 0,
+    sort: {
+      sorted: false,
+      unsorted: true,
+      empty: true,
+    },
+    first: true,
+    numberOfElements: 0,
+    empty: true,
+  },
+});
+
+apiActivity.getOrganisers.mockResolvedValue({
+  data: {
+    content: [
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+      {
+        profile_id: 2,
+        firstname: "Mayuko",
+        lastname: "Williams",
+      },
+    ],
+    pageable: "INSTANCE",
+    last: true,
+    totalPages: 1,
+    totalElements: 0,
+    size: 0,
+    number: 0,
+    sort: {
+      sorted: false,
+      unsorted: true,
+      empty: true,
+    },
+    first: true,
+    numberOfElements: 0,
+    empty: true,
+  },
+});
+
+// you are not following atm
+apiUser.isUserFollowingActivitiy.mockResolvedValue(false);
+
+apiActivity.deleteActivity.mockResolvedValue(
+  {
+    data:[]
+  }
+)
+
+apiUser.getUserContinuousActivities.mockResolvedValue(
+  {
+    data:[]
+  }
+)
+
+apiUser.getUserDurationActivities.mockResolvedValue(
+  {
+    data:[]
+  }
+)
+
+// test to check what is on the activity page if you are the author of this activity
 describe("test if you are author of the activity", () => {
-  let store
-  let wrapper
+  let store;
+  let wrapper;
+  let vuetify;
+
+  // getters in Vuex
   let getters = {
     user: () => ({
       firstname: "Mayuko",
@@ -101,39 +215,48 @@ describe("test if you are author of the activity", () => {
       end_time: null,
       description: null,
       location: null,
-      activity_types: [],
+      activity_types: ["relaxing"],
       activity_id: null,
+      visibility: "public",
     }),
   };
 
   beforeEach(() => {
-      store = new Vuex.Store({
+    vuetify = new Vuetify();
+    store = new Vuex.Store({
+      //defined at let getters above
       getters,
       actions: {
+        // methods from vuex actions
         updateUserContinuousActivities: jest.fn(),
         updateUserDurationActivities: jest.fn(),
-      }
+        getActivityUpdates: jest.fn(),
+        isUserFollowingActivitiy: jest.fn(),
+      },
     });
-    wrapper = mount(Activity, { store, localVue, mocks, stubs })
+    // create environment (called wrapper) of where you are doing the test (Activity.vue with vuex store,
+    // vue environment, mocks, and stubs for methods you don't need.
+    wrapper = mount(Activity, { store, localVue, mocks, stubs, vuetify });
   });
 
-  // it('should have delete button on the page if you are the author', async() => {
-  //   await flushPromises();
-  //   expect(wrapper.find('#activityPageInfoDeleteButton').exists()).toBe(true)
-  // });
-  //
-  // it('should be able to delete the activity by clicking the delete button', async() => {
-  //   await flushPromises();
-  //   await wrapper.find('#activityPageInfoDeleteButton').trigger('click');
-  //   await flushPromises();
-  //   expect(apiActivity.deleteActivity).toBeCalledWith(2, 99)
-  // })
-})
+  it("should have delete button on the page if you are the author", async () => {
+    await flushPromises();
+    expect(wrapper.find("#activityPageInfoDeleteButton").exists()).toBe(true);
+  });
 
-describe('test if you are not the author of this activity', () => {
+  it("should be able to delete the activity by clicking the delete button", async () => {
+    await flushPromises();
+    await wrapper.find("#activityPageInfoDeleteButton").trigger("click");
+    await flushPromises();
+    expect(apiActivity.deleteActivity).toBeCalledWith(2, 99);
+  });
+});
 
+describe("test if you are not the author of this activity", () => {
   let store;
   let wrapper;
+  let vuetify;
+
   let getters = {
     user: () => ({
       firstname: "Mayuko",
@@ -177,20 +300,21 @@ describe('test if you are not the author of this activity', () => {
   };
 
   beforeEach(() => {
+    vuetify = new Vuetify();
     store = new Vuex.Store({
       getters,
       actions: {
         updateUserContinuousActivities: jest.fn(),
         updateUserDurationActivities: jest.fn(),
-      }
+      },
     });
-    wrapper = mount(Activity, { store, localVue, mocks, stubs })
+    wrapper = mount(Activity, { store, localVue, mocks, stubs, vuetify  });
   });
 
-  it('should not have delete button on the profile page', async() => {
+  it("should not have delete button on the profile page", async () => {
     await flushPromises();
-    expect(wrapper.find('#activityPageInfoDeleteButton').exists()).toBe(false)
-  })
+    expect(wrapper.find("#activityPageInfoDeleteButton").exists()).toBe(false);
+  });
 
   // it('should have an add participants button', async() => {
   //   await flushPromises();
@@ -198,9 +322,11 @@ describe('test if you are not the author of this activity', () => {
   // })
 });
 
-describe('test if an activity has restricted visibility', () => {
+describe("test if an activity has restricted visibility", () => {
   let store;
   let wrapper;
+  let vuetify;
+
   let getters = {
     user: () => ({
       firstname: "John",
@@ -241,24 +367,25 @@ describe('test if an activity has restricted visibility', () => {
       activity_types: [],
       activity_id: 1000,
       visibility: 1,
-      emailsToAdd: "test@mail.com"
+      emailsToAdd: "test@mail.com",
     }),
   };
 
   beforeEach(() => {
+    vuetify = new Vuetify();
     store = new Vuex.Store({
       getters,
       actions: {
         updateUserContinuousActivities: jest.fn(),
         updateUserDurationActivities: jest.fn(),
-      }
+      },
     });
-    wrapper = mount(Activity, { store, localVue, mocks, stubs })
+    wrapper = mount(Activity, { store, localVue, mocks, stubs, vuetify });
   });
 
-  it('should have an add participants page section', async() => {
+  it("should have an add participants page section", async () => {
     await flushPromises();
-    expect(wrapper.find('.activityPageCard').exists()).toBe(true)
+    expect(wrapper.find(".activityPageCard").exists()).toBe(true);
   });
 
   // it('should have an input field to type emails', async() => {
@@ -267,12 +394,12 @@ describe('test if an activity has restricted visibility', () => {
   //   expect(wrapper.find('.activityPageCardTextField').exists()).toBe(true)
   // })
 
-  test('the user provides an invalid email', () => {
-    expect(Activity.methods.validateEmail("invalid@email")).toBe(false)
+  test("the user provides an invalid email", () => {
+    expect(Activity.methods.validateEmail("invalid@email")).toBe(false);
   });
 
-  test('the user provides an valid email', () => {
-    expect(Activity.methods.validateEmail("valid@email.com")).toBe(true)
+  test("the user provides an valid email", () => {
+    expect(Activity.methods.validateEmail("valid@email.com")).toBe(true);
   });
 
   // test('User is added as an activity participant', () => {

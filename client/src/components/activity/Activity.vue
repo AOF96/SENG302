@@ -358,8 +358,8 @@
           defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
         },
         userTabs: [
-          {tab: 'Participants', content: null, preview: null},
-          {tab: 'Organisers', content: null, preview: null},
+          {tab: 'Participants', content: null, preview: []},
+          {tab: 'Organisers', content: null, preview: []},
         ],
         roleSwitch: null,
         sharedUsers: [],
@@ -385,12 +385,14 @@
       return this.checkFollowing();
     },
     methods: {
-      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates', 'getParticipants', 'getOrganisers']),
+      // removed 'getActivityUpdates','getParticipants' and 'getOrganisers' for frontend test as they are not used
+      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities']),
 
       /**
        * Parses the list of emails the user entered by splitting them and removing any extra spaces. Checks each one is
        * valid by calling validateEmail, and displays an error message stating which email is invalid if any.
-       */ async parseEmails() {
+       */
+      async parseEmails() {
         this.displayInvalidInputError = false;
         const separators = [' ', ';'];
         let emails = this.emailsToAdd.split(new RegExp(separators.join('|'), 'g'));
@@ -450,11 +452,14 @@
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
           this.userTabs[0].content = response.data.content;
-          if (this.userTabs[0].preview == null) {
+          if (this.userTabs[0].preview == []) {
             this.userTabs[0].preview = this.userTabs[0].content.slice(0,3);
+
           }
         } catch (err) {
           console.error(err)
+
+
         }
       },
       /**
@@ -464,7 +469,7 @@
         try {
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
           this.userTabs[1].content = response.data.content;
-          if (this.userTabs[1].preview == null) {
+          if (this.userTabs[1].preview == []) {
             this.userTabs[1].preview = this.userTabs[1].content.slice(0,3);
           }
         } catch (err) {
