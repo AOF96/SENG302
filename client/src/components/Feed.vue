@@ -22,10 +22,7 @@
             <v-card-actions>
               <v-list-item class="grow">
                 <v-list-item-avatar>
-                  <v-img
-
-                    src="/images/userIcon.png"
-                  ></v-img>
+                  <v-img v-bind:src="rootLocation+'images/userIcon.png'"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title style="font-size: 15px">{{ post.authorName }}</v-list-item-title>
@@ -61,6 +58,7 @@ export default {
   },
   data: function() {
     return {
+      rootLocation: process.env.VUE_APP_BASE_URL,
       activityPosts: [],
       activityPostsTemplate: [
         {
