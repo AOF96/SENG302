@@ -128,7 +128,37 @@
                     <h6 class="editErrorMessage" id="activity_error" hidden="false">An error has occurred</h6>
 
           <div class="confirmButtonContainer">
-            <button class="genericConfirmButton" type="button" v-on:click="addActivity">Create Activity</button>
+            <button class="genericConfirmButton" type="button" @click.stop="dialog = true">
+              Create Activity
+            </button>
+            <v-dialog
+                v-model="dialog"
+                max-width="290"
+            >
+              <v-card>
+                <v-card-title class="headline">Add Achievements</v-card-title>
+                <v-card-text>
+                  Would you like to add achievements to this activity?
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <button
+                      @click="dialog = false"
+                      v-on:click="navigateToCreateAchievement"
+                      class="genericConfirmButton updateProfileButton"
+                  >
+                    Yes
+                  </button>
+                  <button
+                      class="genericDeleteButton deleteProfileButton"
+                      @click="dialog = false"
+                      v-on:click="addActivity"
+                  >
+                    No
+                  </button>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </div>
         </form>
       </div>
@@ -163,6 +193,7 @@ export default {
             suggestedLocations: [],
             showLocations: false,
             city: null,
+            dialog: false,
             country: null,
             state: null,
             locationCity: null,
@@ -171,7 +202,9 @@ export default {
             searchState: null,
             isLoading: false,
             stateLoading: false,
-            features: []
+            features: [],
+            createdId: null,
+            setAchievement: false
 
         };
     },
@@ -256,8 +289,19 @@ export default {
           this.state = document.getElementById('inputState').value,
           this.country = document.getElementById('inputCountry').value
           this.location = this.city + ',' + this.state + ',' + this.country
-          console.log(this.location);
         },
+
+      /**
+       * Navigates the user to the Edit Achievement component page if they would like
+       * to add achievements to the their activities.
+       */
+       navigateToCreateAchievement(){
+        this.setAchievement = true;
+        this.addActivity()
+        if(this.setAchievement === true) {
+          this.$router.push({path: '/activity/achievement_setting/' + this.createdId});
+        }
+       },
 
 
         /**
@@ -452,6 +496,7 @@ export default {
                 this.combinedEndTime, this.description, this.location, this.activity_types_selected)
                 .then(
                     response => {
+                        this.createdId = response.data;
                         document.getElementById("activity_success").hidden = false;
                         document.getElementById("activity_error").hidden = true;
                         console.log(response);
@@ -463,8 +508,9 @@ export default {
                             .then(response => {
                                 this.updateUserDurationActivities(response.data);
                             });
-                        router.push("/profile/"+this.$route.params.profileId);
-                    },
+                        if(this.setAchievement === false) {
+                          router.push("/profile/"+this.$route.params.profileId);
+                        }},
                     error => {
                         if(error){
                             this.displayError("An error occured");

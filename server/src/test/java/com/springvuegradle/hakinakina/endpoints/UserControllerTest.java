@@ -63,6 +63,9 @@ public class UserControllerTest {
     @MockBean
     private SearchRepository searchRepository;
 
+    @MockBean
+    private AchievementRepository achievementRepository;
+
     private ResponseHandler responseHandler = new ResponseHandler();
 
     private final String EDIT_PROFILE_JSON = "{\n" +

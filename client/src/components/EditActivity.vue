@@ -228,7 +228,6 @@ export default {
     await apiUser
       .getActivityTypes()
       .then(response => {
-        console.log(response.data);
         this.activities_option = response.data;
         for (let i = 0; i < this.activities_option.length; i++) {
           this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
@@ -242,9 +241,8 @@ export default {
       .catch(error => console.log(error));
   },
   methods: {
-    ...mapActions(["createActivity"]),
-    ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
-    ...mapActions(["updateUserDurationActivities"]),
+    ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
+      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl"]),
 
     /**
      * This method filters the the data received from the api and only suggests cities to the user.

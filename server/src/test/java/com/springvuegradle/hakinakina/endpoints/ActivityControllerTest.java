@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
+import org.hibernate.sql.Delete;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,7 @@ import java.util.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,6 +60,9 @@ public class ActivityControllerTest {
 
     @MockBean
     private SearchRepository searchRepository;
+
+    @MockBean
+    private AchievementRepository achievementRepository;
 
     @MockBean
     private UserService userService;
@@ -122,7 +124,7 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"author\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
@@ -149,12 +151,12 @@ public class ActivityControllerTest {
         // and lets have some FUN
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));
+        when(service.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("1", HttpStatus.CREATED));
         this.mockMvc.perform(post("/profiles/1/activities").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(INPUT))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("Activity has been created")));
+                .andExpect(content().string(containsString("1")));
     }
 
     @Test
@@ -303,5 +305,75 @@ public class ActivityControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/profiles/2/subscriptions/activities/1").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("true")));
+    }
+
+    @Test
+    public void addAchievement() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+        Activity testActivity = createTestActivity();
+        testActivity.setId((long) 1);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
+        when(service.addAchievement(any(Achievement.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Achievement added successfully", HttpStatus.CREATED));
+        this.mockMvc.perform(post("/profiles/1/activities/1/achievements").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(containsString("Achievement added successfully")));
+    }
+
+    @Test
+    public void editAchievementTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+        Activity testActivity = createTestActivity();
+        testActivity.setId((long) 1);
+        Achievement testAchievement = new Achievement("test", "test", ResultType.TIME);
+        testAchievement.setId((long) 1);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
+        when(service.editAchievement(any(Achievement.class), any(Long.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Achievement has been successfully updated", HttpStatus.OK));
+        this.mockMvc.perform(put("/profiles/1/activities/1/achievements/1").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Achievement has been successfully updated")));
+    }
+
+    @Test
+    public void deleteAchievementTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+        Activity testActivity = createTestActivity();
+        testActivity.setId((long) 1);
+        Achievement testAchievement = new Achievement("test", "test", ResultType.TIME);
+        testAchievement.setId((long) 1);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
+        when(service.deleteAchievement(any(Long.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Achievement successfully deleted", HttpStatus.OK));
+        this.mockMvc.perform(delete("/profiles/1/activities/1/achievements/1").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Achievement successfully deleted")));
     }
 }

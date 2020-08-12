@@ -49,6 +49,9 @@ public class SearchControllerTest {
     private SearchRepository searchRepository;
 
     @MockBean
+    private AchievementRepository achievementRepository;
+
+    @MockBean
     private ActivityChangeRepository activityChangeRepository;
 
     @MockBean
