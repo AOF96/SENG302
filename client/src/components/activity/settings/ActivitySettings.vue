@@ -182,6 +182,62 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat>
+                  <v-row justify="center" v-if="addAchievement">
+                    <v-col cols="11">
+                      <form>
+                        <v-row>
+                          <v-col style="padding: 0px;">
+                            <input class="addAchievementInput" type="email" placeholder="Achievement title" required>
+                          </v-col>
+                          <v-col style="padding: 0px" cols="5.5">
+                            <v-select
+                                    style="margin:0 10px; height: 10px"
+                                    v-model="activity_types_selected"
+                                    :items="options"
+                                    attach
+                                    chips
+                                    label="Select achievement type"
+                                    multiple
+                                    rounded
+                                    outlined
+                                    dense
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col style="padding: 0px;">
+                           <textarea
+                                   class="editAchievementTextarea"
+                                   maxlength="255"
+                                   type="text"
+                                   id="achieveDesc"
+                                   v-model="description"
+                                   placeholder="Achievement Description">
+                            </textarea>
+                          </v-col>
+                        </v-row>
+                        <v-row justify="center">
+                          <v-btn
+                                  v-if="tabs >= 3"
+                                  v-on:click="addAchievement = false"
+                                  style="margin:15px 20px;"
+                                  color="primary"
+                                  rounded
+                                  outlined
+                                  right
+                                  :disabled="overlayLoader"
+                          >
+                            Save achievement
+                          </v-btn>
+                        </v-row>
+                      </form>
+                    </v-col>
+                  </v-row>
+                  <div class="text-center" style="padding-bottom:15px; padding-top:10px">
+                    <v-btn class="mx-2" fab dark outlined color="primary" v-on:click="addAchievement = true">
+                      <v-icon dark>mdi-plus</v-icon>
+                    </v-btn>
+                  </div>
                   <!-- Your stuff here -->
                 </v-card>
               </v-tab-item>
@@ -256,7 +312,9 @@ export default {
             snackbar: false,
             snackbarText: "",
             overlayLoader: false,
-            createdId: null
+            createdId: null,
+            options: ["Word", "Quantity", "Time", "Money"],
+            addAchievement: false,
         };
     },
 
