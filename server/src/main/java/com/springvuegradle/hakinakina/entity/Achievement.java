@@ -37,6 +37,7 @@ public class Achievement {
 
     public void addResult(Result result) {
         results.add(result);
+        result.setAchievement(this);
     }
 
     public Long getId() {

@@ -180,6 +180,7 @@ public class User {
 
     public void addResult(Result result) {
         results.add(result);
+        result.setUser(this);
     }
 
     public void addEmail(Email email) {
@@ -401,10 +402,10 @@ public class User {
     @Override
     public String toString() {
         String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
-                "\nNickname: " + getNickName() + "\nEmails: " + getEmails().toString() + "\nBio: " + getBio() +
-                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString()
+                "\nNickname: " + getNickName() + "\nEmails: " + getEmails() + "\nBio: " + getBio() +
+                "\nDate of Birth: " + getBirthDate() + "\nGender: " + getGender()
                 + "\nPassword: " + getPassword() + "\nFitness Level: " + getFitnessLevel() +
-                "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
+                "\nPassport Countries: " + getPassportCountries() + "\nSalt: " + getSalt() +
                 "\nPrimary Email: " + getPrimaryEmail();
         return result;
     }
