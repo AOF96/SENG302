@@ -602,7 +602,8 @@ export default {
         if (tempActivityData == "Invalid permissions") {
           this.$router.push("/profile");
         } else {
-          this.achievements = apiActivity.getActivityAchievement(tempActivityData.author.profile_id,this.$route.params.activityId)
+          let tempAchievements = await apiActivity.getActivityAchievement(tempActivityData.author.profile_id,this.$route.params.activityId)
+          this.achievements = tempAchievements.data;
           this.pageLoading = false;
           this.activity_name = tempActivityData.activity_name;
           this.continuous = tempActivityData.continuous;
