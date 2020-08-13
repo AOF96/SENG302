@@ -289,6 +289,9 @@ export const apiActivity = {
   deleteActivityAchievement: (profileId, activityId, achievementId) =>
     instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
 
+  getActivityAchievement: (profileId, activityId) =>
+    instance.get(`/profiles/${profileId}/activities/${activityId}/achievements`),
+
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
 

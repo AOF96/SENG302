@@ -535,6 +535,36 @@ public class ActivityService {
     }
 
     /**
+     * Handles requests for retrieving achievements of an activity
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+
+    public ResponseEntity getAchievement(long profileId, long activityId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if ((profileId != session.getUser().getUserId()
+                    || activityRepository.validateAuthor(profileId, activityId) == null)
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+            } else {
+
+                List<Achievement> achievements = achievementRepository.getAchievementsByActivityId(profileId);
+                result = new ResponseEntity(achievements, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot receive achievements");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
+    /**
      * Handles requests to edit achievements
      * @param newAchievement valid json containing new values for an existing achievement
      * @param profileId id of the user performing the edit

@@ -265,7 +265,8 @@ export default {
       snackbarText: "",
       overlayLoader: false,
       pageLoading: true,
-      activityTypesLoading: true
+      activityTypesLoading: true,
+      activityAchievements: []
     };
   },
 
@@ -315,7 +316,8 @@ export default {
   },
   methods: {
     ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
-      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl"]),
+      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl",
+       "getActivityAchievement"]),
 
     /**
      * This method filters the the data received from the api and only suggests cities to the user.
@@ -371,6 +373,7 @@ export default {
         if (tempActivityData == "Invalid permissions") {
           this.$router.push("/profile");
         } else {
+          this.achievements = apiActivity.getActivityAchievement(tempActivityData.author.profile_id,this.$route.params.activityId)
           this.pageLoading = false;
           this.activity_name = tempActivityData.activity_name;
           this.continuous = tempActivityData.continuous;

@@ -206,6 +206,20 @@ public class ActivityController {
     }
 
     /**
+     * Handles requests to get list of  achievements for an activiy
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @GetMapping("/profiles/{profileId}/activities/{activityId}/achievements")
+    public ResponseEntity getAchievement(@PathVariable("profileId") long profileId,
+                                            @PathVariable("activityId") long activityId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.getAchievement(profileId, activityId,sessionToken);
+    }
+
+    /**
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
