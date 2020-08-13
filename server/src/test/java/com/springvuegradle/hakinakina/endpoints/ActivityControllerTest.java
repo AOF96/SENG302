@@ -137,7 +137,7 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        String activityStr = "{\"id\":1,\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
