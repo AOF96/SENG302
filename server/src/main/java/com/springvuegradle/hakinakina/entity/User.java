@@ -409,6 +409,10 @@ public class User {
         this.activities = participateActivities;
     }
 
+    public void addActivitiesShared(Activity activity) {
+        this.activitiesShared.add(activity);
+    }
+
     @Override
     public String toString() {
         String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
