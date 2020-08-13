@@ -185,7 +185,7 @@
                   <v-row justify="center" >
                     <v-col cols="11">
                       <v-row justify="center" align="center"
-                             v-for="(achievement, index) in achievements" v-bind:key="index">
+                             v-for="achievement in achievements" v-bind:key="achievement">
                         <v-col cols="9">
                           {{achievement.title}} {{achievement.description}} {{achievement.type}}
                         </v-col>
@@ -206,15 +206,66 @@
                             </template>
 
                             <v-list>
-                              <v-btn> edit </v-btn>
-                              <v-btn> delete </v-btn>
+                              <v-row justify="center">
+                              </v-row>
+                              <v-btn
+                                  color="primary"
+                                  dark
+                                  setTempAchievement
+                                  v-on:click="setTempAchievement(achievement)"
+                              >
+                                edit
+                              </v-btn>
+                              <v-btn v-on:click="deleteAchievement(achievement)"> delete </v-btn>
                             </v-list>
                           </v-menu>
-                          <!--<v-btn class="mx-2" fab dark outlined color="primary">
-                            <v-icon dark>mdi-format-list-bulleted-square</v-icon>
-                          </v-btn>-->
                         </v-col>
                       </v-row>
+                      <v-dialog v-model="editDialog">
+                        <v-card>
+                          <v-card-title class="headline">Edit Achievement</v-card-title>
+                          <hr>
+                          <v-card-text>
+                            <v-row>
+                              <v-col style="padding: 0px;">
+                                <input v-model="tempTitle" class="addAchievementInput" placeholder="Achievement title" required>
+                              </v-col>
+                              <v-col style="padding: 0px" cols="5.5">
+                                <v-select
+                                    id = "achieveType"
+                                    style="margin:0 10px; height: 10px"
+                                    v-model="tempResultType"
+                                    :items="options"
+                                    chips
+                                    label="Select achievement type"
+                                    rounded
+                                    outlined
+                                    dense
+                                />
+                              </v-col>
+                            </v-row>
+                            <v-row>
+                              <v-col style="padding: 0px;">
+                           <textarea
+
+                               class="editAchievementTextarea"
+                               maxlength="255"
+                               type="text"
+                               v-model="tempDescription"
+                               placeholder="Achievement Description">
+                            </textarea>
+                              </v-col>
+                            </v-row>
+                            <v-row justify="center">
+                            </v-row>
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="green darken-1" text @click="editDialog = false">Cancel</v-btn>
+                            <v-btn color="green darken-1" text @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save</v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
                     </v-col>
                   </v-row>
                   <v-row justify="center" v-if="addAchievement">
@@ -353,7 +404,14 @@ export default {
       achieveTitle: "",
       achieveDesc: "",
       achieveType: "",
+      editDialog: false,
       achievements: [],
+      tempAchievement: null,
+      index: null,
+      tempTitle: null,
+      tempDescription: null,
+      tempResultType: null,
+
     };
   },
 
@@ -405,9 +463,56 @@ export default {
     ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
     ...mapActions(["updateUserDurationActivities", "addActivityAchievement"]),
 
+    /**
+     * The function adds the achievement to the list of achievements.
+     * */
+
     addNewAchievement(title, description, type) {
       this.addAchievement = false;
       this.achievements.push({'name': title, 'description': description, 'resultType': type});
+      this.achieveDesc= "";
+      this.achieveTitle = "";
+      this.achieveType = "";
+    },
+
+    /**
+     * The function over writes the saved achievement if the user decides to edit it before saving the activity.
+     * */
+    saveEditedAchievement(title, description, type){
+      this.editDialog = false;
+      this.achievements[this.index] = {'name': title, 'description': description, 'resultType': type};
+      this.tempAchievement = null;
+      this.index = null;
+      this.tempTitle = null;
+      this.tempDescription = null;
+      this.tempResultType = null;
+    },
+
+    /**
+     * The function deletes a specific achievements from the list of achievement.
+     * */
+    deleteAchievement(achievement){
+      if (this.achievements.length === 1) {
+        this.achievements = [];
+      } else {
+        const index = this.achievements.indexOf(achievement);
+        if (index > -1) {
+          this.achievements.splice(index, 1);
+        }
+      }
+    },
+
+    /**
+     * Assigns the temp achievement to the selected achievement form the list of achievements
+     **/
+    setTempAchievement(achievement){
+      console.log(achievement)
+      this.index = this.achievements.indexOf(achievement);
+     this.tempAchievement = this.achievements[this.index]
+     this.tempTitle = achievement.name
+      this.tempDescription = achievement.description
+      this.tempResultType = achievement.resultType
+      this.editDialog=true
     },
 
     /**
@@ -659,7 +764,6 @@ export default {
                           apiActivity.addActivityAchievement(this.user.profile_id, this.createdId, this.achievements[i].name,
                               this.achievements[i].description, this.achievements[i].resultType.toUpperCase())
                       }
-
                   }
                   router.push("/activity/"+this.createdId);
                 }
