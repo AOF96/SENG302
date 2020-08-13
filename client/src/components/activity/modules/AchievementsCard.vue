@@ -6,7 +6,7 @@
         <v-container>
           <v-row>
             <v-col class="achievementCol">
-              <h3>{{achievement.title}}</h3>
+              <h3>{{achievement.name}}</h3>
             </v-col>
             <v-col class="achievementCol">
               <v-tooltip top max-width="500px">
@@ -73,29 +73,9 @@
 <script>
   export default {
     name: "AchievementsCard",
+    props: ['achievements'],
     data() {
       return {
-        achievements: [
-          {
-            id: 0,
-            title: "Time to finish",
-            description: "Time take from starting the race to finishing the race. Time take from starting the race to finishing the race. Time take from starting the race to finishing the race. Time take from starting the race to finishing the race",
-            resultType: "time",
-          },
-          {
-            id: 1,
-            title: "Time to win",
-            description: "Time take from starting the race to finishing the race",
-            resultType: "distance",
-          },
-          {
-            id: 2,
-            title: "Time to lose",
-            description: "Time take from starting the race to finishing the race",
-            resultType: "word",
-          }
-        ],
-
         latestResult: "0:41",
         result: null,
         menu2: false

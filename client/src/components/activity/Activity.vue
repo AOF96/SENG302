@@ -257,7 +257,7 @@
                 </v-flex>
 
                 <v-flex>
-                    <AchievementsCard/>
+                    <AchievementsCard v-bind:achievements="achievements"/>
                 </v-flex>
               </v-layout>
             </v-flex>
@@ -322,7 +322,8 @@
         sharedUsers: [],
         displaySharedUsersSuccessMsg: false,
         displaySharedUsersErrorMsg: false,
-        sharedUsersStatusMsg: ""
+        sharedUsersStatusMsg: "",
+        achievements: [],
       }
     },
 
@@ -472,6 +473,7 @@
             this.authorId = tempActivityData.author.profile_id;
             this.loaded = true;
             this.loadingActivity = false;
+            this.achievements = tempActivityData.achievements;
           }
         }
       },
