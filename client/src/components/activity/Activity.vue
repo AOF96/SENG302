@@ -326,6 +326,16 @@
       if (!this.user.isLogin) {
         this.$router.push('/login');
       }
+    beforeRouteEnter(to, from, next) {
+        const activityId = to.params.activityId;
+        apiActivity.getActivity(activityId).then(resp => {
+            console.log(resp.data)
+        })
+        console.log(from)
+        console.log(next)
+    },
+    components: {
+      ActivityPageInfo
     },
     created: function () {
       this.loadActivity();
