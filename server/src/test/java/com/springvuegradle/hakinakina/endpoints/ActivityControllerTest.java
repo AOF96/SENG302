@@ -65,6 +65,9 @@ public class ActivityControllerTest {
     private AchievementRepository achievementRepository;
 
     @MockBean
+    private ResultRepository resultRepository;
+
+    @MockBean
     private UserService userService;
 
 

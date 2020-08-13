@@ -137,6 +137,9 @@ public class User {
     )
     private Set<Session> sessions = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Result> results;
+
     public User() {}
 
     public User(String firstName,
@@ -173,6 +176,10 @@ public class User {
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Error while creating password.");
         }
+    }
+
+    public void addResult(Result result) {
+        results.add(result);
     }
 
     public void addEmail(Email email) {
