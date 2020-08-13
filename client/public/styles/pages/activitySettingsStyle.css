@@ -34,6 +34,11 @@ backButton {
     color: #5c5c5c;
     font-weight: 400;
 }
+
+#addAchievementBox .v-text-field__details{
+    display:none !important;
+}
+
 .editActivityInput {
     width: calc(100% - 40px);
     display:block;
