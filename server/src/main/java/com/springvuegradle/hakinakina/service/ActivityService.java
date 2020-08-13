@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.AchievementDto;
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
@@ -554,8 +555,18 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(403, "Invalid user");
             } else {
 
-                List<Achievement> achievements = achievementRepository.getAchievementsByActivityId(profileId);
-                result = new ResponseEntity(achievements, HttpStatus.OK);
+                List<Achievement> achievements = achievementRepository.getAchievementsByActivityId(activityId);
+                List<AchievementDto> response = new ArrayList<>();
+                for (Achievement achievement : achievements) {
+                    AchievementDto dto = new AchievementDto();
+                    dto.setId(achievement.getId());
+                    dto.setName(achievement.getName());
+                    dto.setDescription(achievement.getDescription());
+                    dto.setResultType(achievement.getResultType());
+                    response.add(dto);
+                }
+
+                result = new ResponseEntity(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot receive achievements");
