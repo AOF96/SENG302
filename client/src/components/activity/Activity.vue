@@ -69,8 +69,9 @@
                   <v-card class="activityPageCard">
                     <h2>Participants / Organisers</h2>
                     <v-tabs
-                        v-model="tab"
+                        v-model="previewTabs"
                         fixed-tabs
+                        id="previewParticipantsOrganisersTabs"
                     >
                       <v-tab
                           v-for="item in userTabs"
@@ -79,18 +80,18 @@
                         {{ item.tab }}
                       </v-tab>
                     </v-tabs>
-
-                    <v-tabs-items v-model="tab">
+                    <v-tabs-items v-model="previewTabs" id="activityParticipantsOrganisersTabItems">
                       <v-tab-item
                           v-for="item in userTabs"
                           :key="item.tab"
                       >
-                        <v-card flat>
+                        <v-card flat id="participantOrganiserList">
                           <div v-if="item.preview.length === 0">
                             <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
                           </div>
                           <div v-else>
-                            <v-list-item two-line v-for="user in item.preview" :key="user.email" link @click.stop="">
+                            <v-list-item two-line v-for="user in item.preview" :key="user.email" link @click.stop=""
+                            >
                               <v-list-item-content>
                                 <v-list-item-title v-if="user.middlename != null">
                                   {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -133,9 +134,8 @@
                         </v-card>
                       </v-tab-item>
                     </v-tabs-items>
-
                     <v-btn
-                        class="activityPageShowMoreButton"
+                        id="activityPageShowMoreButton"
                         height="40px" color="#1cca92"
                         outlined rounded
                         @click.stop="showMoreDialog = true"
@@ -147,6 +147,7 @@
                 <v-dialog
                     v-model="showMoreDialog"
                     max-width="450"
+                    id="activityPageMoreParticipantsOrganisersDialog"
                 >
                   <v-tabs
                       v-model="dialogTab"
@@ -339,7 +340,7 @@
         activityId: null,
         loadingActivity: true,
         userFollowing: null,
-        tab: null,
+        previewTabs: null,
         dialogTab: null,
         showMoreDialog: false,
         newRole: "participant",
@@ -358,8 +359,8 @@
           defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
         },
         userTabs: [
-          {tab: 'Participants', content: null, preview: []},
-          {tab: 'Organisers', content: null, preview: []},
+          {tab: 'Participants', content: [], preview: []},
+          {tab: 'Organisers', content: [], preview: []},
         ],
         roleSwitch: null,
         sharedUsers: [],
@@ -484,10 +485,7 @@
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
           this.userTabs[0].content = response.data.content;
-          if (this.userTabs[0].preview == []) {
-            this.userTabs[0].preview = this.userTabs[0].content.slice(0,3);
-
-          }
+          this.userTabs[0].preview = this.userTabs[0].content.slice(0,3);
         } catch (err) {
           console.error(err)
 
@@ -501,9 +499,7 @@
         try {
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
           this.userTabs[1].content = response.data.content;
-          if (this.userTabs[1].preview == []) {
-            this.userTabs[1].preview = this.userTabs[1].content.slice(0,3);
-          }
+          this.userTabs[1].preview = this.userTabs[1].content.slice(0,3);
         } catch (err) {
           console.error(err)
         }

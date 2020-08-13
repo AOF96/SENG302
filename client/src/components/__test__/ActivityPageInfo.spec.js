@@ -77,19 +77,19 @@ apiActivity.getParticipants.mockResolvedValue({
         lastname: "Williams",
       },
       {
-        profile_id: 2,
-        firstname: "Mayuko",
-        lastname: "Williams",
+        profile_id: 3,
+        firstname: "Shivin",
+        lastname: "Gaba",
       },
       {
-        profile_id: 2,
-        firstname: "Mayuko",
-        lastname: "Williams",
+        profile_id: 4,
+        firstname: "Frankie",
+        lastname: "Oprenario",
       },
       {
-        profile_id: 2,
-        firstname: "Mayuko",
-        lastname: "Williams",
+        profile_id: 5,
+        firstname: "Fabian",
+        lastname: "Gilson",
       },
     ],
     pageable: "INSTANCE",
@@ -409,4 +409,94 @@ describe("test if an activity has restricted visibility", () => {
   //     expect(data.status).toBe(200);
   //   });
   // });
+});
+
+describe("test if page shows the participants and organisers of an activity", () => {
+  let store;
+  let wrapper;
+  let vuetify;
+
+  let getters = {
+    user: () => ({
+      firstname: "John",
+      lastname: "Doe",
+      middlename: "James",
+      nickname: "Jimmy",
+      gender: "Male",
+      primary_email: "john@uclive.ac.nz",
+      additional_email: [],
+      date_of_birth: "1985-01-11",
+      bio: "Testing officer",
+      isLogin: true,
+      fitness: 3,
+      profile_id: 5000,
+      password: null,
+      passports: [],
+      tmp_passports: [],
+      permission_level: 0,
+      activities: [],
+      tmp_activities: [],
+      cont_activities: [],
+      dur_activities: [],
+      location: {
+        city: null,
+        state: null,
+        county: null,
+      },
+    }),
+
+    activity: () => ({
+      author_id: 5000,
+      name: null,
+      continuous: null,
+      start_time: null,
+      end_time: null,
+      description: null,
+      location: null,
+      activity_types: [],
+      activity_id: 1000,
+      visibility: 0,
+      emailsToAdd: "test@mail.com",
+    }),
+  };
+
+  beforeEach(() => {
+    vuetify = new Vuetify();
+    store = new Vuex.Store({
+      getters,
+      actions: {
+        updateUserContinuousActivities: jest.fn(),
+        updateUserDurationActivities: jest.fn(),
+      },
+    });
+    wrapper = mount(Activity, { store, localVue, mocks, stubs, vuetify });
+  });
+
+  it("should have a card for displaying the list of participants and organisers", async () => {
+    await flushPromises();
+    expect(wrapper.find(".activityPageCard").exists()).toBe(true);
+  });
+
+  it("should have the preview tabs to switch between the top participants and organisers", async () => {
+    await flushPromises();
+    expect(wrapper.find("#previewParticipantsOrganisersTabs").exists()).toBe(true);
+  });
+
+  it("should have a show more button to view more participants and organisers for the activity", async() => {
+    await flushPromises();
+    expect(wrapper.find("#activityPageShowMoreButton").exists()).toBe(true);
+  });
+
+  it("should have a dialog box appear the displays more users when Show More button is clicked", async() => {
+    await flushPromises();
+    wrapper.find("#activityPageShowMoreButton").trigger('click');
+    expect(wrapper.find("#activityPageMoreParticipantsOrganisersDialog").exists()).toBe(true);
+  });
+
+  it("should display a preview of the list of participants", async() => {
+    await flushPromises();
+    expect(wrapper.find("#participantOrganiserList").text()).toContain("Mayuko Williams");
+    expect(wrapper.find("#participantOrganiserList").text()).toContain("Shivin Gaba");
+    expect(wrapper.find("#participantOrganiserList").text()).toContain("Frankie Oprenario");
+  })
 });
