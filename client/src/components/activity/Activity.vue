@@ -286,15 +286,15 @@
                       </h6>
                       <h6 class="editSuccessMessage" v-if="displaySharedUsersSuccessMsg">{{ sharedUsersStatusMsg }}
                       </h6>
-                      <div class="activityPageCardDiv">
+                      <div id="usersCard" class="activityPageCardDiv">
                         <v-card flat>
                           <v-list-item two-line v-for="user in sharedUsers" :key="user[0]">
                             <v-list-item-content>
-                              <v-list-item-title v-if="user[2] != null">
-                                {{ user[1] + " " + user[2] + " " + user[3]}}
+                              <v-list-item-title v-if="user.middlename != null">
+                                {{ user.firstname + " " + user.middlename + " " + user.lastname}}
                               </v-list-item-title>
                               <v-list-item-title v-else>
-                                {{ user[1] + " " + user[3]}}
+                                {{ user.firstname + " " + user.lastname}}
                               </v-list-item-title>
                               <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
                             </v-list-item-content>
@@ -365,7 +365,11 @@
         sharedUsers: [],
         displaySharedUsersSuccessMsg: false,
         displaySharedUsersErrorMsg: false,
-        sharedUsersStatusMsg: ""
+        sharedUsersStatusMsg: "",
+        currentPage: 0,
+        size: 10,
+        bottom: false,
+        watching: true,
       }
     },
 
@@ -384,9 +388,33 @@
       this.getOrganisers();
       return this.checkFollowing();
     },
+    watch: {
+      bottom(bottom) {
+        if (bottom && this.watching) {
+          this.currentPage += 1;
+          apiActivity.getSharedUsers(this.activityId, this.currentPage, this.size).then(response => {
+            if (response.data.content.length < this.size) {
+              this.watching = false;
+            }
+            this.sharedUsers = this.sharedUsers.concat(response.data.content);
+          })
+        }
+      }
+    },
     methods: {
       // removed 'getActivityUpdates','getParticipants' and 'getOrganisers' for frontend test as they are not used
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities']),
+
+      /**
+       * Checks if user has scrolled to bottom of card code sourced from: https://codepen.io/mednabouli/pen/EdKzzL
+       */
+      bottomVisible() {
+        const cardScroll = document.getElementById("usersCard");
+        const scrollY = cardScroll.scrollHeight - cardScroll.scrollTop;
+        const height = cardScroll.offsetHeight;
+        const offset = height - scrollY;
+        return offset === 0;
+      },
 
       /**
        * Parses the list of emails the user entered by splitting them and removing any extra spaces. Checks each one is
@@ -417,6 +445,11 @@
             .then(response => {
               this.sharedUsersStatusMsg = response.data;
               this.displaySharedUsersSuccessMsg = true;
+              this.currentPage = 0;
+              apiActivity.getSharedUsers(this.activityId, this.currentPage, this.size).then(response => {
+                this.sharedUsers = response.data.content;
+                this.watching = true;
+              })
             })
             .catch(error => {
               console.log(error);
@@ -424,7 +457,6 @@
               this.invalidInputErrorMessage = "Something went wrong, please check the information provided is correct.";
               this.displayInvalidInputError = true;
             })
-
         }
       },
 
@@ -528,9 +560,12 @@
             this.activity_types = tempActivityData.activity_type;
             this.visibility = tempActivityData.visibility;
             if (this.visibility === "restricted") {
-              apiActivity.getSharedUsers(this.activityId).then(
+              apiActivity.getSharedUsers(this.activityId, this.currentPage, this.size).then(
                 (response) => {
                   this.sharedUsers = response.data.content;
+                  document.getElementById("usersCard").addEventListener('scroll', () => {
+                    this.bottom = this.bottomVisible()
+                  });
                 })
             }
             this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));

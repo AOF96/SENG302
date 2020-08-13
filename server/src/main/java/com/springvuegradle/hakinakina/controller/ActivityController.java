@@ -170,16 +170,10 @@ public class ActivityController {
      * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
     @GetMapping("/activities/{activityId}/shared")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId,
+    public Page<SearchUserDto> getSharedUsers(@PathVariable("activityId") long activityId,
                                          @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        Activity activity = activityRepository.getOne(activityId);
-        if (activity != null) {
-            // TODO: Check to see if activity is private
+        return activityService.getSharedUsers(activityId, page, size);
 
-            return activityService.getSharedUsers(activityId, page, size);
-        } else {
-            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
-        }
     }
 
     /**

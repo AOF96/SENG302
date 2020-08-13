@@ -382,27 +382,12 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the shared users.
      */
-    public ResponseEntity getSharedUsers(Long activityId, int page, int size) {
-        ResponseEntity result;
-        try {
-            if (page < 0 || size < 0) {
-                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
-            }
-            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
-                result = responseHandler.formatErrorResponse(404, "Activity not found");
-            } else {
-                Page<Object> users = searchRepository.getSharedUsers(PageRequest.of(page, size), activityId);
-                result = new ResponseEntity(users, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not retrieve shared users");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-
-        return result;
+    public Page<SearchUserDto> getSharedUsers(Long activityId, int page, int size) {
+        Page<User> users = searchRepository.getSharedUsers(PageRequest.of(page, size), activityId);
+        return responseHandler.userPageToSearchResponsePage(users);
     }
 
-    /**
+    /***
      * Retrieves a list of participants from the given activity with paginated results.
      * @param activityId the id of the activity.
      * @param page the requested page to return.
@@ -420,7 +405,7 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
                 Page<User> userPage = userRepository.getParticipantsOROrganisers(PageRequest.of(page, size), activityId, ActivityRole.PARTICIPANT);
-                Page<SearchUserDto> users = searchService.userPageToSearchResponsePage(userPage);
+                Page<SearchUserDto> users = responseHandler.userPageToSearchResponsePage(userPage);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -449,7 +434,7 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
                 Page<User> userPage = userRepository.getParticipantsOROrganisers(PageRequest.of(page, size), activityId, ActivityRole.ORGANISER);
-                Page<SearchUserDto> users = searchService.userPageToSearchResponsePage(userPage);
+                Page<SearchUserDto> users = responseHandler.userPageToSearchResponsePage(userPage);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
         } catch (Exception e) {
