@@ -1,5 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 /**
@@ -21,6 +23,7 @@ public class Achievement {
     private ResultType resultType;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     private Activity activity;
 
     protected Achievement() {}
