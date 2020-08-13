@@ -182,98 +182,121 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat>
-                  <v-row justify="center" >
-                    <v-col cols="11">
-                      <v-row justify="center" align="center"
-                             v-for="(achievement, index) in achievements" v-bind:key="index">
-                        <v-col cols="9">
-                          {{achievement.title}} {{achievement.description}} {{achievement.type}}
-                        </v-col>
-                        <v-col cols="2">
-                          <v-menu open-on-hover top offset-y>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                  class="mx-2"
-                                  color="primary"
-                                  fab
-                                  dark
-                                  outlined
+                  <v-card-text style="text-align: center;color:grey;" v-if="achievements.length == 0">No Achievements Yet</v-card-text>
+                  <v-row justify="center" align="center" no-gutters v-for="(achievement, index) in achievements" v-bind:key="index">
+                    <v-card style="width:100%;padding:20px;margin:15px;border-radius: 15px;">
+                      <v-card-text style="padding: 0;word-break: break-word;">{{achievement.resultType}}</v-card-text>
+                      <v-card-title style="padding: 0;word-break: break-word;">{{achievement.name}}</v-card-title>
+                      <v-card-text style="padding: 0;word-break: break-word;">{{achievement.description}}</v-card-text>
+                      <v-spacer></v-spacer>
+                      <v-menu bottom left>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                                  text
+                                  rounded
+                                  style="position:absolute;width:36px;min-width:36px;right:15px;top:15px;"
                                   v-bind="attrs"
                                   v-on="on"
-                              >
-                                <v-icon dark>mdi-format-list-bulleted-square</v-icon>
-                              </v-btn>
-                            </template>
+                          >
+                            <v-icon>mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
 
-                            <v-list>
-                              <v-btn> edit </v-btn>
-                              <v-btn> delete </v-btn>
-                            </v-list>
-                          </v-menu>
-                          <!--<v-btn class="mx-2" fab dark outlined color="primary">
-                            <v-icon dark>mdi-format-list-bulleted-square</v-icon>
-                          </v-btn>-->
-                        </v-col>
-                      </v-row>
-                    </v-col>
+                        <v-list>
+                          <v-list-item @click="cancelAddAchievement">
+                            <v-list-item-title>Edit</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="cancelAddAchievement">
+                            <v-list-item-title>Remove</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-card>
                   </v-row>
-                  <v-row justify="center" v-if="addAchievement">
-                    <v-col cols="11">
+                  <v-divider></v-divider>
+                  <v-row justify="center" no-gutters v-if="addAchievement" id="addAchievementBox">
+                    <v-card style="padding:10px;padding-top:15px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
                       <form>
-                        <v-row>
-                          <v-col style="padding: 0px;">
-                            <input id="achieveTitle" v-model="achieveTitle" class="addAchievementInput" placeholder="Achievement title" required>
+                        <v-row no-gutters style="margin-bottom:10px;">
+                          <v-col>
+                            <v-text-field
+                                    style="margin-right: 5px;"
+                                    v-model="achieveTitle"
+                                    label="Achievement Title"
+                                    rounded
+                                    required
+                                    outlined
+                                    dense
+                                    color="white"
+                                    dark
+                            ></v-text-field>
                           </v-col>
-                          <v-col style="padding: 0px" cols="5.5">
+                          <v-col>
                             <v-select
+                                style="margin-left: 5px;"
                                 id = "achieveType"
-                                style="margin:0 10px; height: 10px"
                                 v-model="achieveType"
                                 :items="options"
-                                chips
                                 label="Select achievement type"
                                 rounded
                                 outlined
                                 dense
+                                color="white"
+                                dark
                             />
                           </v-col>
                         </v-row>
-                        <v-row>
-                          <v-col style="padding: 0px;">
-                           <textarea
-
-                               class="editAchievementTextarea"
-                               maxlength="255"
-                               type="text"
-                               id="achieveDesc"
-                               v-model="achieveDesc"
-                               placeholder="Achievement Description">
-                            </textarea>
+                        <v-row no-gutters style="margin-bottom:5px;">
+                          <v-col>
+                            <v-textarea
+                                    v-model="achieveDesc"
+                                    rounded
+                                    label="Achievement Description"
+                                    placeholder="Enter Achievement Description"
+                                    rows="2"
+                                    row-height="30"
+                                    outlined
+                                    dense
+                                    color="white"
+                                    dark
+                            ></v-textarea>
                           </v-col>
                         </v-row>
-                        <v-row justify="center">
+                        <v-row no-gutters>
+                          <v-spacer></v-spacer>
                           <v-btn
-                              v-if="tabs >= 3"
-                              v-on:click="addNewAchievement(achieveTitle, achieveDesc, achieveType)"
-                              style="margin:15px 20px;"
-                              color="primary"
+                              v-on:click="cancelAddAchievement()"
+                              color="white"
                               rounded
-                              outlined
+                              text
                               right
+                              dark
                               :disabled="overlayLoader"
                           >
-                            Save achievement
+                            Cancel
+                          </v-btn>
+                          <v-btn
+                              v-on:click="addNewAchievement(achieveTitle, achieveDesc, achieveType)"
+                              color="#3bb18b"
+                              style="background-color:white;margin-left: 10px"
+                              rounded
+                              text
+                              right
+                              dark
+                              :disabled="overlayLoader"
+                          >
+                            Add
                           </v-btn>
                         </v-row>
                       </form>
-                    </v-col>
+                    </v-card>
                   </v-row>
-                  <div class="text-center" style="padding-bottom:15px; padding-top:10px" v-if="!addAchievement">
-                    <v-btn class="mx-2" fab dark outlined color="primary" v-on:click="addAchievement = true">
+                  <div class="text-center" style="padding-bottom:15px;" v-if="!addAchievement">
+                    <v-btn style="margin-top:25px;" class="mx-2" fab dark outlined color="primary" v-on:click="addAchievement = true">
                       <v-icon dark>mdi-plus</v-icon>
                     </v-btn>
+                    <v-card-text style="font-weight: 400;color:#1dca92;font-size: 16px">Add Achievement</v-card-text>
                   </div>
-                  <!-- Your stuff here -->
                 </v-card>
               </v-tab-item>
             </v-tabs-items>
@@ -405,8 +428,15 @@ export default {
     ...mapActions(["updateUserContinuousActivities","getDataFromUrl"]),
     ...mapActions(["updateUserDurationActivities", "addActivityAchievement"]),
 
-    addNewAchievement(title, description, type) {
+    cancelAddAchievement() {
       this.addAchievement = false;
+      this.achieveTitle = "";
+      this.achieveDesc = "";
+      this.achieveType = "";
+    },
+
+    addNewAchievement(title, description, type) {
+      this.cancelAddAchievement();
       this.achievements.push({'name': title, 'description': description, 'resultType': type});
     },
 
