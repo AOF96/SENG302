@@ -5,6 +5,7 @@
     <div class="activityWrap">
       <v-container fluid grid-list-md fill-height fill-width>
         <v-layout row wrap width="600px">
+          <v-snackbar outlined color="error" :timeout="timeout" :value="snackbar" top>{{ errorMessage }}</v-snackbar>
           <v-flex>
             <v-card class="activityContainer" :loading="loadingActivity">
               <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
@@ -136,7 +137,7 @@
                     </v-tabs-items>
                     <v-btn
                         id="activityPageShowMoreButton"
-                        height="40px" color="#1cca92"
+                        height="45px" color="#1cca92"
                         outlined rounded
                         @click.stop="showMoreDialog = true"
                     >Show More
@@ -149,79 +150,83 @@
                     max-width="450"
                     id="activityPageMoreParticipantsOrganisersDialog"
                 >
-                  <v-tabs
-                      v-model="dialogTab"
-                      fixed-tabs
-                  >
-                    <v-tab
-                        v-for="item in userTabs"
-                        :key="item.tab"
+                  <v-card>
+                    <v-tabs
+                        v-model="dialogTab"
+                        fixed-tabs
                     >
-                      {{ item.tab }}
-                    </v-tab>
-                  </v-tabs>
-
-                  <v-tabs-items v-model="dialogTab">
-                    <v-tab-item
-                        v-for="item in userTabs"
-                        :key="item.tab"
-                    >
-                      <div style="overflow-y: scroll; height: 500px"
+                      <v-tab
+                          v-for="item in userTabs"
+                          :key="item.tab"
                       >
-                        <v-card flat
+                        {{ item.tab }}
+                      </v-tab>
+                    </v-tabs>
+                    <v-tabs-items v-model="dialogTab">
+                      <v-tab-item
+                          v-for="item in userTabs"
+                          :key="item.tab"
+                      >
+                        <div style="overflow-y: scroll; height: 500px"
                         >
-                          <div v-if="item.preview.length === 0">
-                            <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
-                          </div>
-                          <div v-else>
-                            <v-list-item two-line v-for="user in item.content" :key="user.email" link>
-                              <v-list-item-content>
-                                <v-list-item-title v-if="user.middlename != null">
-                                  {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                                </v-list-item-title>
-                                <v-list-item-title v-else>
-                                  {{ user.firstname + " " + user.lastname}}
-                                </v-list-item-title>
-                                <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
-                              </v-list-item-content>
-                              <v-menu
-                                      transition="slide-y-transition"
-                                      bottom
-                                      right
-                                      :close-on-click="true"
-                              >
-                                <template v-slot:activator="{ on, attrs }">
-                                  <v-btn
-                                          v-bind="attrs"
-                                          v-on="on"
-                                          icon
-                                  >
-                                    <v-icon>mdi-dots-vertical</v-icon>
-                                  </v-btn>
-                                </template>
-                                <v-card>
-                                  <v-list-item link>
-                                    <div v-if="item.tab === 'Participants'">
-                                      <v-list-item-title>Move to Organiser</v-list-item-title>
-                                    </div>
-                                    <div v-else>
-                                      <v-list-item-title>Move to Participants</v-list-item-title>
-                                    </div>
-                                  </v-list-item>
-                                </v-card>
-                              </v-menu>
-                            </v-list-item>
-                          </div>
-                        </v-card>
-                      </div>
-                    </v-tab-item>
-                  </v-tabs-items>
-                  <v-btn
-                          height="40px" color="#1cca92"
-                          outlined rounded
-                          v-on:click="getMoreResults()"
-                  >More Results
-                  </v-btn>
+                          <v-card flat
+                          >
+                            <div v-if="item.preview.length === 0">
+                              <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
+                            </div>
+                            <div v-else>
+                              <v-list-item two-line v-for="user in item.content" :key="user.email" link>
+                                <v-list-item-content>
+                                  <v-list-item-title v-if="user.middlename != null">
+                                    {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                                  </v-list-item-title>
+                                  <v-list-item-title v-else>
+                                    {{ user.firstname + " " + user.lastname}}
+                                  </v-list-item-title>
+                                  <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                                <v-menu
+                                        transition="slide-y-transition"
+                                        bottom
+                                        right
+                                        :close-on-click="true"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                            v-bind="attrs"
+                                            v-on="on"
+                                            icon
+                                    >
+                                      <v-icon>mdi-dots-vertical</v-icon>
+                                    </v-btn>
+                                  </template>
+                                  <v-card>
+                                    <v-list-item link>
+                                      <div v-if="item.tab === 'Participants'">
+                                        <v-list-item-title>Move to Organiser</v-list-item-title>
+                                      </div>
+                                      <div v-else>
+                                        <v-list-item-title>Move to Participants</v-list-item-title>
+                                      </div>
+                                    </v-list-item>
+                                  </v-card>
+                                </v-menu>
+                              </v-list-item>
+                            </div>
+                          </v-card>
+                        </div>
+                      </v-tab-item>
+                    </v-tabs-items>
+                    <v-btn
+                            height="40px" color="#1cca92"
+                            id="activityPageMoreResultsButton"
+                            outlined rounded
+                            :loading="loadingParticipantsOrganisers"
+                            v-on:click="getMoreResults()"
+                    >More Results
+                    </v-btn>
+                  </v-card>
+
                 </v-dialog>
 
                 <v-flex>
@@ -343,6 +348,9 @@
         previewTabs: null,
         dialogTab: null,
         showMoreDialog: false,
+        snackbar: false,
+        timeout: 2000,
+        errorMessage: "",
         newRole: "participant",
         emailsToAdd: "",
         roleOptions: [
@@ -362,7 +370,7 @@
           {tab: 'Participants', content: [], preview: []},
           {tab: 'Organisers', content: [], preview: []},
         ],
-        roleSwitch: null,
+        loadingParticipantsOrganisers: false,
         sharedUsers: [],
         displaySharedUsersSuccessMsg: false,
         displaySharedUsersErrorMsg: false,
@@ -509,13 +517,28 @@
        */
       async getMoreResults() {
         try {
+          this.loadingParticipantsOrganisers = true;
           if (this.dialogTab === 0) {
             let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage + 1, this.participantsPageInfo.currentSize);
-            this.userTabs[0].content = this.userTabs[0].content.concat(response.data.content);
+            if (response.data.content === []) {
+              this.errorMessage = "No more participants"
+              this.snackbar = true;
+            } else {
+              this.userTabs[0].content = this.userTabs[0].content.concat(response.data.content);
+              this.participantsPageInfo.currentPage += 1;
+            }
+            this.loadingParticipantsOrganisers = false;
           }
           if (this.dialogTab === 1) {
             let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage + 1, this.organisersPageInfo.currentSize);
-            this.userTabs[1].content = this.userTabs[1].content.concat(response.data.content);
+            if (response.data.content === []) {
+              this.errorMessage = "No more organisers"
+              this.snackbar = true;
+            } else {
+              this.userTabs[1].content = this.userTabs[1].content.concat(response.data.content);
+              this.organisersPageInfo.currentPage += 1;
+            }
+            this.loadingParticipantsOrganisers = false;
           }
         } catch (err) {
           console.log(err);
