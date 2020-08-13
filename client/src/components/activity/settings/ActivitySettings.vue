@@ -45,20 +45,20 @@
                   <v-row no-gutters style="margin:0 20px;">
                     <v-radio-group v-model="visibility" row>
                       <v-radio
-                          label="Public"
-                          color="green"
-                          value="public"
-                      ></v-radio>
+                              label="Public"
+                              color="green"
+                              value="public"
+                      />
                       <v-radio
-                          label="Restricted"
-                          color="orange"
-                          value="restricted"
-                      ></v-radio>
+                              label="Restricted"
+                              color="orange"
+                              value="restricted"
+                      />
                       <v-radio
-                          label="Private"
-                          color="red"
-                          value="private"
-                      ></v-radio>
+                              label="Private"
+                              color="red"
+                              value="private"
+                      />
                     </v-radio-group>
                   </v-row>
 
@@ -73,16 +73,16 @@
                   </textarea>
                   <label class="editActivityLabel" style="">Activity Types*</label>
                   <v-select
-                      style="margin:0 20px;margin-top:5px;"
-                      v-model="activity_types_selected"
-                      :items="activities_option"
-                      attach
-                      chips
-                      label="Select Activity Types"
-                      multiple
-                      rounded
-                      outlined
-                  ></v-select>
+                          style="margin:0 20px;margin-top:5px;"
+                          v-model="activity_types_selected"
+                          :items="activities_option"
+                          attach
+                          chips
+                          label="Select Activity Types"
+                          multiple
+                          rounded
+                          outlined
+                  />
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -91,15 +91,15 @@
                   <v-row no-gutters style="margin:0 20px;">
                     <v-radio-group v-model="duration" v-on:change="setDuration" row>
                       <v-radio
-                          label="Continuous"
-                          color="green"
-                          value="continuous"
-                      ></v-radio>
+                              label="Continuous"
+                              color="green"
+                              value="continuous"
+                      />
                       <v-radio
-                          label="Duration"
-                          color="green"
-                          value="duration"
-                      ></v-radio>
+                              label="Duration"
+                              color="green"
+                              value="duration"
+                      />
                     </v-radio-group>
                   </v-row>
 
@@ -214,53 +214,72 @@
                     </v-card>
                   </v-row>
 
-                  <v-dialog v-model="editDialog">
+                  <v-dialog width="33%" v-model="editDialog">
                     <v-card>
                       <v-card-title class="headline">Edit Achievement</v-card-title>
-                      <hr>
-                      <v-card-text>
-                        <v-row>
-                          <v-col style="padding: 0px;">
-                            <input v-model="tempTitle" class="addAchievementInput" placeholder="Achievement title" required>
+                      
+                      <v-row  justify="center" no-gutters>
+                        <v-card style="padding:10px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
+                        <v-row no-gutters style="margin-top: 10px;">
+                          <v-col>
+                            <v-text-field
+                                    v-model="tempTitle" label="Achievement Title"
+                                    placeholder="Achievement title" rounded outlined dense
+                                     required style="margin-right: 5px" color="white"
+                                    dark/>
                           </v-col>
-                          <v-col style="padding: 0px" cols="5.5">
+                          <v-col cols="5.5">
                             <v-select
                                 id = "achieveType"
-                                style="margin:0 10px; height: 10px"
+                                style="margin-left: 5px;"
                                 v-model="tempResultType"
                                 :items="options"
-                                chips
                                 label="Select achievement type"
                                 rounded
                                 outlined
                                 dense
+                                color="white"
+                                dark
                             />
                           </v-col>
                         </v-row>
-                        <v-row>
-                          <v-col style="padding: 0px;">
-                           <textarea
-
-                               class="editAchievementTextarea"
+                        <v-row no-gutters>
+                          <v-col>
+                           <v-textarea
+                               label="Achievement Description"
                                maxlength="255"
                                type="text"
                                v-model="tempDescription"
+                               rows="2"
+                               row-height="30"
+                               outlined
+                               densecolor="white"
+                               dark
                                placeholder="Achievement Description">
-                            </textarea>
+                            </v-textarea>
                           </v-col>
                         </v-row>
-                        <v-row justify="center">
-                        </v-row>
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="green darken-1" text @click="editDialog = false">Cancel</v-btn>
-                        <v-btn color="green darken-1" text @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save</v-btn>
-                      </v-card-actions>
+                          <v-row no-gutters>
+                            <v-spacer></v-spacer>
+                            <v-btn color="#f06a6a"
+                                   style="background-color:white;margin-left: 10px"
+                                   rounded
+                                   text
+                                   right
+                                   dark
+                                   :disabled="overlayLoader"  @click="editDialog = false">Cancel</v-btn>
+                            <v-btn color="#3bb18b"
+                                   style="background-color:white;margin-left: 10px"
+                                   rounded
+                                   text
+                                   right
+                                   dark
+                                   :disabled="overlayLoader" @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save</v-btn>
+                          </v-row>
+                        </v-card>
+                      </v-row>
                     </v-card>
                   </v-dialog>
-
-
                   <v-divider></v-divider>
                   <v-row justify="center" no-gutters v-if="addAchievement" id="addAchievementBox">
                     <v-card style="padding:10px;padding-top:15px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
@@ -277,7 +296,7 @@
                                     dense
                                     color="white"
                                     dark
-                            ></v-text-field>
+                            />
                           </v-col>
                           <v-col>
                             <v-select
@@ -431,7 +450,6 @@ export default {
       tempTitle: null,
       tempDescription: null,
       tempResultType: null,
-
     };
   },
 
