@@ -280,8 +280,6 @@
                       </v-row>
                     </v-card>
                   </v-dialog>
-
-
                   <v-divider></v-divider>
                   <v-row justify="center" no-gutters v-if="addAchievement" id="addAchievementBox">
                     <v-card style="padding:10px;padding-top:15px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
@@ -452,7 +450,6 @@ export default {
       tempTitle: null,
       tempDescription: null,
       tempResultType: null,
-
     };
   },
 
