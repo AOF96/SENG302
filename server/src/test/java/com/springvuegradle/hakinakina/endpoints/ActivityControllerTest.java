@@ -30,8 +30,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -538,4 +537,119 @@ public class ActivityControllerTest {
 
     }
 
+    @Test
+    public void getStats1FollowerTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+
+        User testUser2 = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser2.setUserId((long) 2);
+
+        Activity newActivity = createTestActivity();
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.getStats(any(Long.class))).
+                thenReturn(new ResponseEntity("{\n" +
+                        "  \"followers\": " + 1 + ",\n" +
+                        "  \"participants\": " + 0 + ",\n" +
+                        "  \"organisers\": " + 0 + "\n" +
+                        "}", HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/stats").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\n" +
+                        "  \"followers\": " + 1 + ",\n" +
+                        "  \"participants\": " + 0 + ",\n" +
+                        "  \"organisers\": " + 0 + "\n" +
+                        "}")));
+    }
+
+    @Test
+    public void getStats1OrganiserTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+
+        User testUser2 = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser2.setUserId((long) 2);
+
+        Activity newActivity = createTestActivity();
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.getStats(any(Long.class))).
+                thenReturn(new ResponseEntity("{\n" +
+                        "  \"followers\": " + 0 + ",\n" +
+                        "  \"participants\": " + 0 + ",\n" +
+                        "  \"organisers\": " + 1 + "\n" +
+                        "}", HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/stats").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\n" +
+                        "  \"followers\": " + 0 + ",\n" +
+                        "  \"participants\": " + 0 + ",\n" +
+                        "  \"organisers\": " + 1 + "\n" +
+                        "}")));
+    }
+
+    @Test
+    public void getStats1ParticipantTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+
+        User testUser2 = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser2.setUserId((long) 2);
+
+        Activity newActivity = createTestActivity();
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.getStats(any(Long.class))).
+                thenReturn(new ResponseEntity("{\n" +
+                        "  \"followers\": " + 0 + ",\n" +
+                        "  \"participants\": " + 1 + ",\n" +
+                        "  \"organisers\": " + 0 + "\n" +
+                        "}", HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/stats").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\n" +
+                        "  \"followers\": " + 0 + ",\n" +
+                        "  \"participants\": " + 1 + ",\n" +
+                        "  \"organisers\": " + 0 + "\n" +
+                        "}")));
+    }
+
+    @Test
+    public void getStatsNoValuesTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+
+        User testUser2 = new User("John", "Smith", "john2@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser2.setUserId((long) 2);
+
+        Activity newActivity = createTestActivity();
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser2));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
+        when(service.getStats(any(Long.class))).
+                thenReturn(new ResponseEntity("{\n" +
+                        "  \"followers\": " + 0 + ",\n" +
+                        "  \"participants\": " + 0 + ",\n" +
+                        "  \"organisers\": " + 0 + "\n" +
+                        "}", HttpStatus.OK));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/activities/1/stats").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\n" +
+                        "  \"followers\": " + 0 + ",\n" +
+                        "  \"participants\": " + 0 + ",\n" +
+                        "  \"organisers\": " + 0 + "\n" +
+                        "}")));
+    }
 }

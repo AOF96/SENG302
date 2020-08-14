@@ -349,5 +349,8 @@ export const apiActivity = {
         "email": email,
         "role": role
       }
-    })
+  }),
+
+  getActivityStats: (activityId) =>
+    instance.get(`/activities/${activityId}/stats`),
 };
