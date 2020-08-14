@@ -217,49 +217,72 @@
                       </v-menu>
                     </v-card>
                   </v-row>
-                  <v-dialog v-model="editDialog">
+                  <v-dialog width="33%" v-model="editDialog">
                     <v-card>
                       <v-card-title class="headline">Edit Achievement</v-card-title>
-                      <hr>
-                      <v-card-text>
-                        <v-row>
-                          <v-col style="padding: 0px;">
-                            <input v-model="tempTitle" class="addAchievementInput" placeholder="Achievement title" required>
-                          </v-col>
-                          <v-col style="padding: 0px" cols="5.5">
-                            <v-select
-                                    id = "achieveType"
-                                    style="margin:0 10px; height: 10px"
-                                    v-model="tempResultType"
-                                    :items="options"
-                                    chips
-                                    label="Select achievement type"
-                                    rounded
-                                    outlined
-                                    dense
-                            />
-                          </v-col>
-                        </v-row>
-                        <v-row>
-                          <v-col style="padding: 0px;">
-                           <textarea
 
-                                   class="editAchievementTextarea"
-                                   maxlength="255"
-                                   type="text"
-                                   v-model="tempDescription"
-                                   placeholder="Achievement Description">
-                            </textarea>
-                          </v-col>
-                        </v-row>
-                        <v-row justify="center">
-                        </v-row>
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="green darken-1" text @click="editDialog = false">Cancel</v-btn>
-                        <v-btn color="green darken-1" text @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save</v-btn>
-                      </v-card-actions>
+                      <v-row  justify="center" no-gutters>
+                        <v-card style="padding:10px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
+                          <v-row no-gutters style="margin-top: 10px;">
+                            <v-col>
+                              <v-text-field
+                                      v-model="tempTitle" label="Achievement Title"
+                                      placeholder="Achievement title" rounded outlined dense
+                                      required style="margin-right: 5px" color="white"
+                                      id="achievementTitle"
+                                      dark/>
+                            </v-col>
+                            <v-col cols="5.5">
+                              <v-select
+                                      id = "achieveType"
+                                      style="margin-left: 5px;"
+                                      v-model="tempResultType"
+                                      :items="options"
+                                      label="Select achievement type"
+                                      rounded
+                                      outlined
+                                      dense
+                                      color="white"
+                                      dark
+                              />
+                            </v-col>
+                          </v-row>
+                          <v-row no-gutters>
+                            <v-col>
+                              <v-textarea
+                                      label="Achievement Description"
+                                      maxlength="255"
+                                      type="text"
+                                      v-model="tempDescription"
+                                      rows="2"
+                                      row-height="30"
+                                      outlined
+                                      id="achievementDescription"
+                                      densecolor="white"
+                                      dark
+                                      placeholder="Achievement Description">
+                              </v-textarea>
+                            </v-col>
+                          </v-row>
+                          <v-row no-gutters>
+                            <v-spacer></v-spacer>
+                            <v-btn color="#f06a6a"
+                                   style="background-color:white;margin-left: 10px"
+                                   rounded
+                                   text
+                                   right
+                                   dark
+                                   :disabled="overlayLoader"  @click="editDialog = false">Cancel</v-btn>
+                            <v-btn color="#3bb18b"
+                                   style="background-color:white;margin-left: 10px"
+                                   rounded
+                                   text
+                                   right
+                                   dark
+                                   :disabled="overlayLoader" @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save</v-btn>
+                          </v-row>
+                        </v-card>
+                      </v-row>
                     </v-card>
                   </v-dialog>
                   <v-divider></v-divider>
@@ -542,11 +565,13 @@ export default {
 
     addNewAchievement(title, description, type) {
       this.cancelAddAchievement();
+      apiActivity.addActivityAchievement(this.user.profile_id, this.$route.params.activityId, title, description, type.toUpperCase());
       this.achievements.push({'name': title, 'description': description, 'resultType': type});
       this.achieveDesc= "";
       this.achieveTitle = "";
       this.achieveType = "";
     },
+
     /**
      * The function over writes the saved achievement if the user decides to edit it before saving the activity.
      * */
@@ -557,8 +582,12 @@ export default {
       }
       else {
         this.achievements[this.index] = {'name': title, 'description': description, 'resultType': type};
-        apiActivity.editActivityAchievement(this.user.profile_id, this.$route.params.activityId, this.tempAchievement.id, title, description, type.toUpperCase())
+        apiActivity.editActivityAchievement(this.user.profile_id, this.$route.params.activityId, this.tempAchievement.id, title, description, type.toUpperCase());
         apiActivity.getActivityAchievement(this.user.profile_id, this.$route.params.activityId);
+        for (let i = 0; i < this.achievements.length; i++) {
+          this.achievements[i].resultType = this.achievements[i].resultType.toLowerCase();
+          this.achievements[i].resultType = this.achievements[i].resultType[0].toUpperCase() + this.achievements[i].resultType.slice(1);
+        }
         this.loadActivity()
         this.tempAchievement = null;
         this.index = null;
@@ -595,11 +624,13 @@ export default {
       //if any results are entered then open a pop up to let the user know they cannot delete /edit this anymore
       // make the call to the function that opens that pop up
       //else let the user edit the activity
+      console.log(this.achievements);
       this.index = this.achievements.indexOf(achievement);
-      this.tempAchievement = this.achievements[this.index]
-      this.tempTitle = achievement.name
-      this.tempDescription = achievement.description
-      this.tempResultType = achievement.resultType
+      this.tempAchievement = this.achievements[this.index];
+      this.tempTitle = achievement.name;
+      this.tempDescription = achievement.description;
+      this.tempResultType = achievement.resultType.toLowerCase();
+      this.tempResultType = this.tempResultType[0].toUpperCase() + this.tempResultType.slice(1);
       this.editDialog=true
     },
 
@@ -635,9 +666,18 @@ export default {
      */
     setLocation() {
       this.location = "";
-      this.city = document.getElementById('inputCity').value,
-      this.state = document.getElementById('inputState').value,
-      this.country = document.getElementById('inputCountry').value
+      this.city ="";
+      this.state="";
+      this.country="";
+      if (document.getElementById('inputCity') !== null) {
+        this.city = document.getElementById('inputCity').value;
+      }
+      if (document.getElementById('inputState') !== null) {
+        this.state = document.getElementById('inputState').value;
+      }
+      if (document.getElementById('inputCountry') !== null) {
+        this.country = document.getElementById('inputCountry').value;
+      }
       this.location = this.city + ',' + this.state + ',' + this.country
     },
 
@@ -657,8 +697,12 @@ export default {
         if (tempActivityData == "Invalid permissions") {
           this.$router.push("/profile");
         } else {
-          let tempAchievements = await apiActivity.getActivityAchievement(tempActivityData.author.profile_id,this.$route.params.activityId)
+          let tempAchievements = await apiActivity.getActivityAchievement(tempActivityData.author.profile_id,this.$route.params.activityId);
           this.achievements = tempAchievements.data;
+          for (let i = 0; i < this.achievements.length; i++) {
+            this.achievements[i].resultType = this.achievements[i].resultType.toLowerCase();
+            this.achievements[i].resultType = this.achievements[i].resultType[0].toUpperCase() + this.achievements[i].resultType.slice(1);
+          }
           this.pageLoading = false;
           this.activity_name = tempActivityData.activity_name;
           this.continuous = tempActivityData.continuous;
