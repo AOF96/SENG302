@@ -29,7 +29,7 @@
                 <span v-else>
                         {{a.name}}.
                 </span>
-            </span>
+                </span>
               </div>
               <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
                 <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
@@ -37,15 +37,15 @@
               <div class="activityPageBottomButtons">
                 <router-link v-bind:to="'/profile/'+authorId">
                   <button
-                      class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+                          class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
                     Back to Profile
                   </button>
                 </router-link>
                 <router-link v-if="authorId===user.profile_id || user.permission_level > 0"
                              v-bind:to="'/activity_editing/' + activityId">
                   <button
-                      class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-                      type="button"
+                          class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                          type="button"
                   >Edit Activity
                   </button>
                 </router-link>
@@ -62,7 +62,6 @@
               </div>
             </v-card>
           </v-flex>
-
           <v-flex>
             <v-flex>
               <v-layout row wrap>
@@ -70,147 +69,165 @@
                   <v-card class="activityPageCard">
                     <h2>Participants / Organisers</h2>
                     <v-tabs
-                        v-model="previewTabs"
-                        fixed-tabs
-                        id="previewParticipantsOrganisersTabs"
+                            v-model="previewTabs"
+                            fixed-tabs
+                            id="previewParticipantsOrganisersTabs"
                     >
                       <v-tab
-                          v-for="item in userTabs"
-                          :key="item.tab"
+                              v-for="item in userTabs"
+                              :key="item.tab"
                       >
                         {{ item.tab }}
                       </v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="previewTabs" id="activityParticipantsOrganisersTabItems">
                       <v-tab-item
-                          v-for="item in userTabs"
-                          :key="item.tab"
+                              v-for="item in userTabs"
+                              :key="item.tab"
                       >
                         <v-card flat id="participantOrganiserList">
                           <div v-if="item.preview.length === 0">
-                            <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
+                            <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity
+                            </v-card-text>
                           </div>
                           <div v-else>
-                            <v-list-item two-line v-for="user in item.preview" :key="user.email" link @click.stop=""
-                            >
+                            <v-list-item two-line v-for="profile in item.preview" :key="profile.email" link
+                                         @click.stop="">
                               <v-list-item-content>
-                                <v-list-item-title v-if="user.middlename != null">
-                                  {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                                <v-list-item-title v-if="profile.middlename != null">
+                                  {{ profile.firstname + " " + profile.middlename + " " +
+                                  profile.lastname}}
                                 </v-list-item-title>
                                 <v-list-item-title v-else>
-                                  {{ user.firstname + " " + user.lastname}}
+                                  {{ profile.firstname + " " + profile.lastname}}
                                 </v-list-item-title>
-                                <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                                <v-list-item-subtitle>{{ profile.email }}
+                                </v-list-item-subtitle>
                               </v-list-item-content>
-                              <v-menu
-                                  transition="slide-y-transition"
-                                  bottom
-                                  right
-                                  :close-on-click="true"
-                              >
-                                <template v-slot:activator="{ on, attrs }">
-                                  <v-btn
-                                      v-bind="attrs"
-                                      v-on="on"
-                                      icon
-                                  >
-                                    <v-icon>mdi-dots-vertical</v-icon>
-                                  </v-btn>
-                                </template>
-                                <v-card>
+                              <div v-if="user.profile_id === authorId || user.permission_level > 0">
+                                <v-menu
+                                        transition="slide-y-transition"
+                                        bottom
+                                        right
+                                        :close-on-click="true">
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                            v-bind="attrs"
+                                            v-on="on"
+                                            icon>
+                                      <v-icon>mdi-dots-vertical</v-icon>
+                                    </v-btn>
+                                  </template>
                                   <v-card>
-                                    <v-list-item link>
-                                      <div v-if="item.tab === 'Participants'">
-                                        <v-list-item-title>Move to Organiser</v-list-item-title>
-                                      </div>
-                                      <div v-else>
-                                        <v-list-item-title>Move to Participants</v-list-item-title>
-                                      </div>
-                                    </v-list-item>
+                                    <v-card>
+                                      <v-list-item
+                                              v-on:click="editUserActivityRole(item.tab.toLowerCase(), profile.email)">
+                                        <div v-if="item.tab === 'Participants'">
+                                          <v-list-item-title>Move to Organiser
+                                          </v-list-item-title>
+                                        </div>
+                                        <div v-else>
+                                          <v-list-item-title>Move to
+                                            Participants
+                                          </v-list-item-title>
+                                        </div>
+                                      </v-list-item>
+                                    </v-card>
                                   </v-card>
-                                </v-card>
-                              </v-menu>
+                                </v-menu>
+                              </div>
                             </v-list-item>
                           </div>
                         </v-card>
                       </v-tab-item>
                     </v-tabs-items>
                     <v-btn
-                        id="activityPageShowMoreButton"
-                        height="45px" color="#1cca92"
-                        outlined rounded
-                        @click.stop="showMoreDialog = true"
+                            id="activityPageShowMoreButton"
+                            height="45px" color="#1cca92"
+                            outlined rounded
+                            @click.stop="showMoreDialog = true"
                     >Show More
                     </v-btn>
                   </v-card>
                 </v-flex>
 
                 <v-dialog
-                    v-model="showMoreDialog"
-                    max-width="450"
-                    id="activityPageMoreParticipantsOrganisersDialog"
+                        v-model="showMoreDialog"
+                        max-width="450"
+                        id="activityPageMoreParticipantsOrganisersDialog"
                 >
-                  <v-card>
+                  <v-card :loading="loadingParticipantsOrganisersDialog">
                     <v-tabs
-                        v-model="dialogTab"
-                        fixed-tabs
+                            v-model="dialogTab"
+                            fixed-tabs
                     >
                       <v-tab
-                          v-for="item in userTabs"
-                          :key="item.tab"
+                              v-for="item in userTabs"
+                              :key="item.tab"
                       >
                         {{ item.tab }}
                       </v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="dialogTab">
                       <v-tab-item
-                          v-for="item in userTabs"
-                          :key="item.tab"
+                              v-for="item in userTabs"
+                              :key="item.tab"
                       >
                         <div style="overflow-y: scroll; height: 500px"
                         >
                           <v-card flat
                           >
                             <div v-if="item.preview.length === 0">
-                              <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity</v-card-text>
+                              <v-card-text>There are currently no {{
+                                item.tab.toLowerCase() }} for this activity
+                              </v-card-text>
                             </div>
                             <div v-else>
-                              <v-list-item two-line v-for="user in item.content" :key="user.email" link>
+                              <v-list-item two-line v-for="profile in item.content"
+                                           :key="profile.email" link>
                                 <v-list-item-content>
-                                  <v-list-item-title v-if="user.middlename != null">
-                                    {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                                  <v-list-item-title v-if="profile.middlename != null">
+                                    {{ profile.firstname + " " + profile.middlename + " "
+                                    + profile.lastname}}
                                   </v-list-item-title>
                                   <v-list-item-title v-else>
-                                    {{ user.firstname + " " + user.lastname}}
+                                    {{ profile.firstname + " " + profile.lastname}}
                                   </v-list-item-title>
-                                  <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                                  <v-list-item-subtitle>{{ profile.email }}
+                                  </v-list-item-subtitle>
                                 </v-list-item-content>
-                                <v-menu
-                                        transition="slide-y-transition"
-                                        bottom
-                                        right
-                                        :close-on-click="true"
-                                >
-                                  <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                            v-bind="attrs"
-                                            v-on="on"
-                                            icon
-                                    >
-                                      <v-icon>mdi-dots-vertical</v-icon>
-                                    </v-btn>
-                                  </template>
-                                  <v-card>
-                                    <v-list-item link>
-                                      <div v-if="item.tab === 'Participants'">
-                                        <v-list-item-title>Move to Organiser</v-list-item-title>
-                                      </div>
-                                      <div v-else>
-                                        <v-list-item-title>Move to Participants</v-list-item-title>
-                                      </div>
-                                    </v-list-item>
-                                  </v-card>
-                                </v-menu>
+                                <div v-if="user.profile_id === authorId || user.permission_level > 0">
+                                  <v-menu
+                                          transition="slide-transition"
+                                          bottom
+                                          right
+                                          :close-on-click="true"
+                                  >
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                              v-bind="attrs"
+                                              v-on="on"
+                                              icon
+                                      >
+                                        <v-icon>mdi-dots-vertical</v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <v-card>
+                                      <v-list-item
+                                              v-on:click="editUserActivityRole(item.tab.toLowerCase(), profile.email)">
+                                        <div v-if="item.tab === 'Participants'">
+                                          <v-list-item-title>Move to Organiser
+                                          </v-list-item-title>
+                                        </div>
+                                        <div v-else>
+                                          <v-list-item-title>Move to
+                                            Participants
+                                          </v-list-item-title>
+                                        </div>
+                                      </v-list-item>
+                                    </v-card>
+                                  </v-menu>
+                                </div>
                               </v-list-item>
                             </div>
                           </v-card>
@@ -235,7 +252,6 @@
                     <h3>Coming next sprint!</h3>
                   </v-card>
                 </v-flex>
-
               </v-layout>
             </v-flex>
 
@@ -253,8 +269,8 @@
                     <h2 style="padding-bottom:10px;">Latest Changes</h2>
                     <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
                       <v-timeline-item
-                          icon-color="grey lighten-2"
-                          small
+                              icon-color="grey lighten-2"
+                              small
                       >
                         <v-row justify="space-between">
                           <v-col>
@@ -371,6 +387,7 @@
           {tab: 'Organisers', content: [], preview: []},
         ],
         loadingParticipantsOrganisers: false,
+        loadingParticipantsOrganisersDialog: false,
         sharedUsers: [],
         displaySharedUsersSuccessMsg: false,
         displaySharedUsersErrorMsg: false,
@@ -493,11 +510,9 @@
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
           this.userTabs[0].content = response.data.content;
-          this.userTabs[0].preview = this.userTabs[0].content.slice(0,3);
+          this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
         } catch (err) {
           console.error(err)
-
-
         }
       },
       /**
@@ -507,13 +522,13 @@
         try {
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
           this.userTabs[1].content = response.data.content;
-          this.userTabs[1].preview = this.userTabs[1].content.slice(0,3);
+          this.userTabs[1].preview = this.userTabs[1].content.slice(0, 3);
         } catch (err) {
           console.error(err)
         }
       },
       /**
-       *
+       * Retrieves more participants or organisers for the dialog box
        */
       async getMoreResults() {
         try {
@@ -542,6 +557,25 @@
           }
         } catch (err) {
           console.log(err);
+        }
+      },
+      /**
+       * Edits a user's role from participant to organiser and vice versa
+       */
+      async editUserActivityRole(role, email) {
+        if (this.user.profile_id === this.authorId || this.user.permission_level > 0) {
+          let newRole = "";
+          if (role === "participants") newRole = "organiser"; else newRole = "participant";
+          this.loadingParticipantsOrganisersDialog = true;
+          await apiActivity.editUserActivityRole(this.user.profile_id, this.$route.params.activityId, newRole, email)
+            .then(() => {
+              this.showMoreDialog = false;
+              this.getOrganisers();
+              this.getParticipants();
+            }).catch((err) => {
+              console.log(err);
+            })
+          this.loadingParticipantsOrganisersDialog = false;
         }
       },
       /**

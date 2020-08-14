@@ -341,5 +341,13 @@ export const apiActivity = {
           page: currentPage,
           size: size
       }
-  })
+  }),
+
+  editUserActivityRole: (profileId, activityId, role, email) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`, {
+      "subscriber": {
+        "email": email,
+        "role": role
+      }
+    })
 };
