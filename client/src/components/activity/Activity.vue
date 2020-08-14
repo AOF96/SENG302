@@ -34,6 +34,9 @@
               <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
                 <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
               </div>
+              <div id="numberOfFollowers" class="activityAuthorLabel" v-if="loaded === true">
+                <h3> Followers: {{numFollowers}}</h3>
+              </div>
               <div class="activityPageBottomButtons">
                 <router-link v-bind:to="'/profile/'+authorId">
                   <button
@@ -379,6 +382,9 @@
         size: 10,
         bottom: false,
         watching: true,
+        numFollowers: 0,
+        numParticipants: 0,
+        numOrganisers: 0,
       }
     },
 
@@ -395,6 +401,7 @@
       this.loadActivity();
       this.getParticipants();
       this.getOrganisers();
+      this.getStats();
       return this.checkFollowing();
     },
     watch: {
@@ -499,6 +506,13 @@
 
 
         }
+      },
+      async getStats() {
+        await apiActivity.getActivityStats(this.$route.params.activityId).then(response => {
+          this.numFollowers = response.data.followers;
+          this.numOrganisers = response.data.organisers;
+          this.numParticipants = response.data.participants;
+        })
       },
       /**
        * Retrieves organisers for the activity

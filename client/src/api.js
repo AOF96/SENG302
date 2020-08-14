@@ -341,5 +341,7 @@ export const apiActivity = {
           page: currentPage,
           size: size
       }
-  })
+  }),
+    getActivityStats: (activityId) =>
+        instance.get(`/activities/${activityId}/stats`),
 };
