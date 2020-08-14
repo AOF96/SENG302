@@ -524,10 +524,15 @@ export default {
 
     addNewAchievement(title, description, type) {
       this.cancelAddAchievement();
-      this.achievements.push({'name': title, 'description': description, 'resultType': type});
-      this.achieveDesc= "";
-      this.achieveTitle = "";
-      this.achieveType = "";
+      if (title === null || title.trim() === "") {
+        this.displayError("Please enter a title.");
+      } else {
+        this.achievements.push({'name': title, 'description': description, 'resultType': type});
+        this.achieveDesc= "";
+        this.achieveTitle = "";
+        this.achieveType = "";
+      }
+
     },
 
     /**
@@ -560,8 +565,7 @@ export default {
     /**
      * Assigns the temp achievement to the selected achievement form the list of achievements
      **/
-    setTempAchievement(achievement){
-      console.log(achievement)
+    async setTempAchievement(achievement){
       this.index = this.achievements.indexOf(achievement);
      this.tempAchievement = this.achievements[this.index]
      this.tempTitle = achievement.name
