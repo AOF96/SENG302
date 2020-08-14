@@ -208,8 +208,10 @@
                           <v-list-item @click= "setTempAchievement(achievement)">
                             <v-list-item-title>Edit</v-list-item-title>
                           </v-list-item>
-                          <v-list-item @click="deleteAchievement(achievement)">
-                            <v-list-item-title>Remove</v-list-item-title>
+                          <v-list-item @click="openDeletePopUp(achievement)">
+                            <v-list-item-title>
+                              Remove
+                            </v-list-item-title>
                           </v-list-item>
                         </v-list>
                       </v-menu>
@@ -347,6 +349,43 @@
                 </v-card>
               </v-tab-item>
             </v-tabs-items>
+
+            <v-row justify="center">
+              <v-dialog
+                  v-model="deleteDialog"
+                  max-width="290"
+              >
+                <v-card>
+                  <v-card-title class="headline">Delete achievement</v-card-title>
+
+                  <v-card-text>
+                    Are you sure you want to delete this achievement?
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="deleteDialog = false"
+                    >
+                      Disagree
+                    </v-btn>
+
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="deleteAchievement(tempAchievement)"
+                    >
+                      Agree
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-row>
+
+
             <v-divider></v-divider>
             <v-row no-gutters>
               <v-btn
@@ -437,6 +476,8 @@ export default {
       tempTitle: null,
       tempDescription: null,
       tempResultType: null,
+      deleteDialog: false,
+      confirmDelete: false
     };
   },
 
@@ -495,7 +536,6 @@ export default {
       this.achieveDesc = "";
       this.achieveType = "";
     },
-
     /**
      * The function adds the achievement to the list of achievements.
      * */
@@ -507,13 +547,15 @@ export default {
       this.achieveTitle = "";
       this.achieveType = "";
     },
-
     /**
      * The function over writes the saved achievement if the user decides to edit it before saving the activity.
      * */
     saveEditedAchievement(title, description, type){
       this.editDialog = false;
       this.achievements[this.index] = {'name': title, 'description': description, 'resultType': type};
+      apiActivity.editActivityAchievement(this.user.profile_id, this.$route.params.activityId, this.tempAchievement.id, title, description, type.toUpperCase())
+      apiActivity.getActivityAchievement(this.user.profile_id, this.$route.params.activityId);
+      this.loadActivity()
       this.tempAchievement = null;
       this.index = null;
       this.tempTitle = null;
@@ -522,24 +564,31 @@ export default {
     },
 
     /**
+     * Used to manage the delete pop up box when deleting an achievement
+     * */
+    openDeletePopUp(achievement){
+      this.deleteDialog = true;
+      this.tempAchievement = achievement;
+    },
+    /**
      * The function deletes a specific achievements from the list of achievement.
      * */
     deleteAchievement(achievement){
-      if (this.achievements.length === 1) {
-        this.achievements = [];
-      } else {
-        const index = this.achievements.indexOf(achievement);
-        if (index > -1) {
-          this.achievements.splice(index, 1);
-        }
-      }
+      apiActivity.deleteActivityAchievement(this.user.profile_id, this.$route.params.activityId, achievement.id);
+      this.loadActivity();
+      this.tempAchievement = null;
+      this.deleteDialog = false;
     },
 
     /**
      * Assigns the temp achievement to the selected achievement form the list of achievements
      **/
     setTempAchievement(achievement){
-      console.log(achievement)
+
+      // check if the response from the endpoint has any results entered against this achievement
+      //if any results are entered then open a pop up to let the user know they cannot delete /edit this anymore
+      // make the call to the function that opens that pop up
+      //else let the user edit the activity
       this.index = this.achievements.indexOf(achievement);
       this.tempAchievement = this.achievements[this.index]
       this.tempTitle = achievement.name
