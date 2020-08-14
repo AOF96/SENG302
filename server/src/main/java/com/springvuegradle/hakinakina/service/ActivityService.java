@@ -544,6 +544,11 @@ public class ActivityService {
         return result;
     }
 
+    /**
+     * Service method that processes requests to get the number of followers, participants and organisers for an activity
+     * @param activityId the id of the activity for which the numbers are being requested
+     * @return response entity with json containing the counts and status of the request
+     */
     public ResponseEntity getStats(long activityId) {
         try {
             int numFollowers = activityRepository.getNumFollowersForActivity(activityId);

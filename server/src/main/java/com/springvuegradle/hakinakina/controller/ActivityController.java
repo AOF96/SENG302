@@ -295,6 +295,12 @@ public class ActivityController {
         return activityService.getActivityChanges(activityId, page, size);
     }
 
+    /**
+     * Controller endpoint that receives requests to get the number of followers, participants and organisers for an activity
+     * @param activityId the id of the activity for which the numbers are being requested
+     * @param sessionToken session token of the user making the request
+     * @return response entity with json containing the counts and status of the request
+     */
     @GetMapping("/activities/{activityId}/stats")
     public ResponseEntity getActivityStats(@PathVariable("activityId") long activityId, @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
