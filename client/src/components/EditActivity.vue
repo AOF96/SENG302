@@ -552,15 +552,21 @@ export default {
      * */
     saveEditedAchievement(title, description, type){
       this.editDialog = false;
-      this.achievements[this.index] = {'name': title, 'description': description, 'resultType': type};
-      apiActivity.editActivityAchievement(this.user.profile_id, this.$route.params.activityId, this.tempAchievement.id, title, description, type.toUpperCase())
-      apiActivity.getActivityAchievement(this.user.profile_id, this.$route.params.activityId);
-      this.loadActivity()
-      this.tempAchievement = null;
-      this.index = null;
-      this.tempTitle = null;
-      this.tempDescription = null;
-      this.tempResultType = null;
+      if (title === null || title.trim() === "") {
+        this.displayError("Please enter a title.");
+      }
+      else {
+        this.achievements[this.index] = {'name': title, 'description': description, 'resultType': type};
+        apiActivity.editActivityAchievement(this.user.profile_id, this.$route.params.activityId, this.tempAchievement.id, title, description, type.toUpperCase())
+        apiActivity.getActivityAchievement(this.user.profile_id, this.$route.params.activityId);
+        this.loadActivity()
+        this.tempAchievement = null;
+        this.index = null;
+        this.tempTitle = null;
+        this.tempDescription = null;
+        this.tempResultType = null;
+      }
+
     },
 
     /**
