@@ -22,16 +22,16 @@
         <form class="CreateActivityFormContainer">
           <v-card style="margin-top:20px;border-radius:15px;">
             <v-tabs v-model="tabs" grow show-arrows>
-              <v-tab>
+              <v-tab id="BasicInfoTab">
                 Basic Info*
               </v-tab>
-              <v-tab>
+              <v-tab id="TimeDateTab">
                 Time/Date*
               </v-tab>
-              <v-tab>
+              <v-tab id="LocationTab">
                 Location
               </v-tab>
-              <v-tab>
+              <v-tab id="AchievementTab">
                 Achievements
               </v-tab>
             </v-tabs>
@@ -39,22 +39,22 @@
             <v-tabs-items v-model="tabs">
               <v-tab-item>
                 <v-card flat class="py-3">
-                  <label class="editActivityLabel" for="name">Activity Name*</label>
+                  <label class="editActivityLabel" for="name" id="ActivityNameLabel">Activity Name*</label>
                   <input class="editActivityInput" type="text" id="name" v-model="name" placeholder="Activity Name" required />
-                  <label class="editActivityLabel">Visibility</label>
+                  <label class="editActivityLabel" id="VisibilityLabel" >Visibility</label>
                   <v-row no-gutters style="margin:0 20px;">
                     <v-radio-group v-model="visibility" row>
-                      <v-radio
+                      <v-radio id="publicVisibility"
                               label="Public"
                               color="green"
                               value="public"
                       />
-                      <v-radio
+                      <v-radio id="restrictedVisibility"
                               label="Restricted"
                               color="orange"
                               value="restricted"
                       />
-                      <v-radio
+                      <v-radio id="privateVisibility"
                               label="Private"
                               color="red"
                               value="private"
@@ -62,7 +62,7 @@
                     </v-radio-group>
                   </v-row>
 
-                  <label class="editActivityLabel" for="desc">Description</label>
+                  <label class="editActivityLabel" id="DescriptionLabel" for="desc">Description</label>
                   <textarea
                       class="editActivityTextarea"
                       maxlength="255"
@@ -71,13 +71,14 @@
                       v-model="description"
                       placeholder="Activity Description">
                   </textarea>
-                  <label class="editActivityLabel" style="">Activity Types*</label>
+                  <label class="editActivityLabel" id="ActivityTypeLabel" style="">Activity Types*</label>
                   <v-select
                           style="margin:0 20px;margin-top:5px;"
                           v-model="activity_types_selected"
                           :items="activities_option"
                           attach
                           chips
+                          id="ActivityTypeOptions"
                           label="Select Activity Types"
                           multiple
                           rounded
@@ -91,14 +92,17 @@
                   <v-row no-gutters style="margin:0 20px;">
                     <v-radio-group v-model="duration" v-on:change="setDuration" row>
                       <v-radio
+                              id="continuousButton"
                               label="Continuous"
                               color="green"
                               value="continuous"
+
                       />
                       <v-radio
                               label="Duration"
                               color="green"
                               value="duration"
+                              id="durationButton"
                       />
                     </v-radio-group>
                   </v-row>
@@ -226,6 +230,7 @@
                                     v-model="tempTitle" label="Achievement Title"
                                     placeholder="Achievement title" rounded outlined dense
                                      required style="margin-right: 5px" color="white"
+                                     id="achievementTitle"
                                     dark/>
                           </v-col>
                           <v-col cols="5.5">
@@ -253,6 +258,7 @@
                                rows="2"
                                row-height="30"
                                outlined
+                               id="achievementDescription"
                                densecolor="white"
                                dark
                                placeholder="Achievement Description">
@@ -337,6 +343,7 @@
                               rounded
                               text
                               right
+                              id="cancelAchievementButton"
                               dark
                               :disabled="overlayLoader"
                           >
@@ -347,6 +354,7 @@
                               color="#3bb18b"
                               style="background-color:white;margin-left: 10px"
                               rounded
+                              id="addAchievementButton"
                               text
                               right
                               dark
@@ -362,18 +370,18 @@
                     <v-btn style="margin-top:25px;" class="mx-2" fab dark outlined color="primary" v-on:click="addAchievement = true">
                       <v-icon dark>mdi-plus</v-icon>
                     </v-btn>
-                    <v-card-text style="font-weight: 400;color:#1dca92;font-size: 16px">Add Achievement</v-card-text>
+                    <v-card-text id="addAchievementLabel" style="font-weight: 400;color:#1dca92;font-size: 16px">Add Achievement</v-card-text>
                   </div>
                 </v-card>
               </v-tab-item>
             </v-tabs-items>
             <v-divider></v-divider>
             <v-row no-gutters>
-              <v-btn :disabled="tabs <= 0" v-on:click="tabs -= 1" text rounded color="black" style="margin: 15px;padding:0 10px;">
+              <v-btn id="BackArrow" :disabled="tabs <= 0" v-on:click="tabs -= 1" text rounded color="black" style="margin: 15px;padding:0 10px;">
                 <v-icon style="padding-right:5px;">mdi-arrow-left</v-icon> Back
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn v-if="tabs < 3" v-on:click="tabs += 1" text rounded color="black" style="margin: 15px;padding:0 10px;">
+              <v-btn id="NextArrow" v-if="tabs < 3" v-on:click="tabs += 1" text rounded color="black" style="margin: 15px;padding:0 10px;">
                 Next <v-icon style="padding-left:5px;">mdi-arrow-right</v-icon>
               </v-btn>
               <v-btn
@@ -385,6 +393,7 @@
                   outlined
                   right
                   :disabled="overlayLoader"
+                  id="CreateActivityButton"
               >
                 Create Activity
               </v-btn>
@@ -403,6 +412,7 @@ import router from "../../../router";
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all';
 
 export default {
+  name: "ActivitySettingsPage",
   data() {
     return {
       tabs: null,
