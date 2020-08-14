@@ -543,4 +543,21 @@ public class ActivityService {
         }
         return result;
     }
+
+    public ResponseEntity getStats(long activityId) {
+        try {
+            int numFollowers = activityRepository.getNumFollowersForActivity(activityId);
+            int numOrganizers = activityRepository.getNumOrganisersForActivity(activityId);
+            int numParticipants = activityRepository.getNumParticipantsForActivity(activityId);
+            String jsonToReturn = "{\n" +
+                    "  \"followers\": " + numFollowers + ",\n" +
+                    "  \"participants\": " + numParticipants + ",\n" +
+                    "  \"organisers\": " + numOrganizers + "\n" +
+                    "}";
+            return new ResponseEntity(jsonToReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot get stats");
+            return responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+    }
 }
