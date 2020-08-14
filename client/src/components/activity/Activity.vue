@@ -62,6 +62,15 @@
                 <div v-else>
                   <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
                 </div>
+                <div v-if="userOpttedIn">
+                  <v-btn
+                          id="optoutButton"
+                          height="45px" color="#f06a6a"
+                          outlined rounded style="margin-right: 20px"
+                          v-on:click="userOpttedIn = false"
+                  >Opt-out
+                  </v-btn>
+                </div>
               </div>
             </v-card>
           </v-flex>
@@ -150,7 +159,7 @@
                             outlined rounded
                             @click.stop="showMoreDialog = true"
                     >Show More
-                    </v-btn>
+                      </v-btn>
                   </v-card>
                 </v-flex>
 
@@ -402,6 +411,7 @@
         numFollowers: 0,
         numParticipants: 0,
         numOrganisers: 0,
+        userOpttedIn: false,
       }
     },
 
@@ -414,11 +424,12 @@
         this.$router.push('/login');
       }
     },
-    created: function () {
+    created: async function () {
       this.loadActivity();
-      this.getParticipants();
-      this.getOrganisers();
+      await this.getParticipants();
+      await this.getOrganisers();
       this.getStats();
+      this.checkUserHasOptedIn();
       return this.checkFollowing();
     },
     watch: {
@@ -437,6 +448,22 @@
     methods: {
       // removed 'getActivityUpdates','getParticipants' and 'getOrganisers' for frontend test as they are not used
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities']),
+
+      checkUserHasOptedIn() {
+        let i;
+        for (i=0; i<this.userTabs[0].content.length; i++) {
+          if (this.user.primary_email.localeCompare(this.userTabs[0].content[i].email) === 0) {
+             this.userOpttedIn = true;
+          }
+        }
+        if (!this.userOpttedIn) {
+          for (let i=0; i<this.userTabs[1].content.length; i++) {
+            if (this.user.primary_email.localeCompare(this.userTabs[1].content[i].email) === 0) {
+              this.userOpttedIn = true;
+            }
+          }
+        }
+      },
 
       /**
        * Checks if user has scrolled to bottom of card code sourced from: https://codepen.io/mednabouli/pen/EdKzzL

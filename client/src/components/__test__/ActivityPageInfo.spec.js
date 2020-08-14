@@ -452,6 +452,7 @@ describe("test if page shows the participants and organisers of an activity", ()
       numFollowers: 0,
       numOrganisers: 0,
       numParticipants: 0,
+      userOpttedIn: false,
     }),
 
     activity: () => ({
@@ -486,6 +487,12 @@ describe("test if page shows the participants and organisers of an activity", ()
     await flushPromises();
     expect(wrapper.find(".activityPageCard").exists()).toBe(true);
   });
+
+  it("shouldn't have button if user is not already opted in", async () => {
+    await flushPromises();
+    expect(wrapper.find(".optoutButton").exists()).toBe(false);
+  });
+
 
   it("should have a div for displaying the number of followers", async () => {
     await flushPromises();
