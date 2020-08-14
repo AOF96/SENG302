@@ -66,6 +66,12 @@ apiActivity.getActivityById.mockResolvedValue({
   visibility: "public",
 });
 
+apiActivity.getActivityStats.mockResolvedValue({data: {
+    numFollowers: 0,
+    numParticipants: 0,
+    numOrganisers:0,
+  }});
+
 apiActivity.getActivityUpdates.mockResolvedValue([]);
 
 apiActivity.getParticipants.mockResolvedValue({
@@ -443,6 +449,9 @@ describe("test if page shows the participants and organisers of an activity", ()
         state: null,
         county: null,
       },
+      numFollowers: 0,
+      numOrganisers: 0,
+      numParticipants: 0,
     }),
 
     activity: () => ({
@@ -467,12 +476,18 @@ describe("test if page shows the participants and organisers of an activity", ()
       actions: {
         updateUserContinuousActivities: jest.fn(),
         updateUserDurationActivities: jest.fn(),
+        getActivityStats: jest.fn(),
       },
     });
     wrapper = mount(Activity, { store, localVue, mocks, stubs, vuetify });
   });
 
   it("should have a card for displaying the list of participants and organisers", async () => {
+    await flushPromises();
+    expect(wrapper.find(".activityPageCard").exists()).toBe(true);
+  });
+
+  it("should have a div for displaying the number of followers", async () => {
     await flushPromises();
     expect(wrapper.find(".activityPageCard").exists()).toBe(true);
   });
