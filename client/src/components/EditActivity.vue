@@ -443,6 +443,30 @@
           <v-card>
             <v-card-title class="headline">Update Activity Visibility</v-card-title>
             <v-card-text>{{ visibilityUpdateMessage }}</v-card-text>
+            <v-list-item>
+              <v-checkbox
+                      v-model="groups.followers"
+                      label="Keep Followers"
+                      color="success"
+                      hide-details
+              ></v-checkbox>
+            </v-list-item>
+            <v-list-item>
+              <v-checkbox
+                      v-model="groups.participants"
+                      label="Keep Participants"
+                      color="success"
+                      hide-details
+              ></v-checkbox>
+            </v-list-item>
+            <v-list-item>
+              <v-checkbox
+                      v-model="groups.organisers"
+                      label="Kepp Organisers"
+                      color="success"
+                      hide-details
+              ></v-checkbox>
+            </v-list-item>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Cancel</v-btn>
@@ -516,7 +540,12 @@ export default {
       deleteDialog: false,
       confirmDelete: false,
       visibilityUpdateDialog: false,
-      visibilityUpdateMessage: ""
+      visibilityUpdateMessage: "",
+      groups: {
+        followers: false,
+        participants: false,
+        organisers: false
+        }
     };
   },
 
