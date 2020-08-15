@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.entity;
 
+
 import javax.persistence.*;
 
 /**
@@ -56,5 +57,15 @@ public class Result {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "Result{" +
+                "id=" + id +
+                ", value='" + value + '\'' +
+                ", achievement=" + achievement.getId() +
+                ", user=" + user.getUserId() +
+                '}';
     }
 }

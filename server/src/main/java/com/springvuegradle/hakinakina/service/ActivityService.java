@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -7,6 +8,7 @@ import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -471,5 +473,34 @@ public class ActivityService {
         achievementRepository.save(achievement);
         userRepository.save(user);
         return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+
+    /***
+     * Makes a query to the database to retrieve a result with the given ID.
+     * @param profileId the if of the user making the request.
+     * @param achievementId the id of the achievement that contains the result.
+     * @param resultId the id of the requested result.
+     * @return a 200 response with the requested result if it exists, otherwise a 404 response code.
+     */
+    public ResponseEntity retrieveOneResult(Long profileId, Long achievementId, Long resultId) {
+        ResponseEntity result;
+        if (userRepository.getUserById(profileId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "User not found");
+        } else if (achievementRepository.findById(achievementId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "Achievement not found");
+        } else {
+            Optional<Result> outcome = resultRepository.findById(resultId);
+            if (outcome.isEmpty()) {
+                result = responseHandler.formatErrorResponseString(404, "Result not found");
+            } else {
+                ResultDto dto = new ResultDto();
+                dto.setId(outcome.get().getId());
+                dto.setAchievementId(outcome.get().getAchievement().getId());
+                dto.setUserId(outcome.get().getUser().getUserId());
+                dto.setValue(outcome.get().getValue());
+                result = new ResponseEntity(dto, HttpStatus.OK);
+            }
+        }
+        return result;
     }
 }

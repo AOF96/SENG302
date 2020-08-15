@@ -235,4 +235,16 @@ public class ActivityController {
             return activityService.addResult(result, profileId, achievementId);
         }
     }
+
+    /***
+     * Handles the request to retrieve a single result for the given achievement.
+     * @param profileId the if of the user making the request.
+     * @param achievementId the id of the achievement that contains the result.
+     * @param resultId the id of the requested result.
+     * @return a 200 response with the requested result if it exists, otherwise a 404 response code.
+     */
+    @GetMapping("/profiles/{profileId}/achievements/{achievementId}/results/{resultId}")
+    public ResponseEntity getOneResult(@PathVariable Long profileId, @PathVariable Long achievementId, @PathVariable Long resultId) {
+        return activityService.retrieveOneResult(profileId, achievementId, resultId);
+    }
 }
