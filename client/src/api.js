@@ -355,10 +355,23 @@ export const apiActivity = {
   unfollowActivity: (profileId, activityId) =>
     instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
 
-  getSharedUsers: (activityId) => instance.get(`/activities/${activityId}/shared`,{
+  getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{
       params: {
-          page: 0,
-          size: 10
+          page: currentPage,
+          size: size
       }
-  })
+  }),
+
+  editUserActivityRole: (profileId, activityId, role, email) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`, {
+      "subscriber": {
+        "email": email,
+        "role": role
+      }
+  }),
+
+  optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
+
+  getActivityStats: (activityId) =>
+    instance.get(`/activities/${activityId}/stats`),
 };
