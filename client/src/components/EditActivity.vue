@@ -424,7 +424,7 @@
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn
-                      v-on:click="saveEditedActivity"
+                      v-on:click="visibilityOrSave"
                       style="margin:15px 20px;"
                       color="primary"
                       rounded
@@ -437,6 +437,19 @@
             </v-row>
           </v-card>
         </form>
+      </div>
+      <div>
+        <v-dialog v-model="visibilityUpdateDialog" persistent max-width="400">
+          <v-card>
+            <v-card-title class="headline">Update Activity Visibility</v-card-title>
+            <v-card-text>{{ visibilityUpdateMessage }}</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Cancel</v-btn>
+              <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Confirm</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </div>
@@ -499,8 +512,11 @@ export default {
       tempTitle: null,
       tempDescription: null,
       tempResultType: null,
+      tempVisibility: "null",
       deleteDialog: false,
-      confirmDelete: false
+      confirmDelete: false,
+      visibilityUpdateDialog: false,
+      visibilityUpdateMessage: ""
     };
   },
 
@@ -723,6 +739,7 @@ export default {
           this.activity_type = tempActivityData.activity_type.slice();
           this.location = tempActivityData.location;
           this.visibility = tempActivityData.visibility;
+          this.tempVisibility = tempActivityData.visibility;
 
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
@@ -919,10 +936,21 @@ export default {
       }
     },
 
+    visibilityOrSave() {
+      // Checks if the user wants to the visibility of the activity
+      if (this.visibility !== this.tempVisibility) {
+        this.visibilityUpdateDialog = true;
+        this.visibilityUpdateMessage = `You are updating the visibility of this activity from ${this.tempVisibility}
+         to ${this.visibility}. Please select what groups you would like to keep or remove.`
+      } else {
+        this.saveEditedActivity();
+      }
+    },
+
     /**
      * Checks form conditions and sends create activity request if conditions pass
      */
-    saveEditedActivity() {
+     saveEditedActivity() {
       // Combines dates and times, must be done before checking form
       this.combineDateTime();
 
