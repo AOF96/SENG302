@@ -708,6 +708,7 @@
         await apiActivity.followActivity(this.user.profile_id, this.$route.params.activityId).then(response => {
           if (response.status === 201) {
             this.userFollowing = true;
+            this.getStats();
           }
         });
       },
@@ -720,6 +721,7 @@
         await apiActivity.unfollowActivity(this.user.profile_id, this.$route.params.activityId).then(response => {
           if (response.status === 200) {
             this.userFollowing = false;
+            this.getStats();
           }
         });
       }

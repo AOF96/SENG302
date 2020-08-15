@@ -568,7 +568,7 @@ public class ActivityService {
 
     public ResponseEntity optOutOfActivity(long activityId, long userId) {
         try {
-            userActivityRoleRepository.deleteByIdActivityIdAndIdUserId(activityId, userId);
+            userActivityRoleRepository.deleteUserFromActivityRoles(activityId, userId);
             return responseHandler.formatErrorResponseString(200, "Success");
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot delete user role");

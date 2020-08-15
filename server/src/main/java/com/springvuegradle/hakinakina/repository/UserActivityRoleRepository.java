@@ -29,8 +29,10 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
      * @param activityId Id of the activity your want to look at
      * @param userId Id of an user who has the role you want to delete
      */
-    @Query(value = "DELETE FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?",  nativeQuery = true)
     void deleteByIdActivityIdAndIdUserId(Long activityId, Long userId);
+
+    @Query(value = "DELETE FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?",  nativeQuery = true)
+    void deleteUserFromActivityRoles(Long activityId, Long userId);
 
     void deleteByActivity(Activity activity);
 }
