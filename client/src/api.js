@@ -351,6 +351,8 @@ export const apiActivity = {
       }
   }),
 
+    optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
+
   getActivityStats: (activityId) =>
     instance.get(`/activities/${activityId}/stats`),
 };

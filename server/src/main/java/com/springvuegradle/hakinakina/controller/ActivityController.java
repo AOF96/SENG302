@@ -310,4 +310,16 @@ public class ActivityController {
             return activityService.getStats(activityId);
         }
     }
+
+    @DeleteMapping("/activities/{activityId}/roles/{userEmail}")
+    public ResponseEntity optOutOfActivity(@PathVariable("activityId") long activityId, @PathVariable("userEmail") String email,
+                                           @CookieValue(value = "s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponseString(401, "Invalid session");
+        } else {
+            long userId = userRepository.getIdByAnyEmail(email);
+            return activityService.optOutOfActivity(activityId, userId);
+        }
+    }
 }

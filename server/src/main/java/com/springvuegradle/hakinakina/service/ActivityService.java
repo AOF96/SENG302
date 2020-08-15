@@ -565,4 +565,14 @@ public class ActivityService {
             return responseHandler.formatErrorResponseString(500, "An error occurred");
         }
     }
+
+    public ResponseEntity optOutOfActivity(long activityId, long userId) {
+        try {
+            userActivityRoleRepository.deleteByIdActivityIdAndIdUserId(activityId, userId);
+            return responseHandler.formatErrorResponseString(200, "Success");
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete user role");
+            return responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+    }
 }

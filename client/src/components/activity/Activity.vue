@@ -67,7 +67,7 @@
                           id="optoutButton"
                           height="45px" color="#f06a6a"
                           outlined rounded style="margin-right: 20px"
-                          v-on:click="userOpttedIn = false"
+                          v-on:click="optOut()"
                   >Opt-out
                   </v-btn>
                 </div>
@@ -448,6 +448,17 @@
     methods: {
       // removed 'getActivityUpdates','getParticipants' and 'getOrganisers' for frontend test as they are not used
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities']),
+
+      optOut() {
+        apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email).then(response => {
+          if (response.status === 200) {
+            this.userOpttedIn = false;
+            this.getOrganisers();
+            this.getParticipants();
+          }
+        }
+      );
+      },
 
       checkUserHasOptedIn() {
         let i;

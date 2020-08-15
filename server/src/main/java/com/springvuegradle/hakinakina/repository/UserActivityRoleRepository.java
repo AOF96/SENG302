@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.ActivityRole;
 import com.springvuegradle.hakinakina.entity.UserActivityKey;
 import com.springvuegradle.hakinakina.entity.UserActivityRole;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
@@ -28,6 +29,7 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
      * @param activityId Id of the activity your want to look at
      * @param userId Id of an user who has the role you want to delete
      */
+    @Query(value = "DELETE FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?",  nativeQuery = true)
     void deleteByIdActivityIdAndIdUserId(Long activityId, Long userId);
 
     void deleteByActivity(Activity activity);
