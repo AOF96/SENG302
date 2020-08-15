@@ -300,5 +300,14 @@ export const apiActivity = {
   addResult: (profileId, achievementId, resultValue) =>
       instance.post(`/profiles/${profileId}/achievements/${achievementId}/results`, {
         value: resultValue,
-      })
+      }),
+  /**
+   * Sends a get request to retrieve one result
+   * @param profileId Id of profile
+   * @param achievementId Id of achievement
+   * @param resultId Id of result
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  getOneResult: (profileId, achievementId, resultId) =>
+      instance.get(`/profiles/${profileId}/achievements/${achievementId}/results/${resultId}`),
 };

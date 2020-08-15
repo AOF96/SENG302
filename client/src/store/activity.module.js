@@ -93,6 +93,17 @@ const actions = {
      */
     async addResult(data, {'profileId': profileId, 'achievementId': achievementId, 'value': value}) {
         return await apiActivity.addResult(profileId, achievementId, value);
+    },
+    /**
+     * Calls the api to send a get request to retrieve one result
+     * @param data
+     * @param profileId Id of profile
+     * @param achievementId Id of achievement
+     * @param resultId Id of result
+     * @returns {Promise<AxiosResponse<T>>}
+     */
+    async getOneResult(data, {'profileId': profileId, 'achievementId': achievementId, 'resultId': resultId}) {
+        return await apiActivity.getOneResult(profileId, achievementId, resultId);
     }
 };
 
