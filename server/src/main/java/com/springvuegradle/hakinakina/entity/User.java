@@ -202,7 +202,7 @@ public class User {
     }
 
     public void followActivity(Activity activity) {
-        activities.add(activity);
+        activitiesShared.add(activity);
     }
 
     @JsonIgnore
@@ -211,7 +211,7 @@ public class User {
     }
 
     public void unfollowActivity(Activity activity) {
-        activities.remove(activity);
+        activitiesShared.remove(activity);
     }
 
     public Set<PassportCountry> getPassportCountries() {
@@ -411,6 +411,14 @@ public class User {
 
     public void addActivitiesShared(Activity activity) {
         this.activitiesShared.add(activity);
+    }
+
+    public void setActivitiesShared(Set<Activity> activitiesShared) {
+        this.activitiesShared = activitiesShared;
+    }
+
+    public Set<Activity> getActivitiesShared() {
+        return activitiesShared;
     }
 
     @Override

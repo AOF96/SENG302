@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -54,5 +55,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "SELECT * FROM User_Activities_Shared  WHERE activity_id = ? AND author_user_id = ?", nativeQuery = true)
     List<Activity> getSharedActivitiesForAuthorOfType(Long activityId, Long userId);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM User_Activities", nativeQuery = true)
+    void removeAllUserActivities();
 //    SearchUserDto organizers = (SearchUserDto)
 }

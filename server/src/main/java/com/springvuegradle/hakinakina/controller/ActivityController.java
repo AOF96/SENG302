@@ -309,7 +309,7 @@ public class ActivityController {
     /**
      * Handles requests to see the visibility, whether a user is allowed to see an activity.
      *
-     * @param activityId the activity id.
+     * @param activityId the activity id.  :)
      * @param profileId the user id.
      * @return a response entity that contains a page object filled with shared users
      */
