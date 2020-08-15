@@ -86,15 +86,14 @@ const actions = {
     /**
      * Calls the api to send a request to add a result
      * @param data
-     * @param profileId
-     * @param achievementId
-     * @param value
+     * @param profileId Id of profile
+     * @param achievementId Id of achievement to add result to
+     * @param value value of result
      * @returns {Promise<AxiosResponse<T>>}
      */
     async addResult(data, {'profileId': profileId, 'achievementId': achievementId, 'value': value}) {
         return await apiActivity.addResult(profileId, achievementId, value);
     }
-
 };
 
 export default {
