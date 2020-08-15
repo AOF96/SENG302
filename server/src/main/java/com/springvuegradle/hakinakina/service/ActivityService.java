@@ -26,6 +26,7 @@ public class ActivityService {
     public SessionRepository sessionRepository;
     public ActivityChangeRepository activityChangeRepository;
     public AchievementRepository achievementRepository;
+    public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public ActivityService(UserRepository userRepository,
@@ -34,7 +35,8 @@ public class ActivityService {
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
                            AchievementRepository achievementRepository,
-                           ActivityChangeRepository activityChangeRepository) {
+                           ActivityChangeRepository activityChangeRepository,
+                           ResultRepository resultRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
@@ -42,6 +44,7 @@ public class ActivityService {
         this.sessionRepository = sessionRepository;
         this.achievementRepository = achievementRepository;
         this.activityChangeRepository = activityChangeRepository;
+        this.resultRepository = resultRepository;
     }
 
     /**
@@ -450,5 +453,23 @@ public class ActivityService {
             result = responseHandler.formatErrorResponseString(500, "An error occurred");
         }
         return result;
+    }
+
+    /**
+     * Adds a new result to the repository
+     * @param result Result to add
+     * @param profileId Id of user setting result
+     * @param achievementId Id of achievement to add to
+     * @return ResponseEntity containing result of the operation
+     */
+    public ResponseEntity<String> addResult(Result result, Long profileId, Long achievementId) {
+        Achievement achievement = achievementRepository.findAchievementById(achievementId);
+        User user = userRepository.findById(profileId).get();
+        resultRepository.save(result);
+        achievement.addResult(result);
+        user.addResult(result);
+        achievementRepository.save(achievement);
+        userRepository.save(user);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 }

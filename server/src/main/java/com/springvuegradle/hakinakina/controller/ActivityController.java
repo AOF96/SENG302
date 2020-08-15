@@ -24,6 +24,7 @@ public class ActivityController {
     public SessionRepository sessionRepository;
     public ActivityRepository activityRepository;
     private ActivityService activityService;
+    private AchievementRepository achievementRepository;
 
     /**
      * Contructs an Activity Controller, passing in the repositories and service so that they can be accessed.
@@ -36,12 +37,13 @@ public class ActivityController {
      */
     public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
                               SessionRepository sessionRepository, ActivityService activityService,
-                              ActivityRepository activityRepository) {
+                              ActivityRepository activityRepository, AchievementRepository achievementRepository) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.achievementRepository = achievementRepository;
     }
 
     /**
@@ -208,5 +210,29 @@ public class ActivityController {
     public ResponseEntity<String> getIfFollowing(@PathVariable Long profileId, @PathVariable Long activityId,
                                                  @CookieValue(value = "s_id") String sessionToken) {
         return activityService.checkFollowing(profileId, activityId, sessionToken);
+    }
+
+    /**
+     * Handles request to add a new result
+     * @param result Result to add
+     * @param profileId Id of profile to add to
+     * @param achievementId Id of achievement to add to
+     * @param sessionToken Session of user sending the request
+     * @return ResponseEntity of result of the operation
+     */
+    @PostMapping("/profiles/{profileId}/achievements/{achievementId}/results")
+    public ResponseEntity<String> addResult(@Valid @RequestBody Result result,
+                                            @PathVariable("profileId") long profileId,
+                                            @PathVariable("achievementId") long achievementId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        if (achievementRepository.findAchievementById(achievementId) == null) {
+            return new ResponseEntity<>("Achievement not found", HttpStatus.NOT_FOUND);
+        } else if (!userRepository.findById(profileId).isPresent()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } else if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+            return new ResponseEntity<>("Session invalid", HttpStatus.UNAUTHORIZED);
+        } else {
+            return activityService.addResult(result, profileId, achievementId);
+        }
     }
 }
