@@ -83,6 +83,17 @@ const actions = {
     async deleteActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId }) {
         return await apiActivity.deleteActivity(userId, activityId, achievementId);
     },
+    /**
+     * Calls the api to send a request to add a result
+     * @param data
+     * @param profileId
+     * @param achievementId
+     * @param value
+     * @returns {Promise<AxiosResponse<T>>}
+     */
+    async addResult(data, {'profileId': profileId, 'achievementId': achievementId, 'value': value}) {
+        return await apiActivity.addResult(profileId, achievementId, value);
+    }
 
 };
 

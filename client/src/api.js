@@ -286,5 +286,16 @@ export const apiActivity = {
     instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
 
   unfollowActivity: (profileId, activityId) =>
-    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`)
+    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+  /**
+   * Sends a request to add a result
+   * @param profileId
+   * @param achievementId
+   * @param resultValue
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  addResult: (profileId, achievementId, resultValue) =>
+      instance.post(`/profiles/${profileId}/achievements/${achievementId}/results`, {
+        value: resultValue,
+      })
 };
