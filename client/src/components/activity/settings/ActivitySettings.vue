@@ -523,16 +523,14 @@ export default {
      * */
 
     addNewAchievement(title, description, type) {
-      this.cancelAddAchievement();
       if (title === null || title.trim() === "") {
         this.displayError("Please enter a title.");
+      } else if (this.type === null || type.trim() === "") {
+        this.displayError("Please enter an achievement type.");
       } else {
         this.achievements.push({'name': title, 'description': description, 'resultType': type});
-        this.achieveDesc= "";
-        this.achieveTitle = "";
-        this.achieveType = "";
+        this.cancelAddAchievement();
       }
-
     },
 
     /**
