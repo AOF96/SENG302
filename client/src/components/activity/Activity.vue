@@ -3,25 +3,25 @@
     <div class="profileBanner">
     </div>
     <div class="activityWrap">
-      <v-container fluid grid-list-md fill-height fill-width>
-        <v-layout row wrap width="600px">
+      <v-container fill-height fill-width fluid grid-list-md>
+        <v-layout row width="600px" wrap>
           <v-flex>
-            <v-card class="activityContainer" :loading="loadingActivity">
-              <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
-              <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
-              <div id="activityPageVisibility" class="activityLocationLabel">
+            <v-card :loading="loadingActivity" class="activityContainer">
+              <h3 class="activityTitle" id="activityPageTitle"> {{ activity_name }} </h3>
+              <div class="activityDescriptionLabel" id="activityPageDescription">{{ description }}</div>
+              <div class="activityLocationLabel" id="activityPageVisibility">
                 {{ "Visibility: " + visibility.replace(/\b\w/g, l => l.toUpperCase()) }}
               </div>
-              <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
-              <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true">
+              <div class="activityLocationLabel" id="activityPageLocation">{{ location }}</div>
+              <div class="activityStartLabel" id="activityPageStartDate" v-if="continuous === false && loaded === true">
                 <h3>
                   Start date: {{ start_date }}</h3></div>
-              <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3>
+              <div class="activityEndLabel" id="activityPageEndDate" v-if="continuous === false && loaded === true"><h3>
                 End
                 date: {{ end_date }}</h3></div>
               <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
                 Activity Type:
-                <span v-for="a in activity_types" :key="a.type_id">
+                <span :key="a.type_id" v-for="a in activity_types">
                 <span v-if="activity_types.indexOf(a) !== activity_types.length - 1">
                         {{a.name}},
                 </span>
@@ -30,33 +30,35 @@
                 </span>
             </span>
               </div>
-              <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
+              <div class="activityAuthorLabel" id="activityAuthor" v-if="loaded === true">
                 <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
               </div>
               <div class="activityPageBottomButtons">
                 <router-link v-bind:to="'/profile/'+authorId">
                   <button
-                      class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+                    class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
                     Back to Profile
                   </button>
                 </router-link>
-                <router-link v-if="authorId===user.profile_id || user.permission_level > 0"
-                             v-bind:to="'/activity_editing/' + activityId">
+                <router-link v-bind:to="'/activity_editing/' + activityId"
+                             v-if="authorId===user.profile_id || user.permission_level > 0">
                   <button
-                      class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-                      type="button"
+                    class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                    type="button"
                   >Edit Activity
                   </button>
                 </router-link>
-                <button v-if="authorId===user.profile_id || user.permission_level > 0"
-                        class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-                        type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+                <button
+                  class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+                  id="activityPageInfoDeleteButton"
+                  type="button" v-if="authorId===user.profile_id || user.permission_level > 0"
+                  v-on:click="deleteActivity()">Delete Activity
                 </button>
                 <div v-if="!userFollowing">
-                  <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
+                  <v-btn color="#1cca92" large outlined rounded v-on:click="followCurrentActivity()">Follow</v-btn>
                 </div>
                 <div v-else>
-                  <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
+                  <v-btn color="#f06a6a" large outlined rounded v-on:click="unFollowCurrentActivity()">Un follow</v-btn>
                 </div>
               </div>
             </v-card>
@@ -69,12 +71,12 @@
                   <v-card class="activityPageCard">
                     <h2>Participants / Organisers</h2>
                     <v-tabs
-                        v-model="tab"
-                        fixed-tabs
+                      fixed-tabs
+                      v-model="tab"
                     >
                       <v-tab
-                          v-for="item in userTabs"
-                          :key="item.tab"
+                        :key="item.tab"
+                        v-for="item in userTabs"
                       >
                         {{ item.tab }}
                       </v-tab>
@@ -82,11 +84,11 @@
 
                     <v-tabs-items v-model="tab">
                       <v-tab-item
-                          v-for="item in userTabs"
-                          :key="item.tab"
+                        :key="item.tab"
+                        v-for="item in userTabs"
                       >
                         <v-card flat>
-                          <v-list-item two-line v-for="user in item.content" :key="user.email" link @click.stop="">
+                          <v-list-item :key="user.email" @click.stop="" link two-line v-for="user in item.content">
                             <v-list-item-content>
                               <v-list-item-title v-if="user.middlename != null">
                                 {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -97,16 +99,16 @@
                               <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                             </v-list-item-content>
                             <v-menu
-                                transition="slide-y-transition"
-                                bottom
-                                right
-                                :close-on-click="false"
+                              :close-on-click="false"
+                              bottom
+                              right
+                              transition="slide-y-transition"
                             >
                               <template v-slot:activator="{ on, attrs }">
                                 <v-btn
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    icon
+                                  icon
+                                  v-bind="attrs"
+                                  v-on="on"
                                 >
                                   <v-icon>mdi-dots-vertical</v-icon>
                                 </v-btn>
@@ -123,26 +125,26 @@
                     </v-tabs-items>
 
                     <v-btn
-                        class="activityPageShowMoreButton"
-                        height="40px" color="#1cca92"
-                        outlined rounded
-                        @click.stop="showMoreDialog = true"
+                      @click.stop="showMoreDialog = true"
+                      class="activityPageShowMoreButton" color="#1cca92"
+                      height="40px" outlined
+                      rounded
                     >Show More
                     </v-btn>
                   </v-card>
                 </v-flex>
 
                 <v-dialog
-                    v-model="showMoreDialog"
-                    max-width="450"
+                  max-width="450"
+                  v-model="showMoreDialog"
                 >
                   <v-tabs
-                      v-model="tab"
-                      fixed-tabs
+                    fixed-tabs
+                    v-model="tab"
                   >
                     <v-tab
-                        v-for="item in userTabs"
-                        :key="item.tab"
+                      :key="item.tab"
+                      v-for="item in userTabs"
                     >
                       {{ item.tab }}
                     </v-tab>
@@ -150,14 +152,14 @@
 
                   <v-tabs-items v-model="tab">
                     <v-tab-item
-                        v-for="item in userTabs"
-                        :key="item.tab"
+                      :key="item.tab"
+                      v-for="item in userTabs"
                     >
                       <div style="overflow-y: scroll; height: 500px"
                       >
                         <v-card flat
                         >
-                          <v-list-item two-line v-for="user in item.content" :key="user.email" link>
+                          <v-list-item :key="user.email" link two-line v-for="user in item.content">
                             <v-list-item-content>
                               <v-list-item-title v-if="user.middlename != null">
                                 {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -196,16 +198,16 @@
                 <v-flex>
                   <v-card class="activityPageCard" style="min-height:0;">
                     <h2 style="padding-bottom:10px;">Latest Changes</h2>
-                    <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
+                    <v-timeline :key="i" clipped dense v-for="(update, i) in activityChanges.data">
                       <v-timeline-item
-                          icon-color="grey lighten-2"
-                          small
+                        icon-color="grey lighten-2"
+                        small
                       >
                         <v-row justify="space-between">
                           <v-col>
                             <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
-                            <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
-                                style="font-size:16px;color:rgba(0,0,0,0.85);">
+                            <h2 :key="j" style="font-size:16px;color:rgba(0,0,0,0.85);"
+                                v-for="(updateText, j) in update.textContext.split('*').slice(1)">
                               <li>{{updateText}}</li>
                             </h2>
                             <!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
@@ -221,16 +223,17 @@
             <v-flex>
               <v-layout row wrap>
                 <v-flex>
-                  <v-card v-if="visibility === 'restricted'" class="activityPageCard">
+                  <v-card class="activityPageCard" v-if="visibility === 'restricted'">
                     <h2>Shared Users</h2>
                     <form class="activityPageCardForm">
-                      <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
-                                    outlined rounded clearable hide-details dense></v-text-field>
-                      <v-select class="activityPageCardSelect mr-10" v-model="newRole"
-                                :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
-                                rounded></v-select>
-                      <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
-                             outlined rounded>Add
+                      <v-text-field class="activityPageCardTextField mb-5" clearable dense
+                                    hide-details label="Add email(s)" outlined rounded
+                                    v-model="emailsToAdd"></v-text-field>
+                      <v-select :items="roleOptions" class="activityPageCardSelect mr-10"
+                                dense hide-details label="Role" name="roleValue" outlined required rounded
+                                v-model="newRole"></v-select>
+                      <v-btn class="activityPageCardButton" color="#1cca92" height="40px" outlined
+                             rounded v-on:click="parseEmails()">Add
                       </v-btn>
                       <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage
                         }}
@@ -239,7 +242,7 @@
                       </h6>
                       <div class="activityPageCardDiv">
                         <v-card flat>
-                          <v-list-item two-line v-for="user in sharedUsers" :key="user[0]">
+                          <v-list-item :key="user[0]" two-line v-for="user in sharedUsers">
                             <v-list-item-content>
                               <v-list-item-title v-if="user[2] != null">
                                 {{ user[1] + " " + user[2] + " " + user[3]}}
@@ -269,6 +272,7 @@
   import dateUtil from "@/util/date";
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../api";
+  import store from '@/store/index.js';
 
   export default {
     name: "ActivityPageInfo",
@@ -322,31 +326,46 @@
       ...mapGetters(['activity']),
       ...mapGetters(['user']),
     },
+
+    beforeRouteEnter: (to, from, next) => {
+      const activityId = to.params.activityId;
+      const userId = store.state.user.user.profile_id;
+      store.dispatch('checkUserActivityVisibility', {profileId: userId, activityId})
+        .then(resp => {
+          if (resp.data.visibility === 'allowed') {
+            next()
+          } else {
+            next({name: "profilePage", params: {profileId: userId}})
+          }
+        })
+        .catch(() => {
+          next({name: "profilePage", params: {profileId: userId}})
+        })
+    },
+
     mounted: function () {
       if (!this.user.isLogin) {
         this.$router.push('/login');
       }
-    // beforeRouteEnter(to, from, next) {
-    //     const activityId = to.params.activityId;
-    //     apiActivity.getActivity(activityId).then(resp => {
-    //         console.log(resp.data)
-    //     })
-    //     console.log(from)
-    //     console.log(next)
     },
+
     created: function () {
       this.loadActivity();
       this.getParticipants();
       this.getOrganisers();
       return this.checkFollowing();
-    },
+    }
+    ,
     methods: {
-      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates', 'getParticipants', 'getOrganisers']),
+      ...
+        mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
+          'getParticipants', 'getOrganisers', 'checkUserActivityVisibility']),
 
       /**
        * Parses the list of emails the user entered by splitting them and removing any extra spaces. Checks each one is
        * valid by calling validateEmail, and displays an error message stating which email is invalid if any.
-       */ async parseEmails() {
+       */
+      async parseEmails() {
         this.displayInvalidInputError = false;
         const separators = [' ', ';'];
         let emails = this.emailsToAdd.split(new RegExp(separators.join('|'), 'g'));
@@ -380,7 +399,8 @@
             })
 
         }
-      },
+      }
+      ,
 
       /**
        * Checks if an email address is valid. Adapted from
@@ -388,7 +408,8 @@
        */
       validateEmail(mail) {
         return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(mail);
-      },
+      }
+      ,
 
       /**
        * Formats the datetime string to the form Aug 4 2020
@@ -398,7 +419,8 @@
         let dateString = newDate.toDateString();
         dateString = dateString.slice(4);
         return dateString;
-      },
+      }
+      ,
       /**
        * Retrieves participants for the activity
        */
@@ -410,7 +432,8 @@
         } catch (err) {
           console.error(err);
         }
-      },
+      }
+      ,
       /**
        * Retrieves organisers for the activity
        */
@@ -422,7 +445,8 @@
         } catch (err) {
           console.error(err)
         }
-      },
+      }
+      ,
       /**
        * Deletes the current activity
        */
@@ -437,7 +461,8 @@
         } catch (err) {
           console.error(err)
         }
-      },
+      }
+      ,
       /**
        * Requests the activity and loads its information
        * @returns {Promise<void>}
@@ -473,7 +498,8 @@
             this.loadingActivity = false;
           }
         }
-      },
+      }
+      ,
       /**
        * Checks if user is following current activity and sets userFollowing which is used to determine if
        * the follow button should be for following or unfollowing
@@ -489,7 +515,8 @@
               this.userFollowing = false;
             }
           });
-      },
+      }
+      ,
       /**
        * Makes api call to allow a user to follow current activity after follow button is pressed
        * @returns {Promise<void>}
@@ -500,7 +527,8 @@
             this.userFollowing = true;
           }
         });
-      },
+      }
+      ,
 
       /**
        * Makes api call to allow a user to un follow current activity after un follow button is pressed

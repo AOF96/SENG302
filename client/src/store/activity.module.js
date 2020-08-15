@@ -82,6 +82,9 @@ const actions = {
     },
     async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
         return await apiActivity.getParticipants(activityId, page, size);
+    },
+    async checkUserActivityVisibility(data, {'profileId': profileId, 'activityId': activityId }) {
+        return await apiActivity.checkUserActivityVisibility(profileId, activityId);
     }
 };
 

@@ -341,5 +341,8 @@ export const apiActivity = {
           page: 0,
           size: 10
       }
-  })
+  }),
+
+  checkUserActivityVisibility: (profileId, activityId) =>
+    instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
 };
