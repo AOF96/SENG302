@@ -326,16 +326,13 @@
       if (!this.user.isLogin) {
         this.$router.push('/login');
       }
-    beforeRouteEnter(to, from, next) {
-        const activityId = to.params.activityId;
-        apiActivity.getActivity(activityId).then(resp => {
-            console.log(resp.data)
-        })
-        console.log(from)
-        console.log(next)
-    },
-    components: {
-      ActivityPageInfo
+    // beforeRouteEnter(to, from, next) {
+    //     const activityId = to.params.activityId;
+    //     apiActivity.getActivity(activityId).then(resp => {
+    //         console.log(resp.data)
+    //     })
+    //     console.log(from)
+    //     console.log(next)
     },
     created: function () {
       this.loadActivity();
@@ -411,7 +408,7 @@
           this.participants = response.data.content;
           this.userTabs[0].content = this.participants;
         } catch (err) {
-          console.error(err)
+          console.error(err);
         }
       },
       /**
