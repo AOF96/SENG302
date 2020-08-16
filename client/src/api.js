@@ -312,10 +312,9 @@ export const apiActivity = {
       instance.get(`/profiles/${profileId}/achievements/${achievementId}/results/${resultId}`),
   /**
    * Sends a get request to retrieve all results
-   * @param activityId
    * @param achievementId
    * @returns {Promise<AxiosResponse<any>>}
    */
-  getResults: (activityId, achievementId) =>
-    instance.get(`/activities/${activityId}/achievements/${achievementId}/results`),
+  getResults: (achievementId) =>
+    instance.get(`/activities/achievements/${achievementId}/results`),
 };

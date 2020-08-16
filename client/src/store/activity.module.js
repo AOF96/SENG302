@@ -108,12 +108,11 @@ const actions = {
     /**
      * Calls the api to send a get request to retrieve all achievements
      * @param data
-     * @param activityId Id of the activity
      * @param achievementId Id of the achievement
      * @returns {Promise<AxiosResponse<any>>}
      */
-    async getResults(data, {'activityId': activityId, 'achievementId': achievementId}) {
-        return await apiActivity.getResults(activityId, achievementId);
+    async getResults(data, {'achievementId': achievementId}) {
+        return await apiActivity.getResults(achievementId);
     }
 };
 

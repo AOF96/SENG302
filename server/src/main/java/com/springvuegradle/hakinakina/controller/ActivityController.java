@@ -247,4 +247,14 @@ public class ActivityController {
     public ResponseEntity getOneResult(@PathVariable Long profileId, @PathVariable Long achievementId, @PathVariable Long resultId) {
         return activityService.retrieveOneResult(profileId, achievementId, resultId);
     }
+
+    /***
+     * Handles the request to retrieve a single result for the given achievement.
+     * @param achievementId the id of the achievement that contains the result.
+     * @return a 200 response with the all result if any exists, otherwise a 404 response code.
+     */
+    @GetMapping("/activities/achievements/{achievementId}/results")
+    public ResponseEntity getSAllResult(@PathVariable Long achievementId) {
+        return activityService.retrieveAllResult(achievementId);
+    }
 }
