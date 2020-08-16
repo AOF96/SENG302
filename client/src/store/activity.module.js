@@ -87,12 +87,23 @@ const actions = {
         return await apiActivity.addActivityAchievement(userId, activityId, name, description, result_type);
     },
     async editActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId, 'name': name, 'description': description, 'result_type': result_type }) {
-        return await apiActivity.addActivityAchievement(userId, activityId, achievementId, name, description, result_type);
+        return await apiActivity.editActivityAchievement(userId, activityId, achievementId, name, description, result_type);
     },
     async deleteActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId }) {
-        return await apiActivity.deleteActivity(userId, activityId, achievementId);
+        return await apiActivity.deleteActivityAchievement(userId, activityId, achievementId);
     },
-
+    async getActivityAchievement(data, {'userId': userId, 'activityId': activityId}) {
+        return await apiActivity.getActivityAchievement(userId, activityId);
+    },
+    async getParticipants(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
+    },
+    async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
+    },
+    async editUserActivityRole(data, {'userId': userId ,'activityId': activityId, 'role': role, 'email': email}) {
+        return await apiActivity.editUserActivityRole(userId, activityId, role, email);
+    }
 };
 
 export default {

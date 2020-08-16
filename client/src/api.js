@@ -272,23 +272,25 @@ export const apiActivity = {
       }
   }),
 
-
-  addActivityAchievement: (profileId, activityId, name, description, result_type) =>
+  addActivityAchievement: (profileId, activityId, name, description, resultType) =>
       instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`,{
       name: name,
       description: description,
-      result_type: result_type
+      resultType: resultType
   }),
 
-  editActivityAchievement: (profileId, activityId, achievementId, name, description, result_type) =>
+  editActivityAchievement: (profileId, activityId, achievementId, name, description, resultType) =>
       instance.put(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`, {
       name: name,
       description: description,
-      result_type: result_type
+      resultType: resultType
   }),
 
   deleteActivityAchievement: (profileId, activityId, achievementId) =>
     instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
+
+  getActivityAchievement: (profileId, activityId) =>
+    instance.get(`/profiles/${profileId}/activities/${activityId}/achievements`),
 
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
@@ -353,10 +355,23 @@ export const apiActivity = {
   unfollowActivity: (profileId, activityId) =>
     instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
 
-  getSharedUsers: (activityId) => instance.get(`/activities/${activityId}/shared`,{
+  getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{
       params: {
-          page: 0,
-          size: 10
+          page: currentPage,
+          size: size
       }
-  })
+  }),
+
+  editUserActivityRole: (profileId, activityId, role, email) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`, {
+      "subscriber": {
+        "email": email,
+        "role": role
+      }
+  }),
+
+  optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
+
+  getActivityStats: (activityId) =>
+    instance.get(`/activities/${activityId}/stats`),
 };

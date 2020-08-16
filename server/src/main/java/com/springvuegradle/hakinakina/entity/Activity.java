@@ -10,9 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Activities entity class.
@@ -66,6 +64,7 @@ public class Activity {
 //    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
 //    private Set<User> users = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<Achievement> achievements = new HashSet<>();
@@ -280,6 +279,10 @@ public class Activity {
         } else {
             ArrayList<ActivityType> otherActivities = new ArrayList<>(other.getActivityTypes());
             ArrayList<ActivityType> thisActivities = new ArrayList<>(this.getActivityTypes());
+
+            otherActivities.sort(Comparator.comparing(ActivityType::getName));
+            thisActivities.sort(Comparator.comparing(ActivityType::getName));
+
             for (int i = 0; i < otherActivities.size(); i++) {
                 if (!(otherActivities.get(i).getName().equals(thisActivities.get(i).getName()))) {
                     sameActivityTypes = false;

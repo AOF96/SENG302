@@ -47,4 +47,13 @@ public class ActivityType {
     public String toString() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof ActivityType) {
+            ActivityType otherActivityType = (ActivityType) other;
+            return this.name.equals(otherActivityType.getName());
+        }
+        return false;
+    }
 }

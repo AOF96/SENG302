@@ -2,6 +2,8 @@ package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import net.minidev.json.annotate.JsonIgnore;
+
 import javax.persistence.*;
 
 /**

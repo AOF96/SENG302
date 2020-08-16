@@ -34,6 +34,11 @@ backButton {
     color: #5c5c5c;
     font-weight: 400;
 }
+
+#addAchievementBox .v-text-field__details{
+    display:none !important;
+}
+
 .editActivityInput {
     width: calc(100% - 40px);
     display:block;
@@ -50,6 +55,16 @@ backButton {
 }
 .editActivityTextarea {
     width: calc(100% - 40px);
+    display: block;
+    margin: 5px auto 20px;
+    height: 100px;
+    resize: none;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
+}
+
+.editAchievementTextarea {
+    width: calc(100%);
     display: block;
     margin: 5px auto 20px;
     height: 100px;

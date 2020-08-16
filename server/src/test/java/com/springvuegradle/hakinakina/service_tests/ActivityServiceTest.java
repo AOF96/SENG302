@@ -4,6 +4,7 @@ import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
+import com.springvuegradle.hakinakina.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,22 +15,29 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.Cookie;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ActivityServiceTest {
     @InjectMocks
     private ActivityService service;
+
+    @InjectMocks
+    private UserService userService;
 
     @Mock
     private ActivityRepository activityRepository;
@@ -413,5 +421,105 @@ public class ActivityServiceTest {
         when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(1L);
         ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
         assertEquals("{\"message\":\"Cannot add the activity author as a shared User.\"}", response.getBody());
+    }
+
+    @Test
+    public void getStats1FollowerTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(1);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(0);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 1 + ",\n" +
+                "  \"participants\": " + 0 + ",\n" +
+                "  \"organisers\": " + 0 + "\n" +
+                "}", response.getBody());
+    }
+
+    @Test
+    public void getStats1OrganiserTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(1);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 0 + ",\n" +
+                "  \"participants\": " + 0 + ",\n" +
+                "  \"organisers\": " + 1 + "\n" +
+                "}", response.getBody());
+    }
+
+    @Test
+    public void getStats1ParticipantTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(1);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(0);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 0 + ",\n" +
+                "  \"participants\": " + 1 + ",\n" +
+                "  \"organisers\": " + 0 + "\n" +
+                "}", response.getBody());
+    }
+
+    @Test
+    public void getStatsNoValuesTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(1);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(0);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 1 + ",\n" +
+                "  \"participants\": " + 0 + ",\n" +
+                "  \"organisers\": " + 0 + "\n" +
+                "}", response.getBody());
     }
 }

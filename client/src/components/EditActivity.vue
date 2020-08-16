@@ -184,10 +184,231 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat>
-                  <!-- Your stuff here -->
+                  <v-card-text style="text-align: center;color:grey;" v-if="achievements.length == 0">No Achievements Yet</v-card-text>
+                  <v-row justify="center" align="center" no-gutters v-for="(achievement, index) in achievements" v-bind:key="index">
+                    <v-card style="width:100%;padding:20px;margin:15px;border-radius: 15px;">
+                      <v-card-text style="padding: 0;word-break: break-word;">{{achievement.resultType}}</v-card-text>
+                      <v-card-title style="padding: 0;word-break: break-word;">{{achievement.name}}</v-card-title>
+                      <v-card-text style="padding: 0;word-break: break-word;">{{achievement.description}}</v-card-text>
+                      <v-spacer></v-spacer>
+                      <v-menu bottom left>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                                  text
+                                  rounded
+                                  style="position:absolute;width:36px;min-width:36px;right:15px;top:15px;"
+                                  v-bind="attrs"
+                                  v-on="on"
+                          >
+                            <v-icon>mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
+
+                        <v-list>
+                          <v-list-item @click= "setTempAchievement(achievement)">
+                            <v-list-item-title>Edit</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="openDeletePopUp(achievement)">
+                            <v-list-item-title>
+                              Remove
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-card>
+                  </v-row>
+                  <v-dialog width="33%" v-model="editDialog">
+                    <v-card>
+                      <v-card-title class="headline">Edit Achievement</v-card-title>
+
+                      <v-row  justify="center" no-gutters>
+                        <v-card style="padding:10px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
+                          <v-row no-gutters style="margin-top: 10px;">
+                            <v-col>
+                              <v-text-field
+                                      v-model="tempTitle" label="Achievement Title"
+                                      placeholder="Achievement title" rounded outlined dense
+                                      required style="margin-right: 5px" color="white"
+                                      id="achievementTitle"
+                                      dark/>
+                            </v-col>
+                            <v-col cols="5.5">
+                              <v-select
+                                      id = "achieveType"
+                                      style="margin-left: 5px;"
+                                      v-model="tempResultType"
+                                      :items="options"
+                                      label="Select achievement type"
+                                      rounded
+                                      outlined
+                                      dense
+                                      color="white"
+                                      dark
+                              />
+                            </v-col>
+                          </v-row>
+                          <v-row no-gutters>
+                            <v-col>
+                              <v-textarea
+                                      label="Achievement Description"
+                                      maxlength="255"
+                                      type="text"
+                                      v-model="tempDescription"
+                                      rows="2"
+                                      row-height="30"
+                                      outlined
+                                      id="achievementDescription"
+                                      densecolor="white"
+                                      dark
+                                      placeholder="Achievement Description">
+                              </v-textarea>
+                            </v-col>
+                          </v-row>
+                          <v-row no-gutters>
+                            <v-spacer></v-spacer>
+                            <v-btn color="#f06a6a"
+                                   style="background-color:white;margin-left: 10px"
+                                   rounded
+                                   text
+                                   right
+                                   dark
+                                   :disabled="overlayLoader"  @click="editDialog = false">Cancel</v-btn>
+                            <v-btn color="#3bb18b"
+                                   style="background-color:white;margin-left: 10px"
+                                   rounded
+                                   text
+                                   right
+                                   dark
+                                   :disabled="overlayLoader" @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save</v-btn>
+                          </v-row>
+                        </v-card>
+                      </v-row>
+                    </v-card>
+                  </v-dialog>
+                  <v-divider></v-divider>
+                  <v-row justify="center" no-gutters v-if="addAchievement" id="addAchievementBox">
+                    <v-card style="padding:10px;padding-top:15px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
+                      <form>
+                        <v-row no-gutters style="margin-bottom:10px;">
+                          <v-col>
+                            <v-text-field
+                                    style="margin-right: 5px;"
+                                    v-model="achieveTitle"
+                                    label="Achievement Title"
+                                    rounded
+                                    required
+                                    outlined
+                                    dense
+                                    color="white"
+                                    dark
+                            ></v-text-field>
+                          </v-col>
+                          <v-col>
+                            <v-select
+                                    style="margin-left: 5px;"
+                                    id = "achieveType"
+                                    v-model="achieveType"
+                                    :items="options"
+                                    label="Select achievement type"
+                                    rounded
+                                    outlined
+                                    dense
+                                    color="white"
+                                    dark
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters style="margin-bottom:5px;">
+                          <v-col>
+                            <v-textarea
+                                    v-model="achieveDesc"
+                                    rounded
+                                    label="Achievement Description"
+                                    placeholder="Enter Achievement Description"
+                                    rows="2"
+                                    row-height="30"
+                                    outlined
+                                    dense
+                                    color="white"
+                                    dark
+                            ></v-textarea>
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                                  v-on:click="cancelAddAchievement()"
+                                  color="white"
+                                  rounded
+                                  text
+                                  right
+                                  dark
+                                  :disabled="overlayLoader"
+                          >
+                            Cancel
+                          </v-btn>
+                          <v-btn
+                                  v-on:click="addNewAchievement(achieveTitle, achieveDesc, achieveType)"
+                                  color="#3bb18b"
+                                  style="background-color:white;margin-left: 10px"
+                                  rounded
+                                  text
+                                  right
+                                  dark
+                                  :disabled="overlayLoader"
+                          >
+                            Add
+                          </v-btn>
+                        </v-row>
+                      </form>
+                    </v-card>
+                  </v-row>
+                  <div class="text-center" style="padding-bottom:15px;" v-if="!addAchievement">
+                    <v-btn style="margin-top:25px;" class="mx-2" fab dark outlined color="primary" v-on:click="addAchievement = true">
+                      <v-icon dark>mdi-plus</v-icon>
+                    </v-btn>
+                    <v-card-text style="font-weight: 400;color:#1dca92;font-size: 16px">Add Achievement</v-card-text>
+                  </div>
                 </v-card>
               </v-tab-item>
             </v-tabs-items>
+
+            <v-row justify="center">
+              <v-dialog
+                  v-model="deleteDialog"
+                  max-width="290"
+              >
+                <v-card>
+                  <v-card-title class="headline">Delete achievement</v-card-title>
+
+                  <v-card-text>
+                    Are you sure you want to delete this achievement?
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="deleteDialog = false"
+                    >
+                      Disagree
+                    </v-btn>
+
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="deleteAchievement(tempAchievement)"
+                    >
+                      Agree
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-row>
+
+
             <v-divider></v-divider>
             <v-row no-gutters>
               <v-btn
@@ -203,7 +424,7 @@
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn
-                      v-on:click="saveEditedActivity"
+                      v-on:click="visibilityOrSave"
                       style="margin:15px 20px;"
                       color="primary"
                       rounded
@@ -216,6 +437,43 @@
             </v-row>
           </v-card>
         </form>
+      </div>
+      <div>
+        <v-dialog v-model="visibilityUpdateDialog" persistent max-width="400">
+          <v-card>
+            <v-card-title class="headline">Update Activity Visibility</v-card-title>
+            <v-card-text>{{ visibilityUpdateMessage }}</v-card-text>
+            <v-list-item>
+              <v-checkbox
+                      v-model="groups.followers"
+                      label="Keep Followers"
+                      color="success"
+                      hide-details
+              ></v-checkbox>
+            </v-list-item>
+            <v-list-item>
+              <v-checkbox
+                      v-model="groups.participants"
+                      label="Keep Participants"
+                      color="success"
+                      hide-details
+              ></v-checkbox>
+            </v-list-item>
+            <v-list-item>
+              <v-checkbox
+                      v-model="groups.organisers"
+                      label="Kepp Organisers"
+                      color="success"
+                      hide-details
+              ></v-checkbox>
+            </v-list-item>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Cancel</v-btn>
+              <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Confirm</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </div>
@@ -265,7 +523,29 @@ export default {
       snackbarText: "",
       overlayLoader: false,
       pageLoading: true,
-      activityTypesLoading: true
+      activityTypesLoading: true,
+      activityAchievements: [],
+      addAchievement: false,
+      options: ["Word", "Quantity", "Time", "Money"],
+      achieveTitle: "",
+      achieveDesc: "",
+      achieveType: "",
+      achievements: [],
+      editDialog: false,
+      tempAchievement: null,
+      tempTitle: null,
+      tempDescription: null,
+      tempResultType: null,
+      tempVisibility: "null",
+      deleteDialog: false,
+      confirmDelete: false,
+      visibilityUpdateDialog: false,
+      visibilityUpdateMessage: "",
+      groups: {
+        followers: false,
+        participants: false,
+        organisers: false
+        }
     };
   },
 
@@ -315,7 +595,92 @@ export default {
   },
   methods: {
     ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
-      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl"]),
+      "addActivityAchievement", "editActivityAchievement", "deleteActivityAchievement", "getDataFromUrl",
+       "getActivityAchievement"]),
+
+    cancelAddAchievement() {
+      this.addAchievement = false;
+      this.achieveTitle = "";
+      this.achieveDesc = "";
+      this.achieveType = "";
+    },
+    /**
+     * The function adds the achievement to the list of achievements.
+     * */
+
+    addNewAchievement(title, description, type) {
+      if (title === null || title.trim() === "") {
+        this.displayError("Please enter a title.");
+      } else if (this.type === null || type.trim() === "") {
+        this.displayError("Please enter an achievement type.");
+      } else {
+        apiActivity.addActivityAchievement(this.user.profile_id, this.$route.params.activityId, title, description, type.toUpperCase());
+        this.achievements.push({'name': title, 'description': description, 'resultType': type});
+        this.cancelAddAchievement();
+      }
+    },
+
+    /**
+     * The function over writes the saved achievement if the user decides to edit it before saving the activity.
+     * */
+    saveEditedAchievement(title, description, type){
+      this.editDialog = false;
+      if (title === null || title.trim() === "") {
+        this.displayError("Please enter a title.");
+      }
+      else {
+        this.achievements[this.index] = {'name': title, 'description': description, 'resultType': type};
+        apiActivity.editActivityAchievement(this.user.profile_id, this.$route.params.activityId, this.tempAchievement.id, title, description, type.toUpperCase());
+        apiActivity.getActivityAchievement(this.user.profile_id, this.$route.params.activityId);
+        for (let i = 0; i < this.achievements.length; i++) {
+          this.achievements[i].resultType = this.achievements[i].resultType.toLowerCase();
+          this.achievements[i].resultType = this.achievements[i].resultType[0].toUpperCase() + this.achievements[i].resultType.slice(1);
+        }
+        this.loadActivity()
+        this.tempAchievement = null;
+        this.index = null;
+        this.tempTitle = null;
+        this.tempDescription = null;
+        this.tempResultType = null;
+      }
+
+    },
+
+    /**
+     * Used to manage the delete pop up box when deleting an achievement
+     * */
+    openDeletePopUp(achievement){
+      this.deleteDialog = true;
+      this.tempAchievement = achievement;
+    },
+    /**
+     * The function deletes a specific achievements from the list of achievement.
+     * */
+    deleteAchievement(achievement){
+      apiActivity.deleteActivityAchievement(this.user.profile_id, this.$route.params.activityId, achievement.id);
+      this.loadActivity();
+      this.tempAchievement = null;
+      this.deleteDialog = false;
+    },
+
+    /**
+     * Assigns the temp achievement to the selected achievement form the list of achievements
+     **/
+    setTempAchievement(achievement){
+
+      // check if the response from the endpoint has any results entered against this achievement
+      //if any results are entered then open a pop up to let the user know they cannot delete /edit this anymore
+      // make the call to the function that opens that pop up
+      //else let the user edit the activity
+      console.log(this.achievements);
+      this.index = this.achievements.indexOf(achievement);
+      this.tempAchievement = this.achievements[this.index];
+      this.tempTitle = achievement.name;
+      this.tempDescription = achievement.description;
+      this.tempResultType = achievement.resultType.toLowerCase();
+      this.tempResultType = this.tempResultType[0].toUpperCase() + this.tempResultType.slice(1);
+      this.editDialog=true
+    },
 
     /**
      * This method filters the the data received from the api and only suggests cities to the user.
@@ -349,9 +714,18 @@ export default {
      */
     setLocation() {
       this.location = "";
-      this.city = document.getElementById('inputCity').value,
-      this.state = document.getElementById('inputState').value,
-      this.country = document.getElementById('inputCountry').value
+      this.city ="";
+      this.state="";
+      this.country="";
+      if (document.getElementById('inputCity') !== null) {
+        this.city = document.getElementById('inputCity').value;
+      }
+      if (document.getElementById('inputState') !== null) {
+        this.state = document.getElementById('inputState').value;
+      }
+      if (document.getElementById('inputCountry') !== null) {
+        this.country = document.getElementById('inputCountry').value;
+      }
       this.location = this.city + ',' + this.state + ',' + this.country
     },
 
@@ -371,6 +745,12 @@ export default {
         if (tempActivityData == "Invalid permissions") {
           this.$router.push("/profile");
         } else {
+          let tempAchievements = await apiActivity.getActivityAchievement(tempActivityData.author.profile_id,this.$route.params.activityId);
+          this.achievements = tempAchievements.data;
+          for (let i = 0; i < this.achievements.length; i++) {
+            this.achievements[i].resultType = this.achievements[i].resultType.toLowerCase();
+            this.achievements[i].resultType = this.achievements[i].resultType[0].toUpperCase() + this.achievements[i].resultType.slice(1);
+          }
           this.pageLoading = false;
           this.activity_name = tempActivityData.activity_name;
           this.continuous = tempActivityData.continuous;
@@ -388,6 +768,7 @@ export default {
           this.activity_type = tempActivityData.activity_type.slice();
           this.location = tempActivityData.location;
           this.visibility = tempActivityData.visibility;
+          this.tempVisibility = tempActivityData.visibility;
 
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
@@ -584,10 +965,21 @@ export default {
       }
     },
 
+    visibilityOrSave() {
+      // Checks if the user wants to the visibility of the activity
+      if (this.visibility !== this.tempVisibility) {
+        this.visibilityUpdateDialog = true;
+        this.visibilityUpdateMessage = `You are updating the visibility of this activity from ${this.tempVisibility}
+         to ${this.visibility}. Please select what groups you would like to keep or remove.`
+      } else {
+        this.saveEditedActivity();
+      }
+    },
+
     /**
      * Checks form conditions and sends create activity request if conditions pass
      */
-    saveEditedActivity() {
+     saveEditedActivity() {
       // Combines dates and times, must be done before checking form
       this.combineDateTime();
 

@@ -391,7 +391,7 @@
     color: #1cca92;
 }
 
-.activityPageShowMoreButton{
+#activityPageShowMoreButton{
     color: #1cca92;
     position: absolute !important;
     bottom: 20px;
@@ -399,6 +399,12 @@
     min-width: 0 !important;
     width: 50%;
     left: 50%;
+}
+
+#activityPageMoreResultsButton{
+    color: #1cca92;
+    left: 50%;
+    right: -50%;
 }
 
 .activityPageCardForm {

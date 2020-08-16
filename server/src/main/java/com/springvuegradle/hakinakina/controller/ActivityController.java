@@ -206,22 +206,30 @@ public class ActivityController {
     }
 
     /**
+     * Handles requests to get list of  achievements for an activiy
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @GetMapping("/profiles/{profileId}/activities/{activityId}/achievements")
+    public ResponseEntity getAchievement(@PathVariable("profileId") long profileId,
+                                            @PathVariable("activityId") long activityId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.getAchievement(profileId, activityId,sessionToken);
+    }
+
+    /**
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
      * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
     @GetMapping("/activities/{activityId}/shared")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId,
+    public Page<SearchUserDto> getSharedUsers(@PathVariable("activityId") long activityId,
                                          @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        Activity activity = activityRepository.getOne(activityId);
-        if (activity != null) {
-            // TODO: Check to see if activity is private
+        return activityService.getSharedUsers(activityId, page, size);
 
-            return activityService.getSharedUsers(activityId, page, size);
-        } else {
-            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
-        }
     }
 
     /**
@@ -316,5 +324,33 @@ public class ActivityController {
     @GetMapping("/activities/{activityId}/changes/")
     public ResponseEntity getChanges(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
         return activityService.getActivityChanges(activityId, page, size);
+    }
+
+    /**
+     * Controller endpoint that receives requests to get the number of followers, participants and organisers for an activity
+     * @param activityId the id of the activity for which the numbers are being requested
+     * @param sessionToken session token of the user making the request
+     * @return response entity with json containing the counts and status of the request
+     */
+    @GetMapping("/activities/{activityId}/stats")
+    public ResponseEntity getActivityStats(@PathVariable("activityId") long activityId, @CookieValue(value = "s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponseString(401, "Invalid Session");
+        } else {
+            return activityService.getStats(activityId);
+        }
+    }
+
+    @DeleteMapping("/activities/{activityId}/roles/{userEmail}")
+    public ResponseEntity optOutOfActivity(@PathVariable("activityId") long activityId, @PathVariable("userEmail") String email,
+                                           @CookieValue(value = "s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponseString(401, "Invalid session");
+        } else {
+            long userId = userRepository.getIdByAnyEmail(email);
+            return activityService.optOutOfActivity(activityId, userId);
+        }
     }
 }
