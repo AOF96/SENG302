@@ -322,4 +322,31 @@ public class ActivityController {
             return activityService.optOutOfActivity(activityId, userId);
         }
     }
+
+    /**
+     * Gets the ActivityRole of a User who is related to an Activity. Otherwise, sends a value of "none".
+     * @param activityId The ID of the Activity
+     * @param userId The ID of the User
+     * @return A ResponseEntity stating the result
+     */
+    @GetMapping("activities/{activityId}/role/{userId}")
+    public ResponseEntity getRoleOfUserForActivity(@PathVariable("activityId") long activityId,
+                                                   @PathVariable("userId") long userId) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        User user = userRepository.getOne(userId);
+        Map<String, String> result = new HashMap<>();
+        if (activity == null) {
+            return new ResponseEntity<String>("Activity not found", HttpStatus.NOT_FOUND);
+        }
+        if (user == null) {
+            return new ResponseEntity<String>("User not found", HttpStatus.NOT_FOUND);
+        }
+        ActivityRole role = activityService.getRoleOfUserForActivity(activity, user);
+        if (role != null) {
+            result.put("role", activityService.getRoleOfUserForActivity(activity, user).getRole());
+        } else {
+            result.put("role", "none");
+        }
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
 }

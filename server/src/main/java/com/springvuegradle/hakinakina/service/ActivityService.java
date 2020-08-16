@@ -575,4 +575,19 @@ public class ActivityService {
             return responseHandler.formatErrorResponseString(500, "An error occurred");
         }
     }
+
+    /**
+     * Gets the ActivityRole of a User who is related to an Activity. Otherwise, returns null.
+     * @param activity The Activity
+     * @param user The User
+     * @return An ActivityRole of the User for that Activity, or null if the User is not related to that Activity.
+     */
+    public ActivityRole getRoleOfUserForActivity(Activity activity, User user) {
+        Optional<UserActivityRole> userActivityRole = userActivityRoleRepository.getByActivityAndUser(activity, user);
+        if (userActivityRole.isEmpty()) {
+            return null;
+        } else {
+            return userActivityRole.get().getActivityRole();
+        }
+    }
 }
