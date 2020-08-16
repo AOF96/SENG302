@@ -285,6 +285,15 @@ export const apiActivity = {
       resultType: resultType
   }),
 
+  updateVisibilityAndGroups: (profileId, activityId, visibility, keepFollowers, keepParticipants, keepOrganisers) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/visibilityGroups`, {
+      visibility: visibility,
+      followers: keepFollowers,
+      participants: keepParticipants,
+      organisers: keepOrganisers,
+    }
+  ),
+
 
  deleteActivityAchievement: (profileId, activityId, achievementId) =>
     instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
