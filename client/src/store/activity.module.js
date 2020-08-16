@@ -95,12 +95,6 @@ const actions = {
     async getActivityAchievement(data, {'userId': userId, 'activityId': activityId}) {
         return await apiActivity.getActivityAchievement(userId, activityId);
     },
-    async getParticipants(data, {'activityId': activityId, 'page': page, 'size': size}) {
-        return await apiActivity.getParticipants(activityId, page, size);
-    },
-    async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
-        return await apiActivity.getParticipants(activityId, page, size);
-    },
     async editUserActivityRole(data, {'userId': userId ,'activityId': activityId, 'role': role, 'email': email}) {
         return await apiActivity.editUserActivityRole(userId, activityId, role, email);
     }

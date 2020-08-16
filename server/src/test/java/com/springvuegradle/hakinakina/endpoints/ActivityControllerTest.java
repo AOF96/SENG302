@@ -142,7 +142,7 @@ public class ActivityControllerTest {
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(activityStr)));
+                .andExpect(content().string(containsString("\"id\":1")));
     }
 
     @Test
