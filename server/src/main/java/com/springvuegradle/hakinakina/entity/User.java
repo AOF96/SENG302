@@ -99,7 +99,6 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "type_id") }
     )
-    @JsonManagedReference
     private Set<ActivityType> activityTypes = new HashSet<>();
 
     @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
@@ -112,6 +111,7 @@ public class User {
     private Set<Activity> activities = new HashSet<>();
 
     @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    @JsonIgnore
     private Set<Activity> activitiesShared = new HashSet<>();
 
     @OneToMany

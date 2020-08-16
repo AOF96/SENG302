@@ -1,4 +1,4 @@
-# Passeage App
+# Passage App
 
 Welcome to Passage, the number one companion for any traveller. 
 

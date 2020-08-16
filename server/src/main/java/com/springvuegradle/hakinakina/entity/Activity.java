@@ -44,7 +44,6 @@ public class Activity {
             joinColumns = {@JoinColumn(name = "activity_id")},
             inverseJoinColumns = {@JoinColumn(name = "type_id")}
     )
-    @JsonManagedReference
     private Set<ActivityType> activityTypes = new HashSet<>();
 
     @JsonProperty("continuous")
