@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.springvuegradle.hakinakina.serialize.*;
@@ -113,6 +114,7 @@ public class User {
     private Set<Activity> activities = new HashSet<>();
 
     @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    @JsonIgnore
     private Set<Activity> activitiesShared = new HashSet<>();
 
     @OneToMany
@@ -214,7 +216,7 @@ public class User {
     }
 
     public void followActivity(Activity activity) {
-        activities.add(activity);
+        activitiesShared.add(activity);
     }
 
     @JsonIgnore
@@ -223,7 +225,7 @@ public class User {
     }
 
     public void unfollowActivity(Activity activity) {
-        activities.remove(activity);
+        activitiesShared.remove(activity);
     }
 
     public Set<PassportCountry> getPassportCountries() {
@@ -419,6 +421,18 @@ public class User {
 
     public void setActivities(Set<Activity> participateActivities) {
         this.activities = participateActivities;
+    }
+
+    public void addActivitiesShared(Activity activity) {
+        this.activitiesShared.add(activity);
+    }
+
+    public void setActivitiesShared(Set<Activity> activitiesShared) {
+        this.activitiesShared = activitiesShared;
+    }
+
+    public Set<Activity> getActivitiesShared() {
+        return activitiesShared;
     }
 
     @Override

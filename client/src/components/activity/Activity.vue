@@ -7,22 +7,22 @@
         <v-layout row wrap width="600px">
           <v-snackbar outlined color="error" :timeout="timeout" :value="snackbar" top>{{ errorMessage }}</v-snackbar>
           <v-flex>
-            <v-card class="activityContainer" :loading="loadingActivity">
-              <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
-              <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
-              <div id="activityPageVisibility" class="activityLocationLabel">
+            <v-card :loading="loadingActivity" class="activityContainer">
+              <h3 class="activityTitle" id="activityPageTitle"> {{ activity_name }} </h3>
+              <div class="activityDescriptionLabel" id="activityPageDescription">{{ description }}</div>
+              <div class="activityLocationLabel" id="activityPageVisibility">
                 {{ "Visibility: " + visibility.replace(/\b\w/g, l => l.toUpperCase()) }}
               </div>
-              <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
-              <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true">
+              <div class="activityLocationLabel" id="activityPageLocation">{{ location }}</div>
+              <div class="activityStartLabel" id="activityPageStartDate" v-if="continuous === false && loaded === true">
                 <h3>
                   Start date: {{ start_date }}</h3></div>
-              <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3>
+              <div class="activityEndLabel" id="activityPageEndDate" v-if="continuous === false && loaded === true"><h3>
                 End
                 date: {{ end_date }}</h3></div>
               <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
                 Activity Type:
-                <span v-for="a in activity_types" :key="a.type_id">
+                <span :key="a.type_id" v-for="a in activity_types">
                 <span v-if="activity_types.indexOf(a) !== activity_types.length - 1">
                         {{a.name}},
                 </span>
@@ -40,27 +40,29 @@
               <div class="activityPageBottomButtons">
                 <router-link v-bind:to="'/profile/'+authorId">
                   <button
-                          class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+                    class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
                     Back to Profile
                   </button>
                 </router-link>
-                <router-link v-if="authorId===user.profile_id || user.permission_level > 0"
-                             v-bind:to="'/activity_editing/' + activityId">
+                <router-link v-bind:to="'/activity_editing/' + activityId"
+                             v-if="authorId===user.profile_id || user.permission_level > 0">
                   <button
-                          class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-                          type="button"
+                    class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                    type="button"
                   >Edit Activity
                   </button>
                 </router-link>
-                <button v-if="authorId===user.profile_id || user.permission_level > 0"
-                        class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-                        type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
+                <button
+                  class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+                  id="activityPageInfoDeleteButton"
+                  type="button" v-if="authorId===user.profile_id || user.permission_level > 0"
+                  v-on:click="deleteActivity()">Delete Activity
                 </button>
                 <div v-if="!userFollowing">
-                  <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
+                  <v-btn color="#1cca92" large outlined rounded v-on:click="followCurrentActivity()">Follow</v-btn>
                 </div>
                 <div v-else>
-                  <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
+                  <v-btn color="#f06a6a" large outlined rounded v-on:click="unFollowCurrentActivity()">Un follow</v-btn>
                 </div>
                 <div v-if="userOpttedIn">
                   <v-btn
@@ -159,7 +161,7 @@
                             outlined rounded
                             @click.stop="showMoreDialog = true"
                     >Show More
-                      </v-btn>
+                    </v-btn>
                   </v-card>
                 </v-flex>
 
@@ -279,16 +281,16 @@
                 <v-flex>
                   <v-card class="activityPageCard" style="min-height:0;">
                     <h2 style="padding-bottom:10px;">Latest Changes</h2>
-                    <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
+                    <v-timeline :key="i" clipped dense v-for="(update, i) in activityChanges.data">
                       <v-timeline-item
-                              icon-color="grey lighten-2"
-                              small
+                        icon-color="grey lighten-2"
+                        small
                       >
                         <v-row justify="space-between">
                           <v-col>
                             <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
-                            <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
-                                style="font-size:16px;color:rgba(0,0,0,0.85);">
+                            <h2 :key="j" style="font-size:16px;color:rgba(0,0,0,0.85);"
+                                v-for="(updateText, j) in update.textContext.split('*').slice(1)">
                               <li>{{updateText}}</li>
                             </h2>
                             <!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
@@ -304,16 +306,17 @@
             <v-flex>
               <v-layout row wrap>
                 <v-flex>
-                  <v-card v-if="visibility === 'restricted'" class="activityPageCard">
+                  <v-card class="activityPageCard" v-if="visibility === 'restricted'">
                     <h2>Shared Users</h2>
                     <form class="activityPageCardForm">
-                      <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
-                                    outlined rounded clearable hide-details dense></v-text-field>
-                      <v-select class="activityPageCardSelect mr-10" v-model="newRole"
-                                :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
-                                rounded></v-select>
-                      <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
-                             outlined rounded>Add
+                      <v-text-field class="activityPageCardTextField mb-5" clearable dense
+                                    hide-details label="Add email(s)" outlined rounded
+                                    v-model="emailsToAdd"></v-text-field>
+                      <v-select :items="roleOptions" class="activityPageCardSelect mr-10"
+                                dense hide-details label="Role" name="roleValue" outlined required rounded
+                                v-model="newRole"></v-select>
+                      <v-btn class="activityPageCardButton" color="#1cca92" height="40px" outlined
+                             rounded v-on:click="parseEmails()">Add
                       </v-btn>
                       <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage
                         }}
@@ -322,7 +325,7 @@
                       </h6>
                       <div id="usersCard" class="activityPageCardDiv">
                         <v-card flat>
-                          <v-list-item two-line v-for="user in sharedUsers" :key="user[0]">
+                          <v-list-item :key="user[0]" two-line v-for="user in sharedUsers">
                             <v-list-item-content>
                               <v-list-item-title v-if="user.middlename != null">
                                 {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -357,6 +360,7 @@
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../api";
   import AchievementsCard from "./modules/AchievementsCard";
+  import store from '@/store/index.js';
 
   export default {
     name: "ActivityPageInfo",
@@ -427,6 +431,23 @@
       ...mapGetters(['activity']),
       ...mapGetters(['user']),
     },
+
+    beforeRouteEnter: (to, from, next) => {
+      const activityId = to.params.activityId;
+      const userId = store.state.user.user.profile_id;
+      store.dispatch('checkUserActivityVisibility', {profileId: userId, activityId})
+        .then(resp => {
+          if (resp.data.visibility === 'allowed') {
+            next()
+          } else {
+            next({name: "profilePage", params: {profileId: userId}})
+          }
+        })
+        .catch(() => {
+          next({name: "profilePage", params: {profileId: userId}})
+        })
+    },
+
     mounted: function () {
       if (!this.user.isLogin) {
         this.$router.push('/login');
@@ -455,7 +476,7 @@
     },
     methods: {
       // removed 'getActivityUpdates','getParticipants' and 'getOrganisers' for frontend test as they are not used
-      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities']),
+      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'checkUserActivityVisibility']),
 
       optOut() {
         apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email).then(response => {
@@ -565,7 +586,7 @@
           this.userTabs[0].content = response.data.content;
           this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
         } catch (err) {
-          console.error(err)
+          console.error(err);
         }
       },
       async getStats() {

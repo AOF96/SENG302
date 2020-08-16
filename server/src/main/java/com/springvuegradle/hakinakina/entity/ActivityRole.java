@@ -20,7 +20,11 @@ public enum ActivityRole {
 
     @JsonValue
     public String getRole() {
-        return role;
+        return this.toString();
     }
 
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

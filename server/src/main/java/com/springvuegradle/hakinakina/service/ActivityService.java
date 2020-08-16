@@ -1,11 +1,13 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.AchievementDto;
+import com.springvuegradle.hakinakina.exception.ActivityNotFoundException;
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
@@ -15,9 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -850,5 +850,50 @@ public class ActivityService {
              }
         }
         return result;
+    }
+    /**
+     * Handles requests to retrieve the visibility, whether a user is allowed to see an activity.
+     *
+     * @param activityId the activity id of activity user is trying to view.
+     * @param profileId the user id of user who is trying to view an activity.
+     * @return response text of user 'allowed' or 'not allowed' to see a certain activity
+     */
+    public Map<String, String> getUserActivityVisibility(long activityId, long profileId) {
+
+        // check if activity and user exist on the database
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityNotFoundException::new);
+        User user = userRepository.findById(profileId).orElseThrow(UserNotFoundException::new);
+
+        // check the visibility of the activity
+        Visibility visibility = activity.getVisibility();
+
+        // returning object
+        Map<String, String> userVisibility = new HashMap<>();
+
+        // if public everyone is allowed to view the activity
+        if (visibility == Visibility.PUBLIC) {
+            userVisibility.put("visibility","allowed");
+        }
+
+        // if private, only creator can see the activity
+        else if (visibility == Visibility.PRIVATE) {
+            if(user.getUserId().equals(activity.getAuthor().getUserId())){
+                userVisibility.put("visibility","allowed");
+            } else {
+                userVisibility.put("visibility","not allowed");
+            }
+        }
+
+        // if restricted, only specific users chosen by the creator can see it
+        // (meaning creator and user in user_activity_shared table)
+        else if (visibility == Visibility.RESTRICTED) {
+            if(user.getUserId().equals(activity.getAuthor().getUserId())){
+                userVisibility.put("visibility","allowed");
+            } else {
+                int counter = activityRepository.findUserActivityVisibility(profileId, activityId);
+                userVisibility.put("visibility", counter > 0 ? "allowed" : "not allowed");
+            }
+        }
+        return userVisibility;
     }
 }
