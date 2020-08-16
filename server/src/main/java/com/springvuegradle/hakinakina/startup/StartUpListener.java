@@ -37,31 +37,20 @@ public class StartUpListener {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         User defaultAdmin = userRepository.findByPermissionLevelEquals(2);
-        if (defaultAdmin == null) {
-            defaultAdmin = new User();
-        }
         try {
-            updatePermissionsInDatabase();
-            createDefaultAdmin(defaultAdmin);
-            updateActivityVisibility();
+            if (defaultAdmin == null) {
+                defaultAdmin = new User();
+                createDefaultAdmin(defaultAdmin);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Parses through to set users permission level if null
+     * Creates a randomly generated password for the default admin
+     * @return randomly generated password
      */
-    private void updatePermissionsInDatabase() {
-
-        for (User user : userRepository.findAll()) {
-            if (user.getPermissionLevel() == null) {
-                user.setPermissionLevel(0);
-                userRepository.save(user);
-            }
-        }
-    }
-
     private String createDefaultAdminPassword() {
         Random random = new Random();
         String password = "";
@@ -90,14 +79,5 @@ public class StartUpListener {
         System.out.println(email);
         System.out.println(password);
         userRepository.save(u);
-    }
-
-    private void updateActivityVisibility() {
-        for (Activity activity : activityRepository.findAll()) {
-            if (activity.getVisibility() == null) {
-                activity.setVisibility(Visibility.PUBLIC);
-                activityRepository.save(activity);
-            }
-        }
     }
 }

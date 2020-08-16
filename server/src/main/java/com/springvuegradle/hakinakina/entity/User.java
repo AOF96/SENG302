@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -98,6 +99,7 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "type_id") }
     )
+    @JsonManagedReference
     private Set<ActivityType> activityTypes = new HashSet<>();
 
     @ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
