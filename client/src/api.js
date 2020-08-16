@@ -166,9 +166,9 @@ export const apiUser = {
    * Request to update activity types
    */
   editUserActivityTypes: (profile_id, activities) =>
-      instance.put("/profiles/" + profile_id + "/activity-types", {
-        activities: activitiesAddDashes(activities),
-      }),
+    instance.put("/profiles/" + profile_id + "/activity-types", {
+      activities: activitiesAddDashes(activities),
+    }),
 
   /***
    * API call to promote an user with permission level 0 to admin.
@@ -176,15 +176,29 @@ export const apiUser = {
    * @returns {Promise<AxiosResponse<any>>}
    */
   promoteToAdmin: (profile_id) =>
-      instance.put("/profiles/" + profile_id + "/role", {
-        "role": "admin"
-      }),
+    instance.put("/profiles/" + profile_id + "/role", {
+      "role": "admin"
+    }),
 
   // Request to delete a user account
   deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
 
-  //
-  isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
+    /**
+     * Makes a request to update a user's role for an activity
+     * @param profileId the id of the user
+     * @param activityId the id of the activity
+     * @param email the email of the user whose role requires updating
+     * @param activityRole the user's role for the activity ie follower, participant, organiser or creator
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    editUserRoleForActivity: (profileId, activityId, email, activityRole) =>
+        instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`,
+            {
+                email: email,
+                activityRole: activityRole
+            }),
+    //
+    isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
 
   /**
    * API call to retrieve the home feed details for a user
@@ -194,79 +208,108 @@ export const apiUser = {
    * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
    */
   getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
-      {
-        params: {
-          page: page,
-          size: size
-        }
-      }),
+    {params: {
+      page: page,
+      size: size
+      }
+    }),
 };
 
 export const apiActivity = {
   addActivity: (
-      author_id,
-      name,
-      continuous,
-      start_time,
-      end_time,
-      description,
-      location,
-      activity_types
+    author_id,
+    name,
+    continuous,
+    start_time,
+    end_time,
+    description,
+    location,
+    activity_types,
+    visibility
   ) =>
-      instance.post("/profiles/" + author_id + "/activities", {
-        activity_name: name,
-        continuous: continuous,
-        start_time: start_time,
-        end_time: end_time,
-        description: description,
-        location: location,
-        activity_type: activitiesAddDashes(activity_types),
-      }),
+    instance.post("/profiles/" + author_id + "/activities", {
+      activity_name: name,
+      continuous: continuous,
+      start_time: start_time,
+      end_time: end_time,
+      description: description,
+      location: location,
+      activity_type: activitiesAddDashes(activity_types),
+      visibility: visibility
+    }),
 
   editActivity: (
-      author_id,
-      name,
-      continuous,
-      start_time,
-      end_time,
-      description,
-      location,
-      activity_types,
-      activity_id
+    author_id,
+    name,
+    continuous,
+    start_time,
+    end_time,
+    description,
+    location,
+    activity_types,
+    visibility,
+    activity_id
   ) =>
-      instance.put("/profiles/" + author_id + "/activities/" + activity_id, {
-        activity_name: name,
-        continuous: continuous,
-        start_time: start_time,
-        end_time: end_time,
-        description: description,
-        location: location,
-        activity_type: activitiesAddDashes(activity_types),
-        activity_id: activity_id,
-      }),
+    instance.put("/profiles/" + author_id + "/activities/" + activity_id, {
+      activity_name: name,
+      continuous: continuous,
+      start_time: start_time,
+      end_time: end_time,
+      description: description,
+      location: location,
+      activity_type: activitiesAddDashes(activity_types),
+      visibility: visibility,
+      activity_id: activity_id,
+    }),
 
   getActivity: (activityId) => instance.get(`/activities/${activityId}`),
 
-  addActivityAchievement: (profileId, activityId, name, description, result_type) =>
-      instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`, {
-        name: name,
-        description: description,
-        result_type: result_type
-      }),
+  getActivityUpdates: (activityId, page, size) => instance.get(`/activities/${activityId}/changes/`, {
+      params: {
+          page: page,
+          size: size
+      }
+  }),
 
-  editActivityAchievement: (profileId, activityId, achievementId, name, description, result_type) =>
+  addActivityAchievement: (profileId, activityId, name, description, resultType) =>
+      instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`,{
+      name: name,
+      description: description,
+      resultType: resultType
+  }),
+
+  editActivityAchievement: (profileId, activityId, achievementId, name, description, resultType) =>
       instance.put(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`, {
-        name: name,
-        description: description,
-        result_type: result_type
-      }),
+      name: name,
+      description: description,
+      resultType: resultType
+  }),
 
 
-  deleteActivityAchievement: (profileId, activityId, achievementId) =>
-      instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
+ deleteActivityAchievement: (profileId, activityId, achievementId) =>
+    instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
+
+  getActivityAchievement: (profileId, activityId) =>
+    instance.get(`/profiles/${profileId}/activities/${activityId}/achievements`),
 
   deleteActivity: (authorId, activityId) =>
       instance.delete(`/profiles/${authorId}/activities/${activityId}`),
+
+  getParticipants: (activityId, page, size) =>
+    instance.get(`/activities/${activityId}/participants/`, {
+      params: {
+        page: page,
+        size: size
+      }
+    }),
+
+  getOrganisers: (activityId, page, size) =>
+    instance.get(`/activities/${activityId}/organizers/`, {
+      params: {
+        page: page,
+        size: size
+      }
+    }),
 
   async getActivityById(activityId) {
     let activity = await apiActivity.getActivity(activityId).then(
@@ -283,6 +326,27 @@ export const apiActivity = {
         }
     );
     return await activity;
+  },
+
+  /***
+   * Makes a request to set the number of people that can view a restricted activity.
+   * @param emails: the emails of the users that can view the activity.
+   * @param role: the role the users have in that activity.
+   * @param profileId: the id of the creator of the activity.
+   * @param activityId: the activity.
+   * @returns a status code saying if the update was successful or was rejected for some reason.
+   */
+  async setActivityMembers(emails, role, profileId, activityId) {
+    let membersList = [];
+    for (let email of emails) {
+      let userDetails = {"email": email, "role": role};
+      membersList.push(userDetails);
+    }
+      return await instance.put(`/profiles/${profileId}/activities/${activityId}/visibility`, {
+            "visibility": "restricted",
+            "accessors": membersList
+        }
+    );
   },
 
   followActivity: (profileId, activityId) =>
@@ -317,4 +381,24 @@ export const apiActivity = {
    */
   getResults: (achievementId) =>
     instance.get(`/activities/achievements/${achievementId}/results`),
+
+    getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{
+        params: {
+            page: currentPage,
+            size: size
+        }
+    }),
+
+    editUserActivityRole: (profileId, activityId, role, email) =>
+        instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`, {
+            "subscriber": {
+                "email": email,
+                "role": role
+            }
+        }),
+
+    optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
+
+    getActivityStats: (activityId) =>
+        instance.get(`/activities/${activityId}/stats`)
 };

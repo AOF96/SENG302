@@ -1,5 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
+import net.minidev.json.annotate.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;

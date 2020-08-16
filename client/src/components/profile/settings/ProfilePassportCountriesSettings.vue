@@ -62,7 +62,11 @@
             ...mapGetters(['user'])
         },
         mounted() {
-            this.loadSearchedUser();
+            if (!this.user.isLogin) {
+                this.$router.push('/login');
+            } else {
+                this.loadSearchedUser();
+            }
         },
         methods: {
             ...mapActions(['updatePassports', "getDataFromUrl", "getUserById","editProfile"]),

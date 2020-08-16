@@ -66,7 +66,10 @@ const actions = {
         await apiActivity.addActivity(id, name, duration, startTime, endTime, description, location, activityTypes);
     },
     async getActivityById(data, id) {
-        return await apiActivity.getActivityById(id)
+        return await apiActivity.getActivityById(id);
+    },
+    async getActivityUpdates(data, {'id': id, 'page': page, 'size': size}) {
+        return await apiActivity.getActivityUpdates(id, page, size);
     },
     async editActivity(data, {'userId': userId, 'name': name, 'duration': duration, 'startTime': startTime, 'endTime': endTime, 'description': description, 'location': location, 'activityTypes': activityTypes, 'activityId': activityId}) {
         return await apiActivity.editActivity(userId, name, duration, startTime, endTime,description, location, activityTypes, activityId);
@@ -78,10 +81,22 @@ const actions = {
         return await apiActivity.addActivityAchievement(userId, activityId, name, description, result_type);
     },
     async editActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId, 'name': name, 'description': description, 'result_type': result_type }) {
-        return await apiActivity.addActivityAchievement(userId, activityId, achievementId, name, description, result_type);
+        return await apiActivity.editActivityAchievement(userId, activityId, achievementId, name, description, result_type);
     },
     async deleteActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'achievementId': achievementId }) {
-        return await apiActivity.deleteActivity(userId, activityId, achievementId);
+        return await apiActivity.deleteActivityAchievement(userId, activityId, achievementId);
+    },
+    async getActivityAchievement(data, {'userId': userId, 'activityId': activityId}) {
+        return await apiActivity.getActivityAchievement(userId, activityId);
+    },
+    async getParticipants(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
+    },
+    async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(activityId, page, size);
+    },
+    async editUserActivityRole(data, {'userId': userId ,'activityId': activityId, 'role': role, 'email': email}) {
+        return await apiActivity.editUserActivityRole(userId, activityId, role, email);
     },
     /**
      * Calls the api to send a request to add a result

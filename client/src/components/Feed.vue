@@ -37,6 +37,14 @@
             </v-card-actions>
           </v-card>
         </v-list-item>
+
+        <v-row no-gutters align="center" justify="center">
+          <v-progress-circular v-if="isLoading"
+                  indeterminate
+                  color="primary"
+          />
+          <v-card-text style="text-align: center; color: grey" v-if="isFinished">No More Results</v-card-text>
+        </v-row>
       </v-list>
     </v-col>
   </v-container>
@@ -80,18 +88,28 @@ export default {
           textContent: 'Activity activity types changed to: [Fun]',
         }
       ],
-      defaultPage: 1,
-      currentPage: 1,
+      defaultPage: 0,
+      currentPage: 0,
       defaultSize: 10,
       currentSize: 10,
+      bottom: false,
+      isLoading: false,
+      isFinished: false
     };
   },
   mounted() {
     this.checkLogin();
     this.getUsersFeed();
+    window.addEventListener('scroll', () => {
+      this.bottom = this.bottomVisible();
+    })
   },
   watch: {
-
+    bottom(bottom) {
+      if (bottom) {
+        this.getUsersFeed();
+      }
+    }
   },
   methods: {
     ...mapActions(["getUserFeed"]),
@@ -110,15 +128,32 @@ export default {
       return dateString;
     },
     getUsersFeed() {
-      this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
-      .then((response) => {
-        console.log(response.data);
-        this.activityPosts = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-    }
+      if (!this.isLoading && !this.isFinished) {
+        this.isLoading = true;
+        this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
+                .then((response) => {
+                  console.log(response.data);
+                  this.activityPosts = this.activityPosts.concat(response.data);
+                  this.isLoading = false;
+                  this.currentPage++;
+                  if (response.data.length === 0) {
+                    this.isFinished = true;
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                  this.isLoading = false;
+                })
+      }
+    },
+
+    bottomVisible() {
+      const scrollY = window.scrollY;
+      const visible = document.documentElement.clientHeight;
+      const pageHeight = document.documentElement.scrollHeight - 150;
+      const bottomOfPage = visible + scrollY >= pageHeight;
+      return bottomOfPage || pageHeight < visible
+    },
   }
 };
 </script>

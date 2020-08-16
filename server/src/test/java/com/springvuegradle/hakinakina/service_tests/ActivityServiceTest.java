@@ -1,33 +1,43 @@
 package com.springvuegradle.hakinakina.service_tests;
 
+import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
+import com.springvuegradle.hakinakina.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.Cookie;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ActivityServiceTest {
     @InjectMocks
     private ActivityService service;
+
+    @InjectMocks
+    private UserService userService;
 
     @Mock
     private ActivityRepository activityRepository;
@@ -40,6 +50,12 @@ public class ActivityServiceTest {
 
     @Mock
     private ActivityChangeRepository activityChangeRepository;
+
+    @Mock
+    private UserActivityRoleRepository userActivityRoleRepository;
+
+    @Captor
+    ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
 
     @Mock
     private AchievementRepository achievementRepository;
@@ -312,5 +328,220 @@ public class ActivityServiceTest {
 
         ResponseEntity<String> response = service.addResult(result, (long) 1, (long) 1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void updateActivityVisibilityTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.PUBLIC);
+
+        activity.setVisibility(Visibility.PRIVATE);
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals(Visibility.PUBLIC, activity.getVisibility());
+    }
+
+    @Test
+    public void updateActivityVisibilitySetSharedUsersTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "participant");
+        accessors.add(accessor1);
+        User accessor1User = new User("John", "Smith", "john@gmail.com",
+                null, Gender.MALE, 2, "Password1");
+
+        Map<String, String> accessor2 = new HashMap<>();
+        accessor2.put("email", "jane@mail.com");
+        accessor2.put("role", "organiser");
+        accessors.add(accessor2);
+        User accessor2User = new User("Jane", "Smith", "jane@gmail.com",
+                null, Gender.FEMALE, 2, "Password1");
+        dto.setAccessors(accessors);
+
+        ActivityService serviceSpy = Mockito.spy(service);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(1L);
+        when(userRepository.getOne(1L)).thenReturn(accessor1User);
+        when(userRepository.getIdByAnyEmail("jane@mail.com")).thenReturn(2L);
+        when(userRepository.getOne(2L)).thenReturn(accessor2User);
+        doNothing().when(userActivityRoleRepository).deleteByActivity(activity);
+        Mockito.doNothing().when(serviceSpy).saveRelationships(anyList());
+        //Mockito.verify(serviceSpy).saveRelationships(userActivityRoleListCaptor.capture());
+        //List<UserActivityRole> relationships = userActivityRoleListCaptor.getValue();
+
+        //service.updateActivityVisibility(1L, 1L, dto);
+        //System.out.println(relationships);
+    }
+
+    @Test
+    public void updateActivityVisibilityInvalidRoleTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "owner");
+        accessors.add(accessor1);
+        dto.setAccessors(accessors);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals("{\"message\":\"No such role as: owner\"}", response.getBody());
+    }
+
+    @Test
+    public void updateActivityVisibilityNonExistentUserIdTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "participant");
+        accessors.add(accessor1);
+        dto.setAccessors(accessors);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(null);
+        ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals("{\"message\":\"No user with email: john@mail.com\"}", response.getBody());
+    }
+
+    @Test
+    public void updateActivityVisibilityAddOwnerTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        User author = new User("John", "Smith", "john@gmail.com",
+                null, Gender.MALE, 2, "Password1");
+        author.setUserId(1L);
+        activity.setAuthor(author);
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "participant");
+        accessors.add(accessor1);
+        dto.setAccessors(accessors);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(1L);
+        ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals("{\"message\":\"Cannot add the activity author as a shared User.\"}", response.getBody());
+    }
+
+    @Test
+    public void getStats1FollowerTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(1);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(0);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 1 + ",\n" +
+                "  \"participants\": " + 0 + ",\n" +
+                "  \"organisers\": " + 0 + "\n" +
+                "}", response.getBody());
+    }
+
+    @Test
+    public void getStats1OrganiserTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(1);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 0 + ",\n" +
+                "  \"participants\": " + 0 + ",\n" +
+                "  \"organisers\": " + 1 + "\n" +
+                "}", response.getBody());
+    }
+
+    @Test
+    public void getStats1ParticipantTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(1);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(0);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 0 + ",\n" +
+                "  \"participants\": " + 1 + ",\n" +
+                "  \"organisers\": " + 0 + "\n" +
+                "}", response.getBody());
+    }
+
+    @Test
+    public void getStatsNoValuesTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        Activity newActivity = createTestActivity();
+
+        testSession.setUser(testUser);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        when(activityRepository.getNumFollowersForActivity((long) 1)).thenReturn(1);
+        when(activityRepository.getNumParticipantsForActivity((long) 1)).thenReturn(0);
+        when(activityRepository.getNumOrganisersForActivity((long) 1)).thenReturn(0);
+
+        ResponseEntity<String> response = service.getStats((long) 1);
+        assertEquals("{\n" +
+                "  \"followers\": " + 1 + ",\n" +
+                "  \"participants\": " + 0 + ",\n" +
+                "  \"organisers\": " + 0 + "\n" +
+                "}", response.getBody());
     }
 }
