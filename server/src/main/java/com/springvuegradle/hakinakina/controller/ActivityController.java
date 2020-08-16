@@ -372,17 +372,17 @@ public class ActivityController {
     public ResponseEntity getRoleOfUserForActivity(@PathVariable("activityId") long activityId,
                                                    @PathVariable("userId") long userId) {
         Activity activity = activityRepository.findActivityById(activityId);
-        User user = userRepository.getOne(userId);
+        Optional<User> user = userRepository.getUserById(userId);
         Map<String, String> result = new HashMap<>();
         if (activity == null) {
             return new ResponseEntity<String>("Activity not found", HttpStatus.NOT_FOUND);
         }
-        if (user == null) {
+        if (user .isEmpty()) {
             return new ResponseEntity<String>("User not found", HttpStatus.NOT_FOUND);
         }
-        ActivityRole role = activityService.getRoleOfUserForActivity(activity, user);
+        ActivityRole role = activityService.getRoleOfUserForActivity(activity, user.get());
         if (role != null) {
-            result.put("role", activityService.getRoleOfUserForActivity(activity, user).getRole());
+            result.put("role", role.getRole());
         } else {
             result.put("role", "none");
         }
