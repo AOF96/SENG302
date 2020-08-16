@@ -46,7 +46,6 @@
           <v-divider></v-divider>
           <v-row no-gutters justify="center" class="activityPageBottomButtons">
             <v-btn style="margin: 5px" v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit</v-btn>
-            <v-btn v-if="userOpttedIn" color="#f06a6a" outlined rounded style="margin: 5px" v-on:click="optOut()">Opt-out</v-btn>
             <v-spacer></v-spacer>
             <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary" outlined rounded>Follow</v-btn>
             <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled>Un-follow</v-btn>
@@ -74,8 +73,8 @@
               </v-btn>
             </template>
 
-            <v-list style="border-radius: 15px">
-              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none'">
+            <v-list>
+              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none' || userRole == 'organiser'">
                 <v-list-item-title>Become a Participant</v-list-item-title>
               </v-list-item>
               <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant') && authorId === user.profile_id">
@@ -417,7 +416,6 @@
         numFollowers: 0,
         numParticipants: 0,
         numOrganisers: 0,
-        userOpttedIn: false,
         userRole: "none",
         roleDisabled: true,
         roleChanging: false
@@ -475,22 +473,11 @@
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
         'getParticipants', 'getOrganisers', 'checkUserActivityVisibility']),
 
-      optOut() {
-        apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email).then(response => {
-          if (response.status === 200) {
-            this.userOpttedIn = false;
-            this.getOrganisers();
-            this.getParticipants();
-          }
-        }
-      );
-      },
-
       /**
        * Loads the role of the currently logged in user.
        */
       loadUserRole() {
-        apiActivity.getUserRole(this.$route.params.activityId, this.user.profileId)
+        apiActivity.getUserRole(this.$route.params.activityId, this.user.profile_id)
         .then((response) => {
           this.userRole = response.data.role;
           this.roleDisabled = false;
@@ -512,19 +499,31 @@
         }
         this.roleChanging = true;
         if(role == "none"){
-          apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.email)
+          apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email)
           .then(() => {
             this.showMoreDialog = false;
             this.getOrganisers();
             this.getParticipants();
             this.roleChanging = false;
+            this.userRole = role;
           }).catch((err) => {
             this.errorMessage = err;
             this.snackbar = true;
             this.roleChanging = true;
           });
         }else{
-          this.editUserActivityRole(role, this.user.email);
+          apiActivity.editUserActivityRole(this.user.profile_id, this.$route.params.activityId, role, this.user.primary_email)
+          .then(() => {
+            this.showMoreDialog = false;
+            this.getOrganisers();
+            this.getParticipants();
+            this.roleChanging = false;
+            this.userRole = role;
+          }).catch((err) => {
+            this.errorMessage = err;
+            this.snackbar = true;
+            this.roleChanging = true;
+          })
         }
       },
 
@@ -553,22 +552,6 @@
           outputString = "No Location Set"
         }
         return outputString;
-      },
-
-      checkUserHasOptedIn() {
-        let i;
-        for (i=0; i<this.userTabs[0].content.length; i++) {
-          if (this.user.primary_email.localeCompare(this.userTabs[0].content[i].email) === 0) {
-             this.userOpttedIn = true;
-          }
-        }
-        if (!this.userOpttedIn) {
-          for (let i=0; i<this.userTabs[1].content.length; i++) {
-            if (this.user.primary_email.localeCompare(this.userTabs[1].content[i].email) === 0) {
-              this.userOpttedIn = true;
-            }
-          }
-        }
       },
 
       /**
@@ -618,7 +601,8 @@
               })
             })
             .catch(error => {
-              console.log(error);
+              this.errorMessage = error;
+              this.snackbar = true;
               this.displaySharedUsersSuccessMsg = false;
               this.invalidInputErrorMessage = "Something went wrong, please check the information provided is correct.";
               this.displayInvalidInputError = true;
@@ -652,9 +636,9 @@
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
           this.userTabs[0].content = response.data.content;
           this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
-          this.checkUserHasOptedIn();
         } catch (err) {
-          console.error(err);
+          this.errorMessage = err;
+          this.snackbar = true;
         }
       },
 
@@ -674,9 +658,9 @@
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
           this.userTabs[1].content = response.data.content;
           this.userTabs[1].preview = this.userTabs[1].content.slice(0, 3);
-          this.checkUserHasOptedIn();
         } catch (err) {
-          console.error(err)
+          this.errorMessage = err;
+          this.snackbar = true;
         }
       },
       /**
@@ -709,7 +693,8 @@
             this.loadingParticipantsOrganisers = false;
           }
         } catch (err) {
-          console.log(err);
+          this.errorMessage = err;
+          this.snackbar = true;
         }
       },
       /**
@@ -727,8 +712,9 @@
               this.getParticipants();
               this.roleChanging = false;
             }).catch((err) => {
-              console.log(err);
-                this.roleChanging = false;
+                this.errorMessage = err;
+                this.snackbar = true;
+                this.roleChanging = true;
             })
           this.loadingParticipantsOrganisersDialog = false;
         }
@@ -745,7 +731,8 @@
           this.updateUserDurationActivities(response.data);
           this.$router.push("/profile/" + this.authorId);
         } catch (err) {
-          console.error(err)
+          this.errorMessage = err;
+          this.snackbar = true;
         }
       },
       /**
