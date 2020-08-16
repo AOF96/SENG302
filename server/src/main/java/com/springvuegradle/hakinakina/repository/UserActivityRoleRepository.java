@@ -1,9 +1,6 @@
 package com.springvuegradle.hakinakina.repository;
 
-import com.springvuegradle.hakinakina.entity.Activity;
-import com.springvuegradle.hakinakina.entity.ActivityRole;
-import com.springvuegradle.hakinakina.entity.UserActivityKey;
-import com.springvuegradle.hakinakina.entity.UserActivityRole;
+import com.springvuegradle.hakinakina.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -35,4 +32,6 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
     void deleteUserFromActivityRoles(Long activityId, Long userId);
 
     void deleteByActivity(Activity activity);
+
+    Optional<UserActivityRole> getByActivityAndUser(Activity activity, User user);
 }
