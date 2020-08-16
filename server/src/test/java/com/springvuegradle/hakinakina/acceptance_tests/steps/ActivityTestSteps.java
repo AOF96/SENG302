@@ -149,12 +149,11 @@ public class ActivityTestSteps {
         String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
-        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been created", HttpStatus.CREATED));;
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity(activity.getId(), HttpStatus.CREATED));;
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
                 .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("Activity has been created")))
                 .andReturn();
         System.out.println(result.getResponse().getStatus());
         System.out.println(result.getResponse().getContentAsString());

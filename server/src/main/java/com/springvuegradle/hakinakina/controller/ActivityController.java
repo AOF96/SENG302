@@ -30,6 +30,7 @@ public class ActivityController {
     public SessionRepository sessionRepository;
     public ActivityRepository activityRepository;
     private ActivityService activityService;
+    private AchievementRepository achievementRepository;
 
     private ResponseHandler responseHandler;
 
@@ -44,12 +45,13 @@ public class ActivityController {
      */
     public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
                               SessionRepository sessionRepository, ActivityService activityService,
-                              ActivityRepository activityRepository) {
+                              ActivityRepository activityRepository, AchievementRepository achievementRepository) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.achievementRepository = achievementRepository;
     }
 
     /**
@@ -209,22 +211,80 @@ public class ActivityController {
     }
 
     /**
+     * Handles requests for adding achievements to an activity
+     * @param achievement valid json containing achievement data
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+    @PostMapping("/profiles/{profileId}/activities/{activityId}/achievements")
+    public ResponseEntity addAchievement(@Valid @RequestBody Achievement achievement,
+                                         @PathVariable("profileId") long profileId,
+                                         @PathVariable("activityId") long activityId,
+                                         @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.addAchievement(achievement, profileId, activityId, sessionToken);
+    }
+
+    /**
+     * Handles requests to edit achievements
+     * @param achievement valid json containing new values for an existing achievement
+     * @param profileId id of the user performing the edit
+     * @param activityId id of the activity that the achievement being edited belongs too
+     * @param achievementId id of the achievement that is being edited
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityId}/achievements/{achievementId}")
+    public ResponseEntity editAchievement(@Valid @RequestBody Achievement achievement,
+                                          @PathVariable("profileId") long profileId,
+                                          @PathVariable("activityId") long activityId,
+                                          @PathVariable("achievementId") long achievementId,
+                                          @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.editAchievement(achievement, profileId, activityId, achievementId, sessionToken);
+    }
+
+    /**
+     * Handles requests to delete an achievement
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param achievementId id of the achievement that is to be deleted
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @DeleteMapping("/profiles/{profileId}/activities/{activityId}/achievements/{achievementId}")
+    public ResponseEntity deleteAchievement(@PathVariable("profileId") long profileId,
+                                            @PathVariable("activityId") long activityId,
+                                            @PathVariable("achievementId") long achievementId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.deleteAchievement(profileId, activityId, achievementId, sessionToken);
+    }
+
+    /**
+     * Handles requests to get list of  achievements for an activiy
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    @GetMapping("/profiles/{profileId}/activities/{activityId}/achievements")
+    public ResponseEntity getAchievement(@PathVariable("profileId") long profileId,
+                                            @PathVariable("activityId") long activityId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        return activityService.getAchievement(profileId, activityId,sessionToken);
+    }
+
+    /**
      * Handles requests for retrieving all shared users of a given activity
      *
      * @param activityId the activity id.
      * @return a response entity that informs the user if retrieving an activity was successful or not.
      */
     @GetMapping("/activities/{activityId}/shared")
-    public ResponseEntity getSharedUsers(@PathVariable("activityId") long activityId,
+    public Page<SearchUserDto> getSharedUsers(@PathVariable("activityId") long activityId,
                                          @RequestParam("page") int page, @RequestParam("size") int size, @CookieValue(value = "s_id") String sessionToken) {
-        Activity activity = activityRepository.getOne(activityId);
-        if (activity != null) {
-            // TODO: Check to see if activity is private
+        return activityService.getSharedUsers(activityId, page, size);
 
-            return activityService.getSharedUsers(activityId, page, size);
-        } else {
-            return new ResponseEntity("Activity does not exist", HttpStatus.valueOf(404));
-        }
     }
 
     /**
@@ -265,6 +325,7 @@ public class ActivityController {
         }
         return activityService.updateActivityVisibility(profileId, activityId, request);
     }
+
 
     /**
      * Returns if the given user is following the given activity
@@ -338,5 +399,79 @@ public class ActivityController {
     @GetMapping("/activities/{activityId}/changes/")
     public ResponseEntity getChanges(@PathVariable("activityId") long activityId, @RequestParam("page") int page, @RequestParam("size") int size) {
         return activityService.getActivityChanges(activityId, page, size);
+    }
+
+    /**
+     * Controller endpoint that receives requests to get the number of followers, participants and organisers for an activity
+     * @param activityId the id of the activity for which the numbers are being requested
+     * @param sessionToken session token of the user making the request
+     * @return response entity with json containing the counts and status of the request
+     */
+    @GetMapping("/activities/{activityId}/stats")
+    public ResponseEntity getActivityStats(@PathVariable("activityId") long activityId, @CookieValue(value = "s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponseString(401, "Invalid Session");
+        } else {
+            return activityService.getStats(activityId);
+        }
+    }
+
+    @DeleteMapping("/activities/{activityId}/roles/{userEmail}")
+    public ResponseEntity optOutOfActivity(@PathVariable("activityId") long activityId, @PathVariable("userEmail") String email,
+                                           @CookieValue(value = "s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return responseHandler.formatErrorResponseString(401, "Invalid session");
+        } else {
+            long userId = userRepository.getIdByAnyEmail(email);
+            return activityService.optOutOfActivity(activityId, userId);
+        }
+    }
+
+    /**
+     * Handles request to add a new result
+     * @param result Result to add
+     * @param profileId Id of profile to add to
+     * @param achievementId Id of achievement to add to
+     * @param sessionToken Session of user sending the request
+     * @return ResponseEntity of result of the operation
+     */
+    @PostMapping("/profiles/{profileId}/achievements/{achievementId}/results")
+    public ResponseEntity<String> addResult(@Valid @RequestBody Result result,
+                                            @PathVariable("profileId") long profileId,
+                                            @PathVariable("achievementId") long achievementId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        if (achievementRepository.findAchievementById(achievementId) == null) {
+            return new ResponseEntity<>("Achievement not found", HttpStatus.NOT_FOUND);
+        } else if (!userRepository.findById(profileId).isPresent()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } else if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+            return new ResponseEntity<>("Session invalid", HttpStatus.UNAUTHORIZED);
+        } else {
+            return activityService.addResult(result, profileId, achievementId);
+        }
+    }
+
+    /***
+     * Handles the request to retrieve a single result for the given achievement.
+     * @param profileId the if of the user making the request.
+     * @param achievementId the id of the achievement that contains the result.
+     * @param resultId the id of the requested result.
+     * @return a 200 response with the requested result if it exists, otherwise a 404 response code.
+     */
+    @GetMapping("/profiles/{profileId}/achievements/{achievementId}/results/{resultId}")
+    public ResponseEntity getOneResult(@PathVariable Long profileId, @PathVariable Long achievementId, @PathVariable Long resultId) {
+        return activityService.retrieveOneResult(profileId, achievementId, resultId);
+    }
+
+    /***
+     * Handles the request to retrieve a single result for the given achievement.
+     * @param achievementId the id of the achievement that contains the result.
+     * @return a 200 response with the all result if any exists, otherwise a 404 response code.
+     */
+    @GetMapping("/activities/achievements/{achievementId}/results")
+    public ResponseEntity getSAllResult(@PathVariable Long achievementId) {
+        return activityService.retrieveAllResult(achievementId);
     }
 }

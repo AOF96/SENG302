@@ -1,9 +1,11 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.AchievementDto;
 import com.springvuegradle.hakinakina.exception.ActivityNotFoundException;
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
@@ -16,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,8 @@ public class ActivityService {
     public SessionRepository sessionRepository;
     public SearchRepository searchRepository;
     public ActivityChangeRepository activityChangeRepository;
+    public AchievementRepository achievementRepository;
+    public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
     private SearchService searchService;
@@ -44,16 +47,20 @@ public class ActivityService {
                            ActivityTypeRepository activityTypeRepository,
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
+                           AchievementRepository achievementRepository,
+                           ActivityChangeRepository activityChangeRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
-                           ActivityChangeRepository activityChangeRepository,
-                           SearchService searchService) {
+                           SearchService searchService,
+                           ResultRepository resultRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
+        this.achievementRepository = achievementRepository;
         this.activityChangeRepository = activityChangeRepository;
+        this.resultRepository = resultRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
@@ -90,8 +97,8 @@ public class ActivityService {
             }
 
             //If there are no activity types listed
-            if (activity.getActivityTypes().size() == 0) {
-                return new ResponseEntity<>("Activity must have at least one activity type", HttpStatus.valueOf(400));
+            if (activity.getActivityTypes().isEmpty()) {
+                return new ResponseEntity("Activity must have at least one activity type", HttpStatus.valueOf(400));
             }
 
             for (ActivityType activityType : activity.getActivityTypes()) {
@@ -124,8 +131,7 @@ public class ActivityService {
             UserActivityKey userActivityKey = new UserActivityKey(profileId, savedActivity.getId());
             userActivityRoleRepository.save(new UserActivityRole(userActivityKey, ActivityRole.CREATOR));
 
-
-            return new ResponseEntity<>("Activity has been created", HttpStatus.valueOf(201));
+            return new ResponseEntity(activity.getId(), HttpStatus.valueOf(201));
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "cannot add activity");
             return new ResponseEntity<>("An error occurred", HttpStatus.valueOf(500));
@@ -219,6 +225,7 @@ public class ActivityService {
      */
     private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
         Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
+        System.out.println(activityChanges);
         StringBuilder description = new StringBuilder();
         for (ActivityAttribute attribute : activityChanges) {
             if (attribute == ActivityAttribute.NAME) {
@@ -236,7 +243,7 @@ public class ActivityService {
             } else if (attribute == ActivityAttribute.START_TIME) {
                 description.append("*Start time changed to ").append(newActivity.getStartTime()).append("\n");
             } else if (attribute == ActivityAttribute.VISIBILITY) {
-                description.append("*Activity Visibility was changed.");
+                description.append("*Visibility was changed.");
             }  else if (attribute == ActivityAttribute.END_TIME) {
                 description.append("*End time changed to: ").append(newActivity.getEndTime()).append("\n");
             } else if (attribute == ActivityAttribute.LOCATION) {
@@ -384,27 +391,12 @@ public class ActivityService {
      * @return 404 status if the provided activity does not exist, 400 status if pagination parameters are invalid,
      * otherwise it returns a 200 code with a list of the shared users.
      */
-    public ResponseEntity getSharedUsers(Long activityId, int page, int size) {
-        ResponseEntity result;
-        try {
-            if (page < 0 || size < 0) {
-                result = responseHandler.formatErrorResponse(400, "Invalid pagination parameters");
-            }
-            else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
-                result = responseHandler.formatErrorResponse(404, "Activity not found");
-            } else {
-                Page<Object> users = searchRepository.getSharedUsers(PageRequest.of(page, size), activityId);
-                result = new ResponseEntity(users, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Could not retrieve shared users");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-
-        return result;
+    public Page<SearchUserDto> getSharedUsers(Long activityId, int page, int size) {
+        Page<User> users = searchRepository.getSharedUsers(PageRequest.of(page, size), activityId);
+        return responseHandler.userPageToSearchResponsePage(users);
     }
 
-    /**
+    /***
      * Retrieves a list of participants from the given activity with paginated results.
      * @param activityId the id of the activity.
      * @param page the requested page to return.
@@ -422,7 +414,7 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
                 Page<User> userPage = userRepository.getParticipantsOROrganisers(PageRequest.of(page, size), activityId, ActivityRole.PARTICIPANT);
-                Page<SearchUserDto> users = searchService.userPageToSearchResponsePage(userPage);
+                Page<SearchUserDto> users = responseHandler.userPageToSearchResponsePage(userPage);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -451,7 +443,7 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
                 Page<User> userPage = userRepository.getParticipantsOROrganisers(PageRequest.of(page, size), activityId, ActivityRole.ORGANISER);
-                Page<SearchUserDto> users = searchService.userPageToSearchResponsePage(userPage);
+                Page<SearchUserDto> users = responseHandler.userPageToSearchResponsePage(userPage);
                 result = new ResponseEntity(users, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -496,6 +488,165 @@ public class ActivityService {
             result = responseHandler.formatErrorResponse(500, "An error occurred");
         }
 
+        return result;
+    }
+
+    /**
+     * Handles requests for adding achievements to an activity
+     * @param achievement valid json containing achievement data
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+    public ResponseEntity addAchievement(Achievement achievement, long profileId, long activityId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if ((profileId != session.getUser().getUserId()
+                    || activityRepository.validateAuthor(profileId, activityId) == null)
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+            } else {
+                Achievement achievementToAdd = new Achievement(achievement.getName(),
+                                                               achievement.getDescription(),
+                                                               achievement.getResultType());
+                Activity activityToUpdate = activityRepository.getOne(activityId);
+                activityToUpdate.addAchievement(achievementToAdd);
+                activityRepository.save(activityToUpdate);
+
+                result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot add achievement");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
+    /**
+     * Handles requests for retrieving achievements of an activity
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+
+    public ResponseEntity getAchievement(long profileId, long activityId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if ((profileId != session.getUser().getUserId()
+                    || activityRepository.validateAuthor(profileId, activityId) == null)
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+            } else {
+
+                List<Achievement> achievements = achievementRepository.getAchievementsByActivityId(activityId);
+                List<AchievementDto> response = new ArrayList<>();
+                for (Achievement achievement : achievements) {
+                    AchievementDto dto = new AchievementDto();
+                    dto.setId(achievement.getId());
+                    dto.setName(achievement.getName());
+                    dto.setDescription(achievement.getDescription());
+                    dto.setResultType(achievement.getResultType());
+                    response.add(dto);
+                }
+
+                result = new ResponseEntity(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot receive achievements");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
+    /**
+     * Handles requests to edit achievements
+     * @param newAchievement valid json containing new values for an existing achievement
+     * @param profileId id of the user performing the edit
+     * @param activityId id of the activity that the achievement being edited belongs too
+     * @param achievementId id of the achievement that is being edited
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    public ResponseEntity editAchievement(Achievement newAchievement, long profileId, long activityId, long achievementId, String sessionToken) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+            }
+            if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null)
+                            && session.getUser().getPermissionLevel() == 0) {
+                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+            }
+            if (newAchievement.getName() == null) {
+                return new ResponseEntity("Achievement name must be provided", HttpStatus.valueOf(400));
+            }
+            if (newAchievement.getDescription() == null) {
+                return new ResponseEntity("Achievement description must be provided", HttpStatus.valueOf(400));
+            }
+            if (newAchievement.getResultType() == null) {
+                return new ResponseEntity("Achievement result type must be provided", HttpStatus.valueOf(400));
+            }
+
+            Achievement achievement = achievementRepository.findAchievementById(achievementId);
+            if (achievement == null) {
+                return new ResponseEntity("Achievement couldn't be found", HttpStatus.valueOf(404));
+            }
+
+            achievement.setName(newAchievement.getName());
+            achievement.setDescription(newAchievement.getDescription());
+            achievement.setResultType(newAchievement.getResultType());
+
+            achievementRepository.save(achievement);
+
+            return new ResponseEntity("Achievement has been successfully updated", HttpStatus.valueOf(200));
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot edit achievement");
+            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Handles requests to delete an achievement
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param achievementId id of the achievement that is to be deleted
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    public ResponseEntity deleteAchievement(long profileId, long activityId, long achievementId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Achievement achievementToDelete = achievementRepository.findAchievementById(achievementId);
+
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+
+            } else if (achievementToDelete == null) {
+                result = responseHandler.formatErrorResponse(404, "Achievement not found");
+
+            } else if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+
+            } else {
+                Activity activity = activityRepository.getOne(activityId);
+                activity.removeAchievement(achievementToDelete);
+                achievementRepository.delete(achievementToDelete);
+                activityRepository.save(activity);
+                result = responseHandler.formatSuccessResponse(200, "Achievement successfully deleted");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete achievement");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
         return result;
     }
 
@@ -558,6 +709,116 @@ public class ActivityService {
             ErrorHandler.printProgramException(e, "Cannot check following");
             result = responseHandler.formatErrorResponseString(500, "An error occurred");
         }
+        return result;
+    }
+
+    /**
+     * Service method that processes requests to get the number of followers, participants and organisers for an activity
+     * @param activityId the id of the activity for which the numbers are being requested
+     * @return response entity with json containing the counts and status of the request
+     */
+    public ResponseEntity getStats(long activityId) {
+        try {
+            int numFollowers = activityRepository.getNumFollowersForActivity(activityId);
+            int numOrganizers = activityRepository.getNumOrganisersForActivity(activityId);
+            int numParticipants = activityRepository.getNumParticipantsForActivity(activityId);
+            String jsonToReturn = "{\n" +
+                    "  \"followers\": " + numFollowers + ",\n" +
+                    "  \"participants\": " + numParticipants + ",\n" +
+                    "  \"organisers\": " + numOrganizers + "\n" +
+                    "}";
+            return new ResponseEntity(jsonToReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot get stats");
+            return responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+    }
+
+    public ResponseEntity optOutOfActivity(long activityId, long userId) {
+        try {
+            userActivityRoleRepository.deleteUserFromActivityRoles(activityId, userId);
+            return responseHandler.formatErrorResponseString(200, "Success");
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete user role");
+            return responseHandler.formatErrorResponseString(500, "An error occurred");
+        }
+    }
+
+    /**
+     * Adds a new result to the repository
+     * @param result Result to add
+     * @param profileId Id of user setting result
+     * @param achievementId Id of achievement to add to
+     * @return ResponseEntity containing result of the operation
+     */
+    public ResponseEntity<String> addResult(Result result, Long profileId, Long achievementId) {
+        Achievement achievement = achievementRepository.findAchievementById(achievementId);
+        User user = userRepository.findById(profileId).get();
+        resultRepository.save(result);
+        achievement.addResult(result);
+        user.addResult(result);
+        achievementRepository.save(achievement);
+        userRepository.save(user);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+
+    /***
+     * Makes a query to the database to retrieve a result with the given ID.
+     * @param profileId the if of the user making the request.
+     * @param achievementId the id of the achievement that contains the result.
+     * @param resultId the id of the requested result.
+     * @return a 200 response with the requested result if it exists, otherwise a 404 response code.
+     */
+    public ResponseEntity retrieveOneResult(Long profileId, Long achievementId, Long resultId) {
+        ResponseEntity result;
+        if (userRepository.getUserById(profileId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "User not found");
+        } else if (achievementRepository.findById(achievementId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "Achievement not found");
+        } else {
+            Optional<Result> outcome = resultRepository.findById(resultId);
+            if (outcome.isEmpty()) {
+                result = responseHandler.formatErrorResponseString(404, "Result not found");
+            } else {
+                ResultDto dto = new ResultDto();
+                dto.setId(outcome.get().getId());
+                dto.setAchievementId(outcome.get().getAchievement().getId());
+                dto.setUserId(outcome.get().getUser().getUserId());
+                dto.setValue(outcome.get().getValue());
+                result = new ResponseEntity(dto, HttpStatus.OK);
+            }
+        }
+        return result;
+    }
+
+    /***
+     * Makes a query to the database to retrieve a result with the given ID.
+     * @param achievementId the id of the achievement that contains the result.
+     * @return a 200 response with the all te results result if any exists, otherwise a 404 response code.
+     */
+    public ResponseEntity retrieveAllResult(Long achievementId) {
+        ResponseEntity result;
+
+        if (achievementRepository.findById(achievementId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "Achievement not found");
+        } else {
+            List<Result> outcome = resultRepository.findAllByAchievement_Id(achievementId);
+            if (outcome.isEmpty()) {
+                result = responseHandler.formatErrorResponseString(404, "Result not found");
+            } else {
+                List<ResultDto> allResults = new ArrayList<>();
+                for (int i = 0; i < outcome.size(); i++) {
+                    ResultDto dto = new ResultDto();
+                    dto.setId(outcome.get(i).getId());
+                    dto.setAchievementId(outcome.get(i).getAchievement().getId());
+                    dto.setUserId(outcome.get(i).getUser().getUserId());
+                    dto.setValue(outcome.get(i).getValue());
+                    allResults.add(dto);
+                }
+                result = new ResponseEntity(allResults, HttpStatus.OK);
+            }
+        }
+        System.out.println(result);
         return result;
     }
     /**

@@ -1,9 +1,14 @@
 package com.springvuegradle.hakinakina.util;
 
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Class for handling server reponses to client using http codes */
 public class ResponseHandler {
@@ -81,5 +86,28 @@ public class ResponseHandler {
      */
     public ResponseEntity<String> formatErrorResponseString(int statusCode, String error) {
         return new ResponseEntity<String>(error, HttpStatus.valueOf(statusCode));
+    }
+
+    /**
+     * Helper function used in findPaginated and findPaginatedByQuery,
+     * creates SearchUserResponse object which has user email, full name and nickname details
+     * from the list of users in page object returned by the query
+     *
+     * @param users Page object that contains list of users found by the query
+     * @return Page object with list of SearchUserResponse object
+     */
+    public Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+        List<SearchUserDto> userResponses = new ArrayList<>();
+        for (User user : users) {
+            SearchUserDto searchUserDto = new SearchUserDto();
+            searchUserDto.setEmail(user.getPrimaryEmail());
+            searchUserDto.setFirstname(user.getFirstName());
+            searchUserDto.setLastname(user.getLastName());
+            searchUserDto.setMiddlename(user.getMiddleName());
+            searchUserDto.setNickname(user.getNickName());
+            searchUserDto.setActivityTypes(user.getActivityTypes());
+            userResponses.add(searchUserDto);
+        }
+        return new PageImpl<>(userResponses);
     }
 }
