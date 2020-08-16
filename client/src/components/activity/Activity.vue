@@ -3,26 +3,27 @@
     <div class="profileBanner">
     </div>
     <div class="activityWrap">
-      <v-container fluid grid-list-md fill-height fill-width>
-        <v-layout row wrap width="600px">
-          <v-snackbar outlined color="error" :timeout="timeout" :value="snackbar" top>{{ errorMessage }}</v-snackbar>
-          <v-flex>
-            <v-card class="activityContainer" :loading="loadingActivity">
-              <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
-              <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
-              <div id="activityPageVisibility" class="activityLocationLabel">
-                {{ "Visibility: " + visibility.replace(/\b\w/g, l => l.toUpperCase()) }}
-              </div>
-              <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
-              <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true">
-                <h3>
-                  Start date: {{ start_date }}</h3></div>
-              <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3>
-                End
-                date: {{ end_date }}</h3></div>
-              <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
-                Activity Type:
-                <span v-for="a in activity_types" :key="a.type_id">
+      <v-snackbar outlined color="error" :timeout="timeout" :value="snackbar" top>{{ errorMessage }}</v-snackbar>
+      <v-container fluid>
+        <v-row>
+          <v-col cols="4">
+            <v-container fluid>
+              <v-card class="activityContainer" :loading="loadingActivity">
+                <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
+                <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
+                <div id="activityPageVisibility" class="activityLocationLabel">
+                  {{ "Visibility: " + visibility.replace(/\b\w/g, l => l.toUpperCase()) }}
+                </div>
+                <div id="activityPageLocation" class="activityLocationLabel">{{ location }}</div>
+                <div id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true">
+                  <h3>
+                    Start date: {{ start_date }}</h3></div>
+                <div id="activityPageEndDate" class="activityEndLabel" v-if="continuous === false && loaded === true"><h3>
+                  End
+                  date: {{ end_date }}</h3></div>
+                <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
+                  Activity Type:
+                  <span v-for="a in activity_types" :key="a.type_id">
                 <span v-if="activity_types.indexOf(a) !== activity_types.length - 1">
                         {{a.name}},
                 </span>
@@ -30,85 +31,175 @@
                         {{a.name}}.
                 </span>
                 </span>
-              </div>
-              <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
-                <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
-              </div>
-              <div id="numberOfFollowers" class="activityAuthorLabel" v-if="loaded === true">
-                <h3> Followers: {{numFollowers}}</h3>
-              </div>
-              <div class="activityPageBottomButtons">
-                <router-link v-bind:to="'/profile/'+authorId">
-                  <button
-                          class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
-                    Back to Profile
+                </div>
+                <div id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
+                  <h3> Created by: {{activity_author_firstname + " " + activity_author_lastname }}</h3>
+                </div>
+                <div id="numberOfFollowers" class="activityAuthorLabel" v-if="loaded === true">
+                  <h3> Followers: {{numFollowers}}</h3>
+                </div>
+                <div class="activityPageBottomButtons">
+                  <router-link v-bind:to="'/profile/'+authorId">
+                    <button
+                        class="genericConfirmButton activityPageBackToProfileButton activityPageBackToProfileButtonSpacing">
+                      Back to Profile
+                    </button>
+                  </router-link>
+                  <router-link v-if="authorId===user.profile_id || user.permission_level > 0"
+                               v-bind:to="'/activity_editing/' + activityId">
+                    <button
+                        class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
+                        type="button"
+                    >Edit Activity
+                    </button>
+                  </router-link>
+                  <button v-if="authorId===user.profile_id || user.permission_level > 0"
+                          class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
+                          type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
                   </button>
-                </router-link>
-                <router-link v-if="authorId===user.profile_id || user.permission_level > 0"
-                             v-bind:to="'/activity_editing/' + activityId">
-                  <button
-                          class="genericConfirmButton activityPageEditActivityButton activityPageEditActivityButtonSpacing"
-                          type="button"
-                  >Edit Activity
-                  </button>
-                </router-link>
-                <button v-if="authorId===user.profile_id || user.permission_level > 0"
-                        class="genericDeleteButton activityPageDeleteActivityButton activityPageDeleteActivityButtonSpacing"
-                        type="button" id="activityPageInfoDeleteButton" v-on:click="deleteActivity()">Delete Activity
-                </button>
-                <div v-if="!userFollowing">
-                  <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
+                  <div v-if="!userFollowing">
+                    <v-btn v-on:click="followCurrentActivity()" color="#1cca92" outlined rounded large>Follow</v-btn>
+                  </div>
+                  <div v-else>
+                    <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
+                  </div>
+                  <div v-if="userOpttedIn">
+                    <v-btn
+                        id="optoutButton"
+                        height="45px" color="#f06a6a"
+                        outlined rounded style="margin-right: 20px"
+                        v-on:click="optOut()"
+                    >Opt-out
+                    </v-btn>
+                  </div>
                 </div>
-                <div v-else>
-                  <v-btn v-on:click="unFollowCurrentActivity()" color="#f06a6a" outlined rounded large>Un follow</v-btn>
-                </div>
-                <div v-if="userOpttedIn">
-                  <v-btn
-                          id="optoutButton"
-                          height="45px" color="#f06a6a"
-                          outlined rounded style="margin-right: 20px"
-                          v-on:click="optOut()"
-                  >Opt-out
-                  </v-btn>
-                </div>
-              </div>
-            </v-card>
-          </v-flex>
-          <v-flex>
-            <v-flex>
-              <v-layout row wrap>
-                <v-flex>
-                  <v-card class="activityPageCard">
-                    <h2>Participants / Organisers</h2>
-                    <v-tabs
-                            v-model="previewTabs"
-                            fixed-tabs
-                            id="previewParticipantsOrganisersTabs"
+              </v-card>
+            </v-container>
+          </v-col>
+          <v-col>
+            <v-container fluid grid-list-md fill-height fill-width>
+              <v-card class="activityPageCard">
+                <h2>Participants / Organisers</h2>
+                <v-tabs
+                    v-model="previewTabs"
+                    fixed-tabs
+                    id="previewParticipantsOrganisersTabs"
+                >
+                  <v-tab
+                      v-for="item in userTabs"
+                      :key="item.tab"
+                  >
+                    {{ item.tab }}
+                  </v-tab>
+                </v-tabs>
+                <v-tabs-items v-model="previewTabs" id="activityParticipantsOrganisersTabItems">
+                  <v-tab-item
+                      v-for="item in userTabs"
+                      :key="item.tab"
+                  >
+                    <v-card flat id="participantOrganiserList">
+                      <div v-if="item.preview.length === 0">
+                        <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity
+                        </v-card-text>
+                      </div>
+                      <div v-else>
+                        <v-list-item two-line v-for="profile in item.preview" :key="profile.email" link
+                                     @click.stop="">
+                          <v-list-item-content>
+                            <v-list-item-title v-if="profile.middlename != null">
+                              {{ profile.firstname + " " + profile.middlename + " " +
+                              profile.lastname}}
+                            </v-list-item-title>
+                            <v-list-item-title v-else>
+                              {{ profile.firstname + " " + profile.lastname}}
+                            </v-list-item-title>
+                            <v-list-item-subtitle>{{ profile.email }}
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                          <div v-if="user.profile_id === authorId || user.permission_level > 0">
+                            <v-menu
+                                transition="slide-y-transition"
+                                bottom
+                                right
+                                :close-on-click="true">
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    icon>
+                                  <v-icon>mdi-dots-vertical</v-icon>
+                                </v-btn>
+                              </template>
+                              <v-card>
+                                <v-card>
+                                  <v-list-item
+                                      v-on:click="editUserActivityRole(item.tab.toLowerCase(), profile.email)">
+                                    <div v-if="item.tab === 'Participants'">
+                                      <v-list-item-title>Move to Organiser
+                                      </v-list-item-title>
+                                    </div>
+                                    <div v-else>
+                                      <v-list-item-title>Move to
+                                        Participants
+                                      </v-list-item-title>
+                                    </div>
+                                  </v-list-item>
+                                </v-card>
+                              </v-card>
+                            </v-menu>
+                          </div>
+                        </v-list-item>
+                      </div>
+                    </v-card>
+                  </v-tab-item>
+                </v-tabs-items>
+                <v-btn
+                    id="activityPageShowMoreButton"
+                    height="45px" color="#1cca92"
+                    outlined rounded
+                    @click.stop="showMoreDialog = true"
+                >Show More
+                </v-btn>
+              </v-card>
+
+              <v-dialog
+                  v-model="showMoreDialog"
+                  max-width="450"
+                  id="activityPageMoreParticipantsOrganisersDialog"
+              >
+                <v-card :loading="loadingParticipantsOrganisersDialog">
+                  <v-tabs
+                      v-model="dialogTab"
+                      fixed-tabs
+                  >
+                    <v-tab
+                        v-for="item in userTabs"
+                        :key="item.tab"
                     >
-                      <v-tab
-                              v-for="item in userTabs"
-                              :key="item.tab"
+                      {{ item.tab }}
+                    </v-tab>
+                  </v-tabs>
+                  <v-tabs-items v-model="dialogTab">
+                    <v-tab-item
+                        v-for="item in userTabs"
+                        :key="item.tab"
+                    >
+                      <div style="overflow-y: scroll; height: 500px"
                       >
-                        {{ item.tab }}
-                      </v-tab>
-                    </v-tabs>
-                    <v-tabs-items v-model="previewTabs" id="activityParticipantsOrganisersTabItems">
-                      <v-tab-item
-                              v-for="item in userTabs"
-                              :key="item.tab"
-                      >
-                        <v-card flat id="participantOrganiserList">
+                        <v-card flat
+                        >
                           <div v-if="item.preview.length === 0">
-                            <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity
+                            <v-card-text>There are currently no {{
+                              item.tab.toLowerCase() }} for this activity
                             </v-card-text>
                           </div>
                           <div v-else>
-                            <v-list-item two-line v-for="profile in item.preview" :key="profile.email" link
-                                         @click.stop="">
+                            <v-list-item two-line v-for="profile in item.content"
+                                         :key="profile.email" link>
                               <v-list-item-content>
                                 <v-list-item-title v-if="profile.middlename != null">
-                                  {{ profile.firstname + " " + profile.middlename + " " +
-                                  profile.lastname}}
+                                  {{ profile.firstname + " " + profile.middlename + " "
+                                  + profile.lastname}}
                                 </v-list-item-title>
                                 <v-list-item-title v-else>
                                   {{ profile.firstname + " " + profile.lastname}}
@@ -118,234 +209,122 @@
                               </v-list-item-content>
                               <div v-if="user.profile_id === authorId || user.permission_level > 0">
                                 <v-menu
-                                        transition="slide-y-transition"
-                                        bottom
-                                        right
-                                        :close-on-click="true">
+                                    transition="slide-transition"
+                                    bottom
+                                    right
+                                    :close-on-click="true"
+                                >
                                   <template v-slot:activator="{ on, attrs }">
                                     <v-btn
-                                            v-bind="attrs"
-                                            v-on="on"
-                                            icon>
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon
+                                    >
                                       <v-icon>mdi-dots-vertical</v-icon>
                                     </v-btn>
                                   </template>
                                   <v-card>
-                                    <v-card>
-                                      <v-list-item
-                                              v-on:click="editUserActivityRole(item.tab.toLowerCase(), profile.email)">
-                                        <div v-if="item.tab === 'Participants'">
-                                          <v-list-item-title>Move to Organiser
-                                          </v-list-item-title>
-                                        </div>
-                                        <div v-else>
-                                          <v-list-item-title>Move to
-                                            Participants
-                                          </v-list-item-title>
-                                        </div>
-                                      </v-list-item>
-                                    </v-card>
+                                    <v-list-item
+                                        v-on:click="editUserActivityRole(item.tab.toLowerCase(), profile.email)">
+                                      <div v-if="item.tab === 'Participants'">
+                                        <v-list-item-title>Move to Organiser
+                                        </v-list-item-title>
+                                      </div>
+                                      <div v-else>
+                                        <v-list-item-title>Move to
+                                          Participants
+                                        </v-list-item-title>
+                                      </div>
+                                    </v-list-item>
                                   </v-card>
                                 </v-menu>
                               </div>
                             </v-list-item>
                           </div>
                         </v-card>
-                      </v-tab-item>
-                    </v-tabs-items>
-                    <v-btn
-                            id="activityPageShowMoreButton"
-                            height="45px" color="#1cca92"
-                            outlined rounded
-                            @click.stop="showMoreDialog = true"
-                    >Show More
-                      </v-btn>
-                  </v-card>
-                </v-flex>
-
-                <v-dialog
-                        v-model="showMoreDialog"
-                        max-width="450"
-                        id="activityPageMoreParticipantsOrganisersDialog"
-                >
-                  <v-card :loading="loadingParticipantsOrganisersDialog">
-                    <v-tabs
-                            v-model="dialogTab"
-                            fixed-tabs
-                    >
-                      <v-tab
-                              v-for="item in userTabs"
-                              :key="item.tab"
-                      >
-                        {{ item.tab }}
-                      </v-tab>
-                    </v-tabs>
-                    <v-tabs-items v-model="dialogTab">
-                      <v-tab-item
-                              v-for="item in userTabs"
-                              :key="item.tab"
-                      >
-                        <div style="overflow-y: scroll; height: 500px"
-                        >
-                          <v-card flat
-                          >
-                            <div v-if="item.preview.length === 0">
-                              <v-card-text>There are currently no {{
-                                item.tab.toLowerCase() }} for this activity
-                              </v-card-text>
-                            </div>
-                            <div v-else>
-                              <v-list-item two-line v-for="profile in item.content"
-                                           :key="profile.email" link>
-                                <v-list-item-content>
-                                  <v-list-item-title v-if="profile.middlename != null">
-                                    {{ profile.firstname + " " + profile.middlename + " "
-                                    + profile.lastname}}
-                                  </v-list-item-title>
-                                  <v-list-item-title v-else>
-                                    {{ profile.firstname + " " + profile.lastname}}
-                                  </v-list-item-title>
-                                  <v-list-item-subtitle>{{ profile.email }}
-                                  </v-list-item-subtitle>
-                                </v-list-item-content>
-                                <div v-if="user.profile_id === authorId || user.permission_level > 0">
-                                  <v-menu
-                                          transition="slide-transition"
-                                          bottom
-                                          right
-                                          :close-on-click="true"
-                                  >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-btn
-                                              v-bind="attrs"
-                                              v-on="on"
-                                              icon
-                                      >
-                                        <v-icon>mdi-dots-vertical</v-icon>
-                                      </v-btn>
-                                    </template>
-                                    <v-card>
-                                      <v-list-item
-                                              v-on:click="editUserActivityRole(item.tab.toLowerCase(), profile.email)">
-                                        <div v-if="item.tab === 'Participants'">
-                                          <v-list-item-title>Move to Organiser
-                                          </v-list-item-title>
-                                        </div>
-                                        <div v-else>
-                                          <v-list-item-title>Move to
-                                            Participants
-                                          </v-list-item-title>
-                                        </div>
-                                      </v-list-item>
-                                    </v-card>
-                                  </v-menu>
-                                </div>
-                              </v-list-item>
-                            </div>
-                          </v-card>
-                        </div>
-                      </v-tab-item>
-                    </v-tabs-items>
-                    <v-btn
-                            height="40px" color="#1cca92"
-                            id="activityPageMoreResultsButton"
-                            outlined rounded
-                            :loading="loadingParticipantsOrganisers"
-                            v-on:click="getMoreResults()"
-                    >More Results
-                    </v-btn>
-                  </v-card>
-
-                </v-dialog>
-
-                <v-flex>
-                  <v-card class="activityPageCard">
-                    <h2>Map track</h2>
-                    <h3>Coming next sprint!</h3>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-
-            <v-flex>
-              <v-layout row wrap>
-                <v-flex>
-                  <v-card class="activityPageCard">
-                    <h2>Gallery</h2>
-                    <h3>Coming at some stage!</h3>
-                  </v-card>
-                </v-flex>
-
-                <v-flex>
-                  <v-card class="activityPageCard" style="min-height:0;">
-                    <h2 style="padding-bottom:10px;">Latest Changes</h2>
-                    <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
-                      <v-timeline-item
-                              icon-color="grey lighten-2"
-                              small
-                      >
-                        <v-row justify="space-between">
-                          <v-col>
-                            <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
-                            <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
-                                style="font-size:16px;color:rgba(0,0,0,0.85);">
-                              <li>{{updateText}}</li>
-                            </h2>
-                            <!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
-                          </v-col>
-                        </v-row>
-                      </v-timeline-item>
-                    </v-timeline>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-
-            <v-flex>
-              <v-layout row wrap>
-                <v-flex>
-                  <v-card v-if="visibility === 'restricted'" class="activityPageCard">
-                    <h2>Shared Users</h2>
-                    <form class="activityPageCardForm">
-                      <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
-                                    outlined rounded clearable hide-details dense></v-text-field>
-                      <v-select class="activityPageCardSelect mr-10" v-model="newRole"
-                                :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
-                                rounded></v-select>
-                      <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
-                             outlined rounded>Add
-                      </v-btn>
-                      <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage
-                        }}
-                      </h6>
-                      <h6 class="editSuccessMessage" v-if="displaySharedUsersSuccessMsg">{{ sharedUsersStatusMsg }}
-                      </h6>
-                      <div id="usersCard" class="activityPageCardDiv">
-                        <v-card flat>
-                          <v-list-item two-line v-for="user in sharedUsers" :key="user[0]">
-                            <v-list-item-content>
-                              <v-list-item-title v-if="user.middlename != null">
-                                {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                              </v-list-item-title>
-                              <v-list-item-title v-else>
-                                {{ user.firstname + " " + user.lastname}}
-                              </v-list-item-title>
-                              <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-card>
                       </div>
-                    </form>
-                  </v-card>
-                </v-flex>
+                    </v-tab-item>
+                  </v-tabs-items>
+                  <v-btn
+                      height="40px" color="#1cca92"
+                      id="activityPageMoreResultsButton"
+                      outlined rounded
+                      :loading="loadingParticipantsOrganisers"
+                      v-on:click="getMoreResults()"
+                  >More Results
+                  </v-btn>
+                </v-card>
+              </v-dialog>
 
-                <v-flex>
-                    <AchievementsCard v-bind:achievements="achievements"/>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-          </v-flex>
-        </v-layout>
+              <v-card class="activityPageCard">
+                <h2>Map track</h2>
+                <h3>Coming next sprint!</h3>
+              </v-card>
+
+              <v-card class="activityPageCard">
+                <h2>Gallery</h2>
+                <h3>Coming at some stage!</h3>
+              </v-card>
+
+              <v-card class="activityPageCard" style="min-height:0;">
+                <h2 style="padding-bottom:10px;">Latest Changes</h2>
+                <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
+                  <v-timeline-item
+                      icon-color="grey lighten-2"
+                      small
+                  >
+                    <v-row justify="space-between">
+                      <v-col>
+                        <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
+                        <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
+                            style="font-size:16px;color:rgba(0,0,0,0.85);">
+                          <li>{{updateText}}</li>
+                        </h2>
+                        <!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
+                      </v-col>
+                    </v-row>
+                  </v-timeline-item>
+                </v-timeline>
+              </v-card>
+
+              <v-card v-if="visibility === 'restricted'" class="activityPageCard">
+                <h2>Shared Users</h2>
+                <form class="activityPageCardForm">
+                  <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
+                                outlined rounded clearable hide-details dense/>
+                  <v-select class="activityPageCardSelect mr-10" v-model="newRole"
+                            :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
+                            rounded/>
+                  <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
+                         outlined rounded>Add
+                  </v-btn>
+                  <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage
+                    }}
+                  </h6>
+                  <h6 class="editSuccessMessage" v-if="displaySharedUsersSuccessMsg">{{ sharedUsersStatusMsg }}
+                  </h6>
+                  <div id="usersCard" class="activityPageCardDiv">
+                    <v-card flat>
+                      <v-list-item two-line v-for="user in sharedUsers" :key="user[0]">
+                        <v-list-item-content>
+                          <v-list-item-title v-if="user.middlename != null">
+                            {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-title v-else>
+                            {{ user.firstname + " " + user.lastname}}
+                          </v-list-item-title>
+                          <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-card>
+                  </div>
+                </form>
+              </v-card>
+
+              <AchievementsCard v-bind:achievements="achievements"/>
+            </v-container>
+          </v-col>
+        </v-row>
       </v-container>
     </div>
   </div>
@@ -361,7 +340,7 @@
   export default {
     name: "ActivityPageInfo",
     components: {
-        AchievementsCard,
+      AchievementsCard,
     },
     data() {
       return {
@@ -460,24 +439,24 @@
 
       optOut() {
         apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email).then(response => {
-          if (response.status === 200) {
-            this.userOpttedIn = false;
-            this.getOrganisers();
-            this.getParticipants();
+            if (response.status === 200) {
+              this.userOpttedIn = false;
+              this.getOrganisers();
+              this.getParticipants();
+            }
           }
-        }
-      );
+        );
       },
 
       checkUserHasOptedIn() {
         let i;
-        for (i=0; i<this.userTabs[0].content.length; i++) {
+        for (i = 0; i < this.userTabs[0].content.length; i++) {
           if (this.user.primary_email.localeCompare(this.userTabs[0].content[i].email) === 0) {
-             this.userOpttedIn = true;
+            this.userOpttedIn = true;
           }
         }
         if (!this.userOpttedIn) {
-          for (let i=0; i<this.userTabs[1].content.length; i++) {
+          for (let i = 0; i < this.userTabs[1].content.length; i++) {
             if (this.user.primary_email.localeCompare(this.userTabs[1].content[i].email) === 0) {
               this.userOpttedIn = true;
             }
