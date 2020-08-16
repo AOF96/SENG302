@@ -12,6 +12,7 @@ import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.RandomToken;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.apache.coyote.Response;
+import org.hibernate.Hibernate;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -693,6 +695,7 @@ public class UserService {
      * @param sessionToken session token of user that wishes to follow activity
      * @return response entity with status code depending on wither it was successful or not
      */
+    @Transactional
     public ResponseEntity subscribeToActivity(Long profileId, Long activityId, String sessionToken) {
         ResponseEntity result;
 
@@ -710,7 +713,8 @@ public class UserService {
                 Optional<User> user = userRepository.getUserById(profileId);
                 if (user.isPresent()) {
                     User validUser = user.get();
-                    Set<Activity> validUserFollowingList = validUser.getActivities();
+                    Hibernate.initialize(validUser.getActivities());
+                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
                     if (validUserFollowingList.contains(activity)) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");

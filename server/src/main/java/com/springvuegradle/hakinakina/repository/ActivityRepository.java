@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -22,6 +23,9 @@ import java.util.Optional;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     Activity findActivityById(Long id);
+
+    @Query(nativeQuery = true, value = "SELECT count(*) FROM User_Activities_Shared WHERE user_id = ?1 AND activity_id = ?2")
+    int findUserActivityVisibility(Long userId, Long activity);
 
 //    @Modifying
     Optional<Activity> findFirstByName(String name);
@@ -47,6 +51,14 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT * FROM User u WHERE u.permission_level != 2 AND u.user_id IN (SELECT c.user_id FROM User_Activities_Shared c WHERE c.activity_id = ?)", nativeQuery = true)
     List<User> getSharedUsers(Long activityId);
+
+    @Query(value = "SELECT * FROM User_Activities_Shared  WHERE activity_id = ? AND author_user_id = ?", nativeQuery = true)
+    List<Activity> getSharedActivitiesForAuthorOfType(Long activityId, Long userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM User_Activities", nativeQuery = true)
+    void removeAllUserActivities();
 
     @Query(value = "SELECT count(*) FROM User_Activities WHERE activity_id = ?", nativeQuery = true)
     int getNumFollowersForActivity(long activityId);

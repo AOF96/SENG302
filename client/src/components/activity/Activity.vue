@@ -322,6 +322,7 @@
   import dateUtil from "@/util/date";
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../api";
+  import store from '@/store/index.js';
 
   export default {
     name: "ActivityPageInfo",
@@ -389,15 +390,32 @@
       ...mapGetters(['activity']),
       ...mapGetters(['user']),
     },
+
+    beforeRouteEnter: (to, from, next) => {
+      const activityId = to.params.activityId;
+      const userId = store.state.user.user.profile_id;
+      store.dispatch('checkUserActivityVisibility', {profileId: userId, activityId})
+        .then(resp => {
+          if (resp.data.visibility === 'allowed') {
+            next()
+          } else {
+            next({name: "profilePage", params: {profileId: userId}})
+          }
+        })
+        .catch(() => {
+          next({name: "profilePage", params: {profileId: userId}})
+        })
+    },
+
     mounted: function () {
       if (!this.user.isLogin) {
         this.$router.push('/login');
       }
     },
-    created: async function () {
+    created: function () {
       this.loadActivity();
-      await this.getParticipants();
-      await this.getOrganisers();
+      this.getParticipants();
+      this.getOrganisers();
       this.getStats();
       this.checkUserHasOptedIn();
       return this.checkFollowing();
@@ -416,8 +434,8 @@
       }
     },
     methods: {
-      // removed 'getActivityUpdates','getParticipants' and 'getOrganisers' for frontend test as they are not used
-      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities']),
+      ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
+        'getParticipants', 'getOrganisers', 'checkUserActivityVisibility']),
 
       optOut() {
         apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email).then(response => {
@@ -545,6 +563,7 @@
         dateString = dateString.slice(4);
         return dateString;
       },
+
       /**
        * Retrieves participants for the activity
        */
@@ -554,9 +573,10 @@
           this.userTabs[0].content = response.data.content;
           this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
         } catch (err) {
-          console.error(err)
+          console.error(err);
         }
       },
+
       async getStats() {
         await apiActivity.getActivityStats(this.$route.params.activityId).then(response => {
           this.numFollowers = response.data.followers;
@@ -564,6 +584,7 @@
           this.numParticipants = response.data.participants;
         })
       },
+
       /**
        * Retrieves organisers for the activity
        */
@@ -682,6 +703,7 @@
           }
         }
       },
+
       /**
        * Checks if user is following current activity and sets userFollowing which is used to determine if
        * the follow button should be for following or unfollowing

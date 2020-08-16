@@ -216,12 +216,17 @@ public class ActivityControllerTest {
 
     @Test
     public void getContinuousActivitiesTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
         List<Activity> dummyList = new ArrayList<>();
         List<Map<String, String>> summaries = createActivitySummariesMap();
         when(activityRepository.getActivitiesForUserOfType(true, (long) 1)).thenReturn(dummyList);
         when(service.getActivitySummaries(dummyList)).thenReturn(summaries);
 
-        this.mockMvc.perform(get("/profiles/1/activities/continuous")
+        this.mockMvc.perform(get("/profiles/1/activities/continuous").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("[{\"name\":\"Activity 1\"," +
@@ -231,12 +236,18 @@ public class ActivityControllerTest {
 
     @Test
     public void getDurationsActivitiesTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+
         List<Activity> dummyList = new ArrayList<>();
         List<Map<String, String>> summaries = createActivitySummariesMap();
         when(activityRepository.getActivitiesForUserOfType(false, (long) 1)).thenReturn(dummyList);
         when(service.getActivitySummaries(dummyList)).thenReturn(summaries);
 
-        this.mockMvc.perform(get("/profiles/1/activities/duration")
+        this.mockMvc.perform(get("/profiles/1/activities/duration").cookie(tokenCookie)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("[{\"name\":\"Activity 1\"," +
@@ -534,7 +545,6 @@ public class ActivityControllerTest {
                 .param("page", "-1")
                 .param("size", "-1"))
                 .andExpect(status().isBadRequest());
-
     }
 
     @Test

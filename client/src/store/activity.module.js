@@ -85,6 +85,9 @@ const actions = {
     },
     async editUserActivityRole(data, {'userId': userId ,'activityId': activityId, 'role': role, 'email': email}) {
         return await apiActivity.editUserActivityRole(userId, activityId, role, email);
+    },
+    async checkUserActivityVisibility(data, {'profileId': profileId, 'activityId': activityId }) {
+        return await apiActivity.checkUserActivityVisibility(profileId, activityId);
     }
 };
 
