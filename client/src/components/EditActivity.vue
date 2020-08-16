@@ -443,30 +443,17 @@
           <v-card>
             <v-card-title class="headline">Update Activity Visibility</v-card-title>
             <v-card-text>{{ visibilityUpdateMessage }}</v-card-text>
-            <v-list-item>
-              <v-checkbox
-                      v-model="groups.followers"
-                      label="Keep Followers"
-                      color="success"
-                      hide-details
-              ></v-checkbox>
-            </v-list-item>
-            <v-list-item>
-              <v-checkbox
-                      v-model="groups.participants"
-                      label="Keep Participants"
-                      color="success"
-                      hide-details
-              ></v-checkbox>
-            </v-list-item>
-            <v-list-item>
-              <v-checkbox
-                      v-model="groups.organisers"
-                      label="Kepp Organisers"
-                      color="success"
-                      hide-details
-              ></v-checkbox>
-            </v-list-item>
+            <v-card-text>There are currently {{groups[0].amount}} {{groups[0].name}}, {{groups[1].amount}} {{groups[1].name}} and {{groups[2].amount}} {{groups[2].name}}.</v-card-text>
+            <div v-if="(tempVisibility === 'public' && visibility === 'restricted') || (tempVisibility === 'restricted' && visibility === 'public')">
+              <v-list-item v-for="group in groups" :key="group.name">
+                <v-checkbox
+                        v-model="group.active"
+                        v-bind:label="'Keep ' + group.name"
+                        color="success"
+                        hide-details
+                ></v-checkbox>
+              </v-list-item>
+            </div>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Cancel</v-btn>
@@ -541,11 +528,11 @@ export default {
       confirmDelete: false,
       visibilityUpdateDialog: false,
       visibilityUpdateMessage: "",
-      groups: {
-        followers: false,
-        participants: false,
-        organisers: false
-        }
+      groups: [
+        {name: "followers", active: true, amount: 0},
+        {name: "participants", active: true, amount: 0},
+        {name: "organisers", active: true, amount: 0},
+      ],
     };
   },
 
@@ -770,6 +757,8 @@ export default {
           this.visibility = tempActivityData.visibility;
           this.tempVisibility = tempActivityData.visibility;
 
+          this.getActivityStats();
+
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
           }
@@ -964,16 +953,55 @@ export default {
         return true;
       }
     },
-
+    /**
+     * Determines whether the visibility pop up is displayed or save the edited activity. The displayed message will
+     * depend on the visibility change.
+     *
+     * If the activity visibility changes from (PUBLIC to RESTRICTED) or (RESTRICTED to PUBLIC), then ask the user what
+     * groups they want to keep.
+     *
+     * If the activity visibility changes from (PUBLIC or RESTRICTED to PRIVATE), then let the user know that they will
+     * lose their followers, participants and organisers if they make the activity PRIVATE.
+     *
+     * If the activity visibility changes from (PRIVATE to PUBLIC), then let the user know that all users will be able
+     * to see the activity
+     *
+     * If the activity visibility changes from (PRIVATE to RESTRICTED)l, then let the user know that only those who they
+     * have shared the activity with can see the activity.
+     *
+     */
     visibilityOrSave() {
       // Checks if the user wants to the visibility of the activity
       if (this.visibility !== this.tempVisibility) {
         this.visibilityUpdateDialog = true;
-        this.visibilityUpdateMessage = `You are updating the visibility of this activity from ${this.tempVisibility}
-         to ${this.visibility}. Please select what groups you would like to keep or remove.`
+        this.visibilityUpdateMessage = `You are updating the visibility of this activity from ${this.tempVisibility} to ${this.visibility}.`
+        if ((this.tempVisibility === "public" && this.visibility === "restricted") || (this.tempVisibility === "restricted" && this.visibility === "public")) {
+          // (PUBLIC to RESTRICTED) or (RESTRICTED to PUBLIC)
+          this.visibilityUpdateMessage += " Please select what groups you would like to keep or remove.";
+        } else if ((this.tempVisibility === "public" || this.tempVisibility === "restricted") && this.visibility === "private") {
+          // (PUBLIC or RESTRICTED to PRIVATE)
+          this.visibilityUpdateMessage += " Making the activity private will remove all followers, participants and organisers. Are you sure you want to update the visibility?";
+        } else if (this.tempVisibility === "private" && this.visibility === "public") {
+          // (PRIVATE to PUBLIC)
+          this.visibilityUpdateMessage +=" Making the activity public means that all users can view the activity. Are you sure you want to update the visibility?";
+        } else if (this.tempVisibility === "private" && this.visibility === "restricted") {
+          // (PRIVATE to RESTRICTED)
+          this.visibilityUpdateMessage +=" Making the activity public means that only users that you have shared this activity with can view it. Are you sure you want to update the visibility?";
+        }
       } else {
         this.saveEditedActivity();
       }
+    },
+
+    /**
+     * Gets the stats of the activity
+     */
+    getActivityStats() {
+      apiActivity.getActivityStats(this.$route.params.activityId).then((response) => {
+        this.groups[0].amount = response.data.followers;
+        this.groups[1].amount = response.data.participants;
+        this.groups[2].amount = response.data.organisers;
+      })
     },
 
     /**
