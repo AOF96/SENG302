@@ -223,7 +223,15 @@
                   </v-tab-item>
                 </v-tabs-items>
                 <v-row justify="center" no-gutters style="padding:15px 0;">
+                  <v-card-text v-if="dialogTab === 0">
+                    Showing {{userTabs[0].content.length}} out of {{numParticipants}} results
+                  </v-card-text>
+                  <v-card-text v-else>
+                    Showing {{userTabs[1].content.length}} out of {{numOrganisers}} results
+                  </v-card-text>
                   <v-btn
+                          v-if="(dialogTab === 0 && (userTabs[0].content.length < 50 || user.permission_level > 0)) ||
+                          dialogTab === 1"
                           color="primary"
                           outlined rounded
                           :loading="loadingParticipantsOrganisers"
@@ -351,10 +359,10 @@
         displayInvalidInputError: false,
         invalidInputErrorMessage: "",
         participantsPageInfo: {
-          defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
+          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
         },
         organisersPageInfo: {
-          defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
+          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
         },
         userTabs: [
           {tab: 'Participants', content: [], preview: []},
@@ -573,11 +581,12 @@
        */
       async getMoreResults() {
         try {
+          this.snackbar = false;
           this.loadingParticipantsOrganisers = true;
           if (this.dialogTab === 0) {
             let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage + 1, this.participantsPageInfo.currentSize);
-            if (response.data.content === []) {
-              this.errorMessage = "No more participants"
+            if (response.data.content.length === 0) {
+              this.errorMessage = "No more participants";
               this.snackbar = true;
             } else {
               this.userTabs[0].content = this.userTabs[0].content.concat(response.data.content);
@@ -587,8 +596,8 @@
           }
           if (this.dialogTab === 1) {
             let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage + 1, this.organisersPageInfo.currentSize);
-            if (response.data.content === []) {
-              this.errorMessage = "No more organisers"
+            if (response.data.content.length === 0) {
+              this.errorMessage = "No more organisers";
               this.snackbar = true;
             } else {
               this.userTabs[1].content = this.userTabs[1].content.concat(response.data.content);
