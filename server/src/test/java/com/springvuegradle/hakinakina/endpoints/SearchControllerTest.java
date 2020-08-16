@@ -58,6 +58,9 @@ public class SearchControllerTest {
     private UserActivityRoleRepository userActivityRoleRepository;
 
     @MockBean
+    private ResultRepository resultRepository;
+
+    @MockBean
     private SearchService searchService;
 
     @Test
