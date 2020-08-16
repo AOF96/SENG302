@@ -141,7 +141,7 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
@@ -818,75 +818,5 @@ public class ActivityControllerTest {
                         "  \"participants\": " + 0 + ",\n" +
                         "  \"organisers\": " + 0 + "\n" +
                         "}")));
-    }
-
-    @Test
-    public void addAchievement() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        User testUser = new User("John", "Smith", "john@gmail.com", null,
-                Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-        testSession.setUser(testUser);
-        Activity testActivity = createTestActivity();
-        testActivity.setId((long) 1);
-
-        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
-        when(service.addAchievement(any(Achievement.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Achievement added successfully", HttpStatus.CREATED));
-        this.mockMvc.perform(post("/profiles/1/activities/1/achievements").cookie(tokenCookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(INPUT))
-                .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("Achievement added successfully")));
-    }
-
-    @Test
-    public void editAchievementTest() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        User testUser = new User("John", "Smith", "john@gmail.com", null,
-                Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-        testSession.setUser(testUser);
-        Activity testActivity = createTestActivity();
-        testActivity.setId((long) 1);
-        Achievement testAchievement = new Achievement("test", "test", ResultType.TIME);
-        testAchievement.setId((long) 1);
-
-        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
-        when(service.editAchievement(any(Achievement.class), any(Long.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Achievement has been successfully updated", HttpStatus.OK));
-        this.mockMvc.perform(put("/profiles/1/activities/1/achievements/1").cookie(tokenCookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(INPUT))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Achievement has been successfully updated")));
-    }
-
-    @Test
-    public void deleteAchievementTest() throws Exception {
-        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        User testUser = new User("John", "Smith", "john@gmail.com", null,
-                Gender.MALE, 2, "Password1");
-        testUser.setUserId((long) 1);
-        testSession.setUser(testUser);
-        Activity testActivity = createTestActivity();
-        testActivity.setId((long) 1);
-        Achievement testAchievement = new Achievement("test", "test", ResultType.TIME);
-        testAchievement.setId((long) 1);
-
-        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
-        when(service.deleteAchievement(any(Long.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Achievement successfully deleted", HttpStatus.OK));
-        this.mockMvc.perform(delete("/profiles/1/activities/1/achievements/1").cookie(tokenCookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(INPUT))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Achievement successfully deleted")));
     }
 }
