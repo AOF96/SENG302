@@ -1,4 +1,4 @@
-package com.springvuegradle.hakinakina;
+package com.springvuegradle.hakinakina.entity_tests;
 
 import com.springvuegradle.hakinakina.entity.Achievement;
 import com.springvuegradle.hakinakina.entity.Activity;

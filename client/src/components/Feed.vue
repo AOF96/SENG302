@@ -7,35 +7,44 @@
           v-for="(post, index) in activityPosts"
           :key="index"
         >
-          <v-card class="mx-auto" rounded style="width:100%;max-width: 800px;margin-bottom:20px;">
+          <v-card class="mx-auto" rounded style="width:100%;max-width: 700px;margin-bottom:20px;border-radius: 15px;">
             <v-card-text>
-              <div>Activity Updated</div>
-              <h2 class="text--primary py-2" style="font-weight:500;">{{ post.textContext }}</h2>
-              <h3 class="text--primary">
-                {{ post.dateTime }}
-              </h3>
+              <v-row no-gutters>
+                <div>Activity Updated</div>
+                <v-spacer></v-spacer>
+                <div>{{ formatDate(post.dateTime) }}</div>
+              </v-row>
+              <h2 class="text--primary py-2" style="font-weight:500;font-size: 18px">Activity '{{ post.activityName }}' was edited.</h2>
+              <ul>
+                <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i">{{update.trim()}}</li>
+              </ul>
             </v-card-text>
             <v-card-actions>
               <v-list-item class="grow">
-                <v-list-item-avatar color="grey darken-3">
-                  <v-img
-                    class="elevation-6"
-                    src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"
-                  ></v-img>
+                <v-list-item-avatar>
+                  <v-img v-bind:src="rootLocation+'images/userIcon.png'"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>{{ post.authorName }}</v-list-item-title>
+                  <v-list-item-title style="font-size: 15px">{{ post.authorName }}</v-list-item-title>
                 </v-list-item-content>
                 <v-row
                   align="center"
                   justify="end"
                 >
-                  <v-btn class="px-3" :to="'/activity/'+post.activityId" text color="#00C853">View Changes</v-btn>
+                  <v-btn class="px-3" :to="'/activity/'+post.activityId" text color="#00C853">View Activity</v-btn>
                 </v-row>
               </v-list-item>
             </v-card-actions>
           </v-card>
         </v-list-item>
+
+        <v-row no-gutters align="center" justify="center">
+          <v-progress-circular v-if="isLoading"
+                  indeterminate
+                  color="primary"
+          />
+          <v-card-text style="text-align: center; color: grey" v-if="isFinished">No More Results</v-card-text>
+        </v-row>
       </v-list>
     </v-col>
   </v-container>
@@ -57,6 +66,7 @@ export default {
   },
   data: function() {
     return {
+      rootLocation: process.env.VUE_APP_BASE_URL,
       activityPosts: [],
       activityPostsTemplate: [
         {
@@ -78,18 +88,28 @@ export default {
           textContent: 'Activity activity types changed to: [Fun]',
         }
       ],
-      defaultPage: 1,
-      currentPage: 1,
+      defaultPage: 0,
+      currentPage: 0,
       defaultSize: 10,
       currentSize: 10,
+      bottom: false,
+      isLoading: false,
+      isFinished: false
     };
   },
   mounted() {
     this.checkLogin();
     this.getUsersFeed();
+    window.addEventListener('scroll', () => {
+      this.bottom = this.bottomVisible();
+    })
   },
   watch: {
-
+    bottom(bottom) {
+      if (bottom) {
+        this.getUsersFeed();
+      }
+    }
   },
   methods: {
     ...mapActions(["getUserFeed"]),
@@ -98,16 +118,42 @@ export default {
         this.$router.push('/login');
       }
     },
+    /**
+     * Formats the datetime string to the form Aug 4 2020
+     */
+    formatDate(datetime) {
+      let newDate = new Date(datetime);
+      let dateString = newDate.toDateString();
+      dateString = dateString.slice(4);
+      return dateString;
+    },
     getUsersFeed() {
-      this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
-      .then((response) => {
-        console.log(response.data);
-        this.activityPosts = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-    }
+      if (!this.isLoading && !this.isFinished) {
+        this.isLoading = true;
+        this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
+                .then((response) => {
+                  console.log(response.data);
+                  this.activityPosts = this.activityPosts.concat(response.data);
+                  this.isLoading = false;
+                  this.currentPage++;
+                  if (response.data.length === 0) {
+                    this.isFinished = true;
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                  this.isLoading = false;
+                })
+      }
+    },
+
+    bottomVisible() {
+      const scrollY = window.scrollY;
+      const visible = document.documentElement.clientHeight;
+      const pageHeight = document.documentElement.scrollHeight - 150;
+      const bottomOfPage = visible + scrollY >= pageHeight;
+      return bottomOfPage || pageHeight < visible
+    },
   }
 };
 </script>

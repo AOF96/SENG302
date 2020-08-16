@@ -1,6 +1,9 @@
 package com.springvuegradle.hakinakina.startup;
 
+import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.entity.Visibility;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ public class StartUpListener {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ActivityRepository activityRepository;
+
     private String email = "passageAdmin@gmail.com";
 
 
@@ -31,30 +37,20 @@ public class StartUpListener {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         User defaultAdmin = userRepository.findByPermissionLevelEquals(2);
-        if (defaultAdmin == null) {
-            defaultAdmin = new User();
-        }
         try {
-            updatePermissionsInDatabase();
-            createDefaultAdmin(defaultAdmin);
+            if (defaultAdmin == null) {
+                defaultAdmin = new User();
+                createDefaultAdmin(defaultAdmin);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Parses through to set users permission level if null
+     * Creates a randomly generated password for the default admin
+     * @return randomly generated password
      */
-    private void updatePermissionsInDatabase() {
-
-        for (User user : userRepository.findAll()) {
-            if (user.getPermissionLevel() == null) {
-                user.setPermissionLevel(0);
-                userRepository.save(user);
-            }
-        }
-    }
-
     private String createDefaultAdminPassword() {
         Random random = new Random();
         String password = "";
@@ -84,6 +80,4 @@ public class StartUpListener {
         System.out.println(password);
         userRepository.save(u);
     }
-
-
 }

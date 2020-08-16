@@ -2,22 +2,23 @@
 .createActivityContainer{
     width: calc(100% - 30px);
     margin: 0 auto;
-    max-width: 700px;
-    padding: 50px 0;
+    max-width: 740px;
 }
 
 .createActivityContentContainer{
     width: 100%;
-    background:white;
-    border-radius: 14px;
-    overflow:hidden;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-    font-size:19px;
+    padding: 50px 0;
 }
 
-.createActivityContentContainer h1{
-    padding: 20px;
-    font-size: 19px;
+#createHeading{
+    font-size: 23px;
+    font-weight: 500;
+}
+
+#createSubheading{
+    font-size: 17px;
+    font-weight: 400;
+    padding-bottom: 10px;
 }
 
 backButton {
@@ -33,6 +34,11 @@ backButton {
     color: #5c5c5c;
     font-weight: 400;
 }
+
+#addAchievementBox .v-text-field__details{
+    display:none !important;
+}
+
 .editActivityInput {
     width: calc(100% - 40px);
     display:block;
@@ -49,6 +55,16 @@ backButton {
 }
 .editActivityTextarea {
     width: calc(100% - 40px);
+    display: block;
+    margin: 5px auto 20px;
+    height: 100px;
+    resize: none;
+    border: 1px solid #d8d8d8 !important;
+    border-radius: 21px !important;
+}
+
+.editAchievementTextarea {
+    width: calc(100%);
     display: block;
     margin: 5px auto 20px;
     height: 100px;

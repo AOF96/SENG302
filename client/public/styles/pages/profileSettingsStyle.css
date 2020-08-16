@@ -201,10 +201,23 @@
     border-radius: 21px !important;
     border: 1px solid #d8d8d8 !important;
 }
+
+.addAchievementInput {
+    width: 100%;
+    border-radius: 21px !important;
+    border: 1px solid #d8d8d8 !important;
+}
+
 .addEmailButton {
     display: inline;
     padding: 8px 16px;
     float: right;
+}
+.updateEmailButton {
+    display: inline;
+    padding: 8px 16px;
+    float: right;
+    margin-top: 20px;
 }
 .transparentCover {
     width:100%;
@@ -226,6 +239,7 @@
     z-index: 102;
     max-width:400px;
     width:calc(100% - 30px);
+    padding: 20px;
 }
 .editEmailContainer h1{
     font-size: 20px;

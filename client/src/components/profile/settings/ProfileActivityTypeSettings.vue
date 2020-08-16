@@ -29,7 +29,7 @@
             >{{addingActivity}}</option>
           </select>
           <button type="button" class="genericConfirmButton addItemButton" v-on:click="addActivityType()">Add</button>
-          <button type="button" class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save</button>
+          <button type="button" class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save All Activity Types</button>
         </form>
       </div>
       <div class="errorMessageContainer">
@@ -64,7 +64,11 @@ export default {
     ...mapGetters(["user"])
   },
   mounted() {
-    this.loadSearchedUser();
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.loadSearchedUser();
+      }
   },
   methods: {
       ...mapActions(["updateActivities", "getUserById", "editUserActivityTypes", "getActivityTypes"]),

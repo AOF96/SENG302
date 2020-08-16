@@ -53,6 +53,7 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         String endTime = getValueString(node, "end_time");
         String location = getValueString(node, "location");
         Set<Achievement> achievements = getAchievements(node, "achievements");
+        Visibility visibility = getVisibility(getValueString(node, "visibility"));
 
         String city;
         String state;
@@ -73,8 +74,25 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
                 Timestamp.valueOf(endTime), location);
 
         activity.setActivityTypes(activityTypes);
+        activity.setVisibility(visibility);
         activity.setAchievements(achievements);
         return activity;
+    }
+
+    /**
+     * Gets visibility object from string
+     *
+     * @param visibilityString string input
+     * @return Visibility object
+     */
+    public Visibility getVisibility(String visibilityString) {
+        if (visibilityString.equals("private")) {
+            return Visibility.PRIVATE;
+        } else if (visibilityString.equals("restricted")) {
+            return Visibility.RESTRICTED;
+        } else {
+            return Visibility.PUBLIC;
+        }
     }
 
     /**

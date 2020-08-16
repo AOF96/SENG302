@@ -6,11 +6,13 @@ import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.SearchRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.specification.UserSpecification;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class SearchService {
 
     private UserRepository userRepository;
     private SearchRepository searchRepository;
+    private ResponseHandler responseHandler = new ResponseHandler();
 
     public SearchService(UserRepository userRepository,
                          SearchRepository searchRepository) {
@@ -41,7 +44,7 @@ public class SearchService {
      */
     public Page<SearchUserDto> findPaginated(int page, int size) {
         Page<User> userPage = userRepository.findAll(PageRequest.of(page, size));
-        return userPageToSearchResponsePage(userPage);
+        return responseHandler.userPageToSearchResponsePage(userPage);
     }
 
     /**
@@ -67,7 +70,7 @@ public class SearchService {
         } else {
             userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
         }
-        return userPageToSearchResponsePage(userPage);
+        return responseHandler.userPageToSearchResponsePage(userPage);
     }
 
     /**
@@ -88,29 +91,6 @@ public class SearchService {
             }
         }
         return result;
-    }
-
-    /**
-     * Helper function used in findPaginated and findPaginatedByQuery,
-     * creates SearchUserResponse object which has user email, full name and nickname details
-     * from the list of users in page object returned by the query
-     *
-     * @param users Page object that contains list of users found by the query
-     * @return Page object with list of SearchUserResponse object
-     */
-    private Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
-        List<SearchUserDto> userResponses = new ArrayList<>();
-        for (User user : users) {
-            SearchUserDto searchUserDto = new SearchUserDto();
-            searchUserDto.setEmail(user.getPrimaryEmail());
-            searchUserDto.setFirstname(user.getFirstName());
-            searchUserDto.setLastname(user.getLastName());
-            searchUserDto.setMiddlename(user.getMiddleName());
-            searchUserDto.setNickname(user.getNickName());
-            searchUserDto.setActivityTypes(user.getActivityTypes());
-            userResponses.add(searchUserDto);
-        }
-        return new PageImpl<>(userResponses);
     }
 
     /***

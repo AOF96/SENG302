@@ -1,7 +1,8 @@
-package com.springvuegradle.hakinakina;
+package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.SearchService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +25,14 @@ public class UserSearchTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ActivityRepository activityRepository;
+
+    @Autowired
     private SearchService service;
 
     @BeforeEach
     public void setUp() {
+        activityRepository.deleteAll();
         userRepository.deleteAll(); //this deletes admin from this test file
 
         User mayuko = new User();

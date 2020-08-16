@@ -1,13 +1,18 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.springvuegradle.hakinakina.serialize.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.springvuegradle.hakinakina.serialize.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -108,6 +113,10 @@ public class User {
     @JsonIgnore
     private Set<Activity> activities = new HashSet<>();
 
+    @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    @JsonIgnore
+    private Set<Activity> activitiesShared = new HashSet<>();
+
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
 
@@ -136,6 +145,12 @@ public class User {
 //            orphanRemoval = true
     )
     private Set<Session> sessions = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
+    private Set<UserActivityRole> userActivityRoles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Result> results = new HashSet<>();
 
     public User() {}
 
@@ -175,6 +190,11 @@ public class User {
         }
     }
 
+    public void addResult(Result result) {
+        results.add(result);
+        result.setUser(this);
+    }
+
     public void addEmail(Email email) {
         emails.add(email);
         email.setUser(this);
@@ -196,7 +216,7 @@ public class User {
     }
 
     public void followActivity(Activity activity) {
-        activities.add(activity);
+        activitiesShared.add(activity);
     }
 
     @JsonIgnore
@@ -205,7 +225,7 @@ public class User {
     }
 
     public void unfollowActivity(Activity activity) {
-        activities.remove(activity);
+        activitiesShared.remove(activity);
     }
 
     public Set<PassportCountry> getPassportCountries() {
@@ -218,6 +238,10 @@ public class User {
 
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
+    }
+
+    public void setActivity(Set<Activity> activities) {
+        this.activities = activities;
     }
 
     /**
@@ -387,17 +411,37 @@ public class User {
         this.authoredActivities.add(authoredActivity);
     }
 
+    public Set<UserActivityRole> getUserActivityRoles() {
+        return userActivityRoles;
+    }
+
+    public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
+        this.userActivityRoles = userActivityRoles;
+    }
+
     public void setActivities(Set<Activity> participateActivities) {
         this.activities = participateActivities;
+    }
+
+    public void addActivitiesShared(Activity activity) {
+        this.activitiesShared.add(activity);
+    }
+
+    public void setActivitiesShared(Set<Activity> activitiesShared) {
+        this.activitiesShared = activitiesShared;
+    }
+
+    public Set<Activity> getActivitiesShared() {
+        return activitiesShared;
     }
 
     @Override
     public String toString() {
         String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
-                "\nNickname: " + getNickName() + "\nEmails: " + getEmails().toString() + "\nBio: " + getBio() +
-                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString()
+                "\nNickname: " + getNickName() + "\nEmails: " + getEmails() + "\nBio: " + getBio() +
+                "\nDate of Birth: " + getBirthDate() + "\nGender: " + getGender()
                 + "\nPassword: " + getPassword() + "\nFitness Level: " + getFitnessLevel() +
-                "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
+                "\nPassport Countries: " + getPassportCountries() + "\nSalt: " + getSalt() +
                 "\nPrimary Email: " + getPrimaryEmail();
         return result;
     }

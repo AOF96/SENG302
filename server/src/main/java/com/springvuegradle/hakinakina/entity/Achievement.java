@@ -1,8 +1,12 @@
 package com.springvuegradle.hakinakina.entity;
 
+import net.minidev.json.annotate.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Achievement entity class for activity achievements
@@ -26,12 +30,20 @@ public class Achievement {
     @JsonBackReference
     private Activity activity;
 
+    @OneToMany(mappedBy = "achievement", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Result> results = new HashSet<>();
+
     protected Achievement() {}
 
     public Achievement(String name, String description, ResultType resultType) {
         this.name = name;
         this.description = description;
         this.resultType = resultType;
+    }
+
+    public void addResult(Result result) {
+        results.add(result);
+        result.setAchievement(this);
     }
 
     public Long getId() {

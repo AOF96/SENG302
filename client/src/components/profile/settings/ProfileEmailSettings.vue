@@ -37,8 +37,8 @@
                                     <path d="M0 0h24v24H0z" fill="none" /></svg>
                             </v-row>
                         </v-col>
-                        <v-col cols="3">
-                            <button class="genericButton" v-on:click="updatePrimaryEmail(email)">Set Primary</button>
+                        <v-col cols="4">
+                            <button class="genericButton" v-on:click="updatePrimaryEmail(email)">Set Primary and Save</button>
                         </v-col>
                         <v-col cols="1" style="background-color: #ee5e5e; display: inherit">
                             <svg class="removeEmailButton" v-on:click="removeEmail(email)" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -66,8 +66,8 @@
                             <v-col style="padding: 0px">
                                 <input class="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
                             </v-col>
-                            <v-col style="padding: 0px" cols="2">
-                                <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addNewEmail(textInput)">Add</button>
+                            <v-col style="padding: 0px" cols="3">
+                                <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addNewEmail(textInput)">Save New Email</button>
                             </v-col>
                         </v-row>
                     </form>
@@ -83,7 +83,7 @@
                 <h6 class="addExtraEmailErrorMessage" v-if="editErrorMsg">{{editErrorMsg}}</h6>
                 <form class="addEmailForm" @submit.prevent>
                     <input class="addEmailInput" v-model="editEmailInput" type="email" placeholder="Secondary Email" required>
-                    <button class="genericConfirmButton addEmailButton" v-on:click="editExistingEmail()">Update</button>
+                    <button class="genericConfirmButton updateEmailButton" v-on:click="editExistingEmail()">Save</button>
                 </form>
             </div>
         </transition>
@@ -240,7 +240,11 @@
             }
         },
         mounted() {
-            this.loadSearchedUser();
+            if (!this.user.isLogin) {
+                this.$router.push('/login');
+            } else {
+                this.loadSearchedUser();
+            }
         }
     };
 </script>
