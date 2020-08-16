@@ -13,6 +13,9 @@ public class ActivityVisibilityDto {
     private Visibility visibility;
     private List<Map<String, String>> accessors;
 
+    // constructor
+    public ActivityVisibilityDto(){};
+
     public Visibility getVisibility() {
         return visibility;
     }

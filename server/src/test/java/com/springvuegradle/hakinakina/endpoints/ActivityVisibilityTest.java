@@ -93,8 +93,12 @@ public class ActivityVisibilityTest {
 
     @BeforeEach
     public void deleteUser() throws Exception {
+        userActivityRoleRepository.deleteAll();
+        activityRepository.removeAllUserActivities();
+        activityRepository.deleteAll();
+        userRepository.deleteAll(); //this deletes admin from this test file
         sessionRepository.deleteAll();
-        userRepository.deleteAll();
+
         testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
         userRepository.save(testUser);
         testUser2 = new User("Shivin", "g", "shivin@gmail.com", null, Gender.FEMALE, 2, "Password2");
@@ -104,7 +108,6 @@ public class ActivityVisibilityTest {
 
         accessors = new ArrayList<Map<String, String>>();
         activityVisibilityDto = new ActivityVisibilityDto();
-
     }
 
     private Activity createTestActivity() {
@@ -125,64 +128,22 @@ public class ActivityVisibilityTest {
         return testActivity;
     }
 
-//    @Test @Transactional
-//    public void updateActivityVisibilityTest() throws Exception {
-//        Session testSession = new Session("t0k3n");
-//
-//        activityVisibilityDto.setVisibility(Visibility.PUBLIC);
-//        Activity newActivity = activityRepository.save(createTestActivity());
-//        activityRepository.insertActivityForUser(testUser.getUserId(), newActivity.getId());
-//        testSession.setUser(testUser);
-//        sessionRepository.save(testSession);
-//
-//        this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
-//                .cookie(new Cookie("s_id", "t0k3n"))
-//                .contentType("application/json")
-//                .content(objectMapper.writeValueAsString(activityVisibilityDto)))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString("Activity Visibility Status Updated")));
-//    }
+    @Test @Transactional
+    public void updateActivityVisibilityTest() throws Exception {
+        Session testSession = new Session("t0k3n");
 
-//    @Test @Transactional
-//    public void updateUserActivityVisibilityTest() throws Exception{
-//        Session testSession = new Session("t0k3n");
-//
-//        Map<String, String> accessors = new HashMap<>();
-//        accessors.put("email", "shivin@gmail.com");
-//        accessors.put("role", "follower");
-//        activityVisibilityDto.setVisibility(Visibility.RESTRICTED);
-//        activityVisibilityDto.setAccessors(Arrays.asList(accessors));
-//
-//
-//        Activity newActivity = activityRepository.save(createTestActivity());
-//        activityRepository.insertActivityForUser(testUser.getUserId(), newActivity.getId());
-//        testSession.setUser(testUser);
-//        sessionRepository.save(testSession);
-//
-//        this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
-//                .cookie(new Cookie("s_id", "t0k3n"))
-//                .contentType("application/json")
-//                .content(objectMapper.writeValueAsString(activityVisibilityDto)))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString("Activity Visibility Status Updated")));
-//
-//        Assertions.assertEquals(activityRepository.findActivityById(newActivity.getId()).getVisibility(), Visibility.RESTRICTED);
-//
-//
-//        activityVisibilityDto.setVisibility(Visibility.PRIVATE);
-//        this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
-//                .cookie(new Cookie("s_id", "t0k3n"))
-//                .contentType("application/json")
-//                .content(objectMapper.writeValueAsString(activityVisibilityDto)))
-//                .andExpect(status().is(200))
-//                .andExpect(content().string(containsString("Activity Visibility Status Updated")));
-//        Assertions.assertEquals(activityRepository.findActivityById(newActivity.getId()).getVisibility(), Visibility.PRIVATE);
-//
-//        // Still need to write tests to check if the accessors list of emails gets populated. The getSharedUsers(newActivity.getId()) is not working.
-////        Assertions.assertEquals(activityRepository.getSharedUsers(newActivity.getId()).get(0), testUser2.getUserId());
-//
-//    }
+        activityVisibilityDto.setVisibility(Visibility.PUBLIC);
+        Activity newActivity = activityRepository.save(createTestActivity());
+        activityRepository.insertActivityForUser(testUser.getUserId(), newActivity.getId());
+        testSession.setUser(testUser);
+        sessionRepository.save(testSession);
 
-
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/profiles/"+ testUser.getUserId()+"/activities/" +newActivity.getId()+"/visibility")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(activityVisibilityDto)))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Activity Visibility Status Updated")));
+    }
 
 }

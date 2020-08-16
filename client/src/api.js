@@ -183,35 +183,36 @@ export const apiUser = {
   // Request to delete a user account
   deleteUserAccount: (profile_id) => instance.delete(`profiles/${profile_id}`),
 
-    /**
-     * Makes a request to update a user's role for an activity
-     * @param profileId the id of the user
-     * @param activityId the id of the activity
-     * @param email the email of the user whose role requires updating
-     * @param activityRole the user's role for the activity ie follower, participant, organiser or creator
-     * @returns {Promise<AxiosResponse<any>>}
-     */
-    editUserRoleForActivity: (profileId, activityId, email, activityRole) =>
-        instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`,
-            {
-                email: email,
-                activityRole: activityRole
-            }),
-    //
+  /**
+   * Makes a request to update a user's role for an activity
+   * @param profileId the id of the user
+   * @param activityId the id of the activity
+   * @param email the email of the user whose role requires updating
+   * @param activityRole the user's role for the activity ie follower, participant, organiser or creator
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  editUserRoleForActivity: (profileId, activityId, email, activityRole) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/subscriber`,
+    {
+        email: email,
+        activityRole: activityRole
+    }),
+
     isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
 
-  /**
-   * API call to retrieve the home feed details for a user
-   * @param profileId the id of the user that requires feed retrieval
-   * @param page the page number
-   * @param size how many posts we want for each page
-   * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
-   */
-  getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
-    {params: {
-      page: page,
-      size: size
-      }
+    /**
+     * API call to retrieve the home feed details for a user
+     * @param profileId the id of the user that requires feed retrieval
+     * @param page the page number
+     * @param size how many posts we want for each page
+     * @returns {Promise<AxiosResponse<any>>} returns the feed for the user
+     */
+    getUserFeed: (profileId, page, size) => instance.get(`/profiles/${profileId}/feed`,
+    {
+        params: {
+            page: page,
+            size: size
+        }
     }),
 };
 
@@ -293,7 +294,7 @@ export const apiActivity = {
     instance.get(`/profiles/${profileId}/activities/${activityId}/achievements`),
 
   deleteActivity: (authorId, activityId) =>
-      instance.delete(`/profiles/${authorId}/activities/${activityId}`),
+    instance.delete(`/profiles/${authorId}/activities/${activityId}`),
 
   getParticipants: (activityId, page, size) =>
     instance.get(`/activities/${activityId}/participants/`, {
@@ -313,17 +314,17 @@ export const apiActivity = {
 
   async getActivityById(activityId) {
     let activity = await apiActivity.getActivity(activityId).then(
-        (response) => {
-          for (let i = 0; i < response.data.activity_type.length; i++) {
-            response.data.activity_type[i].name = response.data.activity_type[i].name.replace(/-/g, " ")
-          }
-          return response.data;
-        },
-        (error) => {
-          if (error) {
-            return "Invalid permissions";
-          }
+      (response) => {
+        for (let i = 0; i < response.data.activity_type.length; i++) {
+          response.data.activity_type[i].name = response.data.activity_type[i].name.replace(/-/g, " ")
         }
+        return response.data;
+      },
+      (error) => {
+        if (error) {
+          return "Invalid permissions";
+        }
+      }
     );
     return await activity;
   },
@@ -350,7 +351,7 @@ export const apiActivity = {
   },
 
   followActivity: (profileId, activityId) =>
-      instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+    instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
 
   unfollowActivity: (profileId, activityId) =>
       instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
@@ -400,5 +401,8 @@ export const apiActivity = {
     optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
 
     getActivityStats: (activityId) =>
-        instance.get(`/activities/${activityId}/stats`)
+        instance.get(`/activities/${activityId}/stats`),
+
+    checkUserActivityVisibility: (profileId, activityId) =>
+        instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
 };

@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -140,8 +141,8 @@ public class Activity {
     }
 
     public void addUsers(User user) {
-        user.followActivity(this);
-        users.add(user);
+        this.usersShared.add(user);
+        user.addActivitiesShared(this);
     }
 
     public void setUsers(Set<User> users) {
@@ -231,6 +232,12 @@ public class Activity {
 
     public void setUsersShared(Set<User> usersShared) {
         this.usersShared = usersShared;
+    }
+
+    // add user who got shared the activity and add user back to the activity
+    public void addSharedUser(User user) {
+        this.usersShared.add(user);
+        user.addActivitiesShared(this);
     }
 
     @Override
