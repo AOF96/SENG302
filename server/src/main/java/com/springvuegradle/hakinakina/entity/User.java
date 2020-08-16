@@ -113,7 +113,6 @@ public class User {
 
     @JsonIgnore
     @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
-    @JsonIgnore
     private Set<Activity> activitiesShared = new HashSet<>();
 
     @JsonIgnore
