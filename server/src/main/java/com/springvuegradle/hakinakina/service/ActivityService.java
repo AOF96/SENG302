@@ -698,6 +698,8 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 User user = userRepository.getUserById(profileId).get();
+                UserActivityKey userActivityKey = new UserActivityKey(profileId, activityId);
+                userActivityRoleRepository.deleteById(userActivityKey);
                 activity.removeUser(user);
                 activityRepository.save(activity);
                 userRepository.save(user);
