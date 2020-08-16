@@ -831,9 +831,7 @@ public class ActivityService {
             result = responseHandler.formatErrorResponseString(404, "Achievement not found");
         } else {
             List<Result> outcome = resultRepository.findAllByAchievement_Id(achievementId);
-            if (outcome.isEmpty()) {
-                result = responseHandler.formatErrorResponseString(404, "Result not found");
-            } else {
+             if(!outcome.isEmpty()) {
                 List<ResultDto> allResults = new ArrayList<>();
                 for (int i = 0; i < outcome.size(); i++) {
                     ResultDto dto = new ResultDto();
@@ -845,8 +843,10 @@ public class ActivityService {
                 }
                 result = new ResponseEntity(allResults, HttpStatus.OK);
             }
+             else {
+                 result = new ResponseEntity(outcome, HttpStatus.OK);
+             }
         }
-        System.out.println(result);
         return result;
     }
 }

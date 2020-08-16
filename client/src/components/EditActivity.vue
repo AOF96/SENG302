@@ -432,7 +432,7 @@
                       right
                       :disabled="overlayLoader"
               >
-                Update Activity
+                Save Activity
               </v-btn>
             </v-row>
           </v-card>
@@ -634,16 +634,22 @@ export default {
     },
 
     /**
-     * Used to manage the delete pop up box when deleting an achievement
+     * Used to manage the delete pop up box when deleting an achievement.
+     * Makes an api call and checks if any results are associated with the selected achievement.
      * */
-    openDeletePopUp(achievement){
+    async openDeletePopUp(achievement){
+      let result = await apiActivity.getResults(achievement.id)
+      if(result.data.length > 0) {
+        this.displayError("This achievement has results associated with it. You cannot delete it anymore.");
+        return;
+      }
       this.deleteDialog = true;
       this.tempAchievement = achievement;
     },
     /**
      * The function deletes a specific achievements from the list of achievement.
      * */
-    deleteAchievement(achievement){
+     deleteAchievement(achievement){
       apiActivity.deleteActivityAchievement(this.user.profile_id, this.$route.params.activityId, achievement.id);
       this.loadActivity();
       this.tempAchievement = null;
@@ -651,15 +657,16 @@ export default {
     },
 
     /**
-     * Assigns the temp achievement to the selected achievement form the list of achievements
+     * Assigns the temp achievement to the selected achievement form the list of achievements.
+     * Makes an api call and checks if any results are associated with the selected achievement.
      **/
-    setTempAchievement(achievement){
+    async setTempAchievement(achievement){
 
-      // check if the response from the endpoint has any results entered against this achievement
-      //if any results are entered then open a pop up to let the user know they cannot delete /edit this anymore
-      // make the call to the function that opens that pop up
-      //else let the user edit the activity
-      console.log(this.achievements);
+      let result = await apiActivity.getResults(achievement.id)
+      if(result.data.length > 0) {
+        this.displayError("This achievement has results associated with it. You cannot edit it anymore.");
+        return;
+      }
       this.index = this.achievements.indexOf(achievement);
       this.tempAchievement = this.achievements[this.index];
       this.tempTitle = achievement.name;

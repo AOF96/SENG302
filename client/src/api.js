@@ -388,7 +388,7 @@ export const apiActivity = {
    * @param achievementId
    * @returns {Promise<AxiosResponse<any>>}
    */
-  getResults: (achievementId) =>
+   getResults: (achievementId) =>
     instance.get(`/activities/achievements/${achievementId}/results`),
 
     getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{
