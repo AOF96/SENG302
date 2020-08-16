@@ -199,7 +199,7 @@ export const apiUser = {
             }),
     //
     isUserFollowingActivitiy: (userId, activityId) => instance.get('/profiles/' + userId + '/subscriptions/activities/' + activityId),
-    
+
   /**
    * API call to retrieve the home feed details for a user
    * @param profileId the id of the user that requires feed retrieval
@@ -275,14 +275,14 @@ export const apiActivity = {
       instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`,{
       name: name,
       description: description,
-      result_type: resultType
+      resultType: resultType
   }),
 
   editActivityAchievement: (profileId, activityId, achievementId, name, description, resultType) =>
       instance.put(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`, {
       name: name,
       description: description,
-      result_type: resultType
+      resultType: resultType
   }),
 
 
@@ -376,12 +376,11 @@ export const apiActivity = {
       instance.get(`/profiles/${profileId}/achievements/${achievementId}/results/${resultId}`),
   /**
    * Sends a get request to retrieve all results
-   * @param activityId
    * @param achievementId
    * @returns {Promise<AxiosResponse<any>>}
    */
-  getResults: (activityId, achievementId) =>
-    instance.get(`/activities/${activityId}/achievements/${achievementId}/results`),
+  getResults: (achievementId) =>
+    instance.get(`/activities/achievements/${achievementId}/results`),
 
     getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{
         params: {

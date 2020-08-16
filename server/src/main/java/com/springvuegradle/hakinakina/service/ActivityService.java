@@ -544,7 +544,6 @@ public class ActivityService {
                 Activity activityToUpdate = activityRepository.getOne(activityId);
                 activityToUpdate.addAchievement(achievementToAdd);
                 activityRepository.save(activityToUpdate);
-                achievementRepository.save(achievementToAdd);
 
                 result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
             }
@@ -817,6 +816,37 @@ public class ActivityService {
                 result = new ResponseEntity(dto, HttpStatus.OK);
             }
         }
+        return result;
+    }
+
+    /***
+     * Makes a query to the database to retrieve a result with the given ID.
+     * @param achievementId the id of the achievement that contains the result.
+     * @return a 200 response with the all te results result if any exists, otherwise a 404 response code.
+     */
+    public ResponseEntity retrieveAllResult(Long achievementId) {
+        ResponseEntity result;
+
+        if (achievementRepository.findById(achievementId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "Achievement not found");
+        } else {
+            List<Result> outcome = resultRepository.findAllByAchievement_Id(achievementId);
+            if (outcome.isEmpty()) {
+                result = responseHandler.formatErrorResponseString(404, "Result not found");
+            } else {
+                List<ResultDto> allResults = new ArrayList<>();
+                for (int i = 0; i < outcome.size(); i++) {
+                    ResultDto dto = new ResultDto();
+                    dto.setId(outcome.get(i).getId());
+                    dto.setAchievementId(outcome.get(i).getAchievement().getId());
+                    dto.setUserId(outcome.get(i).getUser().getUserId());
+                    dto.setValue(outcome.get(i).getValue());
+                    allResults.add(dto);
+                }
+                result = new ResponseEntity(allResults, HttpStatus.OK);
+            }
+        }
+        System.out.println(result);
         return result;
     }
 }

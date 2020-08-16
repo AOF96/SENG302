@@ -57,6 +57,12 @@ public class ActivityServiceTest {
     @Captor
     ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
 
+    @Mock
+    private AchievementRepository achievementRepository;
+
+    @Mock
+    private ResultRepository resultRepository;
+
     @BeforeAll
     public void setUp(){
         MockitoAnnotations.initMocks(this);
@@ -306,6 +312,22 @@ public class ActivityServiceTest {
         activityChangesList.remove(activityChanges);
         when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(0, activityChangesList.size());
+    }
+
+    @Test
+    public void addResultTest() {
+        Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
+        User user = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        Result result = new Result("1.53");
+
+        when(achievementRepository.findAchievementById((long) 1)).thenReturn(achievement);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
+
+        ResponseEntity<String> response = service.addResult(result, (long) 1, (long) 1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test

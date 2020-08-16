@@ -64,8 +64,8 @@ public class Result {
         return "Result{" +
                 "id=" + id +
                 ", value='" + value + '\'' +
-                ", achievement=" + achievement.getId() +
-                ", user=" + user.getUserId() +
+                ", achievement=" + achievement +
+                ", user=" + user +
                 '}';
     }
 }
