@@ -23,6 +23,7 @@ const baseUrl = process.env.BASE_URL;
 
 const routes = [
     {
+        name: "profilePage",
         path: '/profile/:profileId',
         component: Profile
     },

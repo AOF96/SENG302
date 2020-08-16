@@ -17,6 +17,17 @@
             required
           />
 
+          <label class="editActivityLabel" for="time">Visibility</label>
+          <select
+                  class="editActivitySelect"
+                  id="visibility"
+                  v-model="visibility"
+          >
+            <option value="public" selected>Public</option>
+            <option value="restricted">Restricted</option>
+            <option value="private">Private</option>
+          </select>
+
           <label class="editActivityLabel" for="time">Continuous?</label>
           <select class="editActivitySelect" id="time" v-model="duration">
             <option value="continuous">Continuous</option>
@@ -64,6 +75,7 @@
                 id="inputCity"
                 outlined
                 class="locationCombo"
+                autocomplete="new"
                 dense
                 style="margin: 0 20px;"
             />
@@ -84,6 +96,7 @@
                 id="inputState"
                 outlined
                 class="locationCombo"
+                autocomplete="new"
                 dense
                 style="margin: 0 20px;"
             />
@@ -100,6 +113,7 @@
                 id="inputCountry"
                 outlined
                 class="locationCombo"
+                autocomplete="new"
                 dense
                 style="margin: 0 20px;"
             />
@@ -183,6 +197,7 @@ export default {
       author_id: null,
       suggestedLocations: [],
       showLocations: false,
+      visibility: null,
       city: null,
       country: null,
       state: null,
@@ -201,7 +216,11 @@ export default {
    * countries for the user to choose.
    */
   mounted: function() {
-    this.loadCountries();
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+        this.loadCountries();
+      }
   },
 
   computed: {
@@ -228,7 +247,6 @@ export default {
     await apiUser
       .getActivityTypes()
       .then(response => {
-        console.log(response.data);
         this.activities_option = response.data;
         for (let i = 0; i < this.activities_option.length; i++) {
           this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
@@ -315,18 +333,22 @@ export default {
           this.description = tempActivityData.description;
           this.activity_type = tempActivityData.activity_type.slice();
           this.location = tempActivityData.location;
+          this.visibility = tempActivityData.visibility;
+
           for (let i = 0; i < tempActivityData.activity_type.length; i++) {
             tempActivityData.activity_type[i].name = tempActivityData.activity_type[i].name.replace(/-/g, " ")
           }
-          let cityStateCountry = this.location.split(",");
-          if(typeof cityStateCountry[0] !== 'undefined'){
-            this.city = cityStateCountry[0];
-          }
-          if(typeof cityStateCountry[1] !== 'undefined'){
-            this.state = cityStateCountry[1];
-          }
-          if(typeof cityStateCountry[2] !== 'undefined'){
-            this.country = cityStateCountry[2];
+          if(typeof this.location !== 'undefined' & this.location != null){
+            let cityStateCountry = this.location.split(",");
+            if(typeof cityStateCountry[0] !== 'undefined'){
+              this.city = cityStateCountry[0];
+            }
+            if(typeof cityStateCountry[1] !== 'undefined'){
+              this.state = cityStateCountry[1];
+            }
+            if(typeof cityStateCountry[2] !== 'undefined'){
+              this.country = cityStateCountry[2];
+            }
           }
           this.activity_types_selected = tempActivityData.activity_type.map(
             e => e.name
@@ -533,6 +555,7 @@ export default {
           this.description,
           this.location,
           this.activity_types_selected,
+          this.visibility,
           this.$route.params.activityId
         )
         .then(
@@ -555,6 +578,7 @@ export default {
           }
         );
     },
+
     /**
      * The method is used to filter out the feature object without any cities
      */
@@ -567,6 +591,7 @@ export default {
       }
       return featuresCity;
     },
+
     /**
      * The method is used to filter out the feature object without any states
      */
@@ -579,6 +604,7 @@ export default {
       }
       return featuresState;
     },
+
     deleteActivity() {
       apiActivity
         .deleteActivity(this.user.profile_id, this.$route.params.activityId)

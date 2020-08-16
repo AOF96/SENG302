@@ -1,18 +1,14 @@
 package com.springvuegradle.hakinakina.service_tests;
 
+import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.entity.*;
-import com.springvuegradle.hakinakina.repository.ActivityChangeRepository;
-import com.springvuegradle.hakinakina.repository.ActivityRepository;
-import com.springvuegradle.hakinakina.repository.SessionRepository;
-import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -25,6 +21,9 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -43,6 +42,12 @@ public class ActivityServiceTest {
 
     @Mock
     private ActivityChangeRepository activityChangeRepository;
+
+    @Mock
+    private UserActivityRoleRepository userActivityRoleRepository;
+
+    @Captor
+    ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
 
     @BeforeAll
     public void setUp(){
@@ -293,5 +298,120 @@ public class ActivityServiceTest {
         activityChangesList.remove(activityChanges);
         when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(0, activityChangesList.size());
+    }
+
+    @Test
+    public void updateActivityVisibilityTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.PUBLIC);
+
+        activity.setVisibility(Visibility.PRIVATE);
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals(Visibility.PUBLIC, activity.getVisibility());
+    }
+
+    @Test
+    public void updateActivityVisibilitySetSharedUsersTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "participant");
+        accessors.add(accessor1);
+        User accessor1User = new User("John", "Smith", "john@gmail.com",
+                null, Gender.MALE, 2, "Password1");
+
+        Map<String, String> accessor2 = new HashMap<>();
+        accessor2.put("email", "jane@mail.com");
+        accessor2.put("role", "organiser");
+        accessors.add(accessor2);
+        User accessor2User = new User("Jane", "Smith", "jane@gmail.com",
+                null, Gender.FEMALE, 2, "Password1");
+        dto.setAccessors(accessors);
+
+        ActivityService serviceSpy = Mockito.spy(service);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(1L);
+        when(userRepository.getOne(1L)).thenReturn(accessor1User);
+        when(userRepository.getIdByAnyEmail("jane@mail.com")).thenReturn(2L);
+        when(userRepository.getOne(2L)).thenReturn(accessor2User);
+        doNothing().when(userActivityRoleRepository).deleteByActivity(activity);
+        Mockito.doNothing().when(serviceSpy).saveRelationships(anyList());
+        //Mockito.verify(serviceSpy).saveRelationships(userActivityRoleListCaptor.capture());
+        //List<UserActivityRole> relationships = userActivityRoleListCaptor.getValue();
+
+        //service.updateActivityVisibility(1L, 1L, dto);
+        //System.out.println(relationships);
+    }
+
+    @Test
+    public void updateActivityVisibilityInvalidRoleTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "owner");
+        accessors.add(accessor1);
+        dto.setAccessors(accessors);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals("{\"message\":\"No such role as: owner\"}", response.getBody());
+    }
+
+    @Test
+    public void updateActivityVisibilityNonExistentUserIdTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "participant");
+        accessors.add(accessor1);
+        dto.setAccessors(accessors);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(null);
+        ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals("{\"message\":\"No user with email: john@mail.com\"}", response.getBody());
+    }
+
+    @Test
+    public void updateActivityVisibilityAddOwnerTest() {
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
+                false, null, null, "Ireland");
+        User author = new User("John", "Smith", "john@gmail.com",
+                null, Gender.MALE, 2, "Password1");
+        author.setUserId(1L);
+        activity.setAuthor(author);
+        ActivityVisibilityDto dto = new ActivityVisibilityDto();
+        dto.setVisibility(Visibility.RESTRICTED);
+
+        List<Map<String, String>> accessors = new ArrayList<>();
+        Map<String, String> accessor1 = new HashMap<>();
+        accessor1.put("email", "john@mail.com");
+        accessor1.put("role", "participant");
+        accessors.add(accessor1);
+        dto.setAccessors(accessors);
+
+        when(activityRepository.findActivityById(1L)).thenReturn(activity);
+        when(userRepository.getIdByAnyEmail("john@mail.com")).thenReturn(1L);
+        ResponseEntity response = service.updateActivityVisibility(1L, 1L, dto);
+        assertEquals("{\"message\":\"Cannot add the activity author as a shared User.\"}", response.getBody());
     }
 }

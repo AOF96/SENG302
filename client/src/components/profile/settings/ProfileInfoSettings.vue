@@ -63,6 +63,7 @@
               id="inputCity"
               outlined
               class="locationCombo"
+              autocomplete="new"
               dense
           />
           <v-combobox
@@ -82,6 +83,7 @@
               id="inputState"
               outlined
               class="locationCombo"
+              autocomplete="new"
               dense
           />
           <v-combobox
@@ -97,6 +99,7 @@
               id="inputCountry"
               outlined
               class="locationCombo"
+              autocomplete="new"
               dense
           />
           <div v-if="showLocations && suggestedLocations.length > 0" class="locationDropdown">
@@ -465,14 +468,18 @@ export default {
       }
     },
 
-    /**
-     * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
-     * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
-     * duplicate summaries are removed.
-     */
-    mounted() {
-      this.loadSearchedUser();
-      this.loadCountries();
-    }
-  };
+  /**
+   * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
+   * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
+   * duplicate summaries are removed.
+   */
+  mounted() {
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+        this.loadSearchedUser();
+        this.loadCountries();
+      }
+  }
+};
 </script>

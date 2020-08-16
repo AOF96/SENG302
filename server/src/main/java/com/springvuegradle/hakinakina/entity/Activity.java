@@ -18,7 +18,8 @@ import java.util.Set;
  */
 @Entity
 public class Activity {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "activity_id")
     private Long id;
 
@@ -36,11 +37,11 @@ public class Activity {
     private String description;
 
     @JsonProperty("activity_type")
-    @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
             name = "Activity_ActivityType",
-            joinColumns = { @JoinColumn(name = "activity_id") },
-            inverseJoinColumns = { @JoinColumn(name = "type_id") }
+            joinColumns = {@JoinColumn(name = "activity_id")},
+            inverseJoinColumns = {@JoinColumn(name = "type_id")}
     )
     private Set<ActivityType> activityTypes = new HashSet<>();
 
@@ -64,10 +65,27 @@ public class Activity {
     @ManyToOne
     private User author;
 
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "activity")
+    private Set<UserActivityRole> userActivityRoles;
+
+    @ManyToMany(cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+    @JsonIgnore
+    @JoinTable(
+            name = "User_Activities_Shared",
+            joinColumns = { @JoinColumn(name = "activity_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
+    private Set<User> usersShared = new HashSet<>();
+
+
     @OneToMany(mappedBy = "activity")
     private Set<ActivityChange> changes = new HashSet<>();
 
-    protected Activity() {}
+    @Column(name = "visibility")
+    private Visibility visibility;
+
+    public Activity() {}
 
     public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
         this.name = name;
@@ -91,9 +109,17 @@ public class Activity {
         return users;
     }
 
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
+    }
+
     public void addUsers(User user) {
-        user.followActivity(this);
-        users.add(user);
+        this.usersShared.add(user);
+        user.addActivitiesShared(this);
     }
 
     public void setUsers(Set<User> users) {
@@ -167,6 +193,28 @@ public class Activity {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public Set<UserActivityRole> getUserActivityRoles() {
+        return userActivityRoles;
+    }
+
+    public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
+        this.userActivityRoles = userActivityRoles;
+    }
+
+    public Set<User> getUsersShared() {
+        return usersShared;
+    }
+
+    public void setUsersShared(Set<User> usersShared) {
+        this.usersShared = usersShared;
+    }
+
+    // add user who got shared the activity and add user back to the activity
+    public void addSharedUser(User user) {
+        this.usersShared.add(user);
+        user.addActivitiesShared(this);
     }
 
     @Override
@@ -247,7 +295,9 @@ public class Activity {
         if (this.getLocation() != null && !this.getLocation().equals(other.getLocation())) {
             differences.add(ActivityAttribute.LOCATION);
         }
-
+        if (this.getVisibility() != null && !this.getVisibility().equals(other.getVisibility())) {
+            differences.add(ActivityAttribute.VISIBILITY);
+        }
         boolean sameUsers = true;
         if (!(this.getUsers().size() == other.getUsers().size())) {
             sameUsers = false;

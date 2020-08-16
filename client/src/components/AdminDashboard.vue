@@ -26,6 +26,11 @@
                 searchedUser: {}
             }
         },
+        mounted() {
+            if (!this.user.isLogin || !this.user.isAdmin()) {
+                this.$router.push('/login');
+            }
+        },
         methods:{
             openSearch() {
                 document.getElementById("myOverlay").style.display = "block";

@@ -1,6 +1,9 @@
 package com.springvuegradle.hakinakina.startup;
 
+import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.entity.Visibility;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ public class StartUpListener {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ActivityRepository activityRepository;
+
     private String email = "passageAdmin@gmail.com";
 
 
@@ -37,6 +43,7 @@ public class StartUpListener {
         try {
             updatePermissionsInDatabase();
             createDefaultAdmin(defaultAdmin);
+            updateActivityVisibility();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,5 +92,12 @@ public class StartUpListener {
         userRepository.save(u);
     }
 
-
+    private void updateActivityVisibility() {
+        for (Activity activity : activityRepository.findAll()) {
+            if (activity.getVisibility() == null) {
+                activity.setVisibility(Visibility.PUBLIC);
+                activityRepository.save(activity);
+            }
+        }
+    }
 }
