@@ -17,11 +17,9 @@ public class ActivityType {
     private String name;
 
     @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
-    @JsonBackReference
     private Set<User> users = new HashSet<>();
 
     @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
-    @JsonBackReference
     private Set<Activity> activities = new HashSet<>();
 
     protected ActivityType() {}
