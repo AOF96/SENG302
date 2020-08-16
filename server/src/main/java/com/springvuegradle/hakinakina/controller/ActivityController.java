@@ -30,6 +30,7 @@ public class ActivityController {
     public SessionRepository sessionRepository;
     public ActivityRepository activityRepository;
     private ActivityService activityService;
+    private AchievementRepository achievementRepository;
 
     private ResponseHandler responseHandler;
 
@@ -44,12 +45,13 @@ public class ActivityController {
      */
     public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
                               SessionRepository sessionRepository, ActivityService activityService,
-                              ActivityRepository activityRepository) {
+                              ActivityRepository activityRepository, AchievementRepository achievementRepository) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.achievementRepository = achievementRepository;
     }
 
     /**
@@ -352,5 +354,41 @@ public class ActivityController {
             long userId = userRepository.getIdByAnyEmail(email);
             return activityService.optOutOfActivity(activityId, userId);
         }
+    }
+
+    /**
+     * Handles request to add a new result
+     * @param result Result to add
+     * @param profileId Id of profile to add to
+     * @param achievementId Id of achievement to add to
+     * @param sessionToken Session of user sending the request
+     * @return ResponseEntity of result of the operation
+     */
+    @PostMapping("/profiles/{profileId}/achievements/{achievementId}/results")
+    public ResponseEntity<String> addResult(@Valid @RequestBody Result result,
+                                            @PathVariable("profileId") long profileId,
+                                            @PathVariable("achievementId") long achievementId,
+                                            @CookieValue(value = "s_id") String sessionToken) {
+        if (achievementRepository.findAchievementById(achievementId) == null) {
+            return new ResponseEntity<>("Achievement not found", HttpStatus.NOT_FOUND);
+        } else if (!userRepository.findById(profileId).isPresent()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        } else if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+            return new ResponseEntity<>("Session invalid", HttpStatus.UNAUTHORIZED);
+        } else {
+            return activityService.addResult(result, profileId, achievementId);
+        }
+    }
+
+    /***
+     * Handles the request to retrieve a single result for the given achievement.
+     * @param profileId the if of the user making the request.
+     * @param achievementId the id of the achievement that contains the result.
+     * @param resultId the id of the requested result.
+     * @return a 200 response with the requested result if it exists, otherwise a 404 response code.
+     */
+    @GetMapping("/profiles/{profileId}/achievements/{achievementId}/results/{resultId}")
+    public ResponseEntity getOneResult(@PathVariable Long profileId, @PathVariable Long achievementId, @PathVariable Long resultId) {
+        return activityService.retrieveOneResult(profileId, achievementId, resultId);
     }
 }

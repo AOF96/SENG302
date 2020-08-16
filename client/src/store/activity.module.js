@@ -97,6 +97,38 @@ const actions = {
     },
     async editUserActivityRole(data, {'userId': userId ,'activityId': activityId, 'role': role, 'email': email}) {
         return await apiActivity.editUserActivityRole(userId, activityId, role, email);
+    },
+    /**
+     * Calls the api to send a request to add a result
+     * @param data
+     * @param profileId Id of profile
+     * @param achievementId Id of achievement to add result to
+     * @param value value of result
+     * @returns {Promise<AxiosResponse<T>>}
+     */
+    async addResult(data, {'profileId': profileId, 'achievementId': achievementId, 'value': value}) {
+        return await apiActivity.addResult(profileId, achievementId, value);
+    },
+    /**
+     * Calls the api to send a get request to retrieve one result
+     * @param data
+     * @param profileId Id of profile
+     * @param achievementId Id of achievement
+     * @param resultId Id of result
+     * @returns {Promise<AxiosResponse<T>>}
+     */
+    async getOneResult(data, {'profileId': profileId, 'achievementId': achievementId, 'resultId': resultId}) {
+        return await apiActivity.getOneResult(profileId, achievementId, resultId);
+    },
+    /**
+     * Calls the api to send a get request to retrieve all achievements
+     * @param data
+     * @param activityId Id of the activity
+     * @param achievementId Id of the achievement
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    async getResults(data, {'activityId': activityId, 'achievementId': achievementId}) {
+        return await apiActivity.getResults(activityId, achievementId);
     }
 };
 

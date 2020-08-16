@@ -4,6 +4,7 @@ import com.springvuegradle.hakinakina.dto.AchievementDto;
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class ActivityService {
     public SearchRepository searchRepository;
     public ActivityChangeRepository activityChangeRepository;
     public AchievementRepository achievementRepository;
+    public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
     private SearchService searchService;
@@ -49,6 +52,7 @@ public class ActivityService {
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
                            SearchService searchService) {
+                           ResultRepository resultRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
@@ -56,6 +60,7 @@ public class ActivityService {
         this.sessionRepository = sessionRepository;
         this.achievementRepository = achievementRepository;
         this.activityChangeRepository = activityChangeRepository;
+        this.resultRepository = resultRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
@@ -220,6 +225,7 @@ public class ActivityService {
      */
     private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
         Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
+        System.out.println(activityChanges);
         StringBuilder description = new StringBuilder();
         for (ActivityAttribute attribute : activityChanges) {
             if (attribute == ActivityAttribute.NAME) {
@@ -510,6 +516,7 @@ public class ActivityService {
                 Activity activityToUpdate = activityRepository.getOne(activityId);
                 activityToUpdate.addAchievement(achievementToAdd);
                 activityRepository.save(activityToUpdate);
+                achievementRepository.save(achievementToAdd);
 
                 result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
             }
@@ -736,5 +743,52 @@ public class ActivityService {
             ErrorHandler.printProgramException(e, "Cannot delete user role");
             return responseHandler.formatErrorResponseString(500, "An error occurred");
         }
+    }
+
+    /**
+     * Adds a new result to the repository
+     * @param result Result to add
+     * @param profileId Id of user setting result
+     * @param achievementId Id of achievement to add to
+     * @return ResponseEntity containing result of the operation
+     */
+    public ResponseEntity<String> addResult(Result result, Long profileId, Long achievementId) {
+        Achievement achievement = achievementRepository.findAchievementById(achievementId);
+        User user = userRepository.findById(profileId).get();
+        resultRepository.save(result);
+        achievement.addResult(result);
+        user.addResult(result);
+        achievementRepository.save(achievement);
+        userRepository.save(user);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+
+    /***
+     * Makes a query to the database to retrieve a result with the given ID.
+     * @param profileId the if of the user making the request.
+     * @param achievementId the id of the achievement that contains the result.
+     * @param resultId the id of the requested result.
+     * @return a 200 response with the requested result if it exists, otherwise a 404 response code.
+     */
+    public ResponseEntity retrieveOneResult(Long profileId, Long achievementId, Long resultId) {
+        ResponseEntity result;
+        if (userRepository.getUserById(profileId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "User not found");
+        } else if (achievementRepository.findById(achievementId).isEmpty()) {
+            result = responseHandler.formatErrorResponseString(404, "Achievement not found");
+        } else {
+            Optional<Result> outcome = resultRepository.findById(resultId);
+            if (outcome.isEmpty()) {
+                result = responseHandler.formatErrorResponseString(404, "Result not found");
+            } else {
+                ResultDto dto = new ResultDto();
+                dto.setId(outcome.get().getId());
+                dto.setAchievementId(outcome.get().getAchievement().getId());
+                dto.setUserId(outcome.get().getUser().getUserId());
+                dto.setValue(outcome.get().getValue());
+                result = new ResponseEntity(dto, HttpStatus.OK);
+            }
+        }
+        return result;
     }
 }

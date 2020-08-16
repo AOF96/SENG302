@@ -2,6 +2,8 @@ package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.springvuegradle.hakinakina.serialize.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,6 +17,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -137,11 +140,15 @@ public class User {
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL
+//            orphanRemoval = true
     )
     private Set<Session> sessions = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     private Set<UserActivityRole> userActivityRoles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Result> results;
 
     public User() {}
 
@@ -179,6 +186,11 @@ public class User {
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Error while creating password.");
         }
+    }
+
+    public void addResult(Result result) {
+        results.add(result);
+        result.setUser(this);
     }
 
     public void addEmail(Email email) {
@@ -412,10 +424,10 @@ public class User {
     @Override
     public String toString() {
         String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
-                "\nNickname: " + getNickName() + "\nEmails: " + getEmails().toString() + "\nBio: " + getBio() +
-                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString()
+                "\nNickname: " + getNickName() + "\nEmails: " + getEmails() + "\nBio: " + getBio() +
+                "\nDate of Birth: " + getBirthDate() + "\nGender: " + getGender()
                 + "\nPassword: " + getPassword() + "\nFitness Level: " + getFitnessLevel() +
-                "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
+                "\nPassport Countries: " + getPassportCountries() + "\nSalt: " + getSalt() +
                 "\nPrimary Email: " + getPrimaryEmail();
         return result;
     }
