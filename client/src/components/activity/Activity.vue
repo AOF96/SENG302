@@ -5,7 +5,10 @@
     <div class="activityWrap">
       <v-container fluid grid-list-md fill-height fill-width>
         <v-layout row wrap width="600px">
-          <v-snackbar outlined color="error" :timeout="timeout" :value="snackbar" top>{{ errorMessage }}</v-snackbar>
+          <v-snackbar v-model="snackbar">
+            {{ errorMessage }}
+            <v-btn color="primary" text @click="snackbar = false" > Close </v-btn>
+          </v-snackbar>
           <v-flex>
             <v-card class="activityContainer" :loading="loadingActivity">
               <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
@@ -340,7 +343,7 @@
                 </v-flex>
 
                 <v-flex>
-                    <AchievementsCard v-bind:achievements="achievements"/>
+                    <AchievementsCard v-bind:achievements="achievements" :snackbar.sync="snackbar" :errorMessage.sync="errorMessage"/>
                 </v-flex>
               </v-layout>
             </v-flex>

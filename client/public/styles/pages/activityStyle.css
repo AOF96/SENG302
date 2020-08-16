@@ -378,6 +378,7 @@
     height: fit-content;
     width: 450px;
     padding: 15px;
+    border-radius: 15px !important;
 }
 
 .activityPageCardTextField {
@@ -435,8 +436,7 @@
 }
 
 .achievementSaveButton {
-    margin-top: 2px;
-    border-radius: 21px !important;
+    margin-left: 10px;
 }
 
 .v-text-field__details {
@@ -450,7 +450,8 @@
 }
 
 .achievementCard {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    border-radius: 15px !important;
 }
 
 .achievementsContainer {

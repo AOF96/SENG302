@@ -1,84 +1,124 @@
 <template>
-  <v-card id="achievementCard" class="activityPageCard">
-    <h2 id="achievementCardTitle">Achievements</h2>
-    <v-container class="achievementsContainer">
-      <v-card class="achievementCard" v-for="achievement in achievements" v-bind:key="achievement.id" flat outlined>
-        <v-container>
-          <v-row>
-            <v-col class="achievementCol">
-              <h3>{{achievement.name}}</h3>
-            </v-col>
-            <v-col class="achievementCol">
-              <v-tooltip top max-width="500px">
-                <template v-slot:activator="{ on }">
-                  <v-icon v-on="on">mdi-help-circle-outline</v-icon>
-                </template>
-                <span style="color: white;">{{achievement.description}}</span>
-              </v-tooltip>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="5" class="achievementCol">
-              <p class="achievementText">Latest Result: {{latestResult}}</p>
-            </v-col>
-            <v-col cols="4" class="achievementCol">
-              <v-menu v-if="achievement.resultType === 'time'"
-                      ref="menu"
-                      v-model="menu2"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      :return-value.sync="result"
-                      transition="scale-transition"
-                      offset-y
-                      max-width="290px"
-                      min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                          v-model="result"
-                          label="New Result"
-                          outlined
-                          dense
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                  />
-                </template>
-                <v-time-picker
-                        ampm-in-title
-                        v-if="menu2"
-                        v-model="result"
-                        full-width
-                        @click:minute="$refs.menu.save(result)"
-                />
-              </v-menu>
-
-              <v-text-field v-else
-                label="New Result"
-                outlined
-                dense
-              >
-              </v-text-field>
-            </v-col>
-            <v-col cols="3" class="achievementCol">
-              <v-btn id="resultSaveButton" color="primary" class="achievementSaveButton" outlined>Save</v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-container>
+  <v-card id="achievementCard" class="activityPageCard" :loading="loading" :disabled="loading">
+    <h2 id="achievementCardTitle" style="padding-bottom:10px;">Achievements</h2>
+    <v-card  class="achievementCard" v-for="achievement in achievements" v-bind:key="achievement.id" outlined >
+      <v-row no-gutters style="padding: 10px 15px 9px;">
+        <h3 style="padding-right: 5px;">{{achievement.name}}</h3>
+        <v-tooltip bottom max-width="500px">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+          </template>
+          <span style="color: white;">{{achievement.description}}</span>
+        </v-tooltip>
+      </v-row>
+      <v-divider></v-divider>
+      <v-container style="max-height: 200px;overflow-y: auto;">
+        <h4 style="padding:5px 0;" v-for="(results, index) in results[achievement.id]" v-bind:key="index">{{index+1}}: {{results.value}}</h4>
+      </v-container>
+      <v-divider></v-divider>
+      <v-row no-gutters style="padding: 10px 10px 6px;">
+        <v-menu v-if="achievement.resultType === 'time'"
+                ref="menu"
+                v-model="menu2"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                :return-value.sync="inputBind[achievement.id]"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+                    v-model="inputBind[achievement.id]"
+                    label="New Result"
+                    outlined
+                    dense
+                    rounded
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+            />
+          </template>
+          <v-time-picker
+                  ampm-in-title
+                  v-if="menu2"
+                  v-model="inputBind[achievement.id]"
+                  full-width
+                  @click:minute="$refs.menu.save(inputBind[achievement.id])"
+          />
+        </v-menu>
+        <v-text-field v-else
+                      label="New Result"
+                      outlined
+                      rounded
+                      dense
+                      v-model="inputBind[achievement.id]">
+        </v-text-field>
+        <v-btn id="resultSaveButton" color="primary" height="40px" class="achievementSaveButton" @click="saveResult(achievement.id)" outlined rounded>Save</v-btn>
+      </v-row>
+    </v-card>
   </v-card>
 </template>
 
 <script>
+  import {apiActivity} from "../../../api";
+  import {mapGetters} from "vuex";
   export default {
     name: "AchievementsCard",
-    props: ['achievements'],
+    props: ['achievements', 'snackbar', 'errorMessage'],
     data() {
       return {
         latestResult: "0:41",
-        result: null,
-        menu2: false
+        menu2: false,
+        inputBind:{},
+        results: {},
+        snackbarParent: this.snackbar,
+        errorMessageParent: this.errorMessage,
+        loading: true
+      }
+    },
+    watch: {
+      achievements: function() {
+        this.loadResults();
+      }
+    },
+    mounted() {
+      this.loadResults();
+    },
+    computed: {
+      ...mapGetters(['activity']),
+      ...mapGetters(['user']),
+    },
+    methods: {
+      loadResults() {
+        for(let i = 0; i < this.achievements.length; i++){
+          this.results[this.achievements[i].id] = [];
+          apiActivity.getResults(this.achievements[i].id).then(response => {
+            this.results[this.achievements[i].id] = response.data;
+            this.results = {...this.results};
+            this.loading = false;
+          });
+        }
+      },
+      saveResult(achievementId) {
+        this.loading = true;
+        apiActivity.addResult(this.user.profile_id, achievementId, this.inputBind[achievementId])
+        .then(() => {
+          this.displayError("Result Added");
+          this.loading = false;
+          this.results[achievementId].push({"achievementId": achievementId, "value": this.inputBind[achievementId]});
+          this.inputBind[achievementId] = "";
+        }).catch((err) => {
+          this.displayError(err);
+          this.loading = false;
+        })
+      },
+      displayError(msg) {
+        this.errorMessageParent = msg;
+        this.snackbarParent = true;
+        this.$emit('update:errorMessage', this.errorMessageParent);
+        this.$emit('update:snackbar', this.snackbarParent);
       }
     }
   }
