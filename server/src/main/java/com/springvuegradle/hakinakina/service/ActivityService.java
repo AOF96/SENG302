@@ -567,6 +567,13 @@ public class ActivityService {
         }
     }
 
+    /**
+     * Service method to process the request made to the controller
+     * @param activityId If of the activity that the users role will be removed from
+     * @param userId Id of the user whose role will be removed from the activity
+     * @return Response entity with a status dependant on the outcome of the request
+     */
+    @Transactional
     public ResponseEntity optOutOfActivity(long activityId, long userId) {
         try {
             userActivityRoleRepository.deleteUserFromActivityRoles(activityId, userId);

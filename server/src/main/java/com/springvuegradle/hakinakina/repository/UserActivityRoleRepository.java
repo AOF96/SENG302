@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.repository;
 
 import com.springvuegradle.hakinakina.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -28,6 +29,7 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
      */
     void deleteByIdActivityIdAndIdUserId(Long activityId, Long userId);
 
+    @Modifying
     @Query(value = "DELETE FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?",  nativeQuery = true)
     void deleteUserFromActivityRoles(Long activityId, Long userId);
 
