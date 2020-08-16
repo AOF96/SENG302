@@ -51,7 +51,7 @@ public class ActivityService {
                            ActivityChangeRepository activityChangeRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
-                           SearchService searchService) {
+                           SearchService searchService,
                            ResultRepository resultRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
