@@ -471,7 +471,6 @@ public class ActivityService {
 
                     FeedPostDto newPost = new FeedPostDto();
                     newPost.setContent(activityChange);
-                    System.out.println(newPost.dateTime);
                     posts.add(newPost);
                 }
                 result = new ResponseEntity(posts, HttpStatus.OK);

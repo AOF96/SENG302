@@ -353,8 +353,9 @@ export const apiActivity = {
 
   optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
 
-  getActivityStats: (activityId) =>
-    instance.get(`/activities/${activityId}/stats`),
+  getActivityStats: (activityId) => instance.get(`/activities/${activityId}/stats`),
+
+  getUserRole: (activityId, userId) => instance.get(`/activities/${activityId}/role/${userId}`),
 
   checkUserActivityVisibility: (profileId, activityId) =>
     instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)

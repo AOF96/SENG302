@@ -52,6 +52,41 @@
             <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled>Un-follow</v-btn>
           </v-row>
         </v-card>
+        <v-card :disabled="roleChanging" style="padding:20px;border-radius: 15px" class="activityContainer">
+          <h3 style="font-size:13px;" v-if="!roleLoading">Involvement</h3>
+          <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleLoading" ref="skeleton" type="text" ></v-skeleton-loader>
+          <v-skeleton-loader v-if="roleLoading" ref="skeleton" type="heading" ></v-skeleton-loader>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'none' && !roleLoading">You are not Participating</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'participant' && !roleLoading">You are a Participant</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'organiser' && !roleLoading">You are an Organiser</h3>
+          <v-skeleton-loader v-if="roleLoading" ref="skeleton" boilerplate="false" type="button"
+                  style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
+          ></v-skeleton-loader>
+          <v-menu bottom left v-if="!roleLoading">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                      style="position: absolute;right:20px;top:50%;transform:translateY(-50%);"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+              >
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list style="border-radius: 15px">
+              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none'">
+                <v-list-item-title>Become a Participant</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant') && authorId === user.profile_id">
+                <v-list-item-title>Become an Organiser</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="roleSet('none')" v-if="userRole == 'participant' || userRole == 'organiser'">
+                <v-list-item-title>Clear Involvement</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-card>
       </div>
       <div id="activityPageCenter" class="activityPageColumn">
         <div>
@@ -290,10 +325,10 @@
               >
                 <v-row justify="space-between">
                   <v-col>
-                    <h2 style="font-size:16px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
+                    <h2 style="font-size:14px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
                     <ul>
                     <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
-                        style="font-size:16px;color:rgba(0,0,0,0.85);">
+                        style="font-size:15px;color:rgba(0,0,0,0.85);">
 
 
 
@@ -383,6 +418,9 @@
         numParticipants: 0,
         numOrganisers: 0,
         userOpttedIn: false,
+        userRole: "none",
+        roleDisabled: true,
+        roleChanging: false
       }
     },
 
@@ -417,7 +455,7 @@
       this.getParticipants();
       this.getOrganisers();
       this.getStats();
-      this.checkUserHasOptedIn();
+      this.loadUserRole();
       return this.checkFollowing();
     },
     watch: {
@@ -446,6 +484,48 @@
           }
         }
       );
+      },
+
+      /**
+       * Loads the role of the currently logged in user.
+       */
+      loadUserRole() {
+        apiActivity.getUserRole(this.$route.params.activityId, this.user.profileId)
+        .then((response) => {
+          this.userRole = response.data.role;
+          this.roleDisabled = false;
+        }).catch((err) => {
+          this.errorMessage = err;
+          this.snackbar = true;
+          this.roleDisabled = false;
+        });
+      },
+
+      /**
+       * Set the role of the currently logged in user.
+       */
+      roleSet(role) {
+        if(role != "none" && role != "participant" && role != "organiser"){
+          this.errorMessage = "Invalid Role";
+          this.snackbar = true;
+          return;
+        }
+        this.roleChanging = true;
+        if(role == "none"){
+          apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.email)
+          .then(() => {
+            this.showMoreDialog = false;
+            this.getOrganisers();
+            this.getParticipants();
+            this.roleChanging = false;
+          }).catch((err) => {
+            this.errorMessage = err;
+            this.snackbar = true;
+            this.roleChanging = true;
+          });
+        }else{
+          this.editUserActivityRole(role, this.user.email);
+        }
       },
 
       /**
@@ -572,6 +652,7 @@
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
           this.userTabs[0].content = response.data.content;
           this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
+          this.checkUserHasOptedIn();
         } catch (err) {
           console.error(err);
         }
@@ -593,6 +674,7 @@
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
           this.userTabs[1].content = response.data.content;
           this.userTabs[1].preview = this.userTabs[1].content.slice(0, 3);
+          this.checkUserHasOptedIn();
         } catch (err) {
           console.error(err)
         }
@@ -643,8 +725,10 @@
               this.showMoreDialog = false;
               this.getOrganisers();
               this.getParticipants();
+              this.roleChanging = false;
             }).catch((err) => {
               console.log(err);
+                this.roleChanging = false;
             })
           this.loadingParticipantsOrganisersDialog = false;
         }
