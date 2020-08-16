@@ -148,7 +148,7 @@ public class User {
     private Set<UserActivityRole> userActivityRoles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Result> results;
+    private Set<Result> results = new HashSet<>();
 
     public User() {}
 
