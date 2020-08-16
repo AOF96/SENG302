@@ -275,14 +275,14 @@ export const apiActivity = {
       instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`,{
       name: name,
       description: description,
-      result_type: resultType
+      resultType: resultType
   }),
 
   editActivityAchievement: (profileId, activityId, achievementId, name, description, resultType) =>
       instance.put(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`, {
       name: name,
       description: description,
-      result_type: resultType
+      resultType: resultType
   }),
 
 
