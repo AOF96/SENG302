@@ -12,7 +12,7 @@
                 <v-text-field id="searchQueryInput" v-on:keyup="submitSearch" label="Search" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
               </v-col>
               <v-col>
-                <v-select v-model="searchBy" :items="searchMethods" name="searchValue" required label="Search By" outlined hide-details dense rounded>
+                <v-select v-model="searchBy" :items="searchMethods" item-text="display" name="searchValue" required label="Search By" outlined hide-details dense rounded>
                 </v-select>
               </v-col>
               <v-col>
@@ -118,7 +118,11 @@ export default {
       searchInput: "",
       selected_activity: "Activity Type",
       filterMethod: "and",
-      searchMethods: ["fullname", "lastname", "email"]
+      searchMethods: [
+        {display: "Full Name", value: "fullname"},
+        {display: "Last Name", value: "lastname"},
+        {display: "Email", value: "email"}
+        ]
     }
   },
   mounted() {

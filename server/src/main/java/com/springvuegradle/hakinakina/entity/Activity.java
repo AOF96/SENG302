@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -43,6 +44,7 @@ public class Activity {
             joinColumns = {@JoinColumn(name = "activity_id")},
             inverseJoinColumns = {@JoinColumn(name = "type_id")}
     )
+    @JsonManagedReference
     private Set<ActivityType> activityTypes = new HashSet<>();
 
     @JsonProperty("continuous")

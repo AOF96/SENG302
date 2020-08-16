@@ -1,5 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,9 +17,11 @@ public class ActivityType {
     private String name;
 
     @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @JsonBackReference
     private Set<User> users = new HashSet<>();
 
     @ManyToMany(mappedBy = "activityTypes", cascade= CascadeType.MERGE, fetch=FetchType.EAGER)
+    @JsonBackReference
     private Set<Activity> activities = new HashSet<>();
 
     protected ActivityType() {}
