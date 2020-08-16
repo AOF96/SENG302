@@ -74,6 +74,12 @@ apiActivity.getActivityById.mockResolvedValue({
   ]
 });
 
+// mocking getActivityById by stating what is returned by this method if loading is successful
+apiActivity.getResults.mockResolvedValue({
+  "achievementId": 1,
+  "value": "test"
+});
+
 describe("Test if achievements are displayer", () => {
   let store;
   let wrapper;
@@ -111,7 +117,16 @@ describe("Test if achievements are displayer", () => {
     });
     // create environment (called wrapper) of where you are doing the test (Activity.vue with vuex store,
     // vue environment, mocks, and stubs for methods you don't need.
-    wrapper = mount(AchievementsCard, { store, localVue, mocks, stubs, vuetify });
+    wrapper = mount(AchievementsCard, {
+      store,
+      localVue,
+      mocks,
+      stubs,
+      vuetify,
+      propsData: {
+        achievements: {"id": 1}
+      }
+    });
   });
 
   it("sanity check", async () => {
