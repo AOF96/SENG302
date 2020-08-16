@@ -1,10 +1,7 @@
 package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.entity.*;
-import com.springvuegradle.hakinakina.repository.ActivityChangeRepository;
-import com.springvuegradle.hakinakina.repository.ActivityRepository;
-import com.springvuegradle.hakinakina.repository.SessionRepository;
-import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +40,12 @@ public class ActivityServiceTest {
 
     @Mock
     private ActivityChangeRepository activityChangeRepository;
+
+    @Mock
+    private AchievementRepository achievementRepository;
+
+    @Mock
+    private ResultRepository resultRepository;
 
     @BeforeAll
     public void setUp(){
@@ -293,5 +296,21 @@ public class ActivityServiceTest {
         activityChangesList.remove(activityChanges);
         when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(0, activityChangesList.size());
+    }
+
+    @Test
+    public void addResultTest() {
+        Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
+        User user = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        Result result = new Result("1.53");
+
+        when(achievementRepository.findAchievementById((long) 1)).thenReturn(achievement);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
+
+        ResponseEntity<String> response = service.addResult(result, (long) 1, (long) 1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }

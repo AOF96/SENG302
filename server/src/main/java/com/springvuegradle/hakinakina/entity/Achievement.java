@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,7 +26,7 @@ public class Achievement {
     private Activity activity;
 
     @OneToMany(mappedBy = "achievement", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Result> results;
+    private Set<Result> results = new HashSet<>();
 
     protected Achievement() {}
 

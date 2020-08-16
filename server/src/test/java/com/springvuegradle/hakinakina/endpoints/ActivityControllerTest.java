@@ -379,4 +379,96 @@ public class ActivityControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Achievement successfully deleted")));
     }
+
+    @Test
+    public void addResultSuccessTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session session = new Session("token");
+        Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
+        User user = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        Result result = new Result("1.53");
+
+        when(service.addResult(any(Result.class), any(Long.class), any(Long.class))).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+        when(achievementRepository.findAchievementById((long) 1)).thenReturn(achievement);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(session);
+
+        this.mockMvc.perform(post("/profiles/1/achievements/1/results").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Success")));
+    }
+
+    @Test
+    public void addResultBadSession() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "tokfn");
+        Session session = new Session("token");
+        Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
+        User user = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        Result result = new Result("1.53");
+
+        when(service.addResult(any(Result.class), any(Long.class), any(Long.class))).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+        when(achievementRepository.findAchievementById((long) 1)).thenReturn(achievement);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(session);
+
+        this.mockMvc.perform(post("/profiles/1/achievements/1/results").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string(containsString("Session invalid")));
+    }
+
+    @Test
+    public void addResultBadUser() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session session = new Session("token");
+        Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
+        User user = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        Result result = new Result("1.53");
+
+        when(service.addResult(any(Result.class), any(Long.class), any(Long.class))).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+        when(achievementRepository.findAchievementById((long) 1)).thenReturn(achievement);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.empty());
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(session);
+
+        this.mockMvc.perform(post("/profiles/1/achievements/1/results").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("User not found")));
+    }
+
+    @Test
+    public void addResultBadAchievement() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session session = new Session("token");
+        Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
+        User user = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+
+        Result result = new Result("1.53");
+
+        when(service.addResult(any(Result.class), any(Long.class), any(Long.class))).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+        when(achievementRepository.findAchievementById((long) 1)).thenReturn(null);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(session);
+
+        this.mockMvc.perform(post("/profiles/1/achievements/1/results").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(INPUT))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Achievement not found")));
+    }
 }

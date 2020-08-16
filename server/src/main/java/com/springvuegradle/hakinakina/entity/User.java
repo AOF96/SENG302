@@ -138,7 +138,7 @@ public class User {
     private Set<Session> sessions = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Result> results;
+    private Set<Result> results = new HashSet<>();
 
     public User() {}
 
