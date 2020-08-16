@@ -355,6 +355,34 @@ public class ActivityService {
     }
 
     /**
+     * Sets the visibility of an Activity and deletes groups of relationships if required.
+     * @param activityId the activity id of the activity being managed.
+     * @param visibility the new Visibility value
+     * @param keepFollowers Whether to keep the Followers
+     * @param keepParticipants Whether to keep the Participants
+     * @param keepOrganisers Whether to keep the Organisers
+     * @return A ResponseEntity stating the result
+     */
+    @Transactional
+    public ResponseEntity<String> updateActivityVisibility (Long activityId,
+                                                            Visibility visibility, boolean keepFollowers,
+                                                            boolean keepParticipants, boolean keepOrganisers) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        activity.setVisibility(visibility);
+        if (!keepFollowers) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.FOLLOWER);
+        }
+        if (!keepParticipants) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.PARTICIPANT);
+        }
+        if (!keepOrganisers) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.ORGANISER);
+        }
+
+        return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
+    }
+
+    /**
      * A helper method to save each UserActivityRole object to the UserActivityRoleRepository
      * @param newRelationships A List of UserActivityRoles
      */
