@@ -1,6 +1,6 @@
 <template>
-  <v-card class="activityPageCard">
-    <h2>Achievements</h2>
+  <v-card id="achievementCard" class="activityPageCard">
+    <h2 id="achievementCardTitle">Achievements</h2>
     <v-container class="achievementsContainer">
       <v-card class="achievementCard" v-for="achievement in achievements" v-bind:key="achievement.id" flat outlined>
         <v-container>
@@ -61,7 +61,7 @@
               </v-text-field>
             </v-col>
             <v-col cols="3" class="achievementCol">
-              <v-btn color="primary" class="achievementSaveButton" outlined>Save</v-btn>
+              <v-btn id="resultSaveButton" color="primary" class="achievementSaveButton" outlined>Save</v-btn>
             </v-col>
           </v-row>
         </v-container>
