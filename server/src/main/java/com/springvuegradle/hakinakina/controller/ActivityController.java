@@ -459,16 +459,50 @@ public class ActivityController {
         }
     }
 
+    /**
+     * Controller endpoint that receives requests to remove a users role from an activity and handles session checking.
+     * @param activityId Id of the activity from which the users role will be removed
+     * @param email Primary email of the user whose role in the activity will be removed
+     * @param sessionToken Session token of the user making the request
+     * @return Response entity with status depending on the outcome of the request
+     */
     @DeleteMapping("/activities/{activityId}/roles/{userEmail}")
     public ResponseEntity optOutOfActivity(@PathVariable("activityId") long activityId, @PathVariable("userEmail") String email,
                                            @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null) {
+        if (session == null || !session.getUser().getUserId().equals(activityRepository.getOne(activityId).getAuthor().getUserId()) && session.getUser().getPermissionLevel() < 1) {
             return responseHandler.formatErrorResponseString(401, "Invalid session");
         } else {
             long userId = userRepository.getIdByAnyEmail(email);
             return activityService.optOutOfActivity(activityId, userId);
         }
+    }
+
+    /**
+     * Gets the ActivityRole of a User who is related to an Activity. Otherwise, sends a value of "none".
+     * @param activityId The ID of the Activity
+     * @param userId The ID of the User
+     * @return A ResponseEntity stating the result
+     */
+    @GetMapping("activities/{activityId}/role/{userId}")
+    public ResponseEntity getRoleOfUserForActivity(@PathVariable("activityId") long activityId,
+                                                   @PathVariable("userId") long userId) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        Optional<User> user = userRepository.getUserById(userId);
+        Map<String, String> result = new HashMap<>();
+        if (activity == null) {
+            return new ResponseEntity<String>("Activity not found", HttpStatus.NOT_FOUND);
+        }
+        if (user .isEmpty()) {
+            return new ResponseEntity<String>("User not found", HttpStatus.NOT_FOUND);
+        }
+        ActivityRole role = activityService.getRoleOfUserForActivity(activity, user.get());
+        if (role != null) {
+            result.put("role", role.getRole());
+        } else {
+            result.put("role", "none");
+        }
+        return new ResponseEntity(result, HttpStatus.OK);
     }
 
     /**

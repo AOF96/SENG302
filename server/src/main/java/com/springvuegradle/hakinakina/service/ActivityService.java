@@ -545,7 +545,7 @@ public class ActivityService {
         return responseHandler.userPageToSearchResponsePage(users);
     }
 
-    /***
+    /**
      * Retrieves a list of participants from the given activity with paginated results.
      * @param activityId the id of the activity.
      * @param page the requested page to return.
@@ -627,7 +627,6 @@ public class ActivityService {
 
                     FeedPostDto newPost = new FeedPostDto();
                     newPost.setContent(activityChange);
-                    System.out.println(newPost.dateTime);
                     posts.add(newPost);
                 }
                 result = new ResponseEntity(posts, HttpStatus.OK);
@@ -766,6 +765,13 @@ public class ActivityService {
         }
     }
 
+    /**
+     * Service method to process the request made to the controller
+     * @param activityId If of the activity that the users role will be removed from
+     * @param userId Id of the user whose role will be removed from the activity
+     * @return Response entity with a status dependant on the outcome of the request
+     */
+    @Transactional
     public ResponseEntity optOutOfActivity(long activityId, long userId) {
         try {
             userActivityRoleRepository.deleteUserFromActivityRoles(activityId, userId);
@@ -853,6 +859,7 @@ public class ActivityService {
         }
         return result;
     }
+
     /**
      * Handles requests to retrieve the visibility, whether a user is allowed to see an activity.
      *
@@ -897,5 +904,20 @@ public class ActivityService {
             }
         }
         return userVisibility;
+    }
+
+    /**
+     * Gets the ActivityRole of a User who is related to an Activity. Otherwise, returns null.
+     * @param activity The Activity
+     * @param user The User
+     * @return An ActivityRole of the User for that Activity, or null if the User is not related to that Activity.
+     */
+    public ActivityRole getRoleOfUserForActivity(Activity activity, User user) {
+        Optional<UserActivityRole> userActivityRole = userActivityRoleRepository.getByActivityAndUser(activity, user);
+        if (userActivityRole.isEmpty()) {
+            return null;
+        } else {
+            return userActivityRole.get().getActivityRole();
+        }
     }
 }

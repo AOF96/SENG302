@@ -773,17 +773,23 @@ public class UserService {
         UserActivityKey key = new UserActivityKey(profileId, activityId);
 
         // check if the user changing the role is a creator
-        userActivityRoleRepository
-                .findByIdAndActivityRole(key, ActivityRole.CREATOR)
-                .orElseThrow(() -> {
-                    throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "You must be a creator to change roles");
-        });
+        Optional<UserActivityRole> isCreater = userActivityRoleRepository.findByIdAndActivityRole(key, ActivityRole.CREATOR);
+
+        if(dtoUser.getUserId() != profileId && !isCreater.isPresent()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You must be a creator to change other user's roles");
+        }
+
+        if(dto.getSubscriber().getRole().getRole() == "organiser" && !isCreater.isPresent()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You must be a creator to change your role to organiser");
+        }
 
         // check user's session
         Session session = sessionRepository.findUserIdByToken(token);
         if (session == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Session");
+        }
+        if(session.getUser().getUserId() != profileId){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session Mismatch");
         }
 
         // key to set UserActivityRole (fabian)

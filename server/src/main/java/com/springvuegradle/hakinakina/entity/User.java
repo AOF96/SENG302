@@ -110,16 +110,19 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
+
     @JsonIgnore
     private Set<Activity> activities = new HashSet<>();
 
-    @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     @JsonIgnore
+    @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     private Set<Activity> activitiesShared = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "author")
     private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
 
@@ -139,6 +142,7 @@ public class User {
     @Column(name = "permission_level")
     private Integer permissionLevel;
 
+    @JsonIgnore
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL
@@ -146,6 +150,7 @@ public class User {
     )
     private Set<Session> sessions = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     private Set<UserActivityRole> userActivityRoles;
 

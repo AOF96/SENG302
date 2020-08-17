@@ -829,4 +829,46 @@ public class ActivityControllerTest {
                         "  \"organisers\": " + 0 + "\n" +
                         "}")));
     }
+
+    @Test
+    public void getRoleOfUserForActivityTest() throws Exception {
+        User dummyUser = new User();
+        Activity dummyActivity = new Activity();
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(dummyUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(dummyActivity);
+        when(service.getRoleOfUserForActivity(dummyActivity, dummyUser)).thenReturn(ActivityRole.PARTICIPANT);
+        this.mockMvc.perform(get("/activities/1/role/1"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\"role\":\"participant\"}")));
+    }
+
+    @Test
+    public void getRoleOfUserForActivityNoRelationshipTest() throws Exception {
+        User dummyUser = new User();
+        Activity dummyActivity = new Activity();
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(dummyUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(dummyActivity);
+        when(service.getRoleOfUserForActivity(dummyActivity, dummyUser)).thenReturn(null);
+        this.mockMvc.perform(get("/activities/1/role/1"))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("{\"role\":\"none\"}")));
+    }
+
+    @Test
+    public void getRoleOfUserForActivityInvalidActivity() throws Exception {
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        this.mockMvc.perform(get("/activities/1/role/1"))
+                .andExpect(status().is(404))
+                .andExpect(content().string(containsString("Activity not found")));
+    }
+
+    @Test
+    public void getRoleOfUserForActivityInvalidUser() throws Exception {
+        Activity dummyActivity = new Activity();
+        when(activityRepository.findActivityById((long) 1)).thenReturn(dummyActivity);
+        when(userRepository.getUserById((long) 1)).thenReturn(Optional.empty());
+        this.mockMvc.perform(get("/activities/1/role/1"))
+                .andExpect(status().is(404))
+                .andExpect(content().string(containsString("User not found")));
+    }
 }

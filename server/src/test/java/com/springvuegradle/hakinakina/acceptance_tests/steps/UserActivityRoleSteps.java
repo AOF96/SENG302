@@ -1,87 +1,82 @@
-package com.springvuegradle.hakinakina.endpoints;
+package com.springvuegradle.hakinakina.acceptance_tests.steps;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
-import com.springvuegradle.hakinakina.dto.EditActivityRoleDto;
-import com.springvuegradle.hakinakina.dto.EditSubscriberRoleDto;
-import com.springvuegradle.hakinakina.entity.*;
-import com.springvuegradle.hakinakina.repository.ActivityRepository;
-import com.springvuegradle.hakinakina.repository.SessionRepository;
-import com.springvuegradle.hakinakina.repository.UserActivityRoleRepository;
-import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.controller.UserController;
+import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
-import io.cucumber.java.eo.Se;
+import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.util.ResponseHandler;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.apache.coyote.Response;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import javax.imageio.plugins.tiff.ExifParentTIFFTagSet;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import javax.servlet.http.Cookie;
-
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class EditUserActivityRoleEndPointTest {
 
+public class UserActivityRoleSteps {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
-    @Autowired
+    @Mock
     private SessionRepository sessionRepository;
 
-    @Autowired
+    @Mock
     private ActivityRepository activityRepository;
 
-    @Autowired
+    @Mock
     private UserActivityRoleRepository userActivityRoleRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
+    @InjectMocks
     private UserService userService;
 
-    @Autowired
+    @InjectMocks
     private ActivityService activityService;
 
     private User mayuko = new User();
     private User fabian = new User();
     private Activity mayukosActivity = new Activity();
-    private Activity fabiansActivity = new Activity();
+    private UserActivityKey activityKey = new UserActivityKey();
 
 
-    @BeforeEach
+    @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         userActivityRoleRepository.deleteAll();
         activityRepository.deleteAll();
         userRepository.deleteAll();
         setupUser(mayuko, "Mayuko", null, "Williams", "mayuko@acnh.com", 0);
         setupUser(fabian, "Fabian", null,"Gibson", "gibson@acnh.com", 0);
         setupActivity(mayukosActivity);
-        setupActivity(fabiansActivity);
         activityService.addActivity(mayukosActivity, mayuko.getUserId(), "Mayuko");
-        activityService.addActivity(fabiansActivity, fabian.getUserId(), "Fabian");
-
     }
 
     void setupUser(User user, String fName, String mName, String lName, String email, int pLevel) {
@@ -90,6 +85,7 @@ public class EditUserActivityRoleEndPointTest {
         user.setLastName(lName);
         user.setPrimaryEmail(email);
         user.setPermissionLevel(pLevel);
+        user.setUserId((long) 1);
         userRepository.save(user);
 
         Session testSession = new Session(fName); // your first name is your token
@@ -108,42 +104,18 @@ public class EditUserActivityRoleEndPointTest {
         activity.setLocation("Mount Everest");
         Set<ActivityType> activityTypes = Set.of(new ActivityType("Extreme"));
         activity.setActivityTypes(activityTypes);
+        activity.setId((long) 1);
+
 
         activityRepository.save(mayukosActivity);
     }
 
-    @Test
-    void testCreatorChangeActivityRoleSuccessful() throws Exception {
-        // changing fabian's role in activity
-        EditSubscriberRoleDto subDto = new EditSubscriberRoleDto(fabian.getPrimaryEmail(), ActivityRole.ORGANISER);
-        EditActivityRoleDto actDto = new EditActivityRoleDto((subDto));
-
-        mockMvc.perform(put("/profiles/" + mayuko.getUserId() + "/activities/" + mayukosActivity.getId() + "/subscriber")
-                .cookie(new Cookie("s_id", "Mayuko"))
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(actDto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void testChangeActivityRoleByNotCreatorShouldBeUnsuccessful() throws Exception{
-        EditSubscriberRoleDto subDto = new EditSubscriberRoleDto(mayuko.getPrimaryEmail(), ActivityRole.ORGANISER);
-        EditActivityRoleDto actDto = new EditActivityRoleDto((subDto));
-
-        mockMvc.perform(put("/profiles/" + fabian.getUserId() + "/activities/" + mayukosActivity.getId() + "/subscriber")
-                .cookie(new Cookie("s_id", "Mayuko"))
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(actDto)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void testDeleteUserActivityRole() throws Exception {
+    @Given("I am a participant of an activity")
+    public void iAmTheParticipantOfAnActivity() {
         Session testSession = new Session("Mayuko");
         testSession.setUser(mayuko);
 
         UserActivityRole activityRole = new UserActivityRole();
-        UserActivityKey activityKey = new UserActivityKey();
         activityKey.setActivityId(mayukosActivity.getId());
         activityKey.setUserId(mayuko.getUserId());
         activityRole.setId(activityKey);
@@ -157,9 +129,16 @@ public class EditUserActivityRoleEndPointTest {
         userRepository.save(mayuko);
         activityRepository.save(mayukosActivity);
         userActivityRoleRepository.save(activityRole);
+    }
 
-        mockMvc.perform(delete("/activities/" + mayukosActivity.getId() + "/roles/" + mayuko.getPrimaryEmail())
-                .cookie(new Cookie("s_id", "Mayuko")))
-                .andExpect(status().isOk());
+    @When("I opt out of that activity role")
+    public void IOptOutOfThatActivityRole() throws Exception {
+        activityService.optOutOfActivity(mayukosActivity.getId(), mayuko.getUserId());
+    }
+
+    @Then("I am no longer a participant of that activity")
+    public void IAmNoLongerAParticipantOfThatActivity() {
+        Optional<UserActivityRole> activityRole = userActivityRoleRepository.getByActivityAndUser(mayukosActivity, mayuko);
+        assertTrue(activityRole.isEmpty());
     }
 }

@@ -544,4 +544,26 @@ public class ActivityServiceTest {
                 "  \"organisers\": " + 0 + "\n" +
                 "}", response.getBody());
     }
+
+    @Test
+    public void getRoleOfUserForActivityTest() {
+        User dummyUser = new User();
+        Activity dummyActivity = new Activity();
+        UserActivityKey key = new UserActivityKey();
+        key.setActivityId(1);
+        key.setUserId(1);
+        UserActivityRole role = new UserActivityRole(key, ActivityRole.PARTICIPANT);
+
+        when(userActivityRoleRepository.getByActivityAndUser(dummyActivity, dummyUser)).thenReturn(Optional.of(role));
+        assertEquals(ActivityRole.PARTICIPANT, service.getRoleOfUserForActivity(dummyActivity, dummyUser));
+    }
+
+    @Test
+    public void getRoleOfUserForActivityNoRelationshipTest() {
+        User dummyUser = new User();
+        Activity dummyActivity = new Activity();
+
+        when(userActivityRoleRepository.getByActivityAndUser(dummyActivity, dummyUser)).thenReturn(Optional.empty());
+        assertEquals(null, service.getRoleOfUserForActivity(dummyActivity, dummyUser));
+    }
 }

@@ -119,63 +119,59 @@
 }
 
 .activityDescriptionLabel {
-    display: flex;
-    grid-area: Description;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding-top: 1.5rem;
-    padding-bottom: 1rem;
-    padding-left: 1rem;
-    padding-right: 0.5rem;
-    font-size: 18px;
-    color: #1cca92;
-
+    font-size: 16px;
+    font-weight: 400;
+    padding: 0 20px 8px;
 }
 
 .activityAuthorLabel {
-    display: flex;
-    grid-area: Author;
-    justify-content: center;
-    align-items: center;
+    padding: 0 11px 7px;
+}
+
+.activityFollowersLabel{
+    padding: 0 13px;
+}
+
+.activityVisibilityLabel {
+    color: white;
+    padding: 3px 15px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
     text-align: center;
-    padding-top: 0.5rem;
-    padding-bottom: 1rem;
-    padding-left: 1rem;
-    padding-right: 0.5rem;
-    font-size: 12px;
+}
+
+.activityVisibilityLabelRed {
+    background: #ff4f4a;
+}
+
+.activityVisibilityLabelOrange {
+    background: #ff843c;
+}
+
+.activityVisibilityLabelGreen {
+    background: #1dca92;
 }
 
 .activityLocationLabel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    grid-area: Location;
-    color: #6b6b6b;
-    font-size: 17px;
-    padding-bottom: 1rem;
+    font-size: 15px;
+    font-weight: 500;
+    color: grey;
+    padding: 15px 20px 0px;
 }
 
 .activityStartLabel {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    text-align: center;
-    grid-area: Start;
-    font-size: 12px;
-    color: #6b6b6b;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
+    font-size: 14px;
+    color: #379142;
+    padding: 2px 20px;
+    padding-top: 10px;
 }
 
 .activityEndLabel {
-    text-align: center;
-    grid-area: End;
-    font-size: 12px;
-    padding-right: 1rem;
-    color: #6b6b6b;
-    padding-bottom: 1rem;
+    font-size: 14px;
+    color: #d34343;
+    padding: 2px 20px;
+    padding-bottom: 15px;
 }
 
 .activityTypeTitle{
@@ -186,7 +182,6 @@
     align-items: flex-end;
     text-align: center;
     font-weight: 500;
-    colour: black;
 }
 
 .editSuccessMessage {
@@ -231,17 +226,9 @@
 }
 
 .activityTitle {
-    padding-left: 1rem;
-    padding-top: 2rem;
-    padding-bottom: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 22px;
-    grid-area: Title;
-    font-weight: 100;
-
+    font-size: 21px;
+    font-weight: 500;
+    padding: 0 20px 8px;
 }
 
 .activityDescription {
@@ -320,16 +307,21 @@
 }
 
 .activityWrap{
-    max-width: 1500px;
+    max-width: 1800px;
+    width: calc(100% - 30px);
     display: block;
     margin: 0 auto;
     position: relative;
-    top: -56px;
+    top: -100px;
+}
+
+.activityPageColumn{
+    width:33.33%;
+    float: left;
 }
 
 .activityPageTypeList{
-    text-align: center;
-    padding-bottom: 2rem;
+    padding: 0 11px 20px;
 }
 
 .activityPageActivitySeparator {
@@ -342,12 +334,9 @@
 }
 
 .activityPageBottomButtons {
+    padding: 10px 15px;
     overflow: hidden;
-    text-align: center;
-    padding-top: 5rem;
-    padding-bottom: 2rem;
 }
-
 
 .activityPageBackToProfileButton {
     padding: 8px 15px 8px 15px;
@@ -373,11 +362,18 @@
     margin-left: 20px;
 }
 
-.activityPageCard {
+.activityPageCard{
     min-height: 350px;
     height: fit-content;
-    width: 450px;
+    width: calc(100% - 20px);
     padding: 15px;
+    margin:20px 10px;
+    border-radius: 15px !important;
+}
+
+.activityContainer{
+    width: calc(100% - 20px);
+    margin:20px 10px;
     border-radius: 15px !important;
 }
 
@@ -398,7 +394,6 @@
     bottom: 20px;
     transform: translateX(-50%) !important;
     min-width: 0 !important;
-    width: 50%;
     left: 50%;
 }
 
@@ -457,4 +452,16 @@
 .achievementsContainer {
     overflow-y: scroll;
     height: 300px;
+}
+
+@media only screen and (max-width: 1100px) {
+    .activityPageColumn {
+        width: 100%;
+    }
+    .activityPageCard{
+        margin-top:0;
+    }
+    .activityWrap{
+        width:100%;
+    }
 }
