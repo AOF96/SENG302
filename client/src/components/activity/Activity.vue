@@ -308,6 +308,7 @@
               </div>
             </form>
           </v-card>
+          <AchievementsCard/>
           <v-card style="border-radius: 15px" class="activityPageCard">
             <h2>Gallery</h2>
             <h3>Coming at some stage!</h3>
@@ -356,10 +357,14 @@
   import dateUtil from "@/util/date";
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../api";
+  import AchievementsCard from "./modules/AchievementsCard";
   import store from '@/store/index.js';
 
   export default {
     name: "ActivityPageInfo",
+    components: {
+        AchievementsCard,
+    },
     data() {
       return {
         activity_name: "",
@@ -394,10 +399,10 @@
         displayInvalidInputError: false,
         invalidInputErrorMessage: "",
         participantsPageInfo: {
-          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
+          defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
         },
         organisersPageInfo: {
-          defaultPage: 0, currentPage: 0, defaultSize: 10, currentSize: 10,
+          defaultPage: 0, currentPage: 0, defaultSize: 8, currentSize: 8,
         },
         userTabs: [
           {tab: 'Participants', content: [], preview: []},
@@ -666,6 +671,7 @@
           this.snackbar = true;
         }
       },
+
       /**
        * Retrieves more participants or organisers for the dialog box
        */
@@ -700,6 +706,7 @@
           this.snackbar = true;
         }
       },
+
       /**
        * Edits a user's role from participant to organiser and vice versa
        */
@@ -722,6 +729,7 @@
           this.loadingParticipantsOrganisersDialog = false;
         }
       },
+
       /**
        * Deletes the current activity
        */
@@ -738,6 +746,7 @@
           this.snackbar = true;
         }
       },
+
       /**
        * Requests the activity and loads its information
        * @returns {Promise<void>}

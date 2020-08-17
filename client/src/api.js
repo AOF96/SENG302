@@ -272,6 +272,26 @@ export const apiActivity = {
       }
   }),
 
+  addActivityAchievement: (profileId, activityId, name, description, resultType) =>
+      instance.post(`/profiles/${profileId}/activities/${activityId}/achievements`,{
+      name: name,
+      description: description,
+      resultType: resultType
+  }),
+
+  editActivityAchievement: (profileId, activityId, achievementId, name, description, resultType) =>
+      instance.put(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`, {
+      name: name,
+      description: description,
+      resultType: resultType
+  }),
+
+
+ deleteActivityAchievement: (profileId, activityId, achievementId) =>
+    instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
+
+  getActivityAchievement: (profileId, activityId) =>
+    instance.get(`/profiles/${profileId}/activities/${activityId}/achievements`),
 
   deleteActivity: (authorId, activityId) =>
     instance.delete(`/profiles/${authorId}/activities/${activityId}`),
@@ -334,7 +354,34 @@ export const apiActivity = {
     instance.post(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
 
   unfollowActivity: (profileId, activityId) =>
-    instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+      instance.delete(`/profiles/${profileId}/subscriptions/activities/${activityId}`),
+  /**
+   * Sends a request to add a result
+   * @param profileId Id of profile
+   * @param achievementId Id of achievement to add result to
+   * @param resultValue value of result
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  addResult: (profileId, achievementId, resultValue) =>
+      instance.post(`/profiles/${profileId}/achievements/${achievementId}/results`, {
+        value: resultValue,
+      }),
+  /**
+   * Sends a get request to retrieve one result
+   * @param profileId Id of profile
+   * @param achievementId Id of achievement
+   * @param resultId Id of result
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  getOneResult: (profileId, achievementId, resultId) =>
+      instance.get(`/profiles/${profileId}/achievements/${achievementId}/results/${resultId}`),
+  /**
+   * Sends a get request to retrieve all results
+   * @param achievementId
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  getResults: (achievementId) =>
+    instance.get(`/activities/achievements/${achievementId}/results`),
 
   getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{
       params: {
@@ -357,6 +404,5 @@ export const apiActivity = {
 
   getUserRole: (activityId, userId) => instance.get(`/activities/${activityId}/role/${userId}`),
 
-  checkUserActivityVisibility: (profileId, activityId) =>
-    instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
+  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
 };

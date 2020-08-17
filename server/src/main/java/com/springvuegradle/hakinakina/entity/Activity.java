@@ -10,9 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Activities entity class.
@@ -63,6 +61,13 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
+//    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
+//    private Set<User> users = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Achievement> achievements = new HashSet<>();
+
     @ManyToOne
     private User author;
 
@@ -95,6 +100,23 @@ public class Activity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
+    }
+
+    public void addAchievement(Achievement achievement) {
+        this.achievements.add(achievement);
+        achievement.setActivity(this);
+    }
+
+    public void removeAchievement(Achievement achievement) {
+        this.achievements.remove(achievement);
+    }
+
+    public Set<Achievement> getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(Set<Achievement> achievements) {
+        this.achievements = achievements;
     }
 
     public Set<ActivityType> getActivityTypes() {
@@ -262,6 +284,10 @@ public class Activity {
         } else {
             ArrayList<ActivityType> otherActivities = new ArrayList<>(other.getActivityTypes());
             ArrayList<ActivityType> thisActivities = new ArrayList<>(this.getActivityTypes());
+
+            otherActivities.sort(Comparator.comparing(ActivityType::getName));
+            thisActivities.sort(Comparator.comparing(ActivityType::getName));
+
             for (int i = 0; i < otherActivities.size(); i++) {
                 if (!(otherActivities.get(i).getName().equals(thisActivities.get(i).getName()))) {
                     sameActivityTypes = false;

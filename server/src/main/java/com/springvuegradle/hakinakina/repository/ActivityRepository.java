@@ -27,7 +27,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(nativeQuery = true, value = "SELECT count(*) FROM User_Activities_Shared WHERE user_id = ?1 AND activity_id = ?2")
     int findUserActivityVisibility(Long userId, Long activity);
 
-//    @Modifying
     Optional<Activity> findFirstByName(String name);
 
     @Query(value = "select * from Activity where activity_id = ?", nativeQuery = true)
@@ -68,4 +67,12 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'ORGANISER'", nativeQuery = true)
     int getNumOrganisersForActivity(long activityId);
+
+    @Query(value = "SELECT * FROM User_Activities_Shared  WHERE activity_id = ? AND author_user_id = ?", nativeQuery = true)
+    List<Activity> getSharedActivitiesForAuthorOfType(Long activityId, Long userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM User_Activities", nativeQuery = true)
+    void removeAllUserActivities();
 }
