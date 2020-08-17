@@ -77,12 +77,6 @@ const actions = {
     async deleteActivity(data, {'userId': userId, 'activityId': activityId}) {
         return await apiActivity.deleteActivity(userId, activityId);
     },
-    async getParticipants(data, {'activityId': activityId, 'page': page, 'size': size}) {
-        return await apiActivity.getParticipants(activityId, page, size);
-    },
-    async getOrganisers(data, {'activityId': activityId, 'page': page, 'size': size}) {
-        return await apiActivity.getParticipants(activityId, page, size);
-    },
     async addActivityAchievement(data, {'userId': userId, 'activityId': activityId, 'name': name, 'description': description, 'result_type': result_type }) {
         return await apiActivity.addActivityAchievement(userId, activityId, name, description, result_type);
     },
