@@ -35,4 +35,6 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
     void deleteUserFromActivityRoles(Long activityId, Long userId);
 
     void deleteByActivity(Activity activity);
+
+    void deleteAllByActivityRole(ActivityRole role);
 }

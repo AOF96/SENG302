@@ -1,11 +1,13 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.AchievementDto;
+import com.springvuegradle.hakinakina.exception.ActivityNotFoundException;
 import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
+import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
@@ -15,9 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -355,6 +355,34 @@ public class ActivityService {
     }
 
     /**
+     * Sets the visibility of an Activity and deletes groups of relationships if required.
+     * @param activityId the activity id of the activity being managed.
+     * @param visibility the new Visibility value
+     * @param keepFollowers Whether to keep the Followers
+     * @param keepParticipants Whether to keep the Participants
+     * @param keepOrganisers Whether to keep the Organisers
+     * @return A ResponseEntity stating the result
+     */
+    @Transactional
+    public ResponseEntity<String> updateActivityVisibility (Long activityId,
+                                                            Visibility visibility, boolean keepFollowers,
+                                                            boolean keepParticipants, boolean keepOrganisers) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        activity.setVisibility(visibility);
+        if (!keepFollowers) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.FOLLOWER);
+        }
+        if (!keepParticipants) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.PARTICIPANT);
+        }
+        if (!keepOrganisers) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.ORGANISER);
+        }
+
+        return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
+    }
+
+    /**
      * A helper method to save each UserActivityRole object to the UserActivityRoleRepository
      * @param newRelationships A List of UserActivityRoles
      */
@@ -672,6 +700,8 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 User user = userRepository.getUserById(profileId).get();
+                UserActivityKey userActivityKey = new UserActivityKey(profileId, activityId);
+                userActivityRoleRepository.deleteById(userActivityKey);
                 activity.removeUser(user);
                 activityRepository.save(activity);
                 userRepository.save(user);
@@ -805,9 +835,7 @@ public class ActivityService {
             result = responseHandler.formatErrorResponseString(404, "Achievement not found");
         } else {
             List<Result> outcome = resultRepository.findAllByAchievement_Id(achievementId);
-            if (outcome.isEmpty()) {
-                result = responseHandler.formatErrorResponseString(404, "Result not found");
-            } else {
+             if(!outcome.isEmpty()) {
                 List<ResultDto> allResults = new ArrayList<>();
                 for (int i = 0; i < outcome.size(); i++) {
                     ResultDto dto = new ResultDto();
@@ -819,8 +847,55 @@ public class ActivityService {
                 }
                 result = new ResponseEntity(allResults, HttpStatus.OK);
             }
+             else {
+                 result = new ResponseEntity(outcome, HttpStatus.OK);
+             }
         }
-        System.out.println(result);
         return result;
+    }
+    /**
+     * Handles requests to retrieve the visibility, whether a user is allowed to see an activity.
+     *
+     * @param activityId the activity id of activity user is trying to view.
+     * @param profileId the user id of user who is trying to view an activity.
+     * @return response text of user 'allowed' or 'not allowed' to see a certain activity
+     */
+    public Map<String, String> getUserActivityVisibility(long activityId, long profileId) {
+
+        // check if activity and user exist on the database
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityNotFoundException::new);
+        User user = userRepository.findById(profileId).orElseThrow(UserNotFoundException::new);
+
+        // check the visibility of the activity
+        Visibility visibility = activity.getVisibility();
+
+        // returning object
+        Map<String, String> userVisibility = new HashMap<>();
+
+        // if public everyone is allowed to view the activity
+        if (visibility == Visibility.PUBLIC) {
+            userVisibility.put("visibility","allowed");
+        }
+
+        // if private, only creator can see the activity
+        else if (visibility == Visibility.PRIVATE) {
+            if(user.getUserId().equals(activity.getAuthor().getUserId())){
+                userVisibility.put("visibility","allowed");
+            } else {
+                userVisibility.put("visibility","not allowed");
+            }
+        }
+
+        // if restricted, only specific users chosen by the creator can see it
+        // (meaning creator and user in user_activity_shared table)
+        else if (visibility == Visibility.RESTRICTED) {
+            if(user.getUserId().equals(activity.getAuthor().getUserId())){
+                userVisibility.put("visibility","allowed");
+            } else {
+                int counter = activityRepository.findUserActivityVisibility(profileId, activityId);
+                userVisibility.put("visibility", counter > 0 ? "allowed" : "not allowed");
+            }
+        }
+        return userVisibility;
     }
 }

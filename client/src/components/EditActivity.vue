@@ -432,7 +432,7 @@
                       right
                       :disabled="overlayLoader"
               >
-                Update Activity
+                Save Activity
               </v-btn>
             </v-row>
           </v-card>
@@ -444,7 +444,7 @@
             <v-card-title class="headline">Update Activity Visibility</v-card-title>
             <v-card-text>{{ visibilityUpdateMessage }}</v-card-text>
             <v-card-text>There are currently {{groups[0].amount}} {{groups[0].name}}, {{groups[1].amount}} {{groups[1].name}} and {{groups[2].amount}} {{groups[2].name}}.</v-card-text>
-            <div v-if="(tempVisibility === 'public' && visibility === 'restricted') || (tempVisibility === 'restricted' && visibility === 'public')">
+            <div v-if="(tempVisibility === 'public' && visibility === 'restricted')">
               <v-list-item v-for="group in groups" :key="group.name">
                 <v-checkbox
                         v-model="group.active"
@@ -456,8 +456,8 @@
             </div>
             <v-card-actions>
               <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text v-on:click="updateVisibilityAndGroups" @click="visibilityUpdateDialog = false">Confirm</v-btn>
               <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Cancel</v-btn>
-              <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Confirm</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -634,16 +634,22 @@ export default {
     },
 
     /**
-     * Used to manage the delete pop up box when deleting an achievement
+     * Used to manage the delete pop up box when deleting an achievement.
+     * Makes an api call and checks if any results are associated with the selected achievement.
      * */
-    openDeletePopUp(achievement){
+    async openDeletePopUp(achievement){
+      let result = await apiActivity.getResults(achievement.id)
+      if(result.data.length > 0) {
+        this.displayError("This achievement has results associated with it. You cannot delete it anymore.");
+        return;
+      }
       this.deleteDialog = true;
       this.tempAchievement = achievement;
     },
     /**
      * The function deletes a specific achievements from the list of achievement.
      * */
-    deleteAchievement(achievement){
+     deleteAchievement(achievement){
       apiActivity.deleteActivityAchievement(this.user.profile_id, this.$route.params.activityId, achievement.id);
       this.loadActivity();
       this.tempAchievement = null;
@@ -651,15 +657,16 @@ export default {
     },
 
     /**
-     * Assigns the temp achievement to the selected achievement form the list of achievements
+     * Assigns the temp achievement to the selected achievement form the list of achievements.
+     * Makes an api call and checks if any results are associated with the selected achievement.
      **/
-    setTempAchievement(achievement){
+    async setTempAchievement(achievement){
 
-      // check if the response from the endpoint has any results entered against this achievement
-      //if any results are entered then open a pop up to let the user know they cannot delete /edit this anymore
-      // make the call to the function that opens that pop up
-      //else let the user edit the activity
-      console.log(this.achievements);
+      let result = await apiActivity.getResults(achievement.id)
+      if(result.data.length > 0) {
+        this.displayError("This achievement has results associated with it. You cannot edit it anymore.");
+        return;
+      }
       this.index = this.achievements.indexOf(achievement);
       this.tempAchievement = this.achievements[this.index];
       this.tempTitle = achievement.name;
@@ -953,20 +960,20 @@ export default {
         return true;
       }
     },
+    
     /**
      * Determines whether the visibility pop up is displayed or save the edited activity. The displayed message will
      * depend on the visibility change.
      *
-     * If the activity visibility changes from (PUBLIC to RESTRICTED) or (RESTRICTED to PUBLIC), then ask the user what
-     * groups they want to keep.
+     * If the activity visibility changes from (PUBLIC to RESTRICTED), then ask the user what groups they want to keep.
      *
      * If the activity visibility changes from (PUBLIC or RESTRICTED to PRIVATE), then let the user know that they will
      * lose their followers, participants and organisers if they make the activity PRIVATE.
      *
-     * If the activity visibility changes from (PRIVATE to PUBLIC), then let the user know that all users will be able
-     * to see the activity
+     * If the activity visibility changes from (PRIVATE to PUBLIC) or (RESTRICTED to PUBLIC), then let the user know
+     * that all users will be able to see the activity
      *
-     * If the activity visibility changes from (PRIVATE to RESTRICTED)l, then let the user know that only those who they
+     * If the activity visibility changes from (PRIVATE to RESTRICTED), then let the user know that only those who they
      * have shared the activity with can see the activity.
      *
      */
@@ -975,19 +982,43 @@ export default {
       if (this.visibility !== this.tempVisibility) {
         this.visibilityUpdateDialog = true;
         this.visibilityUpdateMessage = `You are updating the visibility of this activity from ${this.tempVisibility} to ${this.visibility}.`
-        if ((this.tempVisibility === "public" && this.visibility === "restricted") || (this.tempVisibility === "restricted" && this.visibility === "public")) {
-          // (PUBLIC to RESTRICTED) or (RESTRICTED to PUBLIC)
+        if (this.tempVisibility === "public" && this.visibility === "restricted") {
+          // (PUBLIC to RESTRICTED)
           this.visibilityUpdateMessage += " Please select what groups you would like to keep or remove.";
         } else if ((this.tempVisibility === "public" || this.tempVisibility === "restricted") && this.visibility === "private") {
           // (PUBLIC or RESTRICTED to PRIVATE)
           this.visibilityUpdateMessage += " Making the activity private will remove all followers, participants and organisers. Are you sure you want to update the visibility?";
-        } else if (this.tempVisibility === "private" && this.visibility === "public") {
-          // (PRIVATE to PUBLIC)
+        } else if ((this.tempVisibility === "private" && this.visibility === "public") || (this.tempVisibility === "restricted" && this.visibility === "public")) {
+          // (PRIVATE to PUBLIC) or (RESTRICTED to PUBLIC)
           this.visibilityUpdateMessage +=" Making the activity public means that all users can view the activity. Are you sure you want to update the visibility?";
         } else if (this.tempVisibility === "private" && this.visibility === "restricted") {
           // (PRIVATE to RESTRICTED)
           this.visibilityUpdateMessage +=" Making the activity public means that only users that you have shared this activity with can view it. Are you sure you want to update the visibility?";
         }
+      } else {
+        this.saveEditedActivity();
+      }
+    },
+
+    /**
+     * Update which groups to keep when activity visibility is changed
+     */
+    updateVisibilityAndGroups() {
+      this.overlayLoader = true;
+      if (this.tempVisibility === 'public' && this.visibility === 'restricted') {
+        apiActivity.updateVisibilityAndGroups(this.user.profile_id, this.$route.params.activityId, this.visibility,
+          this.groups[0].active, this.groups[1].active, this.groups[2].active).then(() => {
+          this.saveEditedActivity();
+        }).catch((err) => {
+          this.displayError(err);
+        });
+      } else if (this.visibility === 'private') {
+        apiActivity.updateVisibilityAndGroups(this.user.profile_id, this.$route.params.activityId, this.visibility,
+          false, false, false).then(() => {
+          this.saveEditedActivity();
+        }).catch((err) => {
+          this.displayError(err);
+        });
       } else {
         this.saveEditedActivity();
       }
@@ -1001,7 +1032,9 @@ export default {
         this.groups[0].amount = response.data.followers;
         this.groups[1].amount = response.data.participants;
         this.groups[2].amount = response.data.organisers;
-      })
+      }).catch((err) => {
+        this.displayError(err);
+      });
     },
 
     /**

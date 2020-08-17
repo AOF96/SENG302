@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import net.minidev.json.annotate.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
