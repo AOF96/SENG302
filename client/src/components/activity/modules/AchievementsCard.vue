@@ -98,6 +98,8 @@
             this.results[this.achievements[i].id] = response.data;
             this.results = {...this.results};
             this.loading = false;
+          }).catch(() => {
+            this.loading = false;
           });
         }
       },
