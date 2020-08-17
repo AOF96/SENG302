@@ -594,14 +594,19 @@ export default {
      * The function adds the achievement to the list of achievements.
      * */
 
-    addNewAchievement(title, description, type) {
+    async addNewAchievement(title, description, type) {
       if (title === null || title.trim() === "") {
         this.displayError("Please enter a title.");
       } else if (this.type === null || type.trim() === "") {
         this.displayError("Please enter an achievement type.");
       } else {
-        apiActivity.addActivityAchievement(this.user.profile_id, this.$route.params.activityId, title, description, type.toUpperCase());
-        this.achievements.push({'name': title, 'description': description, 'resultType': type});
+        await apiActivity.addActivityAchievement(this.user.profile_id, this.$route.params.activityId, title, description, type.toUpperCase());
+        let tempAchievements = await apiActivity.getActivityAchievement(this.author_id,this.$route.params.activityId);
+        this.achievements = tempAchievements.data;
+        for (let i = 0; i < this.achievements.length; i++) {
+          this.achievements[i].resultType = this.achievements[i].resultType.toLowerCase();
+          this.achievements[i].resultType = this.achievements[i].resultType[0].toUpperCase() + this.achievements[i].resultType.slice(1);
+        }
         this.cancelAddAchievement();
       }
     },
