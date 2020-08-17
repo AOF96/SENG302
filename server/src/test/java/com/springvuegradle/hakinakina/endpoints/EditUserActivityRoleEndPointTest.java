@@ -126,18 +126,6 @@ public class EditUserActivityRoleEndPointTest {
     }
 
     @Test
-    void testChangeActivityRoleByNotCreatorShouldBeUnsuccessful() throws Exception{
-        EditSubscriberRoleDto subDto = new EditSubscriberRoleDto(mayuko.getPrimaryEmail(), ActivityRole.ORGANISER);
-        EditActivityRoleDto actDto = new EditActivityRoleDto((subDto));
-
-        mockMvc.perform(put("/profiles/" + fabian.getUserId() + "/activities/" + mayukosActivity.getId() + "/subscriber")
-                .cookie(new Cookie("s_id", "Mayuko"))
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(actDto)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     void testDeleteUserActivityRole() throws Exception {
         Session testSession = new Session("Mayuko");
         testSession.setUser(mayuko);

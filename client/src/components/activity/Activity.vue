@@ -309,10 +309,6 @@
               </div>
             </form>
           </v-card>
-          <v-card style="border-radius: 15px" class="activityPageCard">
-            <h2>Gallery</h2>
-            <h3>Coming at some stage!</h3>
-          </v-card>
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
@@ -337,10 +333,6 @@
               </v-timeline-item>
             </v-timeline>
             <v-card-text v-if="activityChanges.data.length == 0" style="text-align: center">No Changes Yet</v-card-text>
-          </v-card>
-          <v-card style="border-radius: 15px" class="activityPageCard">
-            <h2>Map track</h2>
-            <h3>Coming next sprint!</h3>
           </v-card>
         </div>
       <div class="floatClear"></div>
