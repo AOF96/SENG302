@@ -102,6 +102,7 @@
             this.loading = false;
           });
         }
+        this.loading = false;
       },
       saveResult(achievementId) {
         this.loading = true;
