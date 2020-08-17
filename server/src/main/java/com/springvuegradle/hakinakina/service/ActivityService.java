@@ -436,7 +436,6 @@ public class ActivityService {
                 Activity activityToUpdate = activityRepository.getOne(activityId);
                 activityToUpdate.addAchievement(achievementToAdd);
                 activityRepository.save(activityToUpdate);
-                achievementRepository.save(achievementToAdd);
 
                 result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
             }

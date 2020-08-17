@@ -387,21 +387,20 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="deleteAchievement(tempAchievement)"
+                    >
+                      Confirm
+                    </v-btn>
 
                     <v-btn
                         color="green darken-1"
                         text
                         @click="deleteDialog = false"
                     >
-                      Disagree
-                    </v-btn>
-
-                    <v-btn
-                        color="green darken-1"
-                        text
-                        @click="deleteAchievement(tempAchievement)"
-                    >
-                      Agree
+                      Cancel
                     </v-btn>
                   </v-card-actions>
                 </v-card>

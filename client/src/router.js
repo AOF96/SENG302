@@ -16,7 +16,6 @@ import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
 import Search from "./components/Search";
-import EditAchievement from "@/components/activity/achievements/EditAchievement";
 
 Vue.use(VueRouter);
 
@@ -95,10 +94,6 @@ const routes = [
         path: '/search',
         component: Search
     },
-    {
-        path: '/activity/achievement_setting/:activityId',
-        component: EditAchievement
-    }
 ];
 
 
