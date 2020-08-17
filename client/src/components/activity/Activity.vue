@@ -40,7 +40,7 @@
                     class="ma-2"
                     color="white"
             >
-              {{numFollowers}} Follower<span v-if="numFollowers > 1">s</span>
+              {{numFollowers}} Follower<span v-if="numFollowers != 1">s</span>
             </v-chip>
           </v-row>
           <v-divider></v-divider>

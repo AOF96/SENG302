@@ -17,12 +17,11 @@
       </v-container>
       <v-divider></v-divider>
       <v-row no-gutters style="padding: 10px 10px 6px;">
-        <v-menu v-if="achievement.resultType === 'time'"
+        <v-menu v-if="achievement.resultType === 'TIME'"
                 ref="menu"
-                v-model="menu2"
+                v-model="clockBind[achievement.id]"
                 :close-on-content-click="false"
                 :nudge-right="40"
-                :return-value.sync="inputBind[achievement.id]"
                 transition="scale-transition"
                 offset-y
                 max-width="290px"
@@ -42,10 +41,9 @@
           </template>
           <v-time-picker
                   ampm-in-title
-                  v-if="menu2"
+                  v-if="clockBind[achievement.id]"
                   v-model="inputBind[achievement.id]"
                   full-width
-                  @click:minute="$refs.menu.save(inputBind[achievement.id])"
           />
         </v-menu>
         <v-text-field v-else
@@ -70,7 +68,7 @@
     data() {
       return {
         latestResult: "0:41",
-        menu2: false,
+        clockBind:{},
         inputBind:{},
         results: {},
         snackbarParent: this.snackbar,
@@ -91,6 +89,7 @@
       ...mapGetters(['user']),
     },
     methods: {
+      //Loads results for each activity from the database
       loadResults() {
         for(let i = 0; i < this.achievements.length; i++){
           this.results[this.achievements[i].id] = [];
@@ -104,7 +103,12 @@
         }
         this.loading = false;
       },
+      //Save new result for a given activity into the database
       saveResult(achievementId) {
+        if(this.inputBind[achievementId].trim() == ""){
+          this.displayError("Result cannot be empty.");
+          return;
+        }
         this.loading = true;
         apiActivity.addResult(this.user.profile_id, achievementId, this.inputBind[achievementId])
         .then(() => {
@@ -117,6 +121,7 @@
           this.loading = false;
         })
       },
+      //Display error in snackbar
       displayError(msg) {
         this.errorMessageParent = msg;
         this.snackbarParent = true;
