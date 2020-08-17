@@ -105,6 +105,10 @@
       },
       //Save new result for a given activity into the database
       saveResult(achievementId) {
+        if(typeof this.inputBind[achievementId] === 'undefined'){
+          this.displayError("Result cannot be empty.");
+          return;
+        }
         if(this.inputBind[achievementId].trim() == ""){
           this.displayError("Result cannot be empty.");
           return;
