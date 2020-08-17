@@ -2,6 +2,8 @@ package com.springvuegradle.hakinakina.entity;
 
 import net.minidev.json.annotate.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +27,7 @@ public class Achievement {
     private ResultType resultType;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     private Activity activity;
 
     @OneToMany(mappedBy = "achievement", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
