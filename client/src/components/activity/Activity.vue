@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="profileBanner"></div>
-    <v-snackbar outlined color="error" :timeout="timeout" :value="snackbar" top>{{ errorMessage }}</v-snackbar>
+    <v-snackbar v-model="snackbar">{{ errorMessage }}<v-btn color="primary" text @click="snackbar = false" >Close</v-btn></v-snackbar>
     <div class="activityWrap">
       <div id="activityPageLeft" class="activityPageColumn">
         <v-card style="border-radius: 15px" class="activityContainer" :loading="loadingActivity">
