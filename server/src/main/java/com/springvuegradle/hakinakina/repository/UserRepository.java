@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.entity.ActivityRole;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
@@ -36,34 +37,16 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Optional<User> getUserById(long profileId);
 
     @Query(value = "select user_id from User where primary_email = ?", nativeQuery = true)
-    String getIdByEmail(String email);
+    Long getIdByEmail(String email);
+
+    @Query(value = "select user_id from User where primary_email = ?1 UNION " +
+            "(select user_user_id from Email where email = ?1)", nativeQuery = true)
+    Long getIdByAnyEmail(String email);
 
     @Query(value = "delete from User where user_id = ?", nativeQuery = true)
     void deleteUserById(Long profileId);
 
     /**
-     * Retrieves users based on the following query parameters
-     * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
-     * @param pageable abstract interface for pagination information, if provided page object is sent back
-     * @param email email of the user you are searching for
-     * @param fullname full name of the user you are searching for
-     * @param lastname last name of the user you are searching for
-     * @return Page object with list of users with the query search
-     */
-    @Query(value = "FROM User u " +
-            "WHERE u.permissionLevel < 2" +
-            "AND (u.primaryEmail like %:email% " +
-            "OR concat(u.firstName, ' ', u.lastName) like %:fullname% " +
-            "OR u.lastName like %:lastname%)")
-    Page<User> findAllByQuery(Pageable pageable, String email, String fullname, String lastname);
-
-    @Query(value = "FROM User u " +
-            "WHERE u.primaryEmail = ?1 " +
-            "OR concat(u.firstName, ' ', u.lastName) like ?2 " +
-            "OR u.lastName = ?3")
-    Page<User> findAllByQueryWithQuotation(Pageable pageable, String email, String fullname, String lastname);
-
- /**
      * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match any
      * of those in the userActivityTypes set (OR).
      * This returns the users' primary email, full name (first, middle and last name) and nickname in a Page object
@@ -82,30 +65,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "AND a.type_id IN :userActivityTypes " +
             "AND u.permission_level < 2")
     Page<User> findAllByActivityTypesOR(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> userActivityTypes);
-
-    /**
-     * Retrieves users based on the following query parameters
-     * This returns the users' primary email, full name (first, middle and last name) and nickname
-     * Provides the startIndex and size of the result set
-     * @param email email address of the user
-     * @param nickname nickname of the user
-     * @param fullname full name of the user
-     * @param startIndex index of results
-     * @param size size of results needed
-     * @return List of users
-     */
-    @Query(value = "SELECT u.primary_email as primary_email, u.first_name as firstname, u.last_name as lastname, u.middle_name as middlename, u.nick_name as nickname " +
-            "FROM User u " +
-            "WHERE (:email is null or u.primary_email = :email%) " +
-            "AND (:nickname is null or u.nick_name = :nickname%) " +
-            "AND (:fullname is null or u.first_name LIKE :fullname% or u.middle_name LIKE :fullname% or u.last_name LIKE :fullname%) " +
-            "LIMIT :startIndex, :size " +
-            "FOR JSON AUTO;", nativeQuery = true)
-    List<Object> searchForUser(String email,
-                               String nickname,
-                               String fullname,
-                               int startIndex,
-                               @Param("size") int size);
 
     /**
      * Retrieves users based on the following query parameters. Users are retrieved with Activity Types that match all
@@ -133,6 +92,13 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + "AND (:lastname IS NULL OR u.last_name like :lastname%) "
             + "AND u.permission_level < 2 ", nativeQuery = true)
     Page<User> getUsersWithActivityTypeAnd(Pageable pageable, String email, String fullname, String lastname, Set<ActivityType> activityTypes);
+
+
+   @Query(value = "SELECT u FROM User u " +
+           "INNER JOIN UserActivityRole r ON u.userId = r.user.userId " +
+           "WHERE r.activity.id = :activityId " +
+           "AND r.activityRole = :role")
+   Page<User> getParticipantsOROrganisers(Pageable pageable, Long activityId, ActivityRole role);
 
     /***
      * Query that updated the database to set the permission level to 1 of the user being promoted to admin.

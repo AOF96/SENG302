@@ -1,5 +1,7 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,5 +48,14 @@ public class ActivityType {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof ActivityType) {
+            ActivityType otherActivityType = (ActivityType) other;
+            return this.name.equals(otherActivityType.getName());
+        }
+        return false;
     }
 }

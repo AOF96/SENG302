@@ -41,7 +41,7 @@
                         <h6 class="updatePasswordErrorMessage" id="other_error" hidden="true"/>
                         <h6 class="updatePasswordSuccessMessage" id="success" hidden="true">Password successfully updated</h6>
                     </div>
-                    <button class="genericConfirmButton updatePasswordButton" v-on:click="submitPasswordChange()" type="submit">Change Password</button>
+                    <button class="genericConfirmButton updatePasswordButton" v-on:click="submitPasswordChange()" type="submit">Save New Password</button>
                 </form>
             </div>
         </div>
@@ -191,7 +191,11 @@ export default {
     }
   },
   mounted() {
-    this.loadSearchedUser();
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.loadSearchedUser();
+      }
   }
 };
 </script>

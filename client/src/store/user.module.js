@@ -121,10 +121,20 @@ const mutations = {
     state.user.fitness = data.fitness;
   },
   setUserActivity(state, data) {
-    state.user.activities = data.activities;
+    let activityTypes = data.activities;
+    for (let i = 0; i < activityTypes.length; i++) {
+      activityTypes[i] = activityTypes[i].replace(/-/g, " ")
+    }
+    state.user.activities = activityTypes;
+    console.log(state.user.activities);
+
   },
   setUserTmpActivity(state, data) {
-    state.user.tmp_activities = data.tmp_activities;
+    let activityTypes = data.tmp_activities;
+    for (let i = 0; i < activityTypes.length; i++) {
+      activityTypes[i] = activityTypes[i].replace(/-/g, " ")
+    }
+    state.user.tmp_activities = activityTypes;
   },
   setUserIsLogin(state, data) {
     if (data.isLogin != "") {
@@ -271,11 +281,26 @@ const actions = {
   async getIdByEmail(data, {'email': email}) {
     return await apiUser.getIdByEmail(email);
   },
+  async isUserFollowingActivitiy(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.isUserFollowingActivitiy(userId, activityId);
+  },
+  async followActivity(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.followActivity(userId, activityId);
+  },
+  async unfollowActivity(data, {'userId': userId, 'activityId': activityId}) {
+    return await apiUser.unfollowActivity(userId, activityId);
+  },
   async refreshUserData(data, userId) {
     return await apiUser.refreshUserData(userId);
   },
   async deleteUserAccount(data, {'id': id}) {
     return await apiUser.deleteUserAccount(id);
+  },
+  async editUserRoleForActivity(data, {'id': id, 'activityId': activityId, 'email': email, 'activityRole': activityRole}) {
+    return await apiUser.editUserRoleForActivity(id, activityId, email, activityRole);
+  },
+  async getUserFeed(data, {'id': id, 'page': page, 'size': size}) {
+    return await apiUser.getUserFeed(id, page, size);
   }
 };
 

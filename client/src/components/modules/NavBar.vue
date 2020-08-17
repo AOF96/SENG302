@@ -1,22 +1,22 @@
 <template>
   <div>
     <header class="navBarContainer">
-      <v-row justify="center" align="center">
-        <v-col class="navBarLeftCol">
+      <v-row justify="center" align="center" class="mx-0">
+        <v-col class="navBarLeftCol flexForMobile" cols="auto">
           <v-row align="center">
             <v-btn id="headerNavToggle" icon @click.stop="navDrawer = !navDrawer">
-              <v-icon large>mdi-menu</v-icon>
+              <v-icon size="30">mdi-menu</v-icon>
             </v-btn>
-            <img class="navBarLeftColIcon" v-on:click="$router.push('/')" id="appNavLogo" src="/favicon.png">
+            <img class="navBarLeftColIcon" v-on:click="$router.push('/feed/')" id="appNavLogo" v-bind:src="rootLocation+'favicon.png'">
           </v-row>
         </v-col>
-        <v-col>
+        <v-col class="hideNavForMobile">
           <v-row justify="center">
             <BackButton/>
           </v-row>
         </v-col>
-        <v-col>
-          <v-row>
+        <v-col class="hideForMobile">
+          <v-row justify="center" align="center">
             <div id="globalSearchBarContainer" v-if="user.isLogin">
               <svg id="globalSearchBarIcon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
               <input id="globalSearchBarInput" v-model="searchQuery" v-on:keyup="submitSearch" type="text" placeholder="Search" autocomplete="false">
@@ -24,12 +24,15 @@
             </div>
           </v-row>
         </v-col>
-        <v-col>
+        <v-col class="hideNavForMobile">
           <v-row justify="center">
             <ForwardButton/>
           </v-row>
         </v-col>
-        <v-col>
+        <v-col cols="auto">
+          <v-btn id="headerSearchBtn" v-bind:to="'/search'" v-if="user.isLogin" icon class="showForMobile mr-3">
+            <v-icon size="30">search</v-icon>
+          </v-btn>
           <router-link to="/logout" v-if="user.isLogin">
             <button class="navBarButton" v-on:click="logoutUser">Logout</button>
           </router-link>
@@ -57,7 +60,7 @@
       >
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img src="/images/userIcon.png">
+            <img v-bind:src="rootLocation+'images/userIcon.png'">
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -71,7 +74,7 @@
         <v-list-item-group
           active-class="text--accent-4"
         >
-          <v-list-item link class="mt-2" id="homeButton" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link class="mt-2" id="homeButton" v-bind:to="'/feed/'" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>dashboard</v-icon>
             </v-list-item-icon>
@@ -151,7 +154,8 @@
         data: function () {
           return {
             navDrawer: false,
-            searchQuery: ""
+            searchQuery: "",
+            rootLocation: process.env.VUE_APP_BASE_URL
           }
         },
         components: {

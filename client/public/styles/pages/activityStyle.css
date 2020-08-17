@@ -19,11 +19,8 @@
 }
 
 .activityContainer{
-    width: 60%;
-    margin: 0 auto;
-    display: block;
-    position: relative;
-    border-radius: 50px;
+    border-radius: 14px;
+    width: 450px;
 }
 
 .activityInfoContainer {
@@ -122,63 +119,59 @@
 }
 
 .activityDescriptionLabel {
-    display: flex;
-    grid-area: Description;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding-top: 1.5rem;
-    padding-bottom: 1rem;
-    padding-left: 1rem;
-    padding-right: 0.5rem;
-    font-size: 18px;
-    color: #1cca92;
-
+    font-size: 16px;
+    font-weight: 400;
+    padding: 0 20px 8px;
 }
 
 .activityAuthorLabel {
-    display: flex;
-    grid-area: Author;
-    justify-content: center;
-    align-items: center;
+    padding: 0 11px 7px;
+}
+
+.activityFollowersLabel{
+    padding: 0 13px;
+}
+
+.activityVisibilityLabel {
+    color: white;
+    padding: 3px 15px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
     text-align: center;
-    padding-top: 0.5rem;
-    padding-bottom: 1rem;
-    padding-left: 1rem;
-    padding-right: 0.5rem;
-    font-size: 12px;
+}
+
+.activityVisibilityLabelRed {
+    background: #ff4f4a;
+}
+
+.activityVisibilityLabelOrange {
+    background: #ff843c;
+}
+
+.activityVisibilityLabelGreen {
+    background: #1dca92;
 }
 
 .activityLocationLabel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    grid-area: Location;
-    color: #6b6b6b;
-    font-size: 17px;
-    padding-bottom: 1rem;
+    font-size: 15px;
+    font-weight: 500;
+    color: grey;
+    padding: 15px 20px 0px;
 }
 
 .activityStartLabel {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    text-align: center;
-    grid-area: Start;
-    font-size: 12px;
-    color: #6b6b6b;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
+    font-size: 14px;
+    color: #379142;
+    padding: 2px 20px;
+    padding-top: 10px;
 }
 
 .activityEndLabel {
-    text-align: center;
-    grid-area: End;
-    font-size: 12px;
-    padding-right: 1rem;
-    color: #6b6b6b;
-    padding-bottom: 1rem;
+    font-size: 14px;
+    color: #d34343;
+    padding: 2px 20px;
+    padding-bottom: 15px;
 }
 
 .activityTypeTitle{
@@ -189,7 +182,6 @@
     align-items: flex-end;
     text-align: center;
     font-weight: 500;
-    colour: black;
 }
 
 .editSuccessMessage {
@@ -234,17 +226,9 @@
 }
 
 .activityTitle {
-    padding-left: 1rem;
-    padding-top: 2rem;
-    padding-bottom: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 22px;
-    grid-area: Title;
-    font-weight: 100;
-
+    font-size: 21px;
+    font-weight: 500;
+    padding: 0 20px 8px;
 }
 
 .activityDescription {
@@ -323,16 +307,21 @@
 }
 
 .activityWrap{
-    max-width: 760px;
+    max-width: 1800px;
+    width: calc(100% - 30px);
     display: block;
     margin: 0 auto;
     position: relative;
-    top: -56px;
+    top: -100px;
+}
+
+.activityPageColumn{
+    width:33.33%;
+    float: left;
 }
 
 .activityPageTypeList{
-    text-align: center;
-    padding-bottom: 2rem;
+    padding: 0 11px 20px;
 }
 
 .activityPageActivitySeparator {
@@ -345,12 +334,9 @@
 }
 
 .activityPageBottomButtons {
+    padding: 10px 15px;
     overflow: hidden;
-    text-align: center;
-    padding-top: 5rem;
-    padding-bottom: 2rem;
 }
-
 
 .activityPageBackToProfileButton {
     padding: 8px 15px 8px 15px;
@@ -374,4 +360,108 @@
 
 .activityPageDeleteActivityButtonSpacing {
     margin-left: 20px;
+}
+
+.activityPageCard{
+    min-height: 350px;
+    height: fit-content;
+    width: calc(100% - 20px);
+    padding: 15px;
+    margin:20px 10px;
+    border-radius: 15px !important;
+}
+
+.activityContainer{
+    width: calc(100% - 20px);
+    margin:20px 10px;
+    border-radius: 15px !important;
+}
+
+.activityPageCardTextField {
+    margin-right: 30px;
+    position: relative;
+}
+
+.activityPageCardButton {
+    right: -43px;
+    width: 40%;
+    color: #1cca92;
+}
+
+#activityPageShowMoreButton{
+    color: #1cca92;
+    position: absolute !important;
+    bottom: 20px;
+    transform: translateX(-50%) !important;
+    min-width: 0 !important;
+    left: 50%;
+}
+
+#activityPageMoreResultsButton{
+    color: #1cca92;
+    left: 50%;
+    right: -50%;
+}
+
+.activityPageCardForm {
+    padding: 10px 0 20px 0;
+}
+
+.activityPageCardSelect {
+    float: left;
+    width: 40%;
+}
+
+.activityPageErrorMessage {
+    font-weight: 600;
+    font-size: 15px;
+    color: #ec4e4e;
+    margin-top: 12px;
+    margin-left: 14px;
+}
+
+.activityPageCardDiv {
+    overflow-y: scroll;
+    height: 300px;
+    margin-top: 10px;
+}
+
+.achievementText {
+    margin-top: 10px;
+}
+
+.achievementSaveButton {
+    margin-left: 10px;
+}
+
+.v-text-field__details {
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.achievementCol {
+    padding: 5px 12px !important;
+}
+
+.achievementCard {
+    margin-bottom: 8px;
+    border-radius: 15px !important;
+}
+
+.achievementsContainer {
+    overflow-y: scroll;
+    height: 300px;
+}
+
+@media only screen and (max-width: 1100px) {
+    .activityPageColumn {
+        width: 100%;
+    }
+    .activityPageCard{
+        margin-top:0;
+    }
+    .activityWrap{
+        width:100%;
+    }
 }

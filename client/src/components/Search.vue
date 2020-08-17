@@ -12,7 +12,7 @@
                 <v-text-field id="searchQueryInput" v-on:keyup="submitSearch" label="Search" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
               </v-col>
               <v-col>
-                <v-select v-model="searchBy" :items="searchMethods" name="searchValue" required label="Search By" outlined hide-details dense rounded>
+                <v-select v-model="searchBy" :items="searchMethods" item-text="display" name="searchValue" required label="Search By" outlined hide-details dense rounded>
                 </v-select>
               </v-col>
               <v-col>
@@ -118,13 +118,23 @@ export default {
       searchInput: "",
       selected_activity: "Activity Type",
       filterMethod: "and",
-      searchMethods: ["fullname", "lastname", "email"]
+      searchMethods: [
+        {display: "Full Name", value: "fullname"},
+        {display: "Last Name", value: "lastname"},
+        {display: "Email", value: "email"}
+        ]
     }
   },
   mounted() {
-    this.initialiser();
-    const element = this.$el.querySelector('#searchQueryInput');
-    if (element) this.$nextTick(() => { element.focus() });
+      if (!this.user.isLogin) {
+          this.$router.push('/login');
+      } else {
+          this.initialiser();
+          const element = this.$el.querySelector('#searchQueryInput');
+          if (element) this.$nextTick(() => {
+              element.focus()
+          });
+      }
   },
   watch: {
     "$route.params": {
@@ -169,7 +179,7 @@ export default {
       this.disabled = true;
 
       /* Search for users */
-      apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activityListToString(), this.filterMethod, page - 1, size).then(
+      apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.filterMethod, page - 1, size).then(
         (response) => {
           if (response.data.content.length === 0) {
             this.disabled = true;
@@ -216,21 +226,6 @@ export default {
             path: "/profile/" + response.data.id
           })
         })
-    },
-
-    /**
-     * The method changes a list of activity type to a string, which is appended to the URL for searching users
-     */
-    activityListToString() {
-      if(this.activity_types_selected.length === 0){
-        return null;
-      }
-      let activityString = "";
-      for (let activity of this.activity_types_selected) {
-        activityString += activity + ' ';
-      }
-      return activityString.slice(0, activityString.length - 1);
-
     },
 
     /**
@@ -290,7 +285,7 @@ export default {
       if (this.searchedTerm.trim().length === 0) {
         searchTermInt = null
       }
-      apiUser.searchUsers(searchTermInt, this.searchBy, this.activityListToString(), this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+      apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
         (response) => {
           if (response.data.content.size === 0) {
             this.disabled = true;
@@ -337,6 +332,9 @@ export default {
       .getActivityTypes()
       .then(response => {
         this.activities_option = response.data;
+        for (let i = 0; i < this.activities_option.length; i++) {
+          this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
+        }
       })
       .catch(error => console.log(error));
   },

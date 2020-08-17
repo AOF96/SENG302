@@ -26,7 +26,7 @@
                         </option>
                     </select>
                     <button class="genericConfirmButton addItemButton" v-on:click="addPassportCountries()">Add</button>
-                    <button class="genericConfirmButton saveButton" v-on:click="savePassportCountries()">Save</button>
+                    <button class="genericConfirmButton saveButton" v-on:click="savePassportCountries()">Save All Passport Countries</button>
                     <div class="floatClear"></div>
                 </form>
             </div>
@@ -62,7 +62,11 @@
             ...mapGetters(['user'])
         },
         mounted() {
-            this.loadSearchedUser();
+            if (!this.user.isLogin) {
+                this.$router.push('/login');
+            } else {
+                this.loadSearchedUser();
+            }
         },
         methods: {
             ...mapActions(['updatePassports', "getDataFromUrl", "getUserById","editProfile"]),

@@ -1,7 +1,9 @@
 package com.springvuegradle.hakinakina.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -15,7 +17,6 @@ public class ResponseHandler {
 
     /**
      * Formats a success response to return to the client
-     *
      * @param statusCode
      * @param content
      */
@@ -65,29 +66,48 @@ public class ResponseHandler {
         return new ResponseEntity(details, HttpStatus.valueOf(statusCode));
     }
 
-    public ResponseEntity formatGetUsers(List<User> users) {
-        String userList = "{\n\"Users\": [\n";
-        int firstCheck = 0;
-        for (User user: users) {
-            if (firstCheck == 0) {
-                userList += String.format("\"%d %s %s\"", user.getUserId(), user.getFirstName(), user.getLastName());
-                firstCheck = 1;
-            } else {
-                userList += String.format(",\n\"%d %s %s\"", user.getUserId(), user.getFirstName(), user.getLastName());
-            }
-        }
-        userList += "\n]\n}";
-        return new ResponseEntity(userList, HttpStatus.OK);
+    /**
+     * Formats a success response to return to the client
+     *
+     * @param statusCode status code of the response
+     * @param content content of the response
+     * @return ResponseEntity with response
+     */
+    public ResponseEntity<String> formatSuccessResponseString(int statusCode, String content) {
+        return new ResponseEntity<String>(content, HttpStatus.valueOf(statusCode));
     }
 
-    public ResponseEntity formatGetUser(User user) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String userStr = null;
-        try {
-            userStr = objectMapper.writeValueAsString(user);
-        } catch (Exception exception) {
-            ErrorHandler.printProgramException(exception, "Could not map user to JSON string");
+    /**
+     * Formats an error response to return to the client
+     *
+     * @param statusCode status code of the response
+     * @param error response error message
+     * @return ResponseEntity with response
+     */
+    public ResponseEntity<String> formatErrorResponseString(int statusCode, String error) {
+        return new ResponseEntity<String>(error, HttpStatus.valueOf(statusCode));
+    }
+
+    /**
+     * Helper function used in findPaginated and findPaginatedByQuery,
+     * creates SearchUserResponse object which has user email, full name and nickname details
+     * from the list of users in page object returned by the query
+     *
+     * @param users Page object that contains list of users found by the query
+     * @return Page object with list of SearchUserResponse object
+     */
+    public Page<SearchUserDto> userPageToSearchResponsePage(Page<User> users) {
+        List<SearchUserDto> userResponses = new ArrayList<>();
+        for (User user : users) {
+            SearchUserDto searchUserDto = new SearchUserDto();
+            searchUserDto.setEmail(user.getPrimaryEmail());
+            searchUserDto.setFirstname(user.getFirstName());
+            searchUserDto.setLastname(user.getLastName());
+            searchUserDto.setMiddlename(user.getMiddleName());
+            searchUserDto.setNickname(user.getNickName());
+            searchUserDto.setActivityTypes(user.getActivityTypes());
+            userResponses.add(searchUserDto);
         }
-        return new ResponseEntity(userStr, HttpStatus.OK);
+        return new PageImpl<>(userResponses);
     }
 }

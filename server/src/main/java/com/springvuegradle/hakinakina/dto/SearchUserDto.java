@@ -66,4 +66,5 @@ public class SearchUserDto {
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
     }
+
 }

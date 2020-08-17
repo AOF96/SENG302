@@ -11,7 +11,7 @@
   margin: 0 auto;
   display: block;
   position: relative;
-  top: -56px;
+  top: -61px;
 }
 .leftSidebarContainer {
   width: 269px;
@@ -117,10 +117,10 @@
     float: left;
     text-align: center;
     box-sizing: content-box;
-    margin-left: 10px;
 }
 .profileMainInfoContainer h1 {
     font-size: 18px;
+    font-weight: 500;
 }
 .profileMainInfoContainer h2 {
     color: #7f7f7f;
@@ -128,11 +128,9 @@
     font-weight: 500;
 }
 .profileHeaderContainer .genericConfirmButton {
-    position: absolute;
-    padding: 5px 20px;
+    padding: 4px 16px;
     right: 20px;
     top: 50%;
-    transform: translateY(-50%);
 }
 .profileActivitiesContainer {
     background: white;
@@ -144,14 +142,17 @@
     margin-bottom: 50px;
 }
 .profileActivitiesContainer h2 {
-    text-align: center;
-    padding-left: 90px;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 500;
+    padding-bottom: 12px;
 }
 .profileActivitiesContainer h3 {
     font-size: 17px;
 }
 .profileActivitiesContainer .genericConfirmButton {
-    padding: 5px 14px;
+    padding: 4px 14px;
+    font-size: 13px;
     float: right;
 }
 .activityTypesList {
@@ -233,4 +234,95 @@
     font-weight: 500;
     color: rgba(0,0,0,0.85);
     float: left;
+}
+/* Hide, show and rearrange elements for mobile */
+@media only screen and (max-width: 1160px) {
+    .profileMainInfoContainer h1{
+        font-size: 15px;
+        width:100%;
+    }
+    .profileMainInfoContainer h2{
+        font-size: 12px;
+    }
+    .profileActivitiesContainer .genericConfirmButton{
+        padding: 3px 14px;
+        font-size: 13px;
+    }
+    .profileHeaderContainer .genericConfirmButton{
+        padding: 3px 14px;
+        font-size: 13px;
+    }
+    .userNameInfoRow{
+        width:100%;
+    }
+}
+@media only screen and (max-width: 1070px) {
+    .leftSidebarContainer{
+      float: right;
+    }
+    .centreContainer {
+        width: calc(100% - 279px);
+        float: left;
+        margin-left: 0;
+    }
+    .rightSidebarContainer {
+        float: right;
+        margin-top: 10px;
+    }
+}
+@media only screen and (max-width: 850px) {
+    .leftSidebarContainer{
+        float: none;
+        width:100%;
+        -webkit-box-ordinal-group: 2;
+        -moz-box-ordinal-group: 2;
+        box-ordinal-group: 2;
+        margin:0;
+        margin-top: 10px;
+    }
+    .centreContainer {
+        float: none;
+        width:100%;
+        -webkit-box-ordinal-group: 1;
+        -moz-box-ordinal-group: 1;
+        box-ordinal-group: 1;
+        margin:0;
+    }
+    .rightSidebarContainer {
+        float: none;
+        width:100%;
+        -webkit-box-ordinal-group: 3;
+        -moz-box-ordinal-group: 3;
+        box-ordinal-group: 3;
+        margin:0;
+        margin-top: 10px;
+    }
+    .profileContainer{
+        display: -webkit-box;
+        display: -moz-box;
+        -webkit-box-orient: vertical;
+        -moz-box-orient: vertical;
+        box-orient: vertical;
+        width: calc(100% - 20px);
+    }
+    .profileActivitiesContainer{
+        margin:0;
+        margin-top: 10px;
+    }
+    .profileBanner{
+        height: 200px;
+    }
+    .userNameInfoRow{
+        flex: 0 0 auto !important;
+    }
+    .userNameInfoRow h1{
+        text-align: center;
+        font-size: 16px;
+    }
+    .userNameInfoRow h2{
+        text-align: center;
+    }
+    .profileActivitiesContainer h2{
+      padding-top: 2px;
+    }
 }

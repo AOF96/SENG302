@@ -1,13 +1,18 @@
 package com.springvuegradle.hakinakina.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.springvuegradle.hakinakina.serialize.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.springvuegradle.hakinakina.serialize.*;
 import com.springvuegradle.hakinakina.util.EncryptionUtil;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -105,10 +110,21 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "activity_id") }
     )
-    private Set<Activity> activity = new HashSet<>();
 
+    @JsonIgnore
+    private Set<Activity> activities = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToMany(mappedBy="usersShared", fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
+    private Set<Activity> activitiesShared = new HashSet<>();
+
+    @JsonIgnore
     @OneToMany
     private Set<Activity> authoredActivities = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "author")
+    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -126,12 +142,20 @@ public class User {
     @Column(name = "permission_level")
     private Integer permissionLevel;
 
+    @JsonIgnore
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL
 //            orphanRemoval = true
     )
     private Set<Session> sessions = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
+    private Set<UserActivityRole> userActivityRoles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Result> results = new HashSet<>();
 
     public User() {}
 
@@ -171,6 +195,11 @@ public class User {
         }
     }
 
+    public void addResult(Result result) {
+        results.add(result);
+        result.setUser(this);
+    }
+
     public void addEmail(Email email) {
         emails.add(email);
         email.setUser(this);
@@ -191,6 +220,19 @@ public class User {
         session.setUser(null);
     }
 
+    public void followActivity(Activity activity) {
+        activitiesShared.add(activity);
+    }
+
+    @JsonIgnore
+    public Set<Activity> getActivities() {
+        return activities;
+    }
+
+    public void unfollowActivity(Activity activity) {
+        activitiesShared.remove(activity);
+    }
+
     public Set<PassportCountry> getPassportCountries() {
         return passportCountries;
     }
@@ -204,7 +246,7 @@ public class User {
     }
 
     public void setActivity(Set<Activity> activities) {
-        this.activity = activities;
+        this.activities = activities;
     }
 
     /**
@@ -374,15 +416,48 @@ public class User {
         this.authoredActivities.add(authoredActivity);
     }
 
+    public Set<UserActivityRole> getUserActivityRoles() {
+        return userActivityRoles;
+    }
+
+    public void setUserActivityRoles(Set<UserActivityRole> userActivityRoles) {
+        this.userActivityRoles = userActivityRoles;
+    }
+
+    public void setActivities(Set<Activity> participateActivities) {
+        this.activities = participateActivities;
+    }
+
+    public void addActivitiesShared(Activity activity) {
+        this.activitiesShared.add(activity);
+    }
+
+    public void setActivitiesShared(Set<Activity> activitiesShared) {
+        this.activitiesShared = activitiesShared;
+    }
+
+    public Set<Activity> getActivitiesShared() {
+        return activitiesShared;
+    }
+
     @Override
     public String toString() {
         String result = "ID: " + getUserId() + String.format("\nName: %s %s %s",firstName, middleName, lastName) +
-                "\nNickname: " + getNickName() + "\nEmails: " + getEmails().toString() + "\nBio: " + getBio() +
-                "\nDate of Birth: " + getBirthDate().toString() + "\nGender: " + getGender().toString()
+                "\nNickname: " + getNickName() + "\nEmails: " + getEmails() + "\nBio: " + getBio() +
+                "\nDate of Birth: " + getBirthDate() + "\nGender: " + getGender()
                 + "\nPassword: " + getPassword() + "\nFitness Level: " + getFitnessLevel() +
-                "\nPassport Countries: " + getPassportCountries().toString() + "\nSalt: " + getSalt() +
+                "\nPassport Countries: " + getPassportCountries() + "\nSalt: " + getSalt() +
                 "\nPrimary Email: " + getPrimaryEmail();
         return result;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof User){
+            User otherUser = (User) other;
+            return this.userId.equals(otherUser.userId);
+        }
+        return false;
     }
 
     public String toJson() {

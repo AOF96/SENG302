@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Profile from './components/profile/Profile.vue'
 import Signup from './components/Signup.vue'
 import Login from './components/Login.vue'
+import Feed from './components/Feed.vue'
 import UserProfileSettings from './components/profile/settings/ProfileInfoSettings'
 import UserPasswordSettings from './components/profile/settings/ProfilePasswordSettings'
 import UserEmailSettings from './components/profile/settings/ProfileEmailSettings'
@@ -22,6 +23,7 @@ const baseUrl = process.env.BASE_URL;
 
 const routes = [
     {
+        name: "profilePage",
         path: '/profile/:profileId',
         component: Profile
     },
@@ -32,6 +34,10 @@ const routes = [
     {
         path: '/login',
         component: Login
+    },
+    {
+        path: '/feed',
+        component: Feed
     },
     {
         path: '/logout',
@@ -66,7 +72,7 @@ const routes = [
     },
     {
         path: "*",
-        redirect: "/profile",
+        redirect: "/feed/",
     },
     {
         path: '/activity/:activityId',
@@ -87,7 +93,7 @@ const routes = [
     {
         path: '/search',
         component: Search
-    }
+    },
 ];
 
 

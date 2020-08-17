@@ -3,7 +3,7 @@ package com.springvuegradle.hakinakina.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.dto.EditActivityRoleDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.PassportCountry;
 import com.springvuegradle.hakinakina.entity.Session;
@@ -13,13 +13,13 @@ import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.*;
 
 
@@ -40,7 +40,7 @@ public class UserController {
 
 
     /**
-     * Contructs a UserController, passing in the repositories and service so that they can be accessed.
+     * Constructs a UserController, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository    The repository containing Users
      * @param countryRepository The repository containing PassportCountries
@@ -142,8 +142,6 @@ public class UserController {
 
             oldUser.resetPassportCountries();
             user.setUserId(profileId);
-            //System.out.println(oldUser.getStuff());
-            user.setAuthoredActivities(oldUser.getAuthoredActivities());
             user.setEncryptedPassword(oldUser.getPassword());
             user.setSalt(oldUser.getSalt());
             return userService.validateEditUser(user);
@@ -167,63 +165,6 @@ public class UserController {
                                     @PathVariable long profileId,
                                     @CookieValue(value = "s_id") String sessionToken) {
         return userService.addEmails(request, profileId, sessionToken);
-    }
-
-    /**
-     * Handle request for retrieving users with email or full name or surname
-     *
-     * @param email    searching for a user with the given email
-     * @param fullname searching for a user with some name that matches a users full name (first, middle, last)
-     * @param lastname searching for a user with the given nickname
-//     * @param activityTypes searching for users with given activity types
-     * @param page     current page number that the user is viewing
-     * @param size     how many results we want to return
-     * @return response entity containing a list of profiles
-     */
-    @GetMapping("/profiles")
-    public ResponseEntity findPaginated(
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String fullname,
-            @RequestParam(required = false) String lastname,
-            @RequestParam(required = false) String activity,
-            @RequestParam("method") String method,
-            @RequestParam("page") int page,
-            @RequestParam("size") int size) {
-        if (!method.equals("or") && !method.equals("and")) {
-            return new ResponseEntity("Method must either be 'or' or 'and'", HttpStatus.valueOf(400));
-        }
-        Set<ActivityType> activityTypes = getActivityTypesSet(activity);
-        Page<SearchUserDto> resultPage;
-        if(activityTypes.size() == 0){
-            activityTypes = null;
-        }
-        if (email != null || fullname != null || lastname != null || activityTypes != null) {
-            resultPage = userService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
-        } else {
-            resultPage = userService.findPaginated(page, size);
-        }
-
-        return new ResponseEntity(resultPage, HttpStatus.valueOf(200));
-    }
-
-    /**
-     * Takes a string of activity types from the URL and matches each to an Activity Type object, which is added to a
-     * set and returned.
-     * @param activity The string of activities from the url
-     * @return A set of ActivityType objects matching those in the URL
-     */
-    public Set<ActivityType> getActivityTypesSet(String activity) {
-        Set<ActivityType> activityTypes = new HashSet<>();
-        if(activity != null) {
-            String[] arrOfActivities = activity.split(" ");
-            for (String activityType : arrOfActivities) {
-                ActivityType retrievedType = activityTypeRepository.findActivityTypeByName(activityType);
-                if (retrievedType != null) {
-                    activityTypes.add(retrievedType);
-                }
-            }
-        }
-        return activityTypes;
     }
 
     /**
@@ -255,7 +196,7 @@ public class UserController {
         if (session == null) {
             return responseHandler.formatErrorResponse(401, "User not currently logged in");
         }
-        String userId = userRepository.getIdByEmail(email);
+        Long userId = userRepository.getIdByEmail(email);
         return new ResponseEntity("{\"id\": \"" + userId + "\"}", HttpStatus.valueOf(200));
     }
 
@@ -268,7 +209,10 @@ public class UserController {
      * @throws 404 error if the user with given id doesn't exist or if the given id is that of the default admin
      */
     @GetMapping("/profiles/{profile_id}")
-    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId) {
+    public ResponseEntity getOneUser(@PathVariable("profile_id") long profileId, @CookieValue(value = "s_id") String sessionToken) {
+       if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+           return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         Optional<User> optional = userRepository.getUserById(profileId);
         if (optional.isPresent() && optional.get().getPermissionLevel() != 2) {
             User user = optional.get();
@@ -395,7 +339,9 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/activity-types")
     public ResponseEntity editActivityTypes(@RequestBody String jsonString,
-                                            @PathVariable Long profileId) throws JsonProcessingException {
+                                            @PathVariable Long profileId,
+                                            @CookieValue(value = "s_id") String sessionToken) throws JsonProcessingException {
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode activitiesNode = mapper.readTree(jsonString).get("activities");
         List<String> activities;
@@ -406,7 +352,7 @@ public class UserController {
             return new ResponseEntity("Must send a list of activities", HttpStatus.valueOf(400));
         }
 
-        return userService.editActivityTypes(activities, profileId);
+        return userService.editActivityTypes(activities, profileId, sessionToken);
     }
 
     /**
@@ -434,8 +380,13 @@ public class UserController {
      */
     @PutMapping("/profiles/{profileId}/location")
     public ResponseEntity editLocation(@RequestBody String jsonString,
-                                       @PathVariable Long profileId)
+                                       @PathVariable Long profileId,
+                                       @CookieValue(value = "s_id") String sessionToken)
             throws JsonProcessingException {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null) {
+            return new ResponseEntity("Invalid session", HttpStatus.valueOf(401));
+        }
         ObjectMapper mapper = new ObjectMapper();
         JsonNode locationNode = mapper.readTree(jsonString).get("location");
         String city = locationNode.get("city").asText();
@@ -478,4 +429,33 @@ public class UserController {
         return userService.promoteUser(jsonString, profileId, sessionToken);
     }
 
+    /***
+     * Endpoint to edit role of an user in an activity, if role does not exist, create new role and save
+     * @param profileId id of person who is changing the role of some user
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param activityId id of the activity the user is changing the role of
+     * @param dto DTO of subscriber request which contains email of user changing the role and what role to change to
+     * @return the response status that specifies if the operation was successful or not.
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityId}/subscriber")
+    public ResponseEntity<Void> editUserActivityRole(@PathVariable Long profileId,
+                                                     @CookieValue(value = "s_id") String sessionToken,
+                                                     @PathVariable Long activityId,
+                                               @Valid @RequestBody EditActivityRoleDto dto){
+        userService.editUserActivityRole(profileId, activityId, dto, sessionToken);
+        return ResponseEntity.ok().build();
+    }
+
+    /***
+     * Endpoint to allow a user to follow and activity. Calls userService to do authenticity checks.
+     * @param profileId The id of the user who wishes to follow the activity
+     * @param activityId The id of the activity the user wishes to follow
+     * @param sessionToken session token of user that wishes to follow activity
+     * @return The response code to determine the status of the operation
+     */
+    @PostMapping("/profiles/{profileId}/subscriptions/activities/{activityId}")
+    public ResponseEntity subscribeToActivity(@PathVariable Long profileId, @PathVariable Long activityId,
+                                              @CookieValue(value = "s_id", required = false) String sessionToken) {
+        return userService.subscribeToActivity(profileId, activityId, sessionToken);
+    }
 }
