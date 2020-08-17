@@ -12,7 +12,12 @@ Welcome to Passage, the number one companion for any traveller.
 3. Select the `team-300/server/` folder and click OK.
 4. In the Import Project window that opens, select "Import project from external model", and select Gradle. 
 5. Click Finish, and the project will open where the dependencies should install automatically. 
-6. Right-click Main.java in `src/main/java/com.springvuegradle.Hakinakina`, and select Run 'Main'.
+6. In the top right of IntelliJ select the box "Main" and select "Edit configurations...".
+7. Under override parameters using the + button on the right add 3 new entries with the values shown below.<br />
+Name: SENG302_DB_URL Value: jdbc:mariadb://127.0.0.1/seng302-2020-team300-test <br />
+Name: SENG302_DB_USERNAME Value: seng302-team300 <br />
+Name: SENG302_DB_PASSWORD Value: CreatingRibbon7031
+8. Right-click Main.java in `src/main/java/com.springvuegradle.Hakinakina`, and select Run 'Main'.
 
 ####Option 2:
 1. Open `team-300/server/` directory in console.
