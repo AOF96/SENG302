@@ -52,16 +52,16 @@
           </v-row>
         </v-card>
         <v-card :disabled="roleChanging" style="padding:20px;border-radius: 15px" class="activityContainer">
-          <h3 style="font-size:13px;" v-if="!roleLoading">Involvement</h3>
-          <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleLoading" ref="skeleton" type="text" ></v-skeleton-loader>
-          <v-skeleton-loader v-if="roleLoading" ref="skeleton" type="heading" ></v-skeleton-loader>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole == 'none' || userRole == 'follower') && !roleLoading">Not Participating</h3>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'participant' && !roleLoading">You are a Participant</h3>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'organiser' && !roleLoading">You are an Organiser</h3>
-          <v-skeleton-loader v-if="roleLoading" ref="skeleton" boilerplate="false" type="button"
+          <h3 style="font-size:13px;" v-if="!roleChanging">Involvement</h3>
+          <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleChanging" ref="skeleton" type="text" ></v-skeleton-loader>
+          <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading" ></v-skeleton-loader>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole == 'none' || userRole == 'follower') && !roleChanging">Not Participating</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'participant' && !roleChanging">You are a Participant</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'organiser' && !roleChanging">You are an Organiser</h3>
+          <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
                   style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
           ></v-skeleton-loader>
-          <v-menu bottom left v-if="!roleLoading">
+          <v-menu bottom left v-if="!roleChanging">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                       style="position: absolute;right:20px;top:50%;transform:translateY(-50%);"
@@ -533,14 +533,15 @@
        * Format the received location string, ready to be displayed.
        */
       locationFormat(str) {
-
         let separated = str.split(",");
-        let city = "", state = "", country = "";
+        let city = ""
+        let state = ""
+        let country = "";
         let outputString = "";
 
-        if(separated[0] !== "" || typeof separated[0] !== 'undefined'){ city = separated[0] }
-        if(separated[1] !== "" || typeof separated[0] !== 'undefined'){ state = separated[1] }
-        if(separated[2] !== "" || typeof separated[0] !== 'undefined'){ country = separated[2] }
+        if(typeof separated[0] !== 'undefined'){ city = separated[0] }
+        if(typeof separated[1] !== 'undefined'){ state = separated[1] }
+        if(typeof separated[2] !== 'undefined'){ country = separated[2] }
 
         if(city != ""){
           outputString += city.trim();
