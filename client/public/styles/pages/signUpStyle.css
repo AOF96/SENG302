@@ -39,6 +39,9 @@
     margin-right:15px;
 }
 /* Elements */
+.signUpHalfWidthInput{
+    width:calc(50% - 7.5px) !important;
+}
 .signUpFormContainer h1 {
   font-size: 20px;
   color: #2d2d2d;
@@ -72,7 +75,7 @@
     padding-top:11px;
 }
 .fitnessLevelSelect {
-    width: calc(100% - 106px) !important;
+    width: calc(100% - 109px) !important;
 }
 .signUpFormContainer hr {
     border: 0;
