@@ -327,6 +327,49 @@ public class ActivityController {
     }
 
     /**
+     * Handles the request for activity's visibility and choosing groups of users to keep.
+     * @param profileId the logged in user's id.
+     * @param activityId the activity id of the activity being managed
+     * @param sessionToken the user's token from the cookie for their current session.
+     * @param jsonString the json body
+     * @return A ResponseEntity stating the results
+     */
+    @PutMapping("/profiles/{profileId}/activities/{activityid}/visibilityGroups")
+    public ResponseEntity<String> updateActivityVisibilityWithGroups(@PathVariable("profileId") Long profileId,
+                                                           @PathVariable("activityid") Long activityId,
+                                                           @CookieValue(value = "s_id") String sessionToken,
+                                                           @RequestBody String jsonString) {
+        Map<String, Object> json = new JacksonJsonParser().parseMap(jsonString);
+        Visibility visibility;
+        try {
+            String visibilityString = (String) json.get("visibility");
+            visibility = Visibility.valueOf(visibilityString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<String>("Invalid visibility type selected", HttpStatus.valueOf(403));
+        }
+        boolean keepFollowers = (boolean) json.get("followers");
+        boolean keepParticipants = (boolean) json.get("participants");
+        boolean keepOrganisers = (boolean) json.get("organisers");
+
+        Activity activity = activityRepository.findActivityById(activityId);
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+
+        if(sessionToken == null){
+            return new ResponseEntity<String>("Invalid Session", HttpStatus.valueOf(401));
+        }
+        if (activity == null) {
+            return new ResponseEntity<String>("Activity not found", HttpStatus.NOT_FOUND);
+        }
+        if(!profileId.equals(session.getUser().getUserId()) &&  session.getUser().getPermissionLevel() == 0) {
+            return new ResponseEntity<String>("Invalid User", HttpStatus.valueOf(403));
+        }
+
+        return activityService.updateActivityVisibility(activityId, visibility, keepFollowers, keepParticipants,
+                keepOrganisers);
+    }
+
+
+    /**
      * Returns if the given user is following the given activity
      * @param profileId user requested
      * @param activityId activity to check

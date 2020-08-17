@@ -308,7 +308,7 @@
               </div>
             </form>
           </v-card>
-          <AchievementsCard/>
+          <AchievementsCard v-bind:achievements="achievements" :snackbar.sync="snackbar" :errorMessage.sync="errorMessage" />
           <v-card style="border-radius: 15px" class="activityPageCard">
             <h2>Gallery</h2>
             <h3>Coming at some stage!</h3>
@@ -329,13 +329,9 @@
                     <ul>
                     <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
                         style="font-size:15px;color:rgba(0,0,0,0.85);">
-
-
-
                       <li>{{updateText}}</li>
                     </h2>
                     </ul>
-                    <!--                        <h2 style="font-size:16px;color:rgba(0,0,0,0.85);">{{update.textContext}}</h2>-->
                   </v-col>
                 </v-row>
               </v-timeline-item>
@@ -423,7 +419,8 @@
         numOrganisers: 0,
         userRole: "none",
         roleDisabled: true,
-        roleChanging: false
+        roleChanging: false,
+        achievements: [],
       }
     },
 
@@ -783,6 +780,7 @@
             this.authorId = tempActivityData.author.profile_id;
             this.loaded = true;
             this.loadingActivity = false;
+            this.achievements = tempActivityData.achievements;
           }
         }
       },

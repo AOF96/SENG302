@@ -286,6 +286,15 @@ export const apiActivity = {
       resultType: resultType
   }),
 
+  updateVisibilityAndGroups: (profileId, activityId, visibility, keepFollowers, keepParticipants, keepOrganisers) =>
+    instance.put(`/profiles/${profileId}/activities/${activityId}/visibilityGroups`, {
+      visibility: visibility,
+      followers: keepFollowers,
+      participants: keepParticipants,
+      organisers: keepOrganisers,
+    }
+  ),
+
 
  deleteActivityAchievement: (profileId, activityId, achievementId) =>
     instance.delete(`/profiles/${profileId}/activities/${activityId}/achievements/${achievementId}`),
@@ -380,7 +389,7 @@ export const apiActivity = {
    * @param achievementId
    * @returns {Promise<AxiosResponse<any>>}
    */
-  getResults: (achievementId) =>
+   getResults: (achievementId) =>
     instance.get(`/activities/achievements/${achievementId}/results`),
 
   getSharedUsers: (activityId, currentPage, size) => instance.get(`/activities/${activityId}/shared`,{

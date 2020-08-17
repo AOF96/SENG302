@@ -719,9 +719,12 @@ public class UserService {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
+                        UserActivityKey userActivityKey = new UserActivityKey(profileId, activityId);
+                        UserActivityRole userActivityRole = new UserActivityRole(userActivityKey, ActivityRole.FOLLOWER);
                         activity.addUsers(validUser);
                         userRepository.save(validUser);
                         activityRepository.save(activity);
+                        userActivityRoleRepository.save(userActivityRole);
                         result = responseHandler.formatSuccessResponse(201, "User " + profileId
                                 + " now follows activity " + activityId);
                     }

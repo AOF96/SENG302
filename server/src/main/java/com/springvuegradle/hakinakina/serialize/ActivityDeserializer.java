@@ -52,8 +52,8 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         String startTime = getValueString(node, "start_time");
         String endTime = getValueString(node, "end_time");
         String location = getValueString(node, "location");
-        Set<Achievement> achievements = getAchievements(node, "achievements");
         Visibility visibility = getVisibility(getValueString(node, "visibility"));
+        Set<Achievement> achievements = getAchievements(node, "achievements");
 
         String city;
         String state;

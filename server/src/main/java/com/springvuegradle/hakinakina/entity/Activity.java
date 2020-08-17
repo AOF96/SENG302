@@ -66,6 +66,7 @@ public class Activity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Set<Achievement> achievements = new HashSet<>();
 
     @ManyToOne

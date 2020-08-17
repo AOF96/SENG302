@@ -36,4 +36,6 @@ public interface UserActivityRoleRepository extends JpaRepository<UserActivityRo
     void deleteByActivity(Activity activity);
 
     Optional<UserActivityRole> getByActivityAndUser(Activity activity, User user);
+
+    void deleteAllByActivityRole(ActivityRole role);
 }

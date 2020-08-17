@@ -355,6 +355,34 @@ public class ActivityService {
     }
 
     /**
+     * Sets the visibility of an Activity and deletes groups of relationships if required.
+     * @param activityId the activity id of the activity being managed.
+     * @param visibility the new Visibility value
+     * @param keepFollowers Whether to keep the Followers
+     * @param keepParticipants Whether to keep the Participants
+     * @param keepOrganisers Whether to keep the Organisers
+     * @return A ResponseEntity stating the result
+     */
+    @Transactional
+    public ResponseEntity<String> updateActivityVisibility (Long activityId,
+                                                            Visibility visibility, boolean keepFollowers,
+                                                            boolean keepParticipants, boolean keepOrganisers) {
+        Activity activity = activityRepository.findActivityById(activityId);
+        activity.setVisibility(visibility);
+        if (!keepFollowers) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.FOLLOWER);
+        }
+        if (!keepParticipants) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.PARTICIPANT);
+        }
+        if (!keepOrganisers) {
+            userActivityRoleRepository.deleteAllByActivityRole(ActivityRole.ORGANISER);
+        }
+
+        return new ResponseEntity<String>("Activity Visibility Status Updated", HttpStatus.OK);
+    }
+
+    /**
      * A helper method to save each UserActivityRole object to the UserActivityRoleRepository
      * @param newRelationships A List of UserActivityRoles
      */
@@ -382,6 +410,127 @@ public class ActivityService {
 
         return result;
     }
+
+    /**
+     * Handles requests for adding achievements to an activity
+     * @param achievement valid json containing achievement data
+     * @param profileId id of the user that is adding the achievement
+     * @param activityId id of the activity that the achievement is being added too
+     * @param sessionToken users session token used for verification
+     * @return response entity with status code dependent on the success or failure of the addition
+     */
+    public ResponseEntity addAchievement(Achievement achievement, long profileId, long activityId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+            } else if ((profileId != session.getUser().getUserId()
+                    || activityRepository.validateAuthor(profileId, activityId) == null)
+                    && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+            } else {
+                Achievement achievementToAdd = new Achievement(achievement.getName(),
+                                                               achievement.getDescription(),
+                                                               achievement.getResultType());
+                Activity activityToUpdate = activityRepository.getOne(activityId);
+                activityToUpdate.addAchievement(achievementToAdd);
+                activityRepository.save(activityToUpdate);
+                achievementRepository.save(achievementToAdd);
+
+                result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot add achievement");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
+    /**
+     * Handles requests to edit achievements
+     * @param newAchievement valid json containing new values for an existing achievement
+     * @param profileId id of the user performing the edit
+     * @param activityId id of the activity that the achievement being edited belongs too
+     * @param achievementId id of the achievement that is being edited
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    public ResponseEntity editAchievement(Achievement newAchievement, long profileId, long activityId, long achievementId, String sessionToken) {
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            if (session == null) {
+                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
+            }
+            if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null)
+                            && session.getUser().getPermissionLevel() == 0) {
+                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
+            }
+            if (newAchievement.getName() == null) {
+                return new ResponseEntity("Achievement name must be provided", HttpStatus.valueOf(400));
+            }
+            if (newAchievement.getDescription() == null) {
+                return new ResponseEntity("Achievement description must be provided", HttpStatus.valueOf(400));
+            }
+            if (newAchievement.getResultType() == null) {
+                return new ResponseEntity("Achievement result type must be provided", HttpStatus.valueOf(400));
+            }
+
+            Achievement achievement = achievementRepository.findAchievementById(achievementId);
+            if (achievement == null) {
+                return new ResponseEntity("Achievement couldn't be found", HttpStatus.valueOf(404));
+            }
+
+            achievement.setName(newAchievement.getName());
+            achievement.setDescription(newAchievement.getDescription());
+            achievement.setResultType(newAchievement.getResultType());
+
+            achievementRepository.save(achievement);
+
+            return new ResponseEntity("Achievement has been successfully updated", HttpStatus.valueOf(200));
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot edit achievement");
+            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Handles requests to delete an achievement
+     * @param profileId id of user attempting to delete achievement
+     * @param activityId id of activity that has the achievement associated with it
+     * @param achievementId id of the achievement that is to be deleted
+     * @param sessionToken session token of the user which is used for validation checks
+     * @return response entity with code dependant on success or failure of the request
+     */
+    public ResponseEntity deleteAchievement(long profileId, long activityId, long achievementId, String sessionToken) {
+        ResponseEntity result;
+        try {
+            Session session = sessionRepository.findUserIdByToken(sessionToken);
+            Achievement achievementToDelete = achievementRepository.findAchievementById(achievementId);
+
+            if (sessionToken == null) {
+                result = responseHandler.formatErrorResponse(401, "Invalid Session");
+
+            } else if (achievementToDelete == null) {
+                result = responseHandler.formatErrorResponse(404, "Achievement not found");
+
+            } else if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) && session.getUser().getPermissionLevel() == 0) {
+                result = responseHandler.formatErrorResponse(403, "Invalid user");
+
+            } else {
+                Activity activity = activityRepository.getOne(activityId);
+                activity.removeAchievement(achievementToDelete);
+                achievementRepository.delete(achievementToDelete);
+                activityRepository.save(activity);
+                result = responseHandler.formatSuccessResponse(200, "Achievement successfully deleted");
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "Cannot delete achievement");
+            result = responseHandler.formatErrorResponse(500, "An error occurred");
+        }
+        return result;
+    }
+
 
     /***
      * Retrieves a list of shared users from the given activity with paginated results.
@@ -491,41 +640,6 @@ public class ActivityService {
     }
 
     /**
-     * Handles requests for adding achievements to an activity
-     * @param achievement valid json containing achievement data
-     * @param profileId id of the user that is adding the achievement
-     * @param activityId id of the activity that the achievement is being added too
-     * @param sessionToken users session token used for verification
-     * @return response entity with status code dependent on the success or failure of the addition
-     */
-    public ResponseEntity addAchievement(Achievement achievement, long profileId, long activityId, String sessionToken) {
-        ResponseEntity result;
-        try {
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if (sessionToken == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-            } else if ((profileId != session.getUser().getUserId()
-                    || activityRepository.validateAuthor(profileId, activityId) == null)
-                    && session.getUser().getPermissionLevel() == 0) {
-                result = responseHandler.formatErrorResponse(403, "Invalid user");
-            } else {
-                Achievement achievementToAdd = new Achievement(achievement.getName(),
-                                                               achievement.getDescription(),
-                                                               achievement.getResultType());
-                Activity activityToUpdate = activityRepository.getOne(activityId);
-                activityToUpdate.addAchievement(achievementToAdd);
-                activityRepository.save(activityToUpdate);
-
-                result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Cannot add achievement");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-        return result;
-    }
-
-    /**
      * Handles requests for retrieving achievements of an activity
      * @param profileId id of the user that is adding the achievement
      * @param activityId id of the activity that the achievement is being added too
@@ -566,90 +680,6 @@ public class ActivityService {
     }
 
     /**
-     * Handles requests to edit achievements
-     * @param newAchievement valid json containing new values for an existing achievement
-     * @param profileId id of the user performing the edit
-     * @param activityId id of the activity that the achievement being edited belongs too
-     * @param achievementId id of the achievement that is being edited
-     * @param sessionToken session token of the user which is used for validation checks
-     * @return response entity with code dependant on success or failure of the request
-     */
-    public ResponseEntity editAchievement(Achievement newAchievement, long profileId, long activityId, long achievementId, String sessionToken) {
-        try {
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            if (session == null) {
-                return new ResponseEntity("Invalid Session", HttpStatus.valueOf(401));
-            }
-            if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null)
-                            && session.getUser().getPermissionLevel() == 0) {
-                return new ResponseEntity("Invalid User", HttpStatus.valueOf(403));
-            }
-            if (newAchievement.getName() == null) {
-                return new ResponseEntity("Achievement name must be provided", HttpStatus.valueOf(400));
-            }
-            if (newAchievement.getDescription() == null) {
-                return new ResponseEntity("Achievement description must be provided", HttpStatus.valueOf(400));
-            }
-            if (newAchievement.getResultType() == null) {
-                return new ResponseEntity("Achievement result type must be provided", HttpStatus.valueOf(400));
-            }
-
-            Achievement achievement = achievementRepository.findAchievementById(achievementId);
-            if (achievement == null) {
-                return new ResponseEntity("Achievement couldn't be found", HttpStatus.valueOf(404));
-            }
-
-            achievement.setName(newAchievement.getName());
-            achievement.setDescription(newAchievement.getDescription());
-            achievement.setResultType(newAchievement.getResultType());
-
-            achievementRepository.save(achievement);
-
-            return new ResponseEntity("Achievement has been successfully updated", HttpStatus.valueOf(200));
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Cannot edit achievement");
-            return new ResponseEntity("An error occurred", HttpStatus.valueOf(500));
-        }
-    }
-
-    /**
-     * Handles requests to delete an achievement
-     * @param profileId id of user attempting to delete achievement
-     * @param activityId id of activity that has the achievement associated with it
-     * @param achievementId id of the achievement that is to be deleted
-     * @param sessionToken session token of the user which is used for validation checks
-     * @return response entity with code dependant on success or failure of the request
-     */
-    public ResponseEntity deleteAchievement(long profileId, long activityId, long achievementId, String sessionToken) {
-        ResponseEntity result;
-        try {
-            Session session = sessionRepository.findUserIdByToken(sessionToken);
-            Achievement achievementToDelete = achievementRepository.findAchievementById(achievementId);
-
-            if (sessionToken == null) {
-                result = responseHandler.formatErrorResponse(401, "Invalid Session");
-
-            } else if (achievementToDelete == null) {
-                result = responseHandler.formatErrorResponse(404, "Achievement not found");
-
-            } else if ((profileId != session.getUser().getUserId() || activityRepository.validateAuthor(profileId, activityId) == null) && session.getUser().getPermissionLevel() == 0) {
-                result = responseHandler.formatErrorResponse(403, "Invalid user");
-
-            } else {
-                Activity activity = activityRepository.getOne(activityId);
-                activity.removeAchievement(achievementToDelete);
-                achievementRepository.delete(achievementToDelete);
-                activityRepository.save(activity);
-                result = responseHandler.formatSuccessResponse(200, "Achievement successfully deleted");
-            }
-        } catch (Exception e) {
-            ErrorHandler.printProgramException(e, "Cannot delete achievement");
-            result = responseHandler.formatErrorResponse(500, "An error occurred");
-        }
-        return result;
-    }
-
-    /**
      * Removes a user from following an activity.
      * @param profileId id of user that is unfollowing
      * @param activityId activity to unfollow
@@ -669,6 +699,8 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 User user = userRepository.getUserById(profileId).get();
+                UserActivityKey userActivityKey = new UserActivityKey(profileId, activityId);
+                userActivityRoleRepository.deleteById(userActivityKey);
                 activity.removeUser(user);
                 activityRepository.save(activity);
                 userRepository.save(user);
@@ -809,9 +841,7 @@ public class ActivityService {
             result = responseHandler.formatErrorResponseString(404, "Achievement not found");
         } else {
             List<Result> outcome = resultRepository.findAllByAchievement_Id(achievementId);
-            if (outcome.isEmpty()) {
-                result = responseHandler.formatErrorResponseString(404, "Result not found");
-            } else {
+             if(!outcome.isEmpty()) {
                 List<ResultDto> allResults = new ArrayList<>();
                 for (int i = 0; i < outcome.size(); i++) {
                     ResultDto dto = new ResultDto();
@@ -823,8 +853,10 @@ public class ActivityService {
                 }
                 result = new ResponseEntity(allResults, HttpStatus.OK);
             }
+             else {
+                 result = new ResponseEntity(outcome, HttpStatus.OK);
+             }
         }
-        System.out.println(result);
         return result;
     }
 
