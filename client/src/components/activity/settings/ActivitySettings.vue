@@ -620,7 +620,19 @@
        */
       setLocation() {
         this.location = "";
-        this.location = this.city.Description + ', ' + this.state.Description + ', ' + this.country;
+        this.city ="";
+        this.state="";
+        this.country="";
+        if (document.getElementById('inputCity') !== null) {
+          this.city = document.getElementById('inputCity').value;
+        }
+        if (document.getElementById('inputState') !== null) {
+          this.state = document.getElementById('inputState').value;
+        }
+        if (document.getElementById('inputCountry') !== null) {
+          this.country = document.getElementById('inputCountry').value;
+        }
+        this.location = this.city + ',' + this.state + ',' + this.country
       },
 
       /**

@@ -439,7 +439,7 @@
       </div>
       <div>
         <v-dialog v-model="visibilityUpdateDialog" persistent max-width="400">
-          <v-card>
+          <v-card style="border-radius: 15px;padding:10px 0;">
             <v-card-title class="headline">Update Activity Visibility</v-card-title>
             <v-card-text>{{ visibilityUpdateMessage }}</v-card-text>
             <v-card-text>There are currently {{groups[0].amount}} {{groups[0].name}}, {{groups[1].amount}} {{groups[1].name}} and {{groups[2].amount}} {{groups[2].name}}.</v-card-text>
@@ -455,8 +455,8 @@
             </div>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="green darken-1" text @click="visibilityUpdateDialog = false">Cancel</v-btn>
-              <v-btn color="green darken-1" text v-on:click="updateVisibilityAndGroups" @click="visibilityUpdateDialog = false">Confirm</v-btn>
+              <v-btn color="green darken-1" rounded text @click="visibilityUpdateDialog = false">Cancel</v-btn>
+              <v-btn color="green darken-1" rounded text v-on:click="updateVisibilityAndGroups" @click="visibilityUpdateDialog = false">Confirm</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -1118,6 +1118,7 @@ export default {
     },
 
     deleteActivity() {
+      this.overlayLoader = true;
       apiActivity
         .deleteActivity(this.user.profile_id, this.$route.params.activityId)
         .then(response => {

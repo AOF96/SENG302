@@ -55,7 +55,7 @@
           <h3 style="font-size:13px;" v-if="!roleChanging">Involvement</h3>
           <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleChanging" ref="skeleton" type="text" ></v-skeleton-loader>
           <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading" ></v-skeleton-loader>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole == 'none' || userRole == 'follower') && !roleChanging">Not Participating</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole == 'none' || userRole == 'follower' || userRole == 'creator') && !roleChanging">Not Participating</h3>
           <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'participant' && !roleChanging">You are a Participant</h3>
           <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'organiser' && !roleChanging">You are an Organiser</h3>
           <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
@@ -74,10 +74,10 @@
             </template>
 
             <v-list>
-              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none' || userRole == 'organiser' || userRole == 'follower'">
+              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none' || userRole == 'organiser' || userRole == 'follower' || userRole == 'creator'">
                 <v-list-item-title>Become a Participant</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant' || userRole == 'follower') && authorId === user.profile_id">
+              <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant' || userRole == 'follower' || userRole == 'creator') && authorId === user.profile_id">
                 <v-list-item-title>Become an Organiser</v-list-item-title>
               </v-list-item>
               <v-list-item @click="roleSet('none')" v-if="userRole == 'participant' || userRole == 'organiser'">
@@ -601,6 +601,8 @@
               this.sharedUsersStatusMsg = response.data;
               this.displaySharedUsersSuccessMsg = true;
               this.currentPage = 0;
+              this.getParticipants();
+              this.getOrganisers();
               apiActivity.getSharedUsers(this.activityId, this.currentPage, this.size).then(response => {
                 this.sharedUsers = response.data.content;
                 this.watching = true;
