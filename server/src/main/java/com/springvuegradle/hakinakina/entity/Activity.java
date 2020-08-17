@@ -36,7 +36,7 @@ public class Activity {
     private String description;
 
     @JsonProperty("activity_type")
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "Activity_ActivityType",
             joinColumns = {@JoinColumn(name = "activity_id")},
