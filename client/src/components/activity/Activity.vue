@@ -55,7 +55,7 @@
           <h3 style="font-size:13px;" v-if="!roleLoading">Involvement</h3>
           <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleLoading" ref="skeleton" type="text" ></v-skeleton-loader>
           <v-skeleton-loader v-if="roleLoading" ref="skeleton" type="heading" ></v-skeleton-loader>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'none' && !roleLoading">You are not Participating</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole == 'none' || userRole == 'follower') && !roleLoading">Not Participating</h3>
           <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'participant' && !roleLoading">You are a Participant</h3>
           <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'organiser' && !roleLoading">You are an Organiser</h3>
           <v-skeleton-loader v-if="roleLoading" ref="skeleton" boilerplate="false" type="button"
@@ -74,10 +74,10 @@
             </template>
 
             <v-list>
-              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none' || userRole == 'organiser'">
+              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none' || userRole == 'organiser' || userRole == 'follower'">
                 <v-list-item-title>Become a Participant</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant') && authorId === user.profile_id">
+              <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant' || userRole == 'follower') && authorId === user.profile_id">
                 <v-list-item-title>Become an Organiser</v-list-item-title>
               </v-list-item>
               <v-list-item @click="roleSet('none')" v-if="userRole == 'participant' || userRole == 'organiser'">
@@ -86,6 +86,7 @@
             </v-list>
           </v-menu>
         </v-card>
+        <AchievementsCard v-bind:achievements="achievements" :snackbar.sync="snackbar" :errorMessage.sync="errorMessage" />
       </div>
       <div id="activityPageCenter" class="activityPageColumn">
         <div>
@@ -308,7 +309,6 @@
               </div>
             </form>
           </v-card>
-          <AchievementsCard v-bind:achievements="achievements" :snackbar.sync="snackbar" :errorMessage.sync="errorMessage" />
           <v-card style="border-radius: 15px" class="activityPageCard">
             <h2>Gallery</h2>
             <h3>Coming at some stage!</h3>
