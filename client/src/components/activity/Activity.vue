@@ -109,7 +109,7 @@
                       v-for="(item, index) in userTabs"
                       :key="index"
               >
-                <v-card flat id="participantOrganiserList">
+                <v-card flat id="participantOrganiserList" :loading="loadingParticipantsOrganisersPreview">
                   <div v-if="item.preview.length === 0">
                     <v-card-text>There are currently no {{ item.tab.toLowerCase() }} for this activity
                     </v-card-text>
@@ -156,7 +156,7 @@
                                   </v-list-item-title>
                                 </div>
                               </v-list-item>
-                              <v-list-item>
+                              <v-list-item v-on:click="roleSet('none')">
                                 <div v-if="item.tab === 'Participants'">
                                   <v-list-item-title>
                                     Delete Participant
@@ -261,7 +261,7 @@
                                           </v-list-item-title>
                                         </div>
                                       </v-list-item>
-                                      <v-list-item>
+                                      <v-list-item v-on:click="roleSet('none')">
                                         <div v-if="item.tab === 'Participants'">
                                           <v-list-item-title>
                                             Delete Participant
@@ -295,7 +295,7 @@
                           dialogTab === 1"
                           color="primary"
                           outlined rounded
-                          :loading="loadingParticipantsOrganisers"
+                          :loading="loadingMoreParticipantsOrganisersButton"
                           v-on:click="getMoreResults()"
                   >More Results
                   </v-btn>
@@ -422,8 +422,9 @@
           {tab: 'Participants', content: [], preview: []},
           {tab: 'Organisers', content: [], preview: []},
         ],
-        loadingParticipantsOrganisers: false,
+        loadingMoreParticipantsOrganisersButton: false,
         loadingParticipantsOrganisersDialog: false,
+        loadingParticipantsOrganisersPreview: false,
         sharedUsers: [],
         displaySharedUsersSuccessMsg: false,
         displaySharedUsersErrorMsg: false,
@@ -696,7 +697,7 @@
       async getMoreResults() {
         try {
           this.snackbar = false;
-          this.loadingParticipantsOrganisers = true;
+          this.loadingMoreParticipantsOrganisersButton = true;
           if (this.dialogTab === 0) {
             let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage + 1, this.participantsPageInfo.currentSize);
             if (response.data.content.length === 0) {
@@ -706,7 +707,7 @@
               this.userTabs[0].content = this.userTabs[0].content.concat(response.data.content);
               this.participantsPageInfo.currentPage += 1;
             }
-            this.loadingParticipantsOrganisers = false;
+            this.loadingMoreParticipantsOrganisersButton = false;
           }
           if (this.dialogTab === 1) {
             let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage + 1, this.organisersPageInfo.currentSize);
@@ -717,7 +718,7 @@
               this.userTabs[1].content = this.userTabs[1].content.concat(response.data.content);
               this.organisersPageInfo.currentPage += 1;
             }
-            this.loadingParticipantsOrganisers = false;
+            this.loadingMoreParticipantsOrganisersButton = false;
           }
         } catch (err) {
           this.errorMessage = err;
@@ -733,18 +734,20 @@
           let newRole = "";
           if (role === "participants") newRole = "organiser"; else newRole = "participant";
           this.loadingParticipantsOrganisersDialog = true;
+          this.loadingParticipantsOrganisersPreview = true;
           await apiActivity.editUserActivityRole(this.user.profile_id, this.$route.params.activityId, newRole, email)
             .then(() => {
               this.showMoreDialog = false;
               this.getOrganisers();
               this.getParticipants();
               this.roleChanging = false;
+              this.loadingParticipantsOrganisersDialog = false;
+              this.loadingParticipantsOrganisersPreview = false;
             }).catch((err) => {
                 this.errorMessage = err;
                 this.snackbar = true;
                 this.roleChanging = true;
             })
-          this.loadingParticipantsOrganisersDialog = false;
         }
       },
 
