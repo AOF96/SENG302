@@ -411,7 +411,6 @@ public class UserService {
         try {
             String encryptedPassword = EncryptionUtil.getEncryptedPassword(attempt, user.getSalt());
             if (user.getPassword().equals(encryptedPassword)) {
-
                 //Generate session token
                 String sessionToken = RandomToken.getToken(40);
                 Session session = new Session(sessionToken);
