@@ -47,8 +47,8 @@
           <v-row no-gutters justify="center" class="activityPageBottomButtons">
             <v-btn style="margin: 5px" v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit</v-btn>
             <v-spacer></v-spacer>
-            <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary" outlined rounded>Follow</v-btn>
-            <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled>Un-follow</v-btn>
+            <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary" outlined rounded :loading="loadingFollowButton">Follow</v-btn>
+            <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled :loading="loadingFollowButton">Unfollow</v-btn>
           </v-row>
         </v-card>
         <v-card :disabled="roleChanging" style="padding:20px;border-radius: 15px" class="activityContainer">
@@ -413,6 +413,7 @@
         roleDisabled: true,
         roleChanging: false,
         achievements: [],
+        loadingFollowButton: false,
       }
     },
 
@@ -801,10 +802,12 @@
        * @returns {Promise<void>}
        */
       async followCurrentActivity() {
+        this.loadingFollowButton = true;
         await apiActivity.followActivity(this.user.profile_id, this.$route.params.activityId).then(response => {
           if (response.status === 201) {
             this.userFollowing = true;
             this.getStats();
+            this.loadingFollowButton = false;
           }
         });
       },
@@ -814,10 +817,12 @@
        * @returns {Promise<void>}
        */
       async unFollowCurrentActivity() {
+        this.loadingFollowButton = true;
         await apiActivity.unfollowActivity(this.user.profile_id, this.$route.params.activityId).then(response => {
           if (response.status === 200) {
             this.userFollowing = false;
             this.getStats();
+            this.loadingFollowButton = false;
           }
         });
       }

@@ -732,8 +732,8 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 User user = userRepository.getUserById(profileId).get();
-                boolean following = activity.getUsers().contains(user);
-                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(following));
+                Optional<UserActivityRole> userActivityRole = userActivityRoleRepository.getByActivityAndUser(activity, user);
+                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(userActivityRole.isPresent()));
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot check following");
