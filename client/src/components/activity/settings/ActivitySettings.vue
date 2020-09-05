@@ -659,6 +659,7 @@
           document.getElementById("endTimeLabel").hidden = true;
         }
       },
+
       /**
        * Adds activity type to selected options
        */

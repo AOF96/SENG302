@@ -13,7 +13,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource
 public interface ActivityChangeRepository extends JpaRepository<ActivityChange, Long> {
-    @Query(value = "SELECT * FROM Activity_Change INNER JOIN User_Activities ON user_id = ? " +
+    @Query(value = "SELECT * FROM Activity_Change INNER JOIN User_Activity_Role ON user_id = ? " +
             "AND activity_id = activity_activity_id ORDER BY activity_change_id DESC", nativeQuery = true)
     Page<ActivityChange> getUserHomeFeedById(Pageable pageable, Long profileId);
 
