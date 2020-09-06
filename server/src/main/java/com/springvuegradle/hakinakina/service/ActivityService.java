@@ -622,13 +622,13 @@ public class ActivityService {
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
-                Page<ActivityChange> activityChanges = activityChangeRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
-                List<ActivityChange> changesList = activityChanges.toList();
+                Page<HomeFeedEntry> activityChanges = homeFeedRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
+                List<HomeFeedEntry> changesList = activityChanges.toList();
                 List<FeedPostDto> posts = new ArrayList<>();
-                for (ActivityChange activityChange : changesList) {
+                for (HomeFeedEntry feedEntry : changesList) {
 
                     FeedPostDto newPost = new FeedPostDto();
-                    newPost.setContent(activityChange);
+                    newPost.setContent(feedEntry);
                     posts.add(newPost);
                 }
                 result = new ResponseEntity(posts, HttpStatus.OK);

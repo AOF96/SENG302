@@ -1,7 +1,9 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.entity.ActivityChange;
+import com.springvuegradle.hakinakina.entity.HomeFeedEntry;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.HomeFeedRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.repository.ActivityChangeRepository;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
@@ -16,13 +18,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class HomeFeedService {
 
-    public ActivityChangeRepository activityChangeRepository;
+    public HomeFeedRepository homeFeedRepository;
 
     /**
      * Constructs a Home Feed Service, passing in the repositories so that they can be accessed.
      */
-    public HomeFeedService(ActivityChangeRepository activityChangeRepository) {
-        this.activityChangeRepository = activityChangeRepository;
+    public HomeFeedService(HomeFeedRepository homeFeedRepository) {
+        this.homeFeedRepository = homeFeedRepository;
     }
 
     /**
@@ -30,10 +32,10 @@ public class HomeFeedService {
      * @param profileId id of user to get feed for
      * @return home feed results
      */
-    public Page<ActivityChange> getHomeFeed(Long profileId, int page, int size) {
+    public Page<HomeFeedEntry> getHomeFeed(Long profileId, int page, int size) {
 
-        Page<ActivityChange> result;
-        result = activityChangeRepository.getUserHomeFeedById(PageRequest.of(page, size), profileId);
+        Page<HomeFeedEntry> result;
+        result = homeFeedRepository.getUserHomeFeedById(PageRequest.of(page, size), profileId);
 
         return result;
     }

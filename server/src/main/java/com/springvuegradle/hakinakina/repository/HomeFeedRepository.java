@@ -14,10 +14,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource
 public interface HomeFeedRepository extends JpaRepository<HomeFeedEntry, Long> {
-    @Query(value = "SELECT * FROM Activity_Change INNER JOIN User_Activity_Role ON user_id = ? " +
-            "AND activity_id = activity_activity_id ORDER BY activity_change_id DESC", nativeQuery = true)
-    Page<ActivityChange> getUserHomeFeedById(Pageable pageable, Long profileId);
+    @Query(value = "(SELECT * FROM Home_Feed_Entry INNER JOIN User_Activity_Role ON user_id = :profileId " +
+            "AND activity_id = activity_activity_id WHERE scope = 'ACTIVITY') " +
+            "UNION " +
+            "(SELECT * FROM Home_Feed_Entry WHERE scope = 'PRIVATE' AND user_user_id = :profileId) " +
+            "ORDER BY datetime DESC", nativeQuery = true)
+    Page<HomeFeedEntry> getUserHomeFeedById(Pageable pageable, Long profileId);
 
-    @Query(value = "SELECT * FROM Activity_Change WHERE activity_activity_id = :activityId ORDER BY activity_change_id DESC", nativeQuery = true)
-    Page<ActivityChange> getChangesForActivity(Pageable pageable, Long activityId);
+    @Query(value = "SELECT * FROM Home_Feed_Entry WHERE activity_activity_id = :activityId AND scope = 'ACTIVITY' ORDER BY datetime DESC", nativeQuery = true)
+    Page<HomeFeedEntry> getChangesForActivity(Pageable pageable, Long activityId);
 }
