@@ -71,6 +71,9 @@ public class ActivityControllerTest {
     private SearchRepository searchRepository;
 
     @MockBean
+    private HomeFeedRepository homeFeedRepository;
+
+    @MockBean
     private UserActivityRoleRepository userActivityRoleRepository;
 
     @MockBean

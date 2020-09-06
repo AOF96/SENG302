@@ -40,6 +40,7 @@ public class ActivityService {
     public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
     private SearchService searchService;
 
     public ActivityService(UserRepository userRepository,
@@ -52,7 +53,8 @@ public class ActivityService {
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
                            SearchService searchService,
-                           ResultRepository resultRepository) {
+                           ResultRepository resultRepository,
+                           HomeFeedRepository homeFeedRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
@@ -64,6 +66,7 @@ public class ActivityService {
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
+        this.homeFeedRepository = homeFeedRepository;
     }
 
     /**
@@ -704,6 +707,12 @@ public class ActivityService {
                 activityRepository.save(activity);
                 userRepository.save(user);
                 result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                HomeFeedEntry userChangeToAdd = new HomeFeedEntry("UNFOLLOW", timestamp,
+                        userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                        FeedEntryType.FOLLOWACTIVITY, FeedEntryScope.PRIVATE);
+                homeFeedRepository.save(userChangeToAdd);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot unfollow");

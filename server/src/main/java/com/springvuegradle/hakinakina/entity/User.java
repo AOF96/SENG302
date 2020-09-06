@@ -127,6 +127,10 @@ public class User {
     private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
 
     @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
+
+    @JsonIgnore
     private String salt;
 
     @JsonProperty("primary_email")

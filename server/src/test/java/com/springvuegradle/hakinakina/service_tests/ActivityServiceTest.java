@@ -54,6 +54,9 @@ public class ActivityServiceTest {
     @Mock
     private UserActivityRoleRepository userActivityRoleRepository;
 
+    @Mock
+    private HomeFeedRepository homeFeedRepository;
+
     @Captor
     ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
 
