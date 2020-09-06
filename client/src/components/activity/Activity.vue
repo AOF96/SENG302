@@ -40,12 +40,12 @@
                     class="ma-2"
                     color="white"
             >
-              {{numFollowers}} Follower<span v-if="numFollowers != 1">s</span>
+              {{numFollowers}} Follower<span v-if="numFollowers !== 1">s</span>
             </v-chip>
           </v-row>
           <v-divider></v-divider>
           <v-row no-gutters justify="center" class="activityPageBottomButtons">
-            <v-btn style="margin: 5px" v-if="authorId===user.profile_id || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit</v-btn>
+            <v-btn style="margin: 5px" v-if="user.profile_id === authorId || userRole === 'creator' || userRole === 'organiser' || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit</v-btn>
             <v-spacer></v-spacer>
             <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary" outlined rounded>Follow</v-btn>
             <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled>Un-follow</v-btn>
@@ -55,9 +55,9 @@
           <h3 style="font-size:13px;" v-if="!roleChanging">Involvement</h3>
           <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleChanging" ref="skeleton" type="text" ></v-skeleton-loader>
           <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading" ></v-skeleton-loader>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole == 'none' || userRole == 'follower' || userRole == 'creator') && !roleChanging">Not Participating</h3>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'participant' && !roleChanging">You are a Participant</h3>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole == 'organiser' && !roleChanging">You are an Organiser</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole === 'none' || userRole === 'follower' || userRole === 'creator') && !roleChanging">Not Participating</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole === 'participant' && !roleChanging">You are a Participant</h3>
+          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole === 'organiser' && !roleChanging">You are an Organiser</h3>
           <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
                   style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
           ></v-skeleton-loader>
@@ -74,13 +74,13 @@
             </template>
 
             <v-list>
-              <v-list-item @click="roleSet('participant')" v-if="userRole == 'none' || userRole == 'organiser' || userRole == 'follower' || userRole == 'creator'">
+              <v-list-item @click="roleSet('participant')" v-if="userRole === 'none' || userRole === 'organiser' || userRole === 'follower' || userRole === 'creator'">
                 <v-list-item-title>Become a Participant</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="roleSet('organiser')" v-if="(userRole == 'none' || userRole == 'participant' || userRole == 'follower' || userRole == 'creator') && authorId === user.profile_id">
+              <v-list-item @click="roleSet('organiser')" v-if="(userRole === 'none' || userRole === 'participant' || userRole === 'follower' || userRole === 'creator') && authorId === user.profile_id">
                 <v-list-item-title>Become an Organiser</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="roleSet('none')" v-if="userRole == 'participant' || userRole == 'organiser'">
+              <v-list-item @click="roleSet('none')" v-if="userRole === 'participant' || userRole === 'organiser'">
                 <v-list-item-title>Clear Involvement</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -332,7 +332,7 @@
                 </v-row>
               </v-timeline-item>
             </v-timeline>
-            <v-card-text v-if="activityChanges.data.length == 0" style="text-align: center">No Changes Yet</v-card-text>
+            <v-card-text v-if="activityChanges.data.length === 0" style="text-align: center">No Changes Yet</v-card-text>
           </v-card>
         </div>
       <div class="floatClear"></div>
@@ -346,7 +346,7 @@
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../api";
   import AchievementsCard from "./modules/AchievementsCard";
-  import store from '@/store/index.js';
+  import store from '../../store/index.js';
 
   export default {
     name: "ActivityPageInfo",
@@ -486,13 +486,13 @@
        * Set the role of the currently logged in user.
        */
       roleSet(role) {
-        if(role != "none" && role != "participant" && role != "organiser"){
+        if(role !== "none" && role !== "participant" && role !== "organiser"){
           this.errorMessage = "Invalid Role";
           this.snackbar = true;
           return;
         }
         this.roleChanging = true;
-        if(role == "none"){
+        if(role === "none"){
           apiActivity.optOutOfActivityRole(this.$route.params.activityId, this.user.primary_email)
           .then(() => {
             this.showMoreDialog = false;
@@ -526,8 +526,8 @@
        */
       locationFormat(str) {
         let separated = str.split(",");
-        let city = ""
-        let state = ""
+        let city = "";
+        let state = "";
         let country = "";
         let outputString = "";
 
@@ -535,18 +535,18 @@
         if(typeof separated[1] !== 'undefined'){ state = separated[1] }
         if(typeof separated[2] !== 'undefined'){ country = separated[2] }
 
-        if(city != ""){
+        if(city !== ""){
           outputString += city.trim();
         }
-        if(state != ""){
-          if(outputString != ""){outputString += ", "}
+        if(state !== ""){
+          if(outputString !== ""){outputString += ", "}
           outputString += state.trim();
         }
-        if(country != ""){
-          if(outputString != ""){outputString += ", "}
+        if(country !== ""){
+          if(outputString !== ""){outputString += ", "}
           outputString += country.trim();
         }
-        if(outputString == ""){
+        if(outputString === ""){
           outputString = "No Location Set"
         }
         return outputString;
