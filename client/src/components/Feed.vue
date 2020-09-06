@@ -132,7 +132,6 @@ export default {
         this.isLoading = true;
         this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
                 .then((response) => {
-                  console.log(response.data);
                   this.activityPosts = this.activityPosts.concat(response.data);
                   this.isLoading = false;
                   this.currentPage++;
