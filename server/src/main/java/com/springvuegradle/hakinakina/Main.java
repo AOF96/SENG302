@@ -44,7 +44,6 @@ public class Main {
 						   ActivityTypeRepository activityTypeRepository,
 						   ActivityRepository activityRepository,
 						   SearchRepository searchRepository,
-						   ActivityChangeRepository activityChangeRepository,
 						   UserActivityRoleRepository userActivityRoleRepository,
 						   AchievementRepository achievementRepository,
 						   HomeFeedRepository homeFeedRepository

@@ -35,7 +35,6 @@ public class ActivityService {
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
     public SearchRepository searchRepository;
-    public ActivityChangeRepository activityChangeRepository;
     public AchievementRepository achievementRepository;
     public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
@@ -49,7 +48,6 @@ public class ActivityService {
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
                            AchievementRepository achievementRepository,
-                           ActivityChangeRepository activityChangeRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
                            SearchService searchService,
@@ -61,7 +59,6 @@ public class ActivityService {
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.achievementRepository = achievementRepository;
-        this.activityChangeRepository = activityChangeRepository;
         this.resultRepository = resultRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
@@ -255,9 +252,10 @@ public class ActivityService {
         }
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
-        ActivityChange activityChangesToAdd = new ActivityChange(description.toString(), timestamp,
-                userRepository.getOne(profileId), activityRepository.getOne(activityId));
-        activityChangeRepository.save(activityChangesToAdd);
+        HomeFeedEntry activityChangesToAdd = new HomeFeedEntry(description.toString(), timestamp,
+                userRepository.getOne(profileId), activityRepository.getOne(activityId), FeedEntryType.ACTIVITYUPDATE,
+                FeedEntryScope.ACTIVITY);
+        homeFeedRepository.save(activityChangesToAdd);
     }
 
     /**

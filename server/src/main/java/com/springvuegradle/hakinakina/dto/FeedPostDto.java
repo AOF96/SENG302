@@ -1,12 +1,9 @@
 package com.springvuegradle.hakinakina.dto;
 
-import com.springvuegradle.hakinakina.entity.ActivityChange;
-import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.FeedEntryType;
 import com.springvuegradle.hakinakina.entity.HomeFeedEntry;
 
 import java.sql.Timestamp;
-import java.util.Set;
 
 /**
  * FeedPost class

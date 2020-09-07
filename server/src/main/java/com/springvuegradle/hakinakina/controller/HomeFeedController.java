@@ -1,7 +1,6 @@
 package com.springvuegradle.hakinakina.controller;
 
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
-import com.springvuegradle.hakinakina.entity.ActivityChange;
 import com.springvuegradle.hakinakina.entity.HomeFeedEntry;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;

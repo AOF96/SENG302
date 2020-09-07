@@ -51,9 +51,6 @@ public class UserControllerTest {
     private HomeFeedRepository homeFeedRepository;
 
     @MockBean
-    private ActivityChangeRepository activityChangeRepository;
-
-    @MockBean
     private EmailRepository emailRepository;
 
     @MockBean

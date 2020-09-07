@@ -1,15 +1,9 @@
 package com.springvuegradle.hakinakina.service;
 
-import com.springvuegradle.hakinakina.entity.ActivityChange;
 import com.springvuegradle.hakinakina.entity.HomeFeedEntry;
-import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.HomeFeedRepository;
-import com.springvuegradle.hakinakina.repository.UserRepository;
-import com.springvuegradle.hakinakina.repository.ActivityChangeRepository;
-import com.springvuegradle.hakinakina.util.ErrorHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 /**

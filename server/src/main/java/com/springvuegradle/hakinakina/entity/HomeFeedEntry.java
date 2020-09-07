@@ -22,7 +22,7 @@ public class HomeFeedEntry {
     private FeedEntryScope scope;
 
     @JsonProperty("type")
-    @Column(name = "type")
+    @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
     private FeedEntryType type;
 

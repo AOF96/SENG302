@@ -123,10 +123,6 @@ public class User {
     private Set<Activity> authoredActivities = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
-    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
-
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 

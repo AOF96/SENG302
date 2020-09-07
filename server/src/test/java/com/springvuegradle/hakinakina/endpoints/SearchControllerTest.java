@@ -52,9 +52,6 @@ public class SearchControllerTest {
     private AchievementRepository achievementRepository;
 
     @MockBean
-    private ActivityChangeRepository activityChangeRepository;
-
-    @MockBean
     private UserActivityRoleRepository userActivityRoleRepository;
 
     @MockBean
