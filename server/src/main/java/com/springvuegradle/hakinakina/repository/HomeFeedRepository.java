@@ -13,11 +13,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource
 public interface HomeFeedRepository extends JpaRepository<HomeFeedEntry, Long> {
-    @Query(value = "SELECT Home_Feed_Entry.* FROM Home_Feed_Entry INNER JOIN User_Activity_Role ON user_id = :profileId " +
-            "AND activity_id = activity_activity_id WHERE scope = 'ACTIVITY' " +
-            "UNION ALL " +
-            "SELECT Home_Feed_Entry.* FROM Home_Feed_Entry WHERE scope = 'PRIVATE' AND user_user_id = :profileId " +
-            "ORDER BY datetime DESC", nativeQuery = true)
+    @Query(value = "SELECT h FROM HomeFeedEntry h INNER JOIN UserActivityRole u ON u.user.userId = :profileId " +
+            "WHERE (h.scope = 'PRIVATE' AND h.user.userId = :profileId) OR  (h.scope = 'ACTIVITY' AND h.activity = u.activity)" +
+            "ORDER BY h.datetime DESC")
     Page<HomeFeedEntry> getUserHomeFeedById(Pageable pageable, Long profileId);
 
     @Query(value = "SELECT * FROM Home_Feed_Entry WHERE activity_activity_id = :activityId AND scope = 'ACTIVITY' ORDER BY datetime DESC", nativeQuery = true)
