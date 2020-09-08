@@ -80,6 +80,9 @@ public class ActivityControllerTest {
     private ResultRepository resultRepository;
 
     @MockBean
+    private LocationRepository locationRepository;
+
+    @MockBean
     private UserService userService;
 
     @Mock

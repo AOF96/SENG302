@@ -61,9 +61,6 @@ public class Activity {
     @Column(name = "location")
     private String location;
 
-//    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
-//    private Set<User> users = new HashSet<>();
-
     @JsonIgnore
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
@@ -331,7 +328,7 @@ public class Activity {
             differences.add(ActivityAttribute.VISIBILITY);
         }
         boolean sameUsers = true;
-        if (!(this.getUsers().size() == other.getUsers().size())) {
+        if (this.getUsers().size() != other.getUsers().size()) {
             sameUsers = false;
         } else {
             ArrayList<User> otherUsers = new ArrayList<>(other.getUsers());

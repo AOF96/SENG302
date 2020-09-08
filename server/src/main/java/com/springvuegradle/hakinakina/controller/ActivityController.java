@@ -25,10 +25,9 @@ import java.util.*;
 @RestController
 public class ActivityController {
 
-    public UserRepository userRepository;
-    public PassportCountryRepository countryRepository;
-    public SessionRepository sessionRepository;
-    public ActivityRepository activityRepository;
+    private UserRepository userRepository;
+    private SessionRepository sessionRepository;
+    private ActivityRepository activityRepository;
     private ActivityService activityService;
     private AchievementRepository achievementRepository;
 
@@ -38,16 +37,14 @@ public class ActivityController {
      * Contructs an Activity Controller, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository     The repository containing Users
-     * @param countryRepository  The repository containing PassportCountries
      * @param sessionRepository  The repository containing Sessions
      * @param activityRepository The repository containing Activities
      * @param activityService    The service for Activities
      */
-    public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
+    public ActivityController(UserRepository userRepository,
                               SessionRepository sessionRepository, ActivityService activityService,
                               ActivityRepository activityRepository, AchievementRepository achievementRepository) {
         this.userRepository = userRepository;
-        this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityRepository = activityRepository;
         this.activityService = activityService;

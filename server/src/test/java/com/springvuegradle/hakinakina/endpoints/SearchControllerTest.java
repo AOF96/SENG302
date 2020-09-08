@@ -58,6 +58,9 @@ public class SearchControllerTest {
     private ResultRepository resultRepository;
 
     @MockBean
+    private LocationRepository locationRepository;
+
+    @MockBean
     private HomeFeedRepository homeFeedRepository;
 
     @MockBean
