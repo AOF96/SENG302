@@ -109,7 +109,7 @@ public class ActivityTestSteps {
         activity.setActivityTypes(activityTypes);
         activityRepository.save(activity);
         activityRepository.insertActivityForUser(user.getUserId(), activity.getId());
-
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -118,8 +118,7 @@ public class ActivityTestSteps {
                 "  ],\n" +
                 "  \"continous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + start_time + "\", \n" +
-                "  \"end_time\": \"" + end_time + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + end_time + "\"" +
                 "}";
         return request;
     }
@@ -230,6 +229,7 @@ public class ActivityTestSteps {
             String end_time, String location, String token) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -238,8 +238,7 @@ public class ActivityTestSteps {
                 "  ],\n" +
                 "  \"continous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + start_time + "\", \n" +
-                "  \"end_time\": \"" + end_time + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + end_time + "\"" +
                 "}";
 
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN));
@@ -257,6 +256,7 @@ public class ActivityTestSteps {
                                               String location) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -265,8 +265,7 @@ public class ActivityTestSteps {
                 "  ],\n" +
                 "  \"continous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + startTime + "\", \n" +
-                "  \"end_time\": \"" + endTime + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + endTime + "\"" +
                 "}";
         System.out.println(request);
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been updated", HttpStatus.OK));
@@ -306,7 +305,7 @@ public class ActivityTestSteps {
                                                              String location) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
-
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
@@ -315,8 +314,7 @@ public class ActivityTestSteps {
                 "  ],\n" +
                 "  \"continous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + startTime + "\", \n" +
-                "  \"end_time\": \"" + endTime + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + endTime + "\"" +
                 "}";
 
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid User", HttpStatus.FORBIDDEN));

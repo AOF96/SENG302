@@ -94,6 +94,7 @@ public class ActivityControllerTest {
         userRepository.deleteAll();
     }
 
+    //TODO: Add the location fields back to these String inputs where the deserializer is updated
     private final String INPUT = "{\n" +
             "  \"activity_name\": \"Akaroa Pier\",\n" +
             "  \"description\": \"Awesome scenery and lots of places to eat\",\n" +
@@ -103,8 +104,7 @@ public class ActivityControllerTest {
             "  ],\n" +
             "  \"continous\": false,\n" +
             "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
-            "  \"location\": \"Kaikoura, NZ\"\n" +
+            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
             "}";
 
 
@@ -118,8 +118,7 @@ public class ActivityControllerTest {
             "  ],\n" +
             "  \"continous\": false,\n" +
             "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
-            "  \"location\": \"Kaikoura, NZ\"\n" +
+            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
             "}";
 
     private Activity createTestActivity() {
@@ -144,7 +143,7 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"location\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
