@@ -89,12 +89,7 @@ public interface SearchRepository extends JpaRepository<User, Long>, JpaSpecific
     @Query(value = "SELECT * FROM User u INNER JOIN User_Activities_Shared r ON u.user_id = r.user_id WHERE r.activity_id = :activityId", nativeQuery = true)
     Page<User> getSharedUsers(Pageable pageable , Long activityId);
 
-    @Query(value = "SELECT u.user_id ,u.first_name, u.middle_name, u.last_name FROM User_Activity_Role r INNER JOIN User u ON u.user_id = r.user_id WHERE r.activity_id = :activityId", nativeQuery = true)
-    Page<Object> getOrganizers(Pageable pageable , Long activityId);
+    void findAllByActivitiesContainingOrActivitiesEquals(Pageable pageable, String activityNameSearchTerm);
 
-    @Query(value = "SELECT DISTINCT(u.user_id) FROM User u " +
-            "INNER JOIN User_Activity_Role r ON r.user_id = u.user_id " +
-            "WHERE r.activity_id = :activityId " +
-            "AND activityRole = 0", nativeQuery = true)
-    Page<User> getParticipants(Pageable pageable, Long activityId);
+    void findAllByActivitiesContaining(Pageable pageable, String activityNameSearchTerm);
 }
