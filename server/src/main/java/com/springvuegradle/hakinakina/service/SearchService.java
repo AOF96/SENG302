@@ -50,7 +50,8 @@ public class SearchService {
      * @return Page object with a list of SearchActivityDtos that will display generic information about the activity
      */
     public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
-        Page<Activity> activityPage = activityRepository.findActivitiesByNameContaining(PageRequest.of(page, size), activitySearchTerm);
+        Page<Activity> activityPage = activityRepository.findActivitiesByNameLike(activitySearchTerm, PageRequest.of(page, size));
+        List<Activity> activityPage1 = activityRepository.findAllByNameContains(activitySearchTerm);
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
             SearchActivityDto searchActivityDto = new SearchActivityDto();

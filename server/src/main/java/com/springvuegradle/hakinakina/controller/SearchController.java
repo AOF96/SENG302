@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.dto.SearchActivityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
@@ -7,6 +8,7 @@ import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.SearchService;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +67,24 @@ public class SearchController {
             }
         }
         return activityTypes;
+    }
+
+
+    @GetMapping("/activities")
+    public ResponseEntity findActivityPaginated(
+            @RequestParam(required = false) String activitySearchTerm,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        try {
+//            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+//                return new ResponseEntity("Session invalid", HttpStatus.UNAUTHORIZED);
+//            }
+            Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size);
+            return new ResponseEntity(results, HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "could not search for activity");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
     }
 
     /**
