@@ -8,6 +8,7 @@ import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SearchRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.specification.ActivitySpecification;
 import com.springvuegradle.hakinakina.specification.UserSpecification;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.data.domain.Page;
@@ -52,7 +53,8 @@ public class SearchService {
      */
     @Transactional
     public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
-        Page<Activity> activityPage = activityRepository.getActivitiesByNameContaining(activitySearchTerm, PageRequest.of(page, size));
+//        Page<Activity> activityPage = activityRepository.getActivitiesByNameContaining(activitySearchTerm, PageRequest.of(page, size));
+        Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm), PageRequest.of(page, size));
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
             SearchActivityDto searchActivityDto = new SearchActivityDto();
@@ -140,5 +142,14 @@ public class SearchService {
                 .and(
                         UserSpecification.searchIsNotAdmin()
                 );
+    }
+
+    /**
+     * Specification for searching an activity by name
+     * @param activityName search term of an activity name
+     * @return Specification object with Activity search request (WHERE part of the query)
+     */
+    private Specification<Activity> generateActivitySpecification(String activityName) {
+        return Specification.where(ActivitySpecification.searchByActivityName(activityName));
     }
 }
