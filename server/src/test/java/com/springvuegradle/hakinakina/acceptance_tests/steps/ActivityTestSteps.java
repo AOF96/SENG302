@@ -89,7 +89,7 @@ public class ActivityTestSteps {
                                  String start_time, String end_time, String location, int ID) throws Exception {
         boolean isContinuous = Boolean.parseBoolean(continuous);
         if (isContinuous) {
-            activity = new Activity(activity_name, description, true, null, null,  location);
+            activity = new Activity(activity_name, description, true, null, null);
         } else {
 
             DateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -100,7 +100,7 @@ public class ActivityTestSteps {
             Date parsedEndTime = endDateFormat.parse(end_time);
             Timestamp endTimestamp = new java.sql.Timestamp(parsedEndTime.getTime());
 
-            activity = new Activity(activity_name, description, false, startTimestamp, endTimestamp,  location);
+            activity = new Activity(activity_name, description, false, startTimestamp, endTimestamp);
         }
 
         activity.setId((long)ID);

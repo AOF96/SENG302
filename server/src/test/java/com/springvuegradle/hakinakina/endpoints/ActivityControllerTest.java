@@ -131,7 +131,7 @@ public class ActivityControllerTest {
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
         Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -273,8 +273,7 @@ public class ActivityControllerTest {
         Date startTime = new Date(2021, 10, 10);
         Date endTime = new Date(2021, 10, 11);
         Activity activity1 = new Activity("Storm area 51", "Let's unfold the truth together",
-               true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()),
-                "Area 51");
+               true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         activity1.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<ActivityType>();

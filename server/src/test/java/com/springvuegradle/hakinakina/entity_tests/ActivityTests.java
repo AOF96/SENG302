@@ -26,10 +26,10 @@ public class ActivityTests {
     User testUser3 = new User("Maurice", "Benson", "jacky@google.com",
             "1985-12-20", Gender.MALE, 3,
             "jacky'sSecuredPwd");
-    Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-    Activity activity2 = new Activity("sky diving", "jump from the plane", false, null, null, "England");
-    Activity activity3 = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-    Activity activity4 = new Activity("sky diving", "jump from the plane", false, null, null, "England");
+    Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
+    Activity activity2 = new Activity("sky diving", "jump from the plane", false, null, null);
+    Activity activity3 = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
+    Activity activity4 = new Activity("sky diving", "jump from the plane", false, null, null);
 
 
 
@@ -73,7 +73,6 @@ public class ActivityTests {
         Set<ActivityAttribute> expected = new HashSet<>();
         activity4.setContinuous(true);
         activity4.setEndTime(new Timestamp(4));
-        activity4.setLocation("New Zealand");
         expected.add(ActivityAttribute.END_TIME);
         expected.add(ActivityAttribute.CONTINUOUS);
         expected.add(ActivityAttribute.LOCATION);
