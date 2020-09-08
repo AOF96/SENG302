@@ -46,8 +46,8 @@ public class Main {
 						   SearchRepository searchRepository,
 						   ActivityChangeRepository activityChangeRepository,
 						   UserActivityRoleRepository userActivityRoleRepository,
-						   AchievementRepository achievementRepository
-//						   ResultRepository resultRepository
+						   AchievementRepository achievementRepository,
+						   LocationRepository locationRepository
 	) {
 		return args -> {
 			URL url = new URL("https://restcountries.eu/rest/v2/all");

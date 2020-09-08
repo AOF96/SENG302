@@ -645,7 +645,6 @@ public class ActivityService {
      * @param sessionToken users session token used for verification
      * @return response entity with status code dependent on the success or failure of the addition
      */
-
     public ResponseEntity getAchievement(long profileId, long activityId, String sessionToken) {
         ResponseEntity result;
         try {
@@ -654,10 +653,10 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponse(401, "Invalid Session");
             } else if ((profileId != session.getUser().getUserId()
                     || activityRepository.validateAuthor(profileId, activityId) == null)
+                    && (userActivityRoleRepository.getByActivityAndUser(activityRepository.findActivityById(activityId), session.getUser()).get().getActivityRole() != ActivityRole.ORGANISER)
                     && session.getUser().getPermissionLevel() == 0) {
                 result = responseHandler.formatErrorResponse(403, "Invalid user");
             } else {
-
                 List<Achievement> achievements = achievementRepository.getAchievementsByActivityId(activityId);
                 List<AchievementDto> response = new ArrayList<>();
                 for (Achievement achievement : achievements) {

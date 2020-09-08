@@ -570,4 +570,30 @@ public class ActivityServiceTest {
         when(userActivityRoleRepository.getByActivityAndUser(dummyActivity, dummyUser)).thenReturn(Optional.empty());
         assertEquals(null, service.getRoleOfUserForActivity(dummyActivity, dummyUser));
     }
+
+    @Test
+    public void getAchievementForOrganiser() {
+        long userId = 1;
+        long activityId = 1;
+
+        Session testSession = new Session("t0k3n");
+
+        User user = new User();
+        user.setUserId(userId);
+
+        Activity activity = new Activity();
+
+        UserActivityRole role = new UserActivityRole();
+        role.setActivityRole(ActivityRole.ORGANISER);
+
+        testSession.setUser(user);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.validateAuthor(userId, activityId)).thenReturn(null);
+        when(activityRepository.findActivityById(activityId)).thenReturn(activity);
+        when(userActivityRoleRepository.getByActivityAndUser(activity, user)).thenReturn(Optional.of(role));
+        when(achievementRepository.getAchievementsByActivityId(activityId)).thenReturn(new ArrayList<>());
+
+        assertEquals(HttpStatus.OK, service.getAchievement(userId, activityId, "t0k3n").getStatusCode());
+    }
 }
