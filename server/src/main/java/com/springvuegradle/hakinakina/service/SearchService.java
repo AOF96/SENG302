@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -49,9 +50,9 @@ public class SearchService {
      * @param size the number of activities that are returned per page
      * @return Page object with a list of SearchActivityDtos that will display generic information about the activity
      */
+    @Transactional
     public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
-        Page<Activity> activityPage = activityRepository.findActivitiesByNameLike(activitySearchTerm, PageRequest.of(page, size));
-        List<Activity> activityPage1 = activityRepository.findAllByNameContains(activitySearchTerm);
+        Page<Activity> activityPage = activityRepository.getActivitiesByNameContaining(activitySearchTerm, PageRequest.of(page, size));
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
             SearchActivityDto searchActivityDto = new SearchActivityDto();
@@ -62,7 +63,7 @@ public class SearchService {
             searchActivityDto.setEndTime(activity.getEndTime());
             searchActivityDtoList.add(searchActivityDto);
         }
-        return new PageImpl<SearchActivityDto>(searchActivityDtoList);
+        return new PageImpl<>(searchActivityDtoList);
     }
 
     /**

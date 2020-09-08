@@ -20,7 +20,7 @@ import java.util.Optional;
  * Repository for storing activities that the user can perform.
  */
 @RepositoryRestResource
-public interface ActivityRepository extends JpaRepository<Activity, Long> {
+public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity> {
 
     Activity findActivityById(Long id);
 
@@ -68,5 +68,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'ORGANISER'", nativeQuery = true)
     int getNumOrganisersForActivity(long activityId);
 
-    Page<Activity> findActivitiesByNameContaining(Pageable pageable, String activitySearchTerm);
+    @Query(value = "FROM Activity a WHERE a.name like :activitySearchTerm")
+    Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
 }
