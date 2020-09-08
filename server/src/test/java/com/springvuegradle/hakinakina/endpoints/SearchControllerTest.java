@@ -61,6 +61,9 @@ public class SearchControllerTest {
     private ResultRepository resultRepository;
 
     @MockBean
+    private LocationRepository locationRepository;
+
+    @MockBean
     private SearchService searchService;
 
     @Test
