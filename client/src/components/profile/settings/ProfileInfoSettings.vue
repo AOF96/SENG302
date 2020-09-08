@@ -202,7 +202,7 @@
 <script>
   import { mapGetters, mapActions } from "vuex";
   // import axios from 'axios';
-  const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
+  const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all';
   import UserSettingsMenu from "./ProfileSettingsMenu";
 
 export default {
