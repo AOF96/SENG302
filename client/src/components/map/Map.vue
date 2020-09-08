@@ -29,23 +29,19 @@
       ...mapActions(["getDataFromUrl"]),
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
-        this.map = new window.google.maps.Map(document.getElementById("map"), {
+        let map = new window.google.maps.Map(document.getElementById("map"), {
           center: {
             lat: -34.397,
             lng: 150.644
           },
-          zoom: 10
+          zoom: 12
         });
-        this.setCenterLatLong();
-        this.getCenterLatLong();
-      },
-      setCenterLatLong() {
-        let address = this.user.city;
+        let address = this.user.location.city;
         this.geocoder.geocode({ 'address': address}, function(results, status) {
           if (status === 'OK') {
-            this.map.setCenter(results[0].geometry.location);
+            map.setCenter(results[0].geometry.location);
             new window.google.maps.Marker({
-              map: this.map,
+              map: map,
               position: results[0].geometry.location
             });
           } else {
@@ -54,14 +50,6 @@
           }
         });
       },
-      getCenterLatLong() {
-        console.log(this.user);
-        this.getDataFromUrl("https://nominatim.openstreetmap.org/search?city=" + this.user.location.city).then(
-            response => {
-              console.log(response.data);
-            }
-        )
-      }
     }
   }
 </script>
