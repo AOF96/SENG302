@@ -239,12 +239,16 @@ public class ActivityServiceTest {
         activities.add(newActivity);
         testUser.setActivities(activities);
 
+        UserActivityKey userActivityKey = new UserActivityKey(testUser.getUserId(), newActivity.getId());
+        UserActivityRole userActivityRole = new UserActivityRole(userActivityKey, ActivityRole.FOLLOWER);
         activityRepository.save(newActivity);
         userRepository.save(testUser);
+        userActivityRoleRepository.save(userActivityRole);
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+        when(userActivityRoleRepository.getByActivityAndUser(newActivity, testUser)).thenReturn(Optional.of(userActivityRole));
 
         ResponseEntity<String> response = service.checkFollowing((long) 1, (long) 1, "t0k3n");
 

@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -714,8 +715,8 @@ public class UserService {
                 if (user.isPresent()) {
                     User validUser = user.get();
                     Hibernate.initialize(validUser.getActivities());
-                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
-                    if (validUserFollowingList.contains(activity)) {
+                    Optional<UserActivityRole> userActivityRoleCheck = userActivityRoleRepository.getByActivityAndUser(activity, validUser);
+                    if (userActivityRoleCheck.isPresent()) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
@@ -727,6 +728,11 @@ public class UserService {
                         userActivityRoleRepository.save(userActivityRole);
                         result = responseHandler.formatSuccessResponse(201, "User " + profileId
                                 + " now follows activity " + activityId);
+//                        Date date = new Date();
+//                        Timestamp timestamp = new Timestamp(date.getTime());
+//                        UserChange userChangeToAdd = new UserChange("ACTIVITY_FOLLOW", timestamp,
+//                                userRepository.getOne(profileId), activityRepository.getOne(activityId));
+//                        userChangeRepository.save(userChangeToAdd);
                     }
                 } else {
                     result = responseHandler.formatErrorResponse(404, "No user with id "
