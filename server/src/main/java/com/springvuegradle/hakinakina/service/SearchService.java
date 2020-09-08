@@ -1,8 +1,11 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.SearchActivityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SearchRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.specification.UserSpecification;
@@ -27,12 +30,38 @@ public class SearchService {
 
     private UserRepository userRepository;
     private SearchRepository searchRepository;
+    private ActivityRepository activityRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public SearchService(UserRepository userRepository,
-                         SearchRepository searchRepository) {
+                         SearchRepository searchRepository,
+                         ActivityRepository activityRepository) {
         this.userRepository = userRepository;
         this.searchRepository = searchRepository;
+        this.activityRepository = activityRepository;
+    }
+
+    /**
+     * Returns a list of activities that match the searched term. The returned results are paginated.
+     *
+     * @param activitySearchTerm the search term of the activity that the user is trying to find
+     * @param page the page number the user wants to be at
+     * @param size the number of activities that are returned per page
+     * @return Page object with a list of SearchActivityDtos that will display generic information about the activity
+     */
+    public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
+        Page<Activity> activityPage = activityRepository.findActivitiesByNameContaining(PageRequest.of(page, size), activitySearchTerm);
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        for (Activity activity: activityPage) {
+            SearchActivityDto searchActivityDto = new SearchActivityDto();
+            searchActivityDto.setId(activity.getId());
+            searchActivityDto.setName(activity.getName());
+            searchActivityDto.setContinuous(activity.isContinuous());
+            searchActivityDto.setStartTime(activity.getStartTime());
+            searchActivityDto.setEndTime(activity.getEndTime());
+            searchActivityDtoList.add(searchActivityDto);
+        }
+        return new PageImpl<SearchActivityDto>(searchActivityDtoList);
     }
 
     /**

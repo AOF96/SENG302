@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.repository;
 
+import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
@@ -88,8 +89,4 @@ public interface SearchRepository extends JpaRepository<User, Long>, JpaSpecific
 
     @Query(value = "SELECT * FROM User u INNER JOIN User_Activities_Shared r ON u.user_id = r.user_id WHERE r.activity_id = :activityId", nativeQuery = true)
     Page<User> getSharedUsers(Pageable pageable , Long activityId);
-
-    void findAllByActivitiesContainingOrActivitiesEquals(Pageable pageable, String activityNameSearchTerm);
-
-    void findAllByActivitiesContaining(Pageable pageable, String activityNameSearchTerm);
 }
