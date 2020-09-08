@@ -46,7 +46,7 @@ public class Main {
 						   SearchRepository searchRepository,
 						   UserActivityRoleRepository userActivityRoleRepository,
 						   AchievementRepository achievementRepository,
-						   LocationRepository locationRepository
+						   LocationRepository locationRepository,
 						   HomeFeedRepository homeFeedRepository
 	) {
 		return args -> {
