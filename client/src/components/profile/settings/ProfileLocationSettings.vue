@@ -182,6 +182,9 @@
        * Adds a marker on the city's centre.
        */
       loadMap() {
+        if (!window.google) {
+            return;
+        }
         this.geocoder = new window.google.maps.Geocoder();
 
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
