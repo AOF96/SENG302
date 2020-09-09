@@ -94,20 +94,41 @@
           }
           marker = new window.google.maps.Marker({
             position: e.latLng,
-            map: map,
-            draggable: true
+            map: map
           });
           map.panTo(e.latLng);
-          thisInner.updateLocationFields(e.latLng);
+          thisInner.updateAddressField(e.latLng);
         });
 
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
             map.setCenter(results[0].geometry.location);
-            new window.google.maps.Marker({
+            marker = new window.google.maps.Marker({
               map: map,
               position: results[0].geometry.location
             });
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+          }
+        });
+      },
+      /**
+       * Updates the address field based on the position of the dropped pin
+       */
+      updateAddressField(latlng) {
+        let thisInner = this;
+        this.geocoder.geocode({'location': latlng}, function (results, status) {
+          if (status === 'OK') {
+            if(results.length > 0){
+              thisInner.location = results[0]["formatted_address"];
+              console.log(results[0]["formatted_address"]);
+            }else{
+              this.snackbarText = "Invalid Location";
+              this.snackbarColour = "error";
+              this.snackbar = true;
+            }
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
