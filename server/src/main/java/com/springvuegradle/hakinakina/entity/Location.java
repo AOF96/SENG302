@@ -49,10 +49,10 @@ public class Location {
     private double longitude;
 
     @OneToOne(mappedBy = "homeLocation")
-    private User userHomeLocation;
+    private User userHome;
 
     @OneToOne(mappedBy = "currentLocation")
-    private User userCurrentLocation;
+    private User userCurrent;
 
 
     protected Location() {}
@@ -139,4 +139,21 @@ public class Location {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    public void setUsersHomeLocation(User user) {
+        this.userHome = user;
+    }
+
+    public User getUserHome() {
+        return this.userHome;
+    }
+
+    public void setUsersCurrentLocation(User user) {
+        this.userCurrent = user;
+    }
+
+    public User getUserCurrent() {
+        return this.userCurrent;
+    }
+
 }
