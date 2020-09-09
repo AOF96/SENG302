@@ -786,7 +786,7 @@
        * @returns {Promise<void>}
        */
       async checkFollowing() {
-        await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
+        await apiUser.isUserFollowingActivity(this.user.profile_id, this.$route.params.activityId)
           .then((response) => {
             this.userFollowing = response.data !== false;
           })
