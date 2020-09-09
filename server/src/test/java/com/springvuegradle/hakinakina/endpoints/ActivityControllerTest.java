@@ -50,9 +50,6 @@ public class ActivityControllerTest {
     private ActivityRepository activityRepository;
 
     @MockBean
-    private ActivityChangeRepository activityChangeRepository;
-
-    @MockBean
     private UserRepository userRepository;
 
     @MockBean
@@ -69,6 +66,9 @@ public class ActivityControllerTest {
 
     @MockBean
     private SearchRepository searchRepository;
+
+    @MockBean
+    private HomeFeedRepository homeFeedRepository;
 
     @MockBean
     private UserActivityRoleRepository userActivityRoleRepository;

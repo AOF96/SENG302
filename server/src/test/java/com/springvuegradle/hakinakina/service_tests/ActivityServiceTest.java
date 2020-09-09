@@ -49,10 +49,10 @@ public class ActivityServiceTest {
     private SessionRepository sessionRepository;
 
     @Mock
-    private ActivityChangeRepository activityChangeRepository;
+    private UserActivityRoleRepository userActivityRoleRepository;
 
     @Mock
-    private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
 
     @Captor
     ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
@@ -72,7 +72,6 @@ public class ActivityServiceTest {
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
-        activityChangeRepository.deleteAll();
     }
 
     private Activity createTestActivity() {
@@ -289,12 +288,12 @@ public class ActivityServiceTest {
                 "1985-12-20", Gender.MALE, 3,
                 "jacky'sSecuredPwd");
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
+        HomeFeedEntry activityChanges = new HomeFeedEntry("Test changes", timestamp, testUser, activity, FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
         activityChanges.setId(1L);
-        List<ActivityChange> activityChangesList = new ArrayList<>();
+        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
         activityChangesList.add(activityChanges);
-        activityChangeRepository.save(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        homeFeedRepository.save(activityChanges);
+        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(1, activityChangesList.size());
     }
 
@@ -306,15 +305,15 @@ public class ActivityServiceTest {
                 "1985-12-20", Gender.MALE, 3,
                 "jacky'sSecuredPwd");
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
+        HomeFeedEntry activityChanges = new HomeFeedEntry("Test changes", timestamp, testUser, activity, FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
         activityChanges.setId(1L);
-        List<ActivityChange> activityChangesList = new ArrayList<>();
+        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
         activityChangesList.add(activityChanges);
-        activityChangeRepository.save(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        homeFeedRepository.save(activityChanges);
+        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(1, activityChangesList.size());
         activityChangesList.remove(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(0, activityChangesList.size());
     }
 
