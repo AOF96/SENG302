@@ -144,25 +144,6 @@ public class UserTests {
     }
 
     @Test
-    public void testUserCurrentLocation(){
-        Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
-                "Christchurch", 8041, "Canterbury", "New Zealand",
-                -43.522447, 172.579442);
-        testLocation.setId(1L);
-        locationRepository.save(testLocation);
-
-        User testUser2 = new User("James", "Shaw", "james@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "james'sSecuredPwd");
-
-        testUser2.setUserId(1212L);
-        testUser2.setCurrentLocation(testLocation);
-        assertTrue(testUser2.getCurrentLocation().equals(testLocation));
-        assertTrue(testUser2.getCurrentLocation().getSuburb().equals("Upper Riccarton"));
-
-    }
-
-    @Test
     public void testUserHomeLocation(){
         Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
                 "Christchurch", 8041, "Canterbury", "New Zealand",
