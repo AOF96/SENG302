@@ -53,7 +53,6 @@ public class SearchService {
      */
     @Transactional
     public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
-//        Page<Activity> activityPage = activityRepository.getActivitiesByNameContaining(activitySearchTerm, PageRequest.of(page, size));
         Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm), PageRequest.of(page, size));
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
@@ -126,7 +125,7 @@ public class SearchService {
         return result;
     }
 
-    /***
+    /**
      * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
      * @param lastName last name of the user you are searching
      * @param fullName full name of the user you are searching
