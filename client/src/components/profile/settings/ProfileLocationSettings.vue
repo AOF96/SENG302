@@ -20,7 +20,7 @@
         </v-row>
       </v-container>
       <div class="locationFieldDiv">
-        <v-text-field id="locationInput" v-model="location" class="locationInput" label="Address" outlined dense></v-text-field>
+        <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined dense></v-text-field>
       </div>
       <button class="genericConfirmButton updatePasswordButton" v-on:click="updateProfile()" type="submit">Save
         Location
@@ -41,15 +41,27 @@
     data: function () {
       return {
         searchedUser: {},
-        location: "Christchurch",
         snackbar: false,
         snackbarText: null,
         snackbarColour: "primary",
+        location: {
+          street_address: null,
+          suburb: null,
+          postcode: null,
+          city: null,
+          state: null,
+          country: null,
+          latitude: null,
+          longitude: null,
+        },
       };
     },
     computed: {
       ...mapState(["user"]),
       ...mapGetters(["user"]),
+      address() {
+        return this.location.street_address + this.location.suburb + this.location.city + this.location.country;
+      }
     },
     /**
      * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
@@ -182,7 +194,6 @@
         }
         return state;
       },
-
       /**
        Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
        was unsuccessful.

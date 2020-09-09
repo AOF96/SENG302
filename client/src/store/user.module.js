@@ -30,7 +30,7 @@ const state = {
       postcode: null,
       city: null,
       state: null,
-      county: null,
+      country: null,
       latitude: null,
       longitude: null,
     },
