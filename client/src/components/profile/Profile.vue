@@ -117,6 +117,9 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
+      <v-card id="profileMapCard">
+        <div id="profileMap"></div>
+      </v-card>
       <template v-if="searchedUser.passports">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
       </template>
@@ -182,6 +185,7 @@ export default {
       this.$router.push('/login');
     } else {
       this.loadSearchedUser();
+      this.loadMap();
     }
   },
   watch: {
@@ -231,6 +235,44 @@ export default {
       }
       this.startUp();
       this.componentKey++;
+    },
+
+    /**
+     * Loads the map onto the page and centres on the users home city.
+     * Adds a marker on the city's centre.
+     */
+    loadMap() {
+      if (!window.google) {
+        return;
+      }
+      this.geocoder = new window.google.maps.Geocoder();
+
+      let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+        center: {
+          lat: -34.397,
+          lng: 150.644
+        },
+        zoom: 9,
+        disableDefaultUI: true
+      });
+
+      //Use me once the address is available in the user object
+      //let address = this.user.location.street_address;
+      let address = "Christchurch";
+
+      this.geocoder.geocode({'address': address}, function (results, status) {
+        if (status === 'OK') {
+          map.setCenter(results[0].geometry.location);
+          new window.google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+          });
+        } else {
+          this.snackbarText = status;
+          this.snackbarColour = "error";
+          this.snackbar = true;
+        }
+      });
     },
 
     /**
