@@ -176,19 +176,9 @@ describe("Check user's edit profile page", () => {
         expect(wrapper.find("#navigateToPasswordSettings").exists()).toBe(true);
     });
 
-    it("should have an input field for user to set their current city", () => {
+    it("should have an input field for user to set their location", () => {
         const wrapper = shallowMount(ProfileLocationSettings, { store, localVue, mocks, stubs });
-        expect(wrapper.find("#inputCity").exists()).toBe(true);
-    });
-
-    it("should have an input field for user to set their current state", () => {
-        const wrapper = shallowMount(ProfileLocationSettings, { store, localVue, mocks, stubs });
-        expect(wrapper.find("#inputState").exists()).toBe(true);
-    });
-
-    it("should have an input field for user to set their current country", () => {
-        const wrapper = shallowMount(ProfileLocationSettings, { store, localVue, mocks, stubs });
-        expect(wrapper.find("#inputCountry").exists()).toBe(true);
+        expect(wrapper.find("#locationInput").exists()).toBe(true);
     });
 
     it("should have a map for the user to set their location", () => {
