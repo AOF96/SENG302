@@ -10,7 +10,7 @@
             <div id="userSettingsMap"></div>
             <div class="locationFieldDiv">
                 <v-combobox
-                        v-model="searchedUser.city"
+                        v-model="locationCity"
                         :items="items"
                         :search-input.sync="search"
                         color="primary"
@@ -29,7 +29,7 @@
                         dense
                 />
                 <v-combobox
-                        v-model="searchedUser.state"
+                        v-model="locationState"
                         :items="itemsState"
                         :search-input.sync="searchState"
                         color="primary"
@@ -49,7 +49,7 @@
                         dense
                 />
                 <v-combobox
-                        v-model="searchedUser.country"
+                        v-model="locationCountry"
                         :items="countries_option"
                         color="primary"
                         hide-no-data
@@ -98,13 +98,13 @@
         location: null,
         locationCity: null,
         locationState: null,
+        locationCountry: null,
         dialog: false,
         isLoading: false,
         stateLoading: false,
         search: null,
         searchState: null,
         model: null,
-        locationCountry: null,
         countries_option: [],
         showAdmin: false,
         features: []
@@ -188,11 +188,31 @@
         this.geocoder = new window.google.maps.Geocoder();
 
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-          center: {
-            lat: -34.397,
-            lng: 150.644
-          },
-          zoom: 9
+            center: {
+                lat: -34.397,
+                lng: 150.644
+            },
+            zoom: 9,
+            streetViewControl: false,
+            fullscreenControl: false,
+            rotateControl: false,
+            mapTypeControl: false
+        });
+
+        let marker = null;
+        let thisInner = this;
+
+        map.addListener('click', function(e) {
+          if(marker != null) {
+            marker.setMap(null);
+          }
+          marker = new window.google.maps.Marker({
+            position: e.latLng,
+            map: map,
+            draggable: true
+          });
+          map.panTo(e.latLng);
+          thisInner.updateLocationFields(e.latLng);
         });
 
         let address = this.user.location.city;
@@ -204,6 +224,26 @@
               map: map,
               position: results[0].geometry.location
             });
+          } else {
+            this.errorMessage = status;
+            this.snackbar = true;
+          }
+        });
+      },
+      /**
+       * Loads the location params from a given lat long value
+       */
+      updateLocationFields(latlng) {
+        // let thisInner = this;
+        this.geocoder.geocode({'location': latlng}, function (results, status) {
+          if (status === 'OK') {
+            let resultsLen = results.length;
+            if(resultsLen > 0){
+              console.log(results);
+            } else {
+              this.errorMessage = "Invalid Location";
+              this.snackbar = true;
+            }
           } else {
             this.errorMessage = status;
             this.snackbar = true;
@@ -299,7 +339,7 @@
           this.$router.push("/settings/profile/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
-          var tempUserData = await this.getUserById(this.$route.params.profileId);
+          let tempUserData = await this.getUserById(this.$route.params.profileId);
           if (tempUserData === "Invalid permissions") {
             this.$router.push("/settings/profile/" + this.user.profile_id);
             this.searchedUser = this.user;
@@ -307,6 +347,9 @@
             this.searchedUser = tempUserData;
           }
         }
+        this.locationCity = this.searchedUser.city;
+        this.locationState = this.searchedUser.state;
+        this.locationCountry = this.searchedUser.country;
         this.showAdmin = true;
       },
       /**
