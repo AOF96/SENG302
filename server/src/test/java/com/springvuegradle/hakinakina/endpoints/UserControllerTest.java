@@ -48,7 +48,7 @@ public class UserControllerTest {
     private PassportCountryRepository countryRepository;
 
     @MockBean
-    private ActivityChangeRepository activityChangeRepository;
+    private HomeFeedRepository homeFeedRepository;
 
     @MockBean
     private EmailRepository emailRepository;

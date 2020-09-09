@@ -59,7 +59,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "DELETE FROM User_Activities", nativeQuery = true)
     void removeAllUserActivities();
 
-    @Query(value = "SELECT count(*) FROM User_Activities WHERE activity_id = ?", nativeQuery = true)
+    @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ?", nativeQuery = true)
     int getNumFollowersForActivity(long activityId);
 
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'PARTICIPANT'", nativeQuery = true)

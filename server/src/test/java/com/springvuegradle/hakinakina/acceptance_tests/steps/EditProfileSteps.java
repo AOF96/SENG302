@@ -148,7 +148,9 @@ public class EditProfileSteps {
 
     @When("User provides {string} as the old password to update it to {string} as a new password")
     public void user_provides_as_the_old_password_to_update_it_to_as_a_new_password(String oldPassword, String newPassword) {
-        userService = new UserService(userRepository, null, null, sessionRepository, null, null, null, null);
+        userService = new UserService(userRepository, null, null, sessionRepository,
+                null, null, null, null,
+                null);
         ResponseEntity response = userService.changePassword(user2.getUserId(),"newToken", oldPassword, newPassword);
 //        Assert.assertTrue(response.toString().contains("Successfully changed the password"));
     }
