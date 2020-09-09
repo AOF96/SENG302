@@ -73,14 +73,33 @@
         this.geocoder = new window.google.maps.Geocoder();
 
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-          center: {
-            lat: -34.397,
-            lng: 150.644
-          },
-          zoom: 9
+            center: {
+                lat: -34.397,
+                lng: 150.644
+            },
+            zoom: 9,
+            streetViewControl: false,
+            fullscreenControl: false,
+            rotateControl: false,
+            mapTypeControl: false
         });
 
         let address = this.location;
+        let marker = null;
+        let thisInner = this;
+
+        map.addListener('click', function(e) {
+          if(marker != null) {
+            marker.setMap(null);
+          }
+          marker = new window.google.maps.Marker({
+            position: e.latLng,
+            map: map,
+            draggable: true
+          });
+          map.panTo(e.latLng);
+          thisInner.updateLocationFields(e.latLng);
+        });
 
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
@@ -96,6 +115,54 @@
           }
         });
       },
+      /**
+       * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
+       * the location input.
+       */
+      setLocation(location) {
+        this.location = location;
+        const l = {
+          city: document.getElementById('inputCity').value,
+          state: document.getElementById('inputState').value,
+          country: document.getElementById('inputCountry').value
+        };
+
+        if (l.city.length === 0) {
+          l.city = this.searchedUser.city;
+        }
+        if (l.state.length === 0) {
+          l.state = this.searchedUser.state;
+        }
+        if (l.country.length === 0) {
+          l.country = this.searchedUser.country;
+        }
+        this.searchedUser.location = l;
+      },
+      /**
+       * This method filters the the data received from the api and only suggests cities to the user.
+       *
+       */
+      getLocationCity(location) {
+        let city = "Almora";
+        if (location.properties.city !== undefined) {
+          city = location.properties.city;
+          return city
+        }
+        return city;
+      },
+      /**
+       * This method filters the the data received from the api and only suggests states to the user.
+       *
+       */
+      getLocationState(location) {
+        let state = "Angland";
+        if (location.properties.state !== undefined) {
+          state = location.properties.state;
+          return state
+        }
+        return state;
+      },
+
       /**
        Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
        was unsuccessful.
