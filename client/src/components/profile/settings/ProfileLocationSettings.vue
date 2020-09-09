@@ -123,7 +123,6 @@
           if (status === 'OK') {
             if(results.length > 0){
               thisInner.location = results[0]["formatted_address"];
-              console.log(results[0]["formatted_address"]);
             }else{
               this.snackbarText = "Invalid Location";
               this.snackbarColour = "error";
