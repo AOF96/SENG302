@@ -55,23 +55,9 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         Visibility visibility = getVisibility(getValueString(node, "visibility"));
         Set<Achievement> achievements = getAchievements(node, "achievements");
 
-        String city;
-        String state;
-        String country;
-        List<String> locationSplit = Arrays.asList(location.split("\\s*,\\s*"));
-        if (locationSplit.size() == 3) {
-            city = locationSplit.get(0);
-            state = locationSplit.get(1);
-            country = locationSplit.get(2);
-        } else {
-            city = locationSplit.get(0);
-            state = null;
-            country = locationSplit.get(1);
-        }
-
         // Create user with compulsory attributes
         Activity activity = new Activity(name, description, continuous, Timestamp.valueOf(startTime),
-                Timestamp.valueOf(endTime), location);
+                Timestamp.valueOf(endTime));
 
         activity.setActivityTypes(activityTypes);
         activity.setVisibility(visibility);

@@ -654,7 +654,7 @@ public class UserControllerTest {
         testSession.setUser(testUser);
 
         Activity testActivity = new Activity("testActivity", "Used for testing", true,
-                null, null, null);
+                null, null);
         testActivity.setId((long) 1);
 
         when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
@@ -678,7 +678,7 @@ public class UserControllerTest {
         testSession.setUser(testUser);
 
         Activity testActivity = new Activity("testActivity", "Used for testing", true,
-                null, null, null);
+                null, null);
         testActivity.setId((long) 1);
 
         when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))

@@ -114,17 +114,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         } else {
             user.setPermissionLevel(0);
         }
-        if (node.get("location") != null) {
-            JsonNode location = node.get("location");
-            String city = getValueString(location, "city");
-            String state = getValueString(location, "state");
-            String userCountry = getValueString(location, "country");
-            if (city != null) {
-                user.setCity(city);
-                user.setState(state);
-                user.setCountry(userCountry);
-            }
-        }
 
         return user;
     }

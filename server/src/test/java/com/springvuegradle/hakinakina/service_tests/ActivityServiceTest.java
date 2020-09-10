@@ -84,7 +84,7 @@ public class ActivityServiceTest {
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
         Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -98,15 +98,13 @@ public class ActivityServiceTest {
         Date startDate1 = new Date(2021, 10, 10);
         Date endDate1 = new Date(2021, 10, 12);
         Activity activity1 = new Activity("Climb Mount Everest", "Let's climb Mount Everest together",
-                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()),
-                "Mount Everest");
+                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()));
         activity1.setId((long) 1);
 
         Date startDate2 = new Date(2021, 10, 11);
         Date endDate2 = new Date(2021, 10, 12);
         Activity activity2 = new Activity("Descend Mount Everest", "Let's descend Mount Everest together",
-                true, new Timestamp(startDate2.getTime()), new Timestamp(endDate2.getTime()),
-                "Mount Everest");
+                true, new Timestamp(startDate2.getTime()), new Timestamp(endDate2.getTime()));
         List<Activity> activities = new ArrayList<>();
         activity2.setId((long) 2);
 
@@ -284,7 +282,7 @@ public class ActivityServiceTest {
         User testUser = new User("Maurice", "Benson", "jacky@google.com",
                 "1985-12-20", Gender.MALE, 3,
                 "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
         ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
         activityChanges.setId(1L);
         List<ActivityChange> activityChangesList = new ArrayList<>();
@@ -301,7 +299,7 @@ public class ActivityServiceTest {
         User testUser = new User("Maurice", "Benson", "jacky@google.com",
                 "1985-12-20", Gender.MALE, 3,
                 "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
+        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
         ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
         activityChanges.setId(1L);
         List<ActivityChange> activityChangesList = new ArrayList<>();
@@ -333,7 +331,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.PUBLIC);
 
@@ -346,7 +344,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilitySetSharedUsersTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.RESTRICTED);
 
@@ -385,7 +383,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityInvalidRoleTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.RESTRICTED);
 
@@ -404,7 +402,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityNonExistentUserIdTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.RESTRICTED);
 
@@ -424,7 +422,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityAddOwnerTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         User author = new User("John", "Smith", "john@gmail.com",
                 null, Gender.MALE, 2, "Password1");
         author.setUserId(1L);
