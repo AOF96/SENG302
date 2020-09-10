@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
+import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     @Autowired
     ActivityTypeRepository activityTypeRepository;
+
+    @Autowired
+    LocationRepository locationRepository;
 
     public UserDeserializer() {
         this(null);
@@ -87,6 +91,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
         Set<ActivityType> activityTypes = getActivityTypes(node, "activity_types");
 
+
         // Create user with compulsory attributes
         User user = new User(firstName, lastName, primaryEmail, dateOfBirth, gender, fitnessLevel, password);
 
@@ -114,8 +119,31 @@ public class UserDeserializer extends StdDeserializer<User> {
         } else {
             user.setPermissionLevel(0);
         }
+        if (node.get("location") != null) {
+            Location location = createLocation(node.get("location"));
+            locationRepository.save(location);
+            user.setHomeLocation(location);
+        }
 
         return user;
+    }
+
+    /**
+     * Parses a JsonNode to create and return a Location object.
+     * @param node The JsonNode to parse.
+     * @return A Location object.
+     */
+    public Location createLocation(JsonNode node) {
+        String streetAddress = getValueString(node, "street_address");
+        String suburb = getValueString(node, "suburb");
+        int postcode = getValueInt(node, "postcode");
+        String city = getValueString(node, "city");
+        String state = getValueString(node, "state");
+        String country = getValueString(node, "country");
+        Long latitude = getValueLong(node, "latitude");
+        Long longitude = getValueLong(node, "longitude");
+
+        return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
     }
 
     /**
@@ -141,14 +169,30 @@ public class UserDeserializer extends StdDeserializer<User> {
      *
      * @param node
      * @param field
-     * @return int value or null
+     * @return int value or -1
      */
-    public Integer getValueInt(JsonNode node, String field) {
+    public int getValueInt(JsonNode node, String field) {
         JsonNode fieldValue = node.get(field);
         if (fieldValue == null) {
             return -1;
         } else {
             return fieldValue.asInt();
+        }
+    }
+
+    /**
+     * Returns value of field if it exists
+     *
+     * @param node
+     * @param field
+     * @return long value or null
+     */
+    public Long getValueLong(JsonNode node, String field) {
+        JsonNode fieldValue = node.get(field);
+        if (fieldValue == null) {
+            return 0L;
+        } else {
+            return fieldValue.asLong();
         }
     }
 

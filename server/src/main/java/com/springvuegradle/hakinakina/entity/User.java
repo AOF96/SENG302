@@ -51,10 +51,6 @@ public class User {
 
     @JsonIgnore
     @OneToOne
-    private Location currentLocation;
-
-    @JsonIgnore
-    @OneToOne
     private Location homeLocation;
 
     @JsonIgnore
@@ -230,14 +226,6 @@ public class User {
 
     public void followActivity(Activity activity) {
         activitiesShared.add(activity);
-    }
-
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
     }
 
     public Location getHomeLocation() {

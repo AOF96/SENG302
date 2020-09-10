@@ -3,6 +3,7 @@ package com.springvuegradle.hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -158,4 +159,19 @@ public class Location {
         return this.userCurrent;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return postcode == location.postcode &&
+                Double.compare(location.latitude, latitude) == 0 &&
+                Double.compare(location.longitude, longitude) == 0 &&
+                streetAddress.equals(location.streetAddress) &&
+                suburb.equals(location.suburb) &&
+                city.equals(location.city) &&
+                state.equals(location.state) &&
+                country.equals(location.country);
+    }
 }
