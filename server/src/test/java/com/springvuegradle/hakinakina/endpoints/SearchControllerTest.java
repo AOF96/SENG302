@@ -1,7 +1,7 @@
 package com.springvuegradle.hakinakina.endpoints;
 
 import com.springvuegradle.hakinakina.controller.SearchController;
-import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.SearchService;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,6 +68,24 @@ public class SearchControllerTest {
 
     @MockBean
     private SearchService searchService;
+
+    private Activity createTestActivity() {
+        // add test activity and connect it to the test user
+        // it should prints using toJson method as following
+        //{"id":1,"users":[],"activity_name":"name","description":"description","activity_type":[{"name":"Fun","users":[]}],"continuous":false,"start_time":1000000000,"end_time":1000001000,"location":"location"}
+        java.util.Date date = new java.util.Date();
+        long time = 1000000000;
+        java.sql.Date startTime = new java.sql.Date(time);
+        java.sql.Date endTime = new java.sql.Date(time+1000);
+        Activity testActivity = new Activity("name", "description", false,
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
+
+        testActivity.setId((long) 1);
+        Set<ActivityType> activityTypes = new HashSet<>();
+        activityTypes.add(new ActivityType("Fun"));
+        testActivity.setActivityTypes(activityTypes);
+        return testActivity;
+    }
 
     @Test
     public void getActivityTypesSetTest() {
@@ -151,5 +172,21 @@ public class SearchControllerTest {
                 .thenReturn(null);
         this.mockMvc.perform(get("/profiles/?method=and&activity=Adventurous&page=0&size=10"))
                 .andExpect(status().is(200));
+    }
+
+    @Test
+    public void findActivityPaginatedTest() throws Exception {
+        Session testSession = new Session("t0k3n");
+
+        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        testUser.setUserId((long) 1);
+
+        testSession.setUser(testUser);
+
+        Activity testActivity = createTestActivity();
+        activityRepository.save(testActivity);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
     }
 }
