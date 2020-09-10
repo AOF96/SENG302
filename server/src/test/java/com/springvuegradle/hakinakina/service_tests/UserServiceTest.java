@@ -1,9 +1,11 @@
 package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.repository.LocationRepository;
+import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.UserRepository;
+import io.cucumber.java.eo.Se;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,6 +25,9 @@ import static org.mockito.Mockito.when;
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private SessionRepository sessionRepository;
 
     @Mock
     private LocationRepository locationRepository;
@@ -60,14 +65,18 @@ public class UserServiceTest {
         assertFalse(UserService.checkAge(Date.valueOf("1500-04-23"), LocalDate.of(2020, 4, 23)));
     }
 
-    /*@Test
+    @Test
     public void editActivityTypesUserExistsTest() {
         User testUser = new User("John", "Smith", "john@gmail.com", null,
                 Gender.MALE, 2, "Password1");
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         testUser.setUserId((long) 1);
+        Session session = new Session("tok3n");
+        session.setUser(testUser);
+        when(sessionRepository.findUserIdByToken("tok3n")).thenReturn(session);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
 
-        assertEquals(200, service.editActivityTypes(new ArrayList<String>(), 1, null).getStatusCode().value());
+        assertEquals(200, service.editActivityTypes(new ArrayList<String>(), 1, "tok3n").getStatusCode().value());
     }
 
     @Test
@@ -75,10 +84,13 @@ public class UserServiceTest {
         User testUser = new User("John", "Smith", "john@gmail.com", null,
                 Gender.MALE, 2, "Password1");
         testUser.setUserId((long) 1);
+        //Session session = new Session("tok3n");
+        //session.setUser(testUser);
+        //when(sessionRepository.findUserIdByToken("tok3n")).thenReturn(session);
         when(userRepository.findById((long) 1)).thenReturn(Optional.empty());
 
         assertEquals(401, service.editActivityTypes(new ArrayList<String>(), 1, "t0k3n").getStatusCode().value());
-    }*/
+    }
 
     @Test
     public void editHomeLocationTest(){
@@ -93,7 +105,7 @@ public class UserServiceTest {
 
         service.editLocation("42 manuka Palace", "Twizel", "Mackenzie", 7999, "Mackenzie", "New Zealand", -12.2323, 4.5656, true, 1L);
 
-        assertEquals("42 manuka Palace", user3.getHomeLocation().getStreetAddress());
+        assertEquals("42 manuka Palace", user3.getLocation().getStreetAddress());
     }
 
     @Test

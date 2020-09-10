@@ -51,6 +51,9 @@ public class Location {
     @OneToOne(mappedBy = "location")
     private Activity activity;
 
+    @OneToOne(mappedBy = "location")
+    private User user;
+
     protected Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {
@@ -136,20 +139,20 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public void setUsersHomeLocation(User user) {
-        this.userHome = user;
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
-    public User getUserHome() {
-        return this.userHome;
+    public Activity getActivity() {
+        return this.activity;
     }
 
-    public void setUsersCurrentLocation(User user) {
-        this.userCurrent = user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public User getUserCurrent() {
-        return this.userCurrent;
+    public User getUser() {
+        return this.user;
     }
 
 }
