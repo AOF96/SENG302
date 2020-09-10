@@ -51,6 +51,12 @@ public class Location {
     @OneToOne(mappedBy = "location")
     private Activity activity;
 
+    @OneToOne(mappedBy = "homeLocation")
+    private User userHome;
+
+    @OneToOne(mappedBy = "currentLocation")
+    private User userCurrent;
+
     protected Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {

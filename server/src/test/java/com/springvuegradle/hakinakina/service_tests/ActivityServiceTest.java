@@ -279,43 +279,6 @@ public class ActivityServiceTest {
     }
 
     @Test
-    public void addActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
-        activityChanges.setId(1L);
-        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        homeFeedRepository.save(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-    }
-
-    @Test
-    public void removeActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
-        activityChanges.setId(1L);
-        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        homeFeedRepository.save(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-        activityChangesList.remove(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(0, activityChangesList.size());
-    }
-
-    @Test
     public void addResultTest() {
         Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
         User user = new User("Maurice", "Benson", "jacky@google.com",
