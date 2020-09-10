@@ -342,4 +342,19 @@ public class Activity {
 
         return differences;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Activity activity = (Activity) o;
+        return continuous == activity.continuous &&
+                Objects.equals(name, activity.name) &&
+                Objects.equals(description, activity.description) &&
+                Objects.equals(startTime, activity.startTime) &&
+                Objects.equals(endTime, activity.endTime) &&
+                Objects.equals(author, activity.author) &&
+                visibility == activity.visibility &&
+                Objects.equals(location, activity.location);
+    }
 }

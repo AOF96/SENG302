@@ -33,7 +33,7 @@ public class ParserHelper {
         JsonNode fieldValue = node.get(field);
         if (fieldValue == null) {
             return null;
-        } else if (fieldValue.asText() == "null") {
+        } else if (fieldValue.asText().equals("null")) {
             return null;
         } else {
             return fieldValue.asText();
