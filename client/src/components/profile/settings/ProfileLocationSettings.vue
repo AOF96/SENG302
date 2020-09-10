@@ -54,14 +54,13 @@
           latitude: null,
           longitude: null,
         },
+        autocomplete: null,
+        address: null,
       };
     },
     computed: {
       ...mapState(["user"]),
       ...mapGetters(["user"]),
-      address() {
-        return this.location.street_address + this.location.suburb + this.location.city + this.location.country;
-      }
     },
     /**
      * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
@@ -125,6 +124,22 @@
             this.snackbar = true;
           }
         });
+
+        this.autocomplete = new window.google.maps.places.Autocomplete(
+            document.getElementById("locationInput"),
+            {
+              types: ["address"],
+            }
+        );
+
+        this.autocomplete.addListener("place_changed", this.fillInAddress);
+      },
+      /**
+       * Fills in address field and location object from address autocomplete
+       */
+      fillInAddress() {
+        console.log(this.address);
+        console.log(this.autocomplete.getPlace())
       },
       /**
        * Updates the address field based on the position of the dropped pin
@@ -146,53 +161,6 @@
             this.snackbar = true;
           }
         });
-      },
-      /**
-       * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
-       * the location input.
-       */
-      setLocation(location) {
-        this.location = location;
-        const l = {
-          city: document.getElementById('inputCity').value,
-          state: document.getElementById('inputState').value,
-          country: document.getElementById('inputCountry').value
-        };
-
-        if (l.city.length === 0) {
-          l.city = this.searchedUser.city;
-        }
-        if (l.state.length === 0) {
-          l.state = this.searchedUser.state;
-        }
-        if (l.country.length === 0) {
-          l.country = this.searchedUser.country;
-        }
-        this.searchedUser.location = l;
-      },
-      /**
-       * This method filters the the data received from the api and only suggests cities to the user.
-       *
-       */
-      getLocationCity(location) {
-        let city = "Almora";
-        if (location.properties.city !== undefined) {
-          city = location.properties.city;
-          return city
-        }
-        return city;
-      },
-      /**
-       * This method filters the the data received from the api and only suggests states to the user.
-       *
-       */
-      getLocationState(location) {
-        let state = "Angland";
-        if (location.properties.state !== undefined) {
-          state = location.properties.state;
-          return state
-        }
-        return state;
       },
       /**
        Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
@@ -234,7 +202,6 @@
           } else {
             this.searchedUser = tempUserData;
           }
-          this.location = this.searchedUser.location.city;
         }
       },
     },
