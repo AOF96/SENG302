@@ -79,8 +79,8 @@ public class Activity {
     private Set<User> usersShared = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "activity")
-    private Set<ActivityChange> changes = new HashSet<>();
+    @OneToMany(mappedBy = "activity", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE, orphanRemoval = true)
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 
     @Column(name = "visibility")
     private Visibility visibility;

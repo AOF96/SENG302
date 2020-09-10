@@ -547,4 +547,27 @@ public class ActivityController {
     public ResponseEntity getSAllResult(@PathVariable Long achievementId) {
         return activityService.retrieveAllResult(achievementId);
     }
+
+    @PostMapping("/activities/{activityId}/location")
+    public ResponseEntity addLocationToActivity(@RequestBody @Valid Location location,
+                                                @PathVariable Long activityId,
+                                                @CookieValue(value = "s_id") String sessionToken) {
+        Session userWithSession = sessionRepository.findUserIdByToken(sessionToken);
+        if (userWithSession == null) {
+            return responseHandler.formatErrorResponse(400, "Invalid Session");
+        }
+
+        Activity activity = activityRepository.getOne(activityId);
+        User userAuthoringChange = userWithSession.getUser();
+        boolean isActivityAuthor = activity.getAuthor().getUserId().equals(userAuthoringChange.getUserId());
+        boolean isAdmin = userAuthoringChange.getPermissionLevel() == 1;
+        boolean isDefaultAdmin = userAuthoringChange.getPermissionLevel() == 2;
+        boolean isOrganiser = activityRepository.getUsersRoleForActivity(activityId, userAuthoringChange.getUserId()).equals("ORGANISER");
+
+        if (!isActivityAuthor && !isAdmin && !isDefaultAdmin && !isOrganiser) {
+            return responseHandler.formatErrorResponse(403, "Users who aren't the owner of an activity and or admin");
+        }
+
+        return activityService.addLocationToActivity(activityId, location);
+    }
 }

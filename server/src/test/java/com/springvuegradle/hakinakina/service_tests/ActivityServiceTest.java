@@ -49,10 +49,10 @@ public class ActivityServiceTest {
     private SessionRepository sessionRepository;
 
     @Mock
-    private ActivityChangeRepository activityChangeRepository;
+    private UserActivityRoleRepository userActivityRoleRepository;
 
     @Mock
-    private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
 
     @Captor
     ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
@@ -72,7 +72,6 @@ public class ActivityServiceTest {
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
-        activityChangeRepository.deleteAll();
     }
 
     private Activity createTestActivity() {
@@ -237,12 +236,16 @@ public class ActivityServiceTest {
         activities.add(newActivity);
         testUser.setActivities(activities);
 
+        UserActivityKey userActivityKey = new UserActivityKey(testUser.getUserId(), newActivity.getId());
+        UserActivityRole userActivityRole = new UserActivityRole(userActivityKey, ActivityRole.FOLLOWER);
         activityRepository.save(newActivity);
         userRepository.save(testUser);
+        userActivityRoleRepository.save(userActivityRole);
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+        when(userActivityRoleRepository.getByActivityAndUser(newActivity, testUser)).thenReturn(Optional.of(userActivityRole));
 
         ResponseEntity<String> response = service.checkFollowing((long) 1, (long) 1, "t0k3n");
 
@@ -285,10 +288,10 @@ public class ActivityServiceTest {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
         ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
         activityChanges.setId(1L);
-        List<ActivityChange> activityChangesList = new ArrayList<>();
+        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
         activityChangesList.add(activityChanges);
-        activityChangeRepository.save(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        homeFeedRepository.save(activityChanges);
+        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(1, activityChangesList.size());
     }
 
@@ -302,13 +305,13 @@ public class ActivityServiceTest {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
         ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
         activityChanges.setId(1L);
-        List<ActivityChange> activityChangesList = new ArrayList<>();
+        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
         activityChangesList.add(activityChanges);
-        activityChangeRepository.save(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        homeFeedRepository.save(activityChanges);
+        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(1, activityChangesList.size());
         activityChangesList.remove(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
+        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
         assertEquals(0, activityChangesList.size());
     }
 
