@@ -54,6 +54,7 @@
           latitude: null,
           longitude: null,
         },
+        autocomplete: null,
         address: ""
       };
     },
@@ -123,25 +124,35 @@
             this.snackbar = true;
           }
         });
+
+        this.autocomplete = new window.google.maps.places.Autocomplete(
+            document.getElementById("locationInput"),
+            {
+              types: ["address"],
+            }
+        );
+
+        this.autocomplete.addListener("place_changed", this.fillInAddress);
+      },
+
+      /**
+       * Fills in address field and location object from address autocomplete
+       */
+      fillInAddress() {
+        this.location = this.extractLocationData(this.autocomplete.getPlace());
+        this.updateAddressString();
       },
 
       /**
        * Extractor function that parses the google maps response and returns a location object.
        */
-      extractLocationData(mapsObject) {
-        if(mapsObject.length == 0){
-          this.snackbarText = "Invalid Location";
-          this.snackbarColour = "error";
-          this.snackbar = true;
-          return;
-        }
-
+      extractLocationData(place) {
         let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
-
-        let addressComponents = mapsObject[0]["address_components"];
-        newLocation["latitude"] = mapsObject[0]["geometry"]["location"].lat();
-        newLocation["longitude"] = mapsObject[0]["geometry"]["location"].lng();
+        let addressComponents = place["address_components"];
+        newLocation["latitude"] = place["geometry"]["location"].lat();
+        newLocation["longitude"] = place["geometry"]["location"].lng();
         let findingRoute = false;
+
         for(let i = 0; i < addressComponents.length; i++){
           let content = addressComponents[i]["long_name"];
           if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
@@ -165,8 +176,14 @@
         let thisInner = this;
         this.geocoder.geocode({'location': latlng}, function (results, status) {
           if (status === 'OK') {
-            thisInner.location = thisInner.extractLocationData(results);
-            thisInner.updateAddressString();
+            if(results.length == 0){
+              this.snackbarText = "Invalid Location";
+              this.snackbarColour = "error";
+              this.snackbar = true;
+            }else{
+              thisInner.location = thisInner.extractLocationData(results[0]);
+              thisInner.updateAddressString();
+            }
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
@@ -289,7 +306,6 @@
           } else {
             this.searchedUser = tempUserData;
           }
-          this.location = this.searchedUser.location.city;
         }
       },
     },
