@@ -1,11 +1,14 @@
 package com.springvuegradle.hakinakina.service;
 
 import com.springvuegradle.hakinakina.dto.SearchActivityDto;
+import com.springvuegradle.hakinakina.dto.SearchActivityLocationDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.SearchRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.specification.ActivitySpecification;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -33,14 +37,17 @@ public class SearchService {
     private UserRepository userRepository;
     private SearchRepository searchRepository;
     private ActivityRepository activityRepository;
+    private LocationRepository locationRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public SearchService(UserRepository userRepository,
                          SearchRepository searchRepository,
-                         ActivityRepository activityRepository) {
+                         ActivityRepository activityRepository,
+                         LocationRepository locationRepository) {
         this.userRepository = userRepository;
         this.searchRepository = searchRepository;
         this.activityRepository = activityRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -62,9 +69,31 @@ public class SearchService {
             searchActivityDto.setContinuous(activity.isContinuous());
             searchActivityDto.setStartTime(activity.getStartTime());
             searchActivityDto.setEndTime(activity.getEndTime());
+
+            if (activity.getLocation() != null) {
+                if (locationRepository.findById(activity.getLocation().getId()).isPresent()) {
+                    Location activityLocation = locationRepository.getOne(activity.getLocation().getId());
+                    searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
+                }
+            }
+
             searchActivityDtoList.add(searchActivityDto);
         }
         return new PageImpl<>(searchActivityDtoList);
+    }
+
+    /**
+     * Determines if there is a location set for the activity. If there is one, it sets a generic address.
+     *
+     * @param activityLocation The location of the activity that we are setting the DTO for
+     * @return SearchActivityLocationDto that will return a generic address for the activity search results
+     */
+    public SearchActivityLocationDto setLocationForSearchActivityDto(Location activityLocation) {
+        SearchActivityLocationDto searchActivityLocationDto = new SearchActivityLocationDto();
+        searchActivityLocationDto.setStreetAddress(activityLocation.getStreetAddress());
+        searchActivityLocationDto.setCity(activityLocation.getCity());
+        searchActivityLocationDto.setCountry(activityLocation.getCountry());
+        return searchActivityLocationDto;
     }
 
     /**
