@@ -54,14 +54,12 @@
           latitude: null,
           longitude: null,
         },
+        address: ""
       };
     },
     computed: {
       ...mapState(["user"]),
       ...mapGetters(["user"]),
-      address() {
-        return this.location.street_address + this.location.suburb + this.location.city + this.location.country;
-      }
     },
     /**
      * On start-up, adds a listener to locationInput such that a query is made to Photon when the user stops typing
@@ -96,7 +94,7 @@
             mapTypeControl: false
         });
 
-        let address = this.location;
+        let address = this.address;
         let marker = null;
         let thisInner = this;
 
@@ -109,7 +107,7 @@
             map: map
           });
           map.panTo(e.latLng);
-          thisInner.updateAddressField(e.latLng);
+          thisInner.getLocationFromLatLng(e.latLng);
         });
 
         this.geocoder.geocode({'address': address}, function (results, status) {
@@ -126,20 +124,49 @@
           }
         });
       },
+
       /**
-       * Updates the address field based on the position of the dropped pin
+       * Extractor function that parses the google maps response and returns a location object.
        */
-      updateAddressField(latlng) {
+      extractLocationData(mapsObject) {
+        if(mapsObject.length == 0){
+          this.snackbarText = "Invalid Location";
+          this.snackbarColour = "error";
+          this.snackbar = true;
+          return;
+        }
+
+        let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
+
+        let addressComponents = mapsObject[0]["address_components"];
+        newLocation["latitude"] = mapsObject[0]["geometry"]["location"].lat();
+        newLocation["longitude"] = mapsObject[0]["geometry"]["location"].lng();
+        let findingRoute = false;
+        for(let i = 0; i < addressComponents.length; i++){
+          let content = addressComponents[i]["long_name"];
+          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
+          if(addressComponents[i]["types"].includes("route")){
+            if(findingRoute){newLocation.street_address += content}else{newLocation.street_address = content}
+          }
+          if(addressComponents[i]["types"].includes("sublocality")){newLocation.suburb = content}
+          if(addressComponents[i]["types"].includes("locality")){newLocation.city = content}
+          if(addressComponents[i]["types"].includes("administrative_area_level_1")){newLocation.state = content}
+          if(addressComponents[i]["types"].includes("country")){newLocation.country = content}
+          if(addressComponents[i]["types"].includes("postal_code")){newLocation.postcode = content}
+        }
+
+        return newLocation;
+      },
+
+      /**
+       * Calls google maps api with lat lng and updates the location object
+       */
+      getLocationFromLatLng(latlng) {
         let thisInner = this;
         this.geocoder.geocode({'location': latlng}, function (results, status) {
           if (status === 'OK') {
-            if(results.length > 0){
-              thisInner.location = results[0]["formatted_address"];
-            }else{
-              this.snackbarText = "Invalid Location";
-              this.snackbarColour = "error";
-              this.snackbar = true;
-            }
+            thisInner.location = thisInner.extractLocationData(results);
+            thisInner.updateAddressString();
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
@@ -147,6 +174,31 @@
           }
         });
       },
+
+      /**
+       * Updates the address string from the location object
+       */
+      updateAddressString() {
+        this.address = "";
+        if(this.location.street_address != ""){this.address += this.location.street_address}
+        if(this.location.suburb != ""){
+          if(this.address != ""){this.address += ", "}
+          this.address += this.location.suburb;
+        }
+        if(this.location.city != ""){
+          if(this.address != ""){this.address += ", "}
+          this.address += this.location.city;
+        }
+        if(this.location.state != ""){
+          if(this.address != ""){this.address += ", "}
+          this.address += this.location.state;
+        }
+        if(this.location.country != ""){
+          if(this.address != ""){this.address += ", "}
+          this.address += this.location.country;
+        }
+      },
+
       /**
        * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
        * the location input.
@@ -170,6 +222,7 @@
         }
         this.searchedUser.location = l;
       },
+
       /**
        * This method filters the the data received from the api and only suggests cities to the user.
        *
@@ -194,6 +247,7 @@
         }
         return state;
       },
+
       /**
        Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
        was unsuccessful.
@@ -216,6 +270,7 @@
                 }
             );
       },
+
       /**
        * Uses user id from url to request user data.
        */
