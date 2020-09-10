@@ -407,6 +407,13 @@ export const apiActivity = {
       }
   }),
 
+    getSearchedActivity: (searchTerm, currentPage, size) => instance.get(`/activities?name=${searchTerm}`,{
+    params: {
+        page: currentPage,
+        size: size
+    }
+    }),
+
   optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
 
   getActivityStats: (activityId) => instance.get(`/activities/${activityId}/stats`),
