@@ -397,9 +397,8 @@ public class UserController {
         String country = locationNode.get("country").asText();
         double latitude = locationNode.get("latitude").asDouble();
         double longitude = locationNode.get("longitude").asDouble();
-        boolean isHomeAddress = locationNode.get("isHome").asBoolean();
 
-        return userService.editLocation(streetAddress, suburb, city, postcode, state, country, latitude, longitude, isHomeAddress, profileId);
+        return userService.editLocation(streetAddress, suburb, city, postcode, state, country, latitude, longitude, profileId);
     }
 
     /**

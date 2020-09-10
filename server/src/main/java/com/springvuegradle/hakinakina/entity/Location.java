@@ -55,9 +55,6 @@ public class Location {
     @OneToOne(mappedBy = "homeLocation")
     private User userHome;
 
-    @OneToOne(mappedBy = "currentLocation")
-    private User userCurrent;
-
     protected Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {
@@ -150,15 +147,6 @@ public class Location {
     public User getUserHome() {
         return this.userHome;
     }
-
-    public void setUsersCurrentLocation(User user) {
-        this.userCurrent = user;
-    }
-
-    public User getUserCurrent() {
-        return this.userCurrent;
-    }
-
 
     @Override
     public boolean equals(Object o) {
