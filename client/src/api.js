@@ -281,6 +281,16 @@ export const apiUser = {
           size: size
       }
   }),
+
+  /**
+   *Sends a request to the server to update the given user location
+   * @param profileId the id of the user being updated
+   * @param location the json object containing the location details
+   * @returns {Promise<AxiosResponse<T>>}
+  */
+  editUserLocation: (profileId, location) => instance.put(`/profiles/${profileId}/location`, {
+    location
+})
 };
 
 export const apiActivity = {
