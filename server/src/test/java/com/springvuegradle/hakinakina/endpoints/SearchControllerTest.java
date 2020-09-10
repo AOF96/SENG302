@@ -77,10 +77,16 @@ public class SearchControllerTest {
         long time = 1000000000;
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
-        Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
 
+        Location testLocation = new Location("street address", "suburb", "city", 1234,
+                "state", "country", 123.456, 123.456);
+        testLocation.setId((long) 1);
+
+        Activity testActivity = new Activity("name", "description", false,
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
         testActivity.setId((long) 1);
+        testActivity.setLocation(testLocation);
+
         Set<ActivityType> activityTypes = new HashSet<>();
         activityTypes.add(new ActivityType("Fun"));
         testActivity.setActivityTypes(activityTypes);
