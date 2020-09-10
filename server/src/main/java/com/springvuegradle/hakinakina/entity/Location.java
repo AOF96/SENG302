@@ -48,12 +48,8 @@ public class Location {
     @Column(name = "longitude")
     private double longitude;
 
-    @OneToOne(mappedBy = "homeLocation")
-    private User userHome;
-
-    @OneToOne(mappedBy = "currentLocation")
-    private User userCurrent;
-
+    @OneToOne(mappedBy = "location")
+    private Activity activity;
 
     protected Location() {}
 
