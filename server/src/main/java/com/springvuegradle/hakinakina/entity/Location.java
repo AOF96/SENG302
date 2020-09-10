@@ -3,6 +3,7 @@ package com.springvuegradle.hakinakina.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Location entity class
@@ -46,6 +47,13 @@ public class Location {
     @JsonProperty("longitude")
     @Column(name = "longitude")
     private double longitude;
+
+    @OneToOne(mappedBy = "homeLocation")
+    private User userHome;
+
+    @OneToOne(mappedBy = "currentLocation")
+    private User userCurrent;
+
 
     protected Location() {}
 
@@ -131,4 +139,21 @@ public class Location {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    public void setUsersHomeLocation(User user) {
+        this.userHome = user;
+    }
+
+    public User getUserHome() {
+        return this.userHome;
+    }
+
+    public void setUsersCurrentLocation(User user) {
+        this.userCurrent = user;
+    }
+
+    public User getUserCurrent() {
+        return this.userCurrent;
+    }
+
 }

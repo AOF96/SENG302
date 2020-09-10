@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.service_tests;
 
+import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.UserRepository;
@@ -22,6 +23,9 @@ import static org.mockito.Mockito.when;
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private LocationRepository locationRepository;
 
     @InjectMocks
     private UserService service;
@@ -75,6 +79,22 @@ public class UserServiceTest {
 
         assertEquals(401, service.editActivityTypes(new ArrayList<String>(), 1, "t0k3n").getStatusCode().value());
     }*/
+
+    @Test
+    public void editHomeLocationTest(){
+        Location location = new Location("42 manuka Palace", "Twizel", "Mackenzie", 7999, "Mackenzie", "New Zealand", -12.2323, 4.5656);
+        location.setId(12L);
+        User user3 = new User("Dane", "Joe", "dane@mail.com", "", Gender.NON_BINARY, 3, "coolPassword3");
+        user3.setUserId(1L);
+
+        userRepository.save(user3);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user3));
+
+        service.editLocation("42 manuka Palace", "Twizel", "Mackenzie", 7999, "Mackenzie", "New Zealand", -12.2323, 4.5656, true, 1L);
+
+        assertEquals("42 manuka Palace", user3.getHomeLocation().getStreetAddress());
+    }
 
     @Test
     public void getIntersectionOfListOfSetsOfUsersTest() {
