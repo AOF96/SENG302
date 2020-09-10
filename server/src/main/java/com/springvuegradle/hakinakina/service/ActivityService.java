@@ -925,4 +925,9 @@ public class ActivityService {
             return userActivityRole.get().getActivityRole();
         }
     }
+
+    public ResponseEntity addLocationToActivity(Long activityId, Location location) {
+        Activity activity = activityRepository.getOne(activityId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
