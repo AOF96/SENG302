@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
+import io.cucumber.java.en_old.Ac;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -555,5 +556,22 @@ public class ActivityServiceTest {
         when(achievementRepository.getAchievementsByActivityId(activityId)).thenReturn(new ArrayList<>());
 
         assertEquals(HttpStatus.OK, service.getAchievement(userId, activityId, "t0k3n").getStatusCode());
+    }
+
+    @Test
+    public void getLocationForActivityTest() {
+        Location testLocation = new Location("Street", "Suburb", "City", 8041,
+                "State", "Country", 2350.3, 2350.3);
+        Activity activity = new Activity();
+        activity.setId(1L);
+        testLocation.setId(1L);
+
+        activity.setLocation(testLocation);
+
+        when(activityRepository.getActivityLocationId(1L)).thenReturn(Optional.of(1L));
+        when(activityRepository.getActivityLocation(1L)).thenReturn(testLocation);
+
+        assertEquals(HttpStatus.OK, service.getActivityLocation(1L).getStatusCode());
+        assertEquals(testLocation, service.getActivityLocation(1L).getBody());
     }
 }
