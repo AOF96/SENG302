@@ -48,6 +48,7 @@ public class UserService {
     private SearchRepository searchRepository;
     private UserActivityRoleRepository userActivityRoleRepository;
     private HomeFeedRepository homeFeedRepository;
+    private LocationRepository locationRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
@@ -55,7 +56,8 @@ public class UserService {
                        ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
                        UserActivityRoleRepository userActivityRoleRepository,
                        ActivityRepository activityRepository,
-                       HomeFeedRepository homeFeedRepository) {
+                       HomeFeedRepository homeFeedRepository,
+                       LocationRepository locationRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
@@ -66,6 +68,7 @@ public class UserService {
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.homeFeedRepository = homeFeedRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -547,13 +550,8 @@ public class UserService {
             User user = userOptional.get();
 
             Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
-            if (isHomeAddress) {
-                location.setUsersHomeLocation(user);
-                user.setHomeLocation(location);
-            } else {
-                location.setUsersCurrentLocation(user);
-                user.setCurrentLocation(location);
-            }
+            location.setUserHome(user);
+            user.setHomeLocation(location);
 
             locationRepository.save(location);
             userRepository.save(user);

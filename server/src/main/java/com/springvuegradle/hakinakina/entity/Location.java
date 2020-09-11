@@ -137,6 +137,14 @@ public class Location {
         this.longitude = longitude;
     }
 
+    public void setUserHome(User user) {
+        this.userHome = user;
+    }
+
+    public User getUserHome() {
+        return userHome;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
