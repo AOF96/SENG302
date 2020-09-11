@@ -539,15 +539,23 @@ public class UserService {
      * @param userId Long id of user to update
      * @return ResponseEntity of result
      */
-    public ResponseEntity editLocation(String city, String state, String country, Long userId) {
+    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, boolean isHomeAddress, Long userId) {
         boolean result = false;
 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setCity(city);
-            user.setState(state);
-            user.setCountry(country);
+
+            Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
+            if (isHomeAddress) {
+                location.setUsersHomeLocation(user);
+                user.setHomeLocation(location);
+            } else {
+                location.setUsersCurrentLocation(user);
+                user.setCurrentLocation(location);
+            }
+
+            locationRepository.save(location);
             userRepository.save(user);
             result = true;
         }

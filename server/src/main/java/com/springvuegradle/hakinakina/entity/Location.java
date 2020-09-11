@@ -50,7 +50,7 @@ public class Location {
     private double longitude;
 
     @OneToOne(mappedBy = "homeLocation")
-    private User userHomeLocation;
+    private User userHome;
 
     protected Location() {}
 

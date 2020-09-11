@@ -389,11 +389,17 @@ public class UserController {
         }
         ObjectMapper mapper = new ObjectMapper();
         JsonNode locationNode = mapper.readTree(jsonString).get("location");
+        String streetAddress = locationNode.get("streetAddress").asText();
+        String suburb = locationNode.get("suburb").asText();
         String city = locationNode.get("city").asText();
+        int postcode = locationNode.get("postcode").asInt();
         String state = locationNode.get("state").asText();
         String country = locationNode.get("country").asText();
+        double latitude = locationNode.get("latitude").asDouble();
+        double longitude = locationNode.get("longitude").asDouble();
+        boolean isHomeAddress = locationNode.get("isHome").asBoolean();
 
-        return userService.editLocation(city, state, country, profileId);
+        return userService.editLocation(streetAddress, suburb, city, postcode, state, country, latitude, longitude, isHomeAddress, profileId);
     }
 
     /**
