@@ -8,11 +8,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory;
 import com.fasterxml.jackson.databind.deser.DefaultDeserializationContext;
+import com.springvuegradle.hakinakina.controller.ActivityController;
+import com.springvuegradle.hakinakina.controller.UserController;
 import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.serialize.ActivityDeserializer;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.mockito.Mock;
 
@@ -21,16 +29,26 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ActivityDeserializerTest {
-    private ActivityDeserializer deserializer = new ActivityDeserializer();
+    @InjectMocks
+    ActivityDeserializer deserializer;
+
+    @Mock
+    private LocationRepository locationRepository;
+
+    @BeforeAll
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
 
 //    @Test
 //    public void deserializeTest() throws IOException {
 //        String json = "{\n" +
 //                "    \"activity_name\":\"Cool Activity\",\n" +
 //                "    \"continuous\":false,\n" +
-//                "    \"start_time\":\"2020-09-12T09:00:00\",\n" +
-//                "    \"end_time\":\"2020-09-13T17:00:00\",\n" +
+//                "    \"start_time\":\"2020-09-12 09:00:00\",\n" +
+//                "    \"end_time\":\"2020-09-13 17:00:00\",\n" +
 //                "    \"description\":\"This is a very cool Activity.\",\n" +
 //                "    \"location\": {\n" +
 //                "        \"street_address\": \"48 Somewhere Road\",\n" +
@@ -50,7 +68,9 @@ public class ActivityDeserializerTest {
 //        JsonParser parser = factory.createParser(json);
 //        ObjectCodec codec = new ObjectMapper();
 //        parser.setCodec(codec);
-//        doNothing().when(any(LocationRepository.class)).save(any(Location.class));
+//        Location dummyLocation = new Location(null, null, null, 0, null,
+//                null, 0, 0);
+//        when(locationRepository.save(any(Location.class))).thenReturn(dummyLocation);
 //        Activity activity = deserializer.deserialize(parser, null);
 //
 //        System.out.println(activity);
