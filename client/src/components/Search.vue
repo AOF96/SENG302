@@ -7,7 +7,8 @@
         <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
           <v-card class="ma-2" style="border-radius:14px;padding:8px;">
             <form>
-              <v-toolbar flat>
+              <h1 style="text-align: center" > Search</h1>
+              <v-toolbar flat height="auto">
                 <template v-slot:extension>
                   <v-tabs
                       v-model="tabs"
@@ -15,11 +16,11 @@
                   >
                     <v-tabs-slider></v-tabs-slider>
                     <v-tab style="text-transform: none" href="#mobile-tabs-5-1" v-on:click="activitySearchTab = false">
-                      <h1 class="searchHeading">Search for a User</h1>
+                      <h1 class="searchHeading">User</h1>
                     </v-tab>
 
                     <v-tab style="text-transform: none" href="#mobile-tabs-5-2" v-on:click="activitySearchTab = true">
-                      <h1 class="searchHeading">Search for an activity</h1>
+                      <h1 class="searchHeading">Activity</h1>
                     </v-tab>
                   </v-tabs>
                 </template>
@@ -34,7 +35,7 @@
                   <v-card flat>
                     <div  v-if="index === 1">
                     <v-col>
-                      <v-text-field id="searchQueryInput" v-on:keyup="submitSearch" label="Search" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
+                      <v-text-field id="searchQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch" label="Search User" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
                     </v-col>
                     <v-col>
                       <v-select v-model="searchBy" :items="searchMethods" item-text="display" name="searchValue" required label="Search By" outlined hide-details dense rounded>
@@ -48,7 +49,7 @@
                   <v-card flat>
                     <div  v-if="index === 2">
                       <v-col>
-                        <v-text-field id="searchActivityQueryInput" v-on:keyup="submitSearch" label="Search" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
+                        <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
                       </v-col>
                       <v-col>
                         <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
@@ -58,7 +59,6 @@
 
                 </v-tab-item>
               </v-tabs-items>
-              <label>here are we</label>
                <div v-if="!activitySearchTab">
                 <v-row class="searchRow">
                   <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers" :key="user.email" link>
