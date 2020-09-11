@@ -1,6 +1,8 @@
 package com.springvuegradle.hakinakina.endpoints;
 
 import com.springvuegradle.hakinakina.controller.SearchController;
+import com.springvuegradle.hakinakina.dto.SearchActivityDto;
+import com.springvuegradle.hakinakina.dto.SearchActivityLocationDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.SearchService;
@@ -8,13 +10,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.Cookie;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,13 +86,38 @@ public class SearchControllerTest {
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
         Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
-
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
         activityTypes.add(new ActivityType("Fun"));
         testActivity.setActivityTypes(activityTypes);
         return testActivity;
+    }
+
+    private Page<SearchActivityDto> createExpectedActivitySearchPage(Activity testActivity, Location testLocation) {
+        //Set up to test that the service returns this expected result
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        SearchActivityLocationDto searchActivityLocationDto = new SearchActivityLocationDto();
+        searchActivityLocationDto.setStreetAddress(testLocation.getStreetAddress());
+        searchActivityLocationDto.setCity(testLocation.getCity());
+        searchActivityLocationDto.setCountry(testLocation.getCountry());
+
+        SearchActivityDto searchActivityDto = new SearchActivityDto();
+        searchActivityDto.setId(testActivity.getId());
+        searchActivityDto.setName(testActivity.getName());
+        searchActivityDto.setContinuous(testActivity.isContinuous());
+        searchActivityDto.setStartTime(testActivity.getStartTime());
+        searchActivityDto.setEndTime(testActivity.getEndTime());
+        searchActivityDto.setSearchActivityLocationDto(searchActivityLocationDto);
+
+        searchActivityDtoList.add(searchActivityDto);
+
+        Page<SearchActivityDto> searchActivityDtos = new PageImpl<SearchActivityDto>(searchActivityDtoList,
+                pageable, searchActivityDtoList.size());
+
+        return searchActivityDtos;
     }
 
     @Test
@@ -176,17 +209,38 @@ public class SearchControllerTest {
 
     @Test
     public void findActivityPaginatedTest() throws Exception {
-        Session testSession = new Session("t0k3n");
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session testSession = new Session("token");
 
-        User testUser = new User("John", "Smith", "john@gmail.com", null, Gender.MALE, 2, "Password1");
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
         testUser.setUserId((long) 1);
-
         testSession.setUser(testUser);
 
-        Activity testActivity = createTestActivity();
-        activityRepository.save(testActivity);
+        Location testLocation = new Location("street address", "suburb", "city", 1234,
+                "state", "country", 123.456, 123.456);
+        testLocation.setId((long) 1);
 
-        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(activityRepository.findActivityById((long) 1)).thenReturn(null);
+        Activity testActivity = createTestActivity();
+        testActivity.setLocation(testLocation);
+
+        String response = "{\"content\":[{\"id\":1,\"name\":\"name\",\"continuous\":false,\"start_time\":" +
+                "\"1970-01-12T13:46:40.000+0000\",\"end_time\":\"1970-01-12T13:46:41.000+0000\",\"" +
+                "location\":{\"city\":\"city\",\"country\":\"country\",\"street_address\":\"street address\"}}]," +
+                "\"pageable\":{\"sort\":{\"sorted\":false,\"unsorted\":true,\"empty\":true},\"pageSize\":10," +
+                "\"pageNumber\":0,\"offset\":0,\"paged\":true,\"unpaged\":false},\"last\":true,\"totalElements\":1," +
+                "\"totalPages\":1,\"first\":true,\"numberOfElements\":1,\"size\":10,\"number\":0," +
+                "\"sort\":{\"sorted\":false,\"unsorted\":true,\"empty\":true},\"empty\":false}";
+
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
+        when(searchService.findActivityPaginated(eq("name"), any(int.class), any(int.class)))
+                .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
+
+        this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
+                .andExpect(status().is(200));
+//                .andExpect(content().string(containsString(response)));
     }
 }

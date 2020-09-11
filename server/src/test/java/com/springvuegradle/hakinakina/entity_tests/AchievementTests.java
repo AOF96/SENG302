@@ -48,7 +48,7 @@ public class AchievementTests {
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
         Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();

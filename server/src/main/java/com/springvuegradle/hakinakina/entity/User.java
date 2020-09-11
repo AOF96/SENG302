@@ -49,6 +49,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @JsonProperty("currentlocation")
+    @Column(name = "current_location")
+    private Long currentLocation;
+
+    @JsonProperty("homelocation")
+    @Column(name = "home_location")
+    private Long homeLocation;
+
     @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
@@ -222,6 +230,22 @@ public class User {
 
     public void followActivity(Activity activity) {
         activitiesShared.add(activity);
+    }
+
+    public Long getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Long currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public Long getHomeLocation() {
+        return homeLocation;
+    }
+
+    public void setHomeLocation(Long homeLocation) {
+        this.homeLocation = homeLocation;
     }
 
     @JsonIgnore

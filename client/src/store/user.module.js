@@ -99,11 +99,9 @@ const mutations = {
     }
   },
   setUserLocation(state, data) {
-    if (data.location != null && data.location.city != null) {
-      state.user.location.city = data.location.city;
-      state.user.location.state = data.location.state;
-      state.user.location.country = data.location.country;
-    }
+    state.user.location.city = data.city;
+    state.user.location.state = data.state;
+    state.user.location.country = data.country;
   },
   setUserPassports(state, data) {
     state.user.passports = data.passports;
@@ -126,8 +124,6 @@ const mutations = {
       activityTypes[i] = activityTypes[i].replace(/-/g, " ")
     }
     state.user.activities = activityTypes;
-    console.log(state.user.activities);
-
   },
   setUserTmpActivity(state, data) {
     let activityTypes = data.tmp_activities;

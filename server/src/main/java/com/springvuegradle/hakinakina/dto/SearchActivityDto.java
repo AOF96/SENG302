@@ -1,13 +1,26 @@
 package com.springvuegradle.hakinakina.dto;
 
-import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.sql.Timestamp;
+import java.util.Optional;
+
+/**
+ * DTO for Search Activity response
+ */
 public class SearchActivityDto {
     private Long id;
     private String name;
     private boolean continuous;
+
+    @JsonProperty("start_time")
     private java.sql.Timestamp startTime;
+
+    @JsonProperty("end_time")
     private java.sql.Timestamp endTime;
+
+    @JsonProperty("location")
+    private Optional<SearchActivityLocationDto> searchActivityLocationDto;
 
     public Long getId() {
         return id;
@@ -47,5 +60,13 @@ public class SearchActivityDto {
 
     public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
+    }
+
+    public Optional<SearchActivityLocationDto> getSearchActivityLocationDto() {
+        return searchActivityLocationDto;
+    }
+
+    public void setSearchActivityLocationDto(SearchActivityLocationDto searchActivityLocationDto) {
+        this.searchActivityLocationDto = Optional.ofNullable(searchActivityLocationDto);
     }
 }
