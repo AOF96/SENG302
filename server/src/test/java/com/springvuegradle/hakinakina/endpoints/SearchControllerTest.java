@@ -85,7 +85,7 @@ public class SearchControllerTest {
         long time = 1000000000;
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
-        Activity testActivity = new Activity("name", "description", false,
+        Activity testActivity = new Activity("Outdoor Chess Tournament", "Come and play", false,
                 new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -218,8 +218,9 @@ public class SearchControllerTest {
         testUser.setUserId((long) 1);
         testSession.setUser(testUser);
 
-        Location testLocation = new Location("street address", "suburb", "city", 1234,
-                "state", "country", 123.456, 123.456);
+        Location testLocation = new Location("University of Canterbury", "Ilam",
+                "Christchurch", 1234, "Canterbury", "New Zealand",
+                123.456, 123.456);
         testLocation.setId((long) 1);
 
         Activity testActivity = createTestActivity();
@@ -233,6 +234,15 @@ public class SearchControllerTest {
 
         this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
-                .andExpect(content().string(containsString("\"name\":\"name\"")));
+                .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
+                .andExpect(content().string(containsString("\"continuous\":"+ testActivity.isContinuous() +"")))
+                .andExpect(content().string(containsString("\"start_time\":\"1970-01-12T13:46:40.000+0000\"")))
+                .andExpect(content().string(containsString("\"end_time\":\"1970-01-12T13:46:41.000+0000\"")))
+                .andExpect(content().string(containsString("\"location\"")))
+                .andExpect(content().string(containsString("\"city\":\""+ testLocation.getCity() +"\"")))
+                .andExpect(content().string(containsString("\"country\":\""+ testLocation.getCountry() +"\"")))
+                .andExpect(content().string(containsString("\"street_address\":\""+ testLocation.getStreetAddress() +"\"")));
+
+        assertEquals(1, createExpectedActivitySearchPage(testActivity, testLocation).getNumberOfElements());
     }
 }
