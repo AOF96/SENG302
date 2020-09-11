@@ -51,10 +51,6 @@ public class User {
 
     @JsonIgnore
     @OneToOne
-    private Location currentLocation;
-
-    @JsonIgnore
-    @OneToOne
     private Location homeLocation;
 
     @JsonIgnore
@@ -131,8 +127,8 @@ public class User {
     private Set<Activity> authoredActivities = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
-    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -230,14 +226,6 @@ public class User {
 
     public void followActivity(Activity activity) {
         activitiesShared.add(activity);
-    }
-
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
     }
 
     public Location getHomeLocation() {

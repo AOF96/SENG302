@@ -82,6 +82,14 @@
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item link class="mt-2" v-bind:to="'/map/'" v-if="user.isLogin">
+            <v-list-item-icon>
+              <v-icon>map</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Map</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item link class="mt-2" id="profileButton" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>account_box</v-icon>

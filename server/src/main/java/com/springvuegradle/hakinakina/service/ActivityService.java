@@ -35,11 +35,11 @@ public class ActivityService {
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
     public SearchRepository searchRepository;
-    public ActivityChangeRepository activityChangeRepository;
     public AchievementRepository achievementRepository;
     public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
     private SearchService searchService;
 
     public ActivityService(UserRepository userRepository,
@@ -48,22 +48,22 @@ public class ActivityService {
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
                            AchievementRepository achievementRepository,
-                           ActivityChangeRepository activityChangeRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
                            SearchService searchService,
-                           ResultRepository resultRepository) {
+                           ResultRepository resultRepository,
+                           HomeFeedRepository homeFeedRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.achievementRepository = achievementRepository;
-        this.activityChangeRepository = activityChangeRepository;
         this.resultRepository = resultRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
+        this.homeFeedRepository = homeFeedRepository;
     }
 
     /**
@@ -252,9 +252,10 @@ public class ActivityService {
         }
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
-        ActivityChange activityChangesToAdd = new ActivityChange(description.toString(), timestamp,
-                userRepository.getOne(profileId), activityRepository.getOne(activityId));
-        activityChangeRepository.save(activityChangesToAdd);
+        HomeFeedEntry activityChangesToAdd = new HomeFeedEntry(description.toString(), timestamp,
+                userRepository.getOne(profileId), activityRepository.getOne(activityId), FeedEntryType.ACTIVITYUPDATE,
+                FeedEntryScope.ACTIVITY);
+        homeFeedRepository.save(activityChangesToAdd);
     }
 
     /**
@@ -619,13 +620,13 @@ public class ActivityService {
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
-                Page<ActivityChange> activityChanges = activityChangeRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
-                List<ActivityChange> changesList = activityChanges.toList();
+                Page<HomeFeedEntry> activityChanges = homeFeedRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
+                List<HomeFeedEntry> changesList = activityChanges.toList();
                 List<FeedPostDto> posts = new ArrayList<>();
-                for (ActivityChange activityChange : changesList) {
+                for (HomeFeedEntry feedEntry : changesList) {
 
                     FeedPostDto newPost = new FeedPostDto();
-                    newPost.setContent(activityChange);
+                    newPost.setContent(feedEntry);
                     posts.add(newPost);
                 }
                 result = new ResponseEntity(posts, HttpStatus.OK);
@@ -703,6 +704,12 @@ public class ActivityService {
                 activityRepository.save(activity);
                 userRepository.save(user);
                 result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                HomeFeedEntry userChangeToAdd = new HomeFeedEntry("UNFOLLOW", timestamp,
+                        userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                        FeedEntryType.FOLLOWACTIVITY, FeedEntryScope.PRIVATE);
+                homeFeedRepository.save(userChangeToAdd);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot unfollow");
@@ -731,8 +738,8 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 User user = userRepository.getUserById(profileId).get();
-                boolean following = activity.getUsers().contains(user);
-                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(following));
+                Optional<UserActivityRole> userActivityRole = userActivityRoleRepository.getByActivityAndUser(activity, user);
+                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(userActivityRole.isPresent()));
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot check following");

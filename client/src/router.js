@@ -16,6 +16,8 @@ import EditActivity from "./components/EditActivity";
 import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
 import Search from "./components/Search";
+import Map from "./components/map/Map";
+import ProfileLocationSettings from "./components/profile/settings/ProfileLocationSettings";
 
 Vue.use(VueRouter);
 
@@ -63,6 +65,10 @@ const routes = [
         component: UserActivitySettings
     },
     {
+        path: '/settings/user_location/:profileId',
+        component: ProfileLocationSettings
+    },
+    {
         path: "/settings/admin_dashboard",
         component: AdminDashboard,
     },
@@ -93,6 +99,10 @@ const routes = [
     {
         path: '/search',
         component: Search
+    },
+    {
+        path: '/map',
+        component: Map
     },
 ];
 

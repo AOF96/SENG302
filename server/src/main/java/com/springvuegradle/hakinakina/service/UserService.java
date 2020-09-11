@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -46,14 +47,15 @@ public class UserService {
     private ActivityTypeRepository activityTypeRepository;
     private SearchRepository searchRepository;
     private UserActivityRoleRepository userActivityRoleRepository;
-    private LocationRepository locationRepository;
+    private HomeFeedRepository homeFeedRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
                        ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
                        UserActivityRoleRepository userActivityRoleRepository,
-                       ActivityRepository activityRepository, LocationRepository locationRepository) {
+                       ActivityRepository activityRepository,
+                       HomeFeedRepository homeFeedRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
@@ -63,7 +65,7 @@ public class UserService {
         this.activityTypeRepository = activityTypeRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
-        this.locationRepository = locationRepository;
+        this.homeFeedRepository = homeFeedRepository;
     }
 
     /**
@@ -724,8 +726,8 @@ public class UserService {
                 if (user.isPresent()) {
                     User validUser = user.get();
                     Hibernate.initialize(validUser.getActivities());
-                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
-                    if (validUserFollowingList.contains(activity)) {
+                    Optional<UserActivityRole> userActivityRoleCheck = userActivityRoleRepository.getByActivityAndUser(activity, validUser);
+                    if (userActivityRoleCheck.isPresent()) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
@@ -737,6 +739,12 @@ public class UserService {
                         userActivityRoleRepository.save(userActivityRole);
                         result = responseHandler.formatSuccessResponse(201, "User " + profileId
                                 + " now follows activity " + activityId);
+                        Date date = new Date();
+                        Timestamp timestamp = new Timestamp(date.getTime());
+                        HomeFeedEntry userChangeToAdd = new HomeFeedEntry("FOLLOW", timestamp,
+                                userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                                FeedEntryType.FOLLOWACTIVITY, FeedEntryScope.PRIVATE);
+                        homeFeedRepository.save(userChangeToAdd);
                     }
                 } else {
                     result = responseHandler.formatErrorResponse(404, "No user with id "
