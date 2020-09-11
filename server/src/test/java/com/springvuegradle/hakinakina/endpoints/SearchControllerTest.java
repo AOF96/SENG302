@@ -229,10 +229,10 @@ public class SearchControllerTest {
         when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
-        when(searchService.findActivityPaginated(eq("name"), any(int.class), any(int.class)))
+        when(searchService.findActivityPaginated(eq("Chess"), any(int.class), any(int.class)))
                 .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
 
-        this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities?activitySearchTerm=Chess&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
                 .andExpect(content().string(containsString("\"continuous\":"+ testActivity.isContinuous() +"")))
@@ -244,5 +244,100 @@ public class SearchControllerTest {
                 .andExpect(content().string(containsString("\"street_address\":\""+ testLocation.getStreetAddress() +"\"")));
 
         assertEquals(1, createExpectedActivitySearchPage(testActivity, testLocation).getNumberOfElements());
+    }
+
+    @Test
+    public void findActivityPaginatedExactMatchSuccessTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session testSession = new Session("token");
+
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+
+        Location testLocation = new Location("University of Canterbury", "Ilam",
+                "Christchurch", 1234, "Canterbury", "New Zealand",
+                123.456, 123.456);
+        testLocation.setId((long) 1);
+
+        Activity testActivity = createTestActivity();
+        testActivity.setLocation(testLocation);
+
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
+        when(searchService.findActivityPaginated(eq("'Outdoor Chess Tournament'"), any(int.class), any(int.class)))
+                .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
+
+        this.mockMvc.perform(get("/activities?activitySearchTerm='Outdoor Chess Tournament'&page=0&size=10").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
+                .andExpect(content().string(containsString("\"continuous\":"+ testActivity.isContinuous() +"")))
+                .andExpect(content().string(containsString("\"start_time\":\"1970-01-12T13:46:40.000+0000\"")))
+                .andExpect(content().string(containsString("\"end_time\":\"1970-01-12T13:46:41.000+0000\"")))
+                .andExpect(content().string(containsString("\"location\"")))
+                .andExpect(content().string(containsString("\"city\":\""+ testLocation.getCity() +"\"")))
+                .andExpect(content().string(containsString("\"country\":\""+ testLocation.getCountry() +"\"")))
+                .andExpect(content().string(containsString("\"street_address\":\""+ testLocation.getStreetAddress() +"\"")));
+
+        assertEquals(1, createExpectedActivitySearchPage(testActivity, testLocation).getNumberOfElements());
+    }
+
+    @Test
+    public void findActivityPaginatedExactMatchFailureTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session testSession = new Session("token");
+
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<SearchActivityDto> searchActivityDtos = new PageImpl<SearchActivityDto>(searchActivityDtoList,
+                pageable, searchActivityDtoList.size());
+
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(searchService.findActivityPaginated(eq("'Indoor Chess Tournament'"), any(int.class), any(int.class)))
+                .thenReturn(searchActivityDtos);
+
+        this.mockMvc.perform(get("/activities?activitySearchTerm='Indoor Chess Tournament'&page=0&size=10").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("")));
+
+        assertEquals(0, searchActivityDtos.getNumberOfElements());
+    }
+
+    @Test
+    public void findActivityPaginatedNoMatchTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "token");
+        Session testSession = new Session("token");
+
+        User testUser = new User("Maurice", "Benson", "jacky@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "jacky'sSecuredPwd");
+        testUser.setUserId((long) 1);
+        testSession.setUser(testUser);
+
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<SearchActivityDto> searchActivityDtos = new PageImpl<SearchActivityDto>(searchActivityDtoList,
+                pageable, searchActivityDtoList.size());
+
+        when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
+        when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(searchService.findActivityPaginated(eq("Kayak"), any(int.class), any(int.class)))
+                .thenReturn(searchActivityDtos);
+
+        this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("")));
+
+        assertEquals(0, searchActivityDtos.getNumberOfElements());
     }
 }
