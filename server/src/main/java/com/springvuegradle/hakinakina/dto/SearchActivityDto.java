@@ -69,4 +69,15 @@ public class SearchActivityDto {
     public void setSearchActivityLocationDto(SearchActivityLocationDto searchActivityLocationDto) {
         this.searchActivityLocationDto = Optional.ofNullable(searchActivityLocationDto);
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name='" + name + '\'' +
+                ", continuous=" + continuous +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", searchActivityLocationDto=" + searchActivityLocationDto +
+                '}';
+    }
 }

@@ -225,14 +225,6 @@ public class SearchControllerTest {
         Activity testActivity = createTestActivity();
         testActivity.setLocation(testLocation);
 
-        String response = "{\"content\":[{\"id\":1,\"name\":\"name\",\"continuous\":false,\"start_time\":" +
-                "\"1970-01-12T13:46:40.000+0000\",\"end_time\":\"1970-01-12T13:46:41.000+0000\",\"" +
-                "location\":{\"city\":\"city\",\"country\":\"country\",\"street_address\":\"street address\"}}]," +
-                "\"pageable\":{\"sort\":{\"sorted\":false,\"unsorted\":true,\"empty\":true},\"pageSize\":10," +
-                "\"pageNumber\":0,\"offset\":0,\"paged\":true,\"unpaged\":false},\"last\":true,\"totalElements\":1," +
-                "\"totalPages\":1,\"first\":true,\"numberOfElements\":1,\"size\":10,\"number\":0," +
-                "\"sort\":{\"sorted\":false,\"unsorted\":true,\"empty\":true},\"empty\":false}";
-
         when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
@@ -240,7 +232,7 @@ public class SearchControllerTest {
                 .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
 
         this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
-                .andExpect(status().is(200));
-//                .andExpect(content().string(containsString(response)));
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("\"name\":\"name\"")));
     }
 }
