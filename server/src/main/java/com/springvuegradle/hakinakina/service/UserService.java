@@ -545,13 +545,8 @@ public class UserService {
             User user = userOptional.get();
 
             Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
-            if (isHomeAddress) {
-                location.setUsersHomeLocation(user);
-                user.setHomeLocation(location);
-            } else {
-                location.setUsersCurrentLocation(user);
-                user.setCurrentLocation(location);
-            }
+            location.setUser(user);
+            user.setLocation(location);
 
             locationRepository.save(location);
             userRepository.save(user);

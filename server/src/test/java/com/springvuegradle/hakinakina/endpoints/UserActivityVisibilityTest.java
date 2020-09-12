@@ -159,7 +159,6 @@ public class UserActivityVisibilityTest {
         activity.setContinuous(continuous);
         activity.setStartTime(startTime);
         activity.setEndTime(endTime);
-        activity.setLocation(location);
         activity.setVisibility(visibility);
         activity.setAuthor(user);
         activityRepository.save(activity);

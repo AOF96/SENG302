@@ -72,8 +72,7 @@ public class UserActivityRoleTest {
         Date startDate1 = new Date(2021, 10, 10);
         Date endDate1 = new Date(2021, 10, 12);
         Activity activity1 = new Activity("Climb Mount Everest", "Let's climb Mount Everest together",
-                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()),
-                "Mount Everest");
+                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()));
         Set<ActivityType> activityTypes = Set.of(new ActivityType("Extreme"));
         activity1.setActivityTypes(activityTypes);
 
@@ -97,8 +96,7 @@ public class UserActivityRoleTest {
         Date startDate1 = new Date(2021, 10, 10);
         Date endDate1 = new Date(2021, 10, 12);
         Activity activity1 = new Activity("Climb Mount Everest", "Let's climb Mount Everest together",
-                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()),
-                "Mount Everest");
+                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()));
         Set<ActivityType> activityTypes = Set.of(new ActivityType("Extreme"));
         activity1.setActivityTypes(activityTypes);
 
