@@ -124,16 +124,7 @@
               <v-tab-item>
                 <v-card class="py-3" flat>
                   <div>
-                    <div id="locationSettingsMap"></div>
-                    <v-text-field class="editActivityLocationInput"
-                                  dense
-                                  id="activityLocationAutocomplete"
-                                  label="Location"
-                                  outlined
-                                  rounded
-                                  v-model="locationString">
-
-                    </v-text-field>
+                    <ActivityLocationSettings/>
                   </div>
                 </v-card>
               </v-tab-item>
@@ -376,10 +367,14 @@
   import {mapActions, mapGetters} from "vuex";
   import {apiActivity, apiUser} from "../../../api";
   import router from "../../../router";
+  import ActivityLocationSettings from "./ActivityLocationSettings";
   //import googleMapsApi from "@/util/googleMapsApi";
 
   export default {
     name: "ActivitySettingsPage",
+    components: {
+      ActivityLocationSettings
+    },
     data() {
       return {
         tabs: null,
@@ -436,10 +431,6 @@
 
     mounted() {
       this.checkLogin()
-    },
-
-    updated() {
-      this.loadLocationAutocomplete()
     },
 
     methods: {
@@ -733,19 +724,6 @@
         this.snackbar = true;
         this.snackbarText = error;
       },
-
-      /** load google autocomplete on create activity page **/
-      loadLocationAutocomplete() {
-        if (!window.google) {
-          return;
-        }
-        this.autocomplete = new window.google.maps.places.Autocomplete(
-          document.getElementById("activityLocationAutocomplete"),
-          {
-            types: ["address"],
-          }
-        );
-      }
     },
   };
 </script>

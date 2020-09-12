@@ -2,11 +2,14 @@
 import Vuex from "vuex";
 // import Profile from "../profile/Profile";
 import ActivitySettingsPage from "@/components/activity/settings/ActivitySettings";
-import {createLocalVue, mount} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import {apiUser} from "@/api";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
 import Vuetify from "vuetify";
+import ProfileLocationSettings from "../profile/settings/ProfileLocationSettings";
+import {expect} from "@jest/globals";
+import ActivityLocationSettings from "../activity/settings/ActivityLocationSettings";
 localVue.use(Vuetify)
 localVue.use(Vuex);
 
@@ -211,5 +214,13 @@ describe("Check user's edit profile page", () => {
     it("There should be a drop down menu to select the type of achievement ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#achieveType").exists()).toBe(true);
-    })
+    });
+    it("should have a map for the user to set the activity's location", () => {
+        const wrapper = shallowMount(ActivityLocationSettings, { store, localVue, mocks, stubs });
+        expect(wrapper.find("#locationSettingsMap").exists()).toBe(true);
+    });
+    it("should have an input for the user to set the activity's location", () => {
+        const wrapper = shallowMount(ActivityLocationSettings, { store, localVue, mocks, stubs });
+        expect(wrapper.find("#activityLocationAutocomplete").exists()).toBe(true);
+    });
 });

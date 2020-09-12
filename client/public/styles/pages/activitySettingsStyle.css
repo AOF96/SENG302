@@ -121,3 +121,6 @@ backButton {
 .editActivityLocationInput {
     margin: 0 20px !important;
 }
+#locationSettingsMap {
+    height: 300px;
+}

@@ -120,66 +120,7 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat class="py-3">
-                  <div>
-                    <v-combobox
-                            v-model="city"
-                            :items="items"
-                            :search-input.sync="search"
-                            color="primary"
-                            :loading="isLoading"
-                            no-filter
-                            hide-no-data
-                            item-text="Description"
-                            item-value="API"
-                            label="City"
-                            placeholder="Start typing to Search"
-                            return-object
-                            id="inputCity"
-                            outlined
-                            class="locationCombo"
-                            autocomplete="new"
-                            dense
-                            style="margin: 0 20px;"
-                    />
-                    <v-combobox
-                            v-model="state"
-                            :items="itemsState"
-                            :search-input.sync="searchState"
-                            color="primary"
-                            no-filter
-                            :loading="stateLoading"
-                            hide-no-data
-                            hide-selected
-                            item-text="Description"
-                            item-value="API"
-                            label="State"
-                            placeholder="Start typing to Search"
-                            return-object
-                            id="inputState"
-                            outlined
-                            class="locationCombo"
-                            autocomplete="new"
-                            dense
-                            style="margin: 0 20px;"
-                    />
-                    <v-combobox
-                            v-model="country"
-                            :items="countries_option"
-                            color="primary"
-                            hide-no-data
-                            hide-selected
-                            item-text="Description"
-                            label="Country"
-                            placeholder="Start typing to Search"
-                            return-object
-                            id="inputCountry"
-                            outlined
-                            class="locationCombo"
-                            autocomplete="new"
-                            dense
-                            style="margin: 0 20px;"
-                    />
-                  </div>
+                  <ActivityLocationSettings/>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -469,10 +410,14 @@
 import { mapGetters, mapActions } from "vuex";
 import { apiUser, apiActivity } from "../api";
 import router from "../router";
+import ActivityLocationSettings from "./activity/settings/ActivityLocationSettings";
 
 const COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all'
 
 export default {
+  components: {
+    ActivityLocationSettings
+  },
   data() {
     return {
       tabs: null,
@@ -540,11 +485,10 @@ export default {
    * countries for the user to choose.
    */
   mounted: function() {
-      if (!this.user.isLogin) {
-          this.$router.push('/login');
-      } else {
-        this.loadCountries();
-      }
+
+  },
+
+  updated() {
   },
 
   computed: {
