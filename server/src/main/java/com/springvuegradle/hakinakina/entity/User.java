@@ -467,6 +467,9 @@ public class User {
     public boolean equals(Object other){
         if(other instanceof User){
             User otherUser = (User) other;
+            if (otherUser.userId == null || this.userId == null) {
+                return false;
+            }
             return this.userId.equals(otherUser.userId);
         }
         return false;

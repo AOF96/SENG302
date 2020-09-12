@@ -103,7 +103,7 @@ public class UserServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user3));
 
-        service.editLocation("42 manuka Palace", "Twizel", "Mackenzie", 7999, "Mackenzie", "New Zealand", -12.2323, 4.5656, true, 1L);
+        service.editLocation("42 manuka Palace", "Twizel", "Mackenzie", 7999, "Mackenzie", "New Zealand", -12.2323, 4.5656, 1L);
 
         assertEquals("42 manuka Palace", user3.getLocation().getStreetAddress());
     }

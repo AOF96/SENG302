@@ -537,7 +537,7 @@ public class UserService {
      * @param userId Long id of user to update
      * @return ResponseEntity of result
      */
-    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, boolean isHomeAddress, Long userId) {
+    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, Long userId) {
         boolean result = false;
 
         Optional<User> userOptional = userRepository.findById(userId);
