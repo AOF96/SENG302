@@ -25,9 +25,14 @@ const state = {
     cont_activities: [],
     dur_activities: [],
     location: {
+      street_address: null,
+      suburb: null,
+      postcode: null,
       city: null,
       state: null,
-      county: null,
+      country: null,
+      latitude: null,
+      longitude: null,
     },
   },
 };
@@ -100,13 +105,23 @@ const mutations = {
   },
   setUserLocation(state, data) {
     if (data.location !== undefined) {
+      state.user.location.street_address = data.location.street_address;
+      state.user.location.suburb = data.location.suburb;
+      state.user.location.postcode = data.location.postcode;
       state.user.location.city = data.location.city;
       state.user.location.state = data.location.state;
       state.user.location.country = data.location.country;
+      state.user.location.longitude = data.location.longitude;
+      state.user.location.latitude = data.location.latitude;
     } else {
+      state.user.location.street_address = data.street_address;
+      state.user.location.suburb = data.suburb;
+      state.user.location.postcode = data.postcode;
       state.user.location.city = data.city;
       state.user.location.state = data.state;
       state.user.location.country = data.country;
+      state.user.location.longitude = data.longitude;
+      state.user.location.latitude = data.latitude;
     }
   },
   setUserPassports(state, data) {
@@ -170,6 +185,16 @@ const mutations = {
     state.user.tmp_activities = [];
     state.user.cont_activities = [];
     state.user.dur_activities = [];
+    state.user.location = {
+      street_address: null,
+      suburb: null,
+      postcode: null,
+      city: null,
+      state: null,
+      county: null,
+      latitude: null,
+      longitude: null,
+    };
     apiUser.logout();
   },
   setUserPassword(state, data) {
@@ -284,7 +309,7 @@ const actions = {
     return await apiUser.getIdByEmail(email);
   },
   async isUserFollowingActivitiy(data, {'userId': userId, 'activityId': activityId}) {
-    return await apiUser.isUserFollowingActivitiy(userId, activityId);
+    return await apiUser.isUserFollowingActivity(userId, activityId);
   },
   async followActivity(data, {'userId': userId, 'activityId': activityId}) {
     return await apiUser.followActivity(userId, activityId);

@@ -235,6 +235,15 @@
     color: rgba(0,0,0,0.85);
     float: left;
 }
+#profileMapCard{
+    border-radius: 15px;
+    margin-bottom: 10px;
+    overflow:hidden;
+}
+#profileMap{
+    width: 100%;
+    height:300px;
+}
 /* Hide, show and rearrange elements for mobile */
 @media only screen and (max-width: 1160px) {
     .profileMainInfoContainer h1{
