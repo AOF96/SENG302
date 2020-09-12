@@ -446,6 +446,9 @@
       ...mapActions(["createActivity", "updateUserContinuousActivities", "getDataFromUrl", "updateUserDurationActivities", "addActivityAchievement"]),
       /** checks login and if not created redirects you to profile page **/
       checkLogin() {
+        if (!this.$route || !this.$router) {
+          return;
+        }
         if (parseInt(this.$route.params.profileId, 10) !== this.user.profile_id && this.user.permission_level === 0) {
           this.$router.push('/profile');
         }
@@ -733,6 +736,9 @@
 
       /** load google autocomplete on create activity page **/
       loadLocationAutocomplete() {
+        if (!window.google) {
+          return;
+        }
         this.autocomplete = new window.google.maps.places.Autocomplete(
           document.getElementById("activityLocationAutocomplete"),
           {
