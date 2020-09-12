@@ -92,15 +92,11 @@
 
               <div v-if="activitySearchTab">
               <v-row class="searchRow">
-                <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allActivities" :key="user.email" link>
+                <v-list-item two-line v-for="activity in allActivities" :key="activity.name" link>
                   <v-list-item-content>
-                    <v-list-item-title v-if="user.middlename != null">
-                      {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                    <v-list-item-title>
+                      {{ activity.name}}
                     </v-list-item-title>
-                    <v-list-item-title v-else>
-                      {{ user.firstname + " " + user.lastname}}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-row>
@@ -241,10 +237,13 @@ export default {
         this.errorMessage = "Search is empty";
         this.snackbar = true;
       } else {
-        this.allActivities = apiActivity.getSearchedActivity(this.searchedActivityTerm, page, size);
+        apiActivity.getSearchedActivity(this.searchedActivityTerm, page, size).then(
+            (response) => {
+              this.allActivities = response.data.content;
+            })
       }
-    },
-
+    }
+      ,
     ...mapActions(["setUserSearch", "setScrollPosition"]),
     /**
      * Search for size amount of users on given page and append to list
@@ -360,7 +359,7 @@ export default {
     // Submit search query on enter pressed.
     submitActivitySearch: function(e) {
       if (e.keyCode === 13) {
-        this.searchUsers(this.defaultPage, this.defaultSize);
+        this.searchUsers(this.defaultActivityPage, this.defaultActivitySize);
       }
     },
 
