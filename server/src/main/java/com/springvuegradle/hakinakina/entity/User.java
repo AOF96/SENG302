@@ -50,6 +50,10 @@ public class User {
     private Gender gender;
 
     @JsonIgnore
+    @OneToOne
+    private Location homeLocation;
+
+    @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
 
@@ -222,6 +226,14 @@ public class User {
 
     public void followActivity(Activity activity) {
         activitiesShared.add(activity);
+    }
+
+    public Location getHomeLocation() {
+        return homeLocation;
+    }
+
+    public void setHomeLocation(Location homeLocation) {
+        this.homeLocation = homeLocation;
     }
 
     @JsonIgnore
