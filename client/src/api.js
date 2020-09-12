@@ -407,8 +407,9 @@ export const apiActivity = {
       }
   }),
 
-    getSearchedActivity: (searchTerm, currentPage, size) => instance.get(`/activities?name=${searchTerm}`,{
+    getSearchedActivity: (searchTerm, currentPage, size) => instance.get(`/activities`,{
     params: {
+        activitySearchTerm: searchTerm,
         page: currentPage,
         size: size
     }

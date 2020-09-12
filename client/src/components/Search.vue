@@ -49,10 +49,10 @@
                   <v-card flat>
                     <div  v-if="index === 2">
                       <v-col>
-                        <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
+                        <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
+                        <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
                       </v-col>
                     </div>
                   </v-card>
@@ -107,7 +107,7 @@
               <v-row class="searchRow">
                 <v-spacer />
                 <v-btn
-                    v-on:click="searchUsers(currentPage + 1, currentSize)"
+                    v-on:click="searchUsers(currentActivityPage + 1, currentActivitySize)"
                     :hidden="moreHidden"
                     :loading="loading"
                     :disabled="disabled"
@@ -126,7 +126,7 @@
         <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
           <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
             <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
-            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultPage, defaultSize)">
+            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
               <template v-slot:selection="data">
                 <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
                   {{ data.item }}
@@ -163,6 +163,7 @@ import {
   mapActions
 } from "vuex";
 import {
+  apiActivity,
   apiUser
 } from "../api";
 
@@ -182,6 +183,10 @@ export default {
       currentPage: 1,
       defaultSize: 10,
       currentSize: 10,
+      defaultActivityPage: 0,
+      currentActivityPage: 1,
+      defaultActivitySize: 10,
+      currentActivitySize: 10,
       loading: false,
       disabled: false,
       moreHidden: true,
@@ -228,6 +233,15 @@ export default {
         this.snackbar = true;
       } else {
         this.searchUsers(page, size);
+      }
+    },
+
+    submitActivityButtonCheck(page, size) {
+      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0) && this.searchedActivityTerm.length === 0) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        this.allActivities = apiActivity.getSearchedActivity(this.searchedActivityTerm, page, size);
       }
     },
 
@@ -338,6 +352,13 @@ export default {
 
     // Submit search query on enter pressed.
     submitSearch: function(e) {
+      if (e.keyCode === 13) {
+        this.searchUsers(this.defaultPage, this.defaultSize);
+      }
+    },
+
+    // Submit search query on enter pressed.
+    submitActivitySearch: function(e) {
       if (e.keyCode === 13) {
         this.searchUsers(this.defaultPage, this.defaultSize);
       }
