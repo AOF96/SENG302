@@ -117,3 +117,7 @@ backButton {
 .removeLocationButton:hover {
     color: #ee5e5e;
 }
+
+.editActivityLocationInput {
+    margin: 0 20px !important;
+}
