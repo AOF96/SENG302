@@ -49,8 +49,11 @@ public class Location {
     @Column(name = "longitude")
     private double longitude;
 
-    @OneToOne(mappedBy = "homeLocation")
-    private User userHomeLocation;
+    @OneToOne(mappedBy = "location")
+    private Activity activity;
+
+    @OneToOne(mappedBy = "location")
+    private User user;
 
     protected Location() {}
 
@@ -136,6 +139,23 @@ public class Location {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public Activity getActivity() {
+        return this.activity;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
 
     @Override
     public boolean equals(Object o) {

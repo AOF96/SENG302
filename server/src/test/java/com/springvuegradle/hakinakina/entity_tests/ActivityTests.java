@@ -26,10 +26,10 @@ public class ActivityTests {
     User testUser3 = new User("Maurice", "Benson", "jacky@google.com",
             "1985-12-20", Gender.MALE, 3,
             "jacky'sSecuredPwd");
-    Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-    Activity activity2 = new Activity("sky diving", "jump from the plane", false, null, null, "England");
-    Activity activity3 = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-    Activity activity4 = new Activity("sky diving", "jump from the plane", false, null, null, "England");
+    Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
+    Activity activity2 = new Activity("sky diving", "jump from the plane", false, null, null);
+    Activity activity3 = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
+    Activity activity4 = new Activity("sky diving", "jump from the plane", false, null, null);
 
 
 
@@ -48,12 +48,12 @@ public class ActivityTests {
         activity4.setId(7L);
     }
 
+    //TODO: Re-add checks for different locations
     @Test
     public void findActivityChangesDifferences(){
         Set<ActivityAttribute> expected = new HashSet<>();
         expected.add(ActivityAttribute.NAME);
         expected.add(ActivityAttribute.DESCRIPTION);
-        expected.add(ActivityAttribute.LOCATION);
         activity2.setContinuous(true);
         expected.add(ActivityAttribute.CONTINUOUS);
         activity.setStartTime(new Timestamp(1));
@@ -68,15 +68,14 @@ public class ActivityTests {
         assertEquals(expected, activity.findActivityChanges(activity3));
     }
 
+    //TODO: Re-add checks for different locations
     @Test
     public void findActivityChangesPartiallySame(){
         Set<ActivityAttribute> expected = new HashSet<>();
         activity4.setContinuous(true);
         activity4.setEndTime(new Timestamp(4));
-        activity4.setLocation("New Zealand");
         expected.add(ActivityAttribute.END_TIME);
         expected.add(ActivityAttribute.CONTINUOUS);
-        expected.add(ActivityAttribute.LOCATION);
         assertEquals(expected, activity2.findActivityChanges(activity4));
     }
 
