@@ -11,8 +11,10 @@ import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
+import com.springvuegradle.hakinakina.util.ParserHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.springvuegradle.hakinakina.util.ParserHelper.*;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -60,14 +62,14 @@ public class UserDeserializer extends StdDeserializer<User> {
         ObjectMapper mapper = new ObjectMapper();
 
         // Get compulsory attributes
-        String lastName = getValueString(node, "lastname");
-        String firstName = getValueString(node, "firstname");
-        String primaryEmail = getValueString(node, "primary_email");
-        String password = getValueString(node, "password");
-        String dateOfBirth = getValueString(node, "date_of_birth");
-        int fitnessLevel = getValueInt(node, "fitness");
+        String lastName = ParserHelper.getValueString(node, "lastname");
+        String firstName = ParserHelper.getValueString(node, "firstname");
+        String primaryEmail = ParserHelper.getValueString(node, "primary_email");
+        String password = ParserHelper.getValueString(node, "password");
+        String dateOfBirth = ParserHelper.getValueString(node, "date_of_birth");
+        int fitnessLevel = ParserHelper.getValueInt(node, "fitness");
         // Get gender
-        String genderString = getValueString(node, "gender");
+        String genderString = ParserHelper.getValueString(node, "gender");
         Gender gender = null;
         switch (genderString.toLowerCase()) {
             case ("male"):
@@ -82,10 +84,10 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
 
         // Get other attributes if they exist
-        String middleName = getValueString(node, "middlename");
-        String nickName = getValueString(node, "nickname");
-        String bio = getValueString(node, "bio");
-        int permission_level = getValueInt(node, "permission_level");
+        String middleName = ParserHelper.getValueString(node, "middlename");
+        String nickName = ParserHelper.getValueString(node, "nickname");
+        String bio = ParserHelper.getValueString(node, "bio");
+        int permission_level = ParserHelper.getValueInt(node, "permission_level");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
@@ -120,80 +122,12 @@ public class UserDeserializer extends StdDeserializer<User> {
             user.setPermissionLevel(0);
         }
         if (node.get("location") != null) {
-            Location location = createLocation(node.get("location"));
+            Location location = ParserHelper.createLocation(node.get("location"));
             locationRepository.save(location);
-            user.setHomeLocation(location);
+            user.setLocation(location);
         }
 
         return user;
-    }
-
-    /**
-     * Parses a JsonNode to create and return a Location object.
-     * @param node The JsonNode to parse.
-     * @return A Location object.
-     */
-    public Location createLocation(JsonNode node) {
-        String streetAddress = getValueString(node, "street_address");
-        String suburb = getValueString(node, "suburb");
-        int postcode = getValueInt(node, "postcode");
-        String city = getValueString(node, "city");
-        String state = getValueString(node, "state");
-        String country = getValueString(node, "country");
-        Long latitude = getValueLong(node, "latitude");
-        Long longitude = getValueLong(node, "longitude");
-
-        return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
-    }
-
-    /**
-     * Returns value of field if it exists
-     *
-     * @param node
-     * @param field
-     * @return string value or empty string
-     */
-    public String getValueString(JsonNode node, String field) {
-        JsonNode fieldValue = node.get(field);
-        if (fieldValue == null) {
-            return null;
-        } else if (fieldValue.asText() == "null") {
-            return null;
-        } else {
-            return fieldValue.asText();
-        }
-    }
-
-    /**
-     * Returns value of field if it exists
-     *
-     * @param node
-     * @param field
-     * @return int value or -1
-     */
-    public int getValueInt(JsonNode node, String field) {
-        JsonNode fieldValue = node.get(field);
-        if (fieldValue == null) {
-            return -1;
-        } else {
-            return fieldValue.asInt();
-        }
-    }
-
-    /**
-     * Returns value of field if it exists
-     *
-     * @param node
-     * @param field
-     * @return long value or null
-     */
-    public Long getValueLong(JsonNode node, String field) {
-        JsonNode fieldValue = node.get(field);
-        if (fieldValue == null) {
-            return 0L;
-        } else {
-            return fieldValue.asLong();
-        }
     }
 
     /**

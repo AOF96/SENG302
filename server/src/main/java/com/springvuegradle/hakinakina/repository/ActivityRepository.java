@@ -67,4 +67,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'ORGANISER'", nativeQuery = true)
     int getNumOrganisersForActivity(long activityId);
+
+    @Query(value = "SELECT activityRole FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?", nativeQuery = true)
+    String getUsersRoleForActivity(Long activityId, Long userId);
 }

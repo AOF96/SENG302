@@ -8,6 +8,7 @@ import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import io.cucumber.java.en_old.Ac;
 import org.hibernate.sql.Delete;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,7 @@ public class ActivityControllerTest {
         userRepository.deleteAll();
     }
 
+    //TODO: Add the location fields back to these String inputs where the deserializer is updated
     private final String INPUT = "{\n" +
             "  \"activity_name\": \"Akaroa Pier\",\n" +
             "  \"description\": \"Awesome scenery and lots of places to eat\",\n" +
@@ -103,8 +105,7 @@ public class ActivityControllerTest {
             "  ],\n" +
             "  \"continous\": false,\n" +
             "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
-            "  \"location\": \"Kaikoura, NZ\"\n" +
+            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
             "}";
 
 
@@ -118,9 +119,20 @@ public class ActivityControllerTest {
             "  ],\n" +
             "  \"continous\": false,\n" +
             "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\",\n" +
-            "  \"location\": \"Kaikoura, NZ\"\n" +
+            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
             "}";
+
+    private final String ADD_LOCATION_JSON = "{\n" +
+            "  \"city\": \"city\",\n" +
+            "  \"country\": \"country\",\n" +
+            "  \"latitude\": 4,\n" +
+            "  \"longitude\": 4,\n" +
+            "  \"postcode\": 4,\n" +
+            "  \"state\": \"state\",\n" +
+            "  \"street_address\": \"123 test ave\",\n" +
+            "  \"suburb\": \"suburb\"" +
+            "}";
+
 
     private Activity createTestActivity() {
         // add test activity and connect it to the test user
@@ -131,7 +143,7 @@ public class ActivityControllerTest {
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
         Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -144,7 +156,7 @@ public class ActivityControllerTest {
     public void getOneActivitySuccessTest() throws Exception {
         Activity testActivity = createTestActivity();
 
-        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000,\"location\":\"location\"}";
+        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"location\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000";
         when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
         this.mockMvc.perform(get("/activities/1"))
                 .andExpect(status().isOk())
@@ -273,8 +285,7 @@ public class ActivityControllerTest {
         Date startTime = new Date(2021, 10, 10);
         Date endTime = new Date(2021, 10, 11);
         Activity activity1 = new Activity("Storm area 51", "Let's unfold the truth together",
-               true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()),
-                "Area 51");
+               true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         activity1.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<ActivityType>();
@@ -873,5 +884,40 @@ public class ActivityControllerTest {
         this.mockMvc.perform(get("/activities/1/role/1"))
                 .andExpect(status().is(404))
                 .andExpect(content().string(containsString("User not found")));
+    }
+
+    @Test
+    public void addLocationToActivityTest() throws Exception {
+        Activity dummyActivity = new Activity();
+        dummyActivity.setId(1L);
+
+        User testUser = new User();
+        testUser.setUserId(1L);
+        dummyActivity.setAuthor(testUser);
+
+
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+        session1.setUser(testUser);
+
+       /* Activity activity = activityRepository.getOne(activityId);
+        User userAuthoringChange = userWithSession.getUser();
+        boolean isActivityAuthor = activity.getAuthor().getUserId().equals(userAuthoringChange.getUserId());
+        boolean isAdmin = userAuthoringChange.getPermissionLevel() == 1;
+        boolean isDefaultAdmin = userAuthoringChange.getPermissionLevel() == 2;
+        boolean isOrganiser = activityRepository.getUsersRoleForActivity(activityId, userAuthoringChange.getUserId()).equals("ORGANISER");*/
+
+        activityRepository.save(dummyActivity);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(activityRepository.getOne((long) 1)).thenReturn(dummyActivity);
+        when(activityRepository.getUsersRoleForActivity(1L, 1L)).thenReturn("ORGANISER");
+        when(service.addLocationToActivity(any(Long.class), any(Location.class))).thenReturn(new ResponseEntity("Success", HttpStatus.valueOf(201)));
+
+        this.mockMvc.perform(post("/activities/1/location").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ADD_LOCATION_JSON))
+                .andExpect(status().isCreated());
+
     }
 }

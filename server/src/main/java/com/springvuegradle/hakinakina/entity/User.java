@@ -51,7 +51,7 @@ public class User {
 
     @JsonIgnore
     @OneToOne
-    private Location homeLocation;
+    private Location location;
 
     @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
@@ -228,12 +228,12 @@ public class User {
         activitiesShared.add(activity);
     }
 
-    public Location getHomeLocation() {
-        return homeLocation;
+    public Location getLocation() {
+        return this.location;
     }
 
-    public void setHomeLocation(Location homeLocation) {
-        this.homeLocation = homeLocation;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     @JsonIgnore
@@ -467,6 +467,9 @@ public class User {
     public boolean equals(Object other){
         if(other instanceof User){
             User otherUser = (User) other;
+            if (otherUser.userId == null || this.userId == null) {
+                return false;
+            }
             return this.userId.equals(otherUser.userId);
         }
         return false;
