@@ -103,9 +103,10 @@ public class ActivityControllerTest {
             "    \"Fun\",\n" +
             "    \"Relaxing\"\n" +
             "  ],\n" +
-            "  \"continous\": false,\n" +
-            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
+            "  \"continuous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"visibility\": \"private\"" +
             "}";
 
 
@@ -117,9 +118,10 @@ public class ActivityControllerTest {
             "    \"Fun\",\n" +
             "    \"Relaxing\"\n" +
             "  ],\n" +
-            "  \"continous\": false,\n" +
-            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
+            "  \"continuous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"visibility\": \"private\"" +
             "}";
 
     private final String ADD_LOCATION_JSON = "{\n" +

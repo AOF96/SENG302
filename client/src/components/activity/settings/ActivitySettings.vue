@@ -380,7 +380,6 @@
         tabs: null,
         selected_activity: "Activity Type",
         activities_option: [],
-        location: null,
         duration: "duration",
         name: "",
         description: "",
@@ -417,7 +416,16 @@
         tempDescription: null,
         tempResultType: null,
         autocomplete: null,
-        locationString: ""
+        location: {
+          street_address: "300 Somewhere Rd",
+          suburb: "Ilam",
+          postcode: 8000,
+          city: "Christchurch",
+          state: "Canterbury",
+          country: "New Zealand",
+          latitude: 0.0,
+          longitude: 0.0,
+        },
       };
     },
 
@@ -682,7 +690,6 @@
 
         // Sets duration to a boolean for the request
         var tempIsDuration = this.duration !== "duration";
-        this.setLocation(location);
 
         // Send a create request
         apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,
