@@ -328,6 +328,11 @@ const actions = {
   },
   async getUserFeed(data, {'id': id, 'page': page, 'size': size}) {
     return await apiUser.getUserFeed(id, page, size);
+  },
+  async editUserLocation(data, profileId, location) {
+    console.log(profileId);
+    console.log(location);
+    return await apiUser.editUserLocation(profileId, location);
   }
 };
 
