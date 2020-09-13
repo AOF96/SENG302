@@ -140,8 +140,16 @@ public class UserDeserializer extends StdDeserializer<User> {
         String city = getValueString(node, "city");
         String state = getValueString(node, "state");
         String country = getValueString(node, "country");
-        Long latitude = getValueLong(node, "latitude");
-        Long longitude = getValueLong(node, "longitude");
+        String latitudeString = getValueString(node, "latitude");
+        double latitude = 0;
+        if (!latitudeString.equals("")) {
+            latitude = Double.parseDouble(latitudeString);
+        }
+        String longitudeString = getValueString(node, "longitude");
+        double longitude = 0;
+        if (!longitudeString.equals("")) {
+            longitude = Double.parseDouble(longitudeString);
+        }
 
         return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
     }

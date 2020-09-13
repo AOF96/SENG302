@@ -180,11 +180,11 @@ export default {
       loadingContinuousActivities: true,
     };
   },
-  mounted() {
+  async mounted() {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.loadSearchedUser();
+      await this.loadSearchedUser();
       this.loadMap();
     }
   },
@@ -248,24 +248,21 @@ export default {
       this.geocoder = new window.google.maps.Geocoder();
 
       let map = new window.google.maps.Map(document.getElementById("profileMap"), {
-        center: {
-          lat: -34.397,
-          lng: 150.644
-        },
         zoom: 9,
         disableDefaultUI: true
       });
 
       //Use me once the address is available in the user object
-      //let address = this.user.location.street_address;
-      let address = "Christchurch";
+      let address = this.searchedUser.homeLocation.street_address;
+
+      let latLng = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
 
       this.geocoder.geocode({'address': address}, function (results, status) {
         if (status === 'OK') {
-          map.setCenter(results[0].geometry.location);
+          map.setCenter(latLng);
           new window.google.maps.Marker({
             map: map,
-            position: results[0].geometry.location
+            position: latLng
           });
         } else {
           this.snackbarText = status;

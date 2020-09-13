@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -49,6 +50,7 @@ public class Location {
     @Column(name = "longitude")
     private double longitude;
 
+    @JsonBackReference
     @OneToOne(mappedBy = "homeLocation")
     private User userHome;
 

@@ -68,8 +68,8 @@
      * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
      * duplicate summaries are removed.
      */
-    mounted() {
-      this.loadSearchedUser();
+    async mounted() {
+      await this.loadSearchedUser();
       this.loadMap();
     },
     methods: {
@@ -84,11 +84,10 @@
         }
         this.geocoder = new window.google.maps.Geocoder();
 
+        let latLng = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
+
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-          center: {
-            lat: -34.397,
-            lng: 150.644
-          },
+          center: latLng,
           zoom: 9,
           streetViewControl: false,
           fullscreenControl: false,
@@ -99,6 +98,11 @@
         let address = this.address;
         let marker = null;
         let thisInner = this;
+
+        marker = new window.google.maps.Marker({
+          map: map,
+          position: latLng
+        });
 
         map.addListener('click', function (e) {
           if (marker != null) {
@@ -114,11 +118,7 @@
 
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
-            marker = new window.google.maps.Marker({
-              map: map,
-              position: results[0].geometry.location
-            });
+            map.setCenter(latLng);
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
