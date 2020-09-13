@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.entity_tests;
 
 import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LocationTests {
     @Autowired
     public LocationRepository locationRepository;
+
+    @BeforeEach
+    public void clearRepository() {
+        locationRepository.deleteAll();
+    }
 
     @Test
     public void createLocation() {
