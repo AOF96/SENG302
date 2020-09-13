@@ -8,6 +8,14 @@ const state = {
     activityTypesSelected: [],
     filterMethod: null
   },
+  activitySearch: {
+    searchTerm: null,
+    searchType: null,
+    page: null,
+    size: null,
+    scrollPos: 0,
+    filterMethod: null
+  },
   pageHistory: {
     previousPages: [],
     nextPages: [],
@@ -17,6 +25,9 @@ const state = {
 const getters = {
   userSearch(state) {
     return state.userSearch;
+  },
+  activitySearch(state) {
+    return state.activitySearch;
   },
   pageHistory(state) {
     return state.pageHistory;
@@ -86,7 +97,33 @@ const mutations = {
   },
   clearNextHistory(state) {
     state.pageHistory.nextPages = [];
-  }
+  },
+  setActivitySearchTerm(state, data) {
+    state.activitySearch.searchTerm = data.searchTerm;
+  },
+  setActivitySearchType(state, data) {
+    state.activitySearch.searchType = data.searchType;
+  },
+  setActivityPage(state, data) {
+    state.activitySearch.page = data.page;
+  },
+  setActivitySize(state, data) {
+    state.activitySearch.size = data.size;
+  },
+  setActivityScrollPos(state, data) {
+    state.activitySearch.scrollPos = data.scrollPos;
+  },
+  setActivityFilterMethod(state, data) {
+    state.activitySearch.filterMethod = data.filterMethod;
+  },
+  clearActivitySearch() {
+    state.activitySearch.searchTerm = null;
+    state.activitySearch.searchType = null;
+    state.activitySearch.page = null;
+    state.activitySearch.size = null;
+    state.activitySearch.scrollPos = 0;
+    state.activitySearch.filterMethod = null;
+  },
 };
 
 const actions = {
@@ -98,6 +135,14 @@ const actions = {
     commit('setScrollPos', data);
     commit('setActivityTypes', data);
     commit('setFilterMethod', data);
+  },
+  setActivitySearch({commit}, data) {
+    commit('setActivitySearchTerm', data);
+    commit('setActivitySearchType', data);
+    commit('setActivityPage', data);
+    commit('setActivitySize', data);
+    commit('setActivityScrollPos', data);
+    commit('setActivityFilterMethod', data);
   },
   setScrollPosition({commit}, data) {
     commit('setScrollPos', data);
