@@ -108,6 +108,16 @@
               types: ["address"],
             }
         );
+
+        this.autocomplete.addListener("place_changed", this.fillInAddress);
+      },
+
+      /**
+       * Fills in address field and location object from address autocomplete
+       */
+      fillInAddress() {
+        this.location = this.extractLocationData(this.autocomplete.getPlace());
+        this.updateAddressString();
       },
 
       /**
