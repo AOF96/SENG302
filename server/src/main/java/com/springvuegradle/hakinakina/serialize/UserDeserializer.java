@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.springvuegradle.hakinakina.entity.*;
-import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
-import com.springvuegradle.hakinakina.repository.EmailRepository;
-import com.springvuegradle.hakinakina.repository.LocationRepository;
-import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
+import com.springvuegradle.hakinakina.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +32,9 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     @Autowired
     LocationRepository locationRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     public UserDeserializer() {
         this(null);
@@ -85,7 +85,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String middleName = getValueString(node, "middlename");
         String nickName = getValueString(node, "nickname");
         String bio = getValueString(node, "bio");
-        int permission_level = getValueInt(node, "permission_level");
+        int permissionLevel = getValueInt(node, "permission_level");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
@@ -114,26 +114,25 @@ public class UserDeserializer extends StdDeserializer<User> {
         if (bio != null) {
             user.setBio(bio);
         }
-        if (permission_level != -1) {
-            user.setPermissionLevel(permission_level);
+        if (permissionLevel != -1) {
+            user.setPermissionLevel(permissionLevel);
         } else {
             user.setPermissionLevel(0);
         }
         if (node.get("location") != null) {
-            Location location = createLocation(node.get("location"));
+            Location location = createLocation(node.get("location"), primaryEmail);
             locationRepository.save(location);
             user.setHomeLocation(location);
         }
-
         return user;
     }
 
     /**
-     * Parses a JsonNode to create and return a Location object.
+     * Parses a JsonNode to create or update and return a Location object.
      * @param node The JsonNode to parse.
      * @return A Location object.
      */
-    public Location createLocation(JsonNode node) {
+    public Location createLocation(JsonNode node, String userEmail) {
         String streetAddress = getValueString(node, "street_address");
         String suburb = getValueString(node, "suburb");
         int postcode = getValueInt(node, "postcode");
@@ -143,7 +142,32 @@ public class UserDeserializer extends StdDeserializer<User> {
         Long latitude = getValueLong(node, "latitude");
         Long longitude = getValueLong(node, "longitude");
 
-        return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
+        Location location = getOldLocation(userEmail);
+
+        location.setStreetAddress(streetAddress);
+        location.setSuburb(suburb);
+        location.setPostcode(postcode);
+        location.setCity(city);
+        location.setState(state);
+        location.setCountry(country);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+
+        return location;
+    }
+
+    /**
+     * Gets the user's old location or creates a new one if it doesn't exist
+     * @param userEmail the primary email of the user getting updated
+     * @return old location if exists or new location
+     */
+    public Location getOldLocation(String userEmail) {
+        User user = userRepository.findUserByEmail(userEmail);
+        if (user.getHomeLocation() != null) {
+            return user.getHomeLocation();
+        } else {
+            return new Location();
+        }
     }
 
     /**

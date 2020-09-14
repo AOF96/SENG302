@@ -234,6 +234,7 @@ public class User {
 
     public void setHomeLocation(Location homeLocation) {
         this.homeLocation = homeLocation;
+        homeLocation.setUserHomeLocation(this);
     }
 
     @JsonIgnore
