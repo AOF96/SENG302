@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -50,10 +51,12 @@ public class Location {
     private double longitude;
 
     @OneToOne(mappedBy = "location")
+    @JsonIgnore
     private Activity activity;
 
-    @OneToOne(mappedBy = "homeLocation")
-    private User userHome;
+    @OneToOne(mappedBy = "location")
+    @JsonIgnore
+    private User user;
 
     protected Location() {}
 
@@ -140,13 +143,22 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public void setUsersHomeLocation(User user) {
-        this.userHome = user;
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
-    public User getUserHome() {
-        return this.userHome;
+    public Activity getActivity() {
+        return this.activity;
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
 
     @Override
     public boolean equals(Object o) {

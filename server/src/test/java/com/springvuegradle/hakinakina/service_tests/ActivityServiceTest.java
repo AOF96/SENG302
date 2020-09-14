@@ -44,6 +44,9 @@ public class ActivityServiceTest {
     private ActivityRepository activityRepository;
 
     @Mock
+    private LocationRepository locationRepository;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -556,6 +559,17 @@ public class ActivityServiceTest {
         when(achievementRepository.getAchievementsByActivityId(activityId)).thenReturn(new ArrayList<>());
 
         assertEquals(HttpStatus.OK, service.getAchievement(userId, activityId, "t0k3n").getStatusCode());
+    }
+
+    @Test
+    public void addLocationToActivityTest() {
+        Activity activity = createTestActivity();
+        Location location = new Location("12 house lane", "house", "city", 7021,
+                "state", "country", 6125.12, 12512.2);
+
+        when(activityRepository.getOne(1L)).thenReturn(activity);
+
+        assertEquals(HttpStatus.valueOf(201), service.addLocationToActivity(1L, location).getStatusCode());
     }
 
     @Test

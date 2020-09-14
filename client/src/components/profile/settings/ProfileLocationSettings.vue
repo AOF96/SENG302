@@ -22,7 +22,7 @@
       <div class="locationFieldDiv">
         <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined dense></v-text-field>
       </div>
-      <button class="genericConfirmButton updatePasswordButton" v-on:click="updateProfile()" type="submit">Save
+      <button class="genericConfirmButton updatePasswordButton" v-on:click="updateUserLocation()" type="submit">Save
         Location
       </button>
     </div>
@@ -72,7 +72,7 @@
       this.loadMap();
     },
     methods: {
-      ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl"]),
+      ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl", "editUserLocation"]),
       /**
        * Loads the map onto the page and centres on the users home city.
        * Adds a marker on the city's centre.
@@ -141,6 +141,7 @@
       fillInAddress() {
         this.location = this.extractLocationData(this.autocomplete.getPlace());
         this.updateAddressString();
+        console.log(this.location)
       },
 
       /**
@@ -308,6 +309,26 @@
           }
         }
       },
+
+      /**
+       * Passes the user id and location object to the api to make a request to the server and displays a success or
+       * error message depending on the request response.
+       */
+      updateUserLocation() {
+        this.editUserLocation(this.searchedUser.profileId, this.location)
+          .then(
+             response => {
+               this.snackbarText = response.data;
+               this.snackbarColour = "success";
+               this.snackbar = true;
+             },
+             error => {
+               this.snackbarText = error.response.data.Errors;
+               this.snackbarColour = "error";
+               this.snackbar = true;
+            }
+          )
+      }
     },
   }
 </script>
