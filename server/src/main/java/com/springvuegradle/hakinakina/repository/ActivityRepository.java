@@ -74,7 +74,4 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT location_id FROM Activity WHERE activity_id = ?", nativeQuery = true)
     Optional<Long> getActivityLocationId(Long activityId);
-
-    @Query(value = "SELECT * FROM Location WHERE location_id = ?", nativeQuery = true)
-    Location getActivityLocation(Long locationId);
 }

@@ -583,7 +583,7 @@ public class ActivityServiceTest {
         activity.setLocation(testLocation);
 
         when(activityRepository.getActivityLocationId(1L)).thenReturn(Optional.of(1L));
-        when(activityRepository.getActivityLocation(1L)).thenReturn(testLocation);
+        when(locationRepository.getOne(1L)).thenReturn(testLocation);
 
         assertEquals(HttpStatus.OK, service.getActivityLocation(1L).getStatusCode());
         assertEquals(testLocation, service.getActivityLocation(1L).getBody());

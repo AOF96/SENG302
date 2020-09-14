@@ -10,7 +10,7 @@
                activityVisibilityLabelRed: visibility === 'private',
                activityVisibilityLabelOrange: visibility === 'restricted',
                activityVisibilityLabelGreen: visibility === 'public'}">{{visibility}}</div>
-          <div id="activityPageLocation" class="activityLocationLabel">{{ locationFormat(location) }}</div>
+          <div id="activityPageLocation" class="activityLocationLabel">{{ locationToDisplay }}</div>
           <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
           <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
           <h3 id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><b>Starts:</b> {{ start_date }}</h3>
@@ -365,7 +365,7 @@
         visibility: "",
         start_date: null,
         end_date: null,
-        location: "",
+        location: null,
         loaded: false,
         authorId: null,
         activityId: null,
@@ -414,6 +414,7 @@
         roleChanging: false,
         achievements: [],
         loadingFollowButton: false,
+        locationToDisplay: "",
       }
     },
 
@@ -444,6 +445,7 @@
       }
     },
     created: function () {
+      this.getActivityLocation();
       this.loadActivity();
       this.getParticipants();
       this.getOrganisers();
@@ -466,7 +468,7 @@
     },
     methods: {
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
-        'getParticipants', 'getOrganisers', 'checkUserActivityVisibility']),
+        'getParticipants', 'getOrganisers', 'checkUserActivityVisibility', 'getLocationForActivity']),
 
       /**
        * Loads the role of the currently logged in user.
@@ -525,11 +527,11 @@
       /**
        * Format the received location string, ready to be displayed.
        */
-      locationFormat(location ) {
-        let streetAddress = location.street_address;
-        let city = location.city;
-        let state = location.state;
-        let country = location.country;
+      locationFormat() {
+        let city = this.location.city;
+        let state = this.location.state;
+        let country = this.location.country;
+        let streetAddress = this.location.street_address;
         let outputString = "";
 
         outputString += streetAddress;
@@ -548,7 +550,7 @@
         if(outputString === ""){
           outputString = "No Location Set"
         }
-        return outputString;
+        this.locationToDisplay = outputString;
       },
 
       /**
@@ -740,7 +742,6 @@
 
       /**
        * Requests the activity and loads its information
-       * @returns {Promise<void>}
        */
       async loadActivity() {
         if (this.$route.params.activityId == null || this.$route.params.activityId === "") {
@@ -768,7 +769,6 @@
             }
             this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
             this.end_date = dateUtil.getFormatDate(new Date(tempActivityData.end_time));
-            this.location = tempActivityData.location;
             this.activity_author_firstname = tempActivityData.author.firstname;
             this.activity_author_lastname = tempActivityData.author.lastname;
             this.authorId = tempActivityData.author.profile_id;
@@ -780,9 +780,18 @@
       },
 
       /**
+       * Retrieves the location of the activity
+       */
+      async getActivityLocation(){
+        await apiActivity.getLocationForActivity(this.$route.params.activityId).then((response) => {
+          this.location = response.data;
+        })
+        this.locationFormat();
+      },
+
+      /**
        * Checks if user is following current activity and sets userFollowing which is used to determine if
        * the follow button should be for following or unfollowing
-       * @returns {Promise<void>}
        */
       async checkFollowing() {
         await apiUser.isUserFollowingActivity(this.user.profile_id, this.$route.params.activityId)
@@ -797,7 +806,6 @@
       },
       /**
        * Makes api call to allow a user to follow current activity after follow button is pressed
-       * @returns {Promise<void>}
        */
       async followCurrentActivity() {
         this.loadingFollowButton = true;
@@ -812,7 +820,6 @@
 
       /**
        * Makes api call to allow a user to un follow current activity after un follow button is pressed
-       * @returns {Promise<void>}
        */
       async unFollowCurrentActivity() {
         this.loadingFollowButton = true;

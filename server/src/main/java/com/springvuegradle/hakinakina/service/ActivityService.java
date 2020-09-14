@@ -967,7 +967,7 @@ public class ActivityService {
                 return new ResponseEntity("Activity has no location", HttpStatus.valueOf(404));
             } else {
                 Long locationId = optionalLocationId.get();
-                Location activityLocation = activityRepository.getActivityLocation(locationId);
+                Location activityLocation = locationRepository.getOne(locationId);
                 return new ResponseEntity(activityLocation, HttpStatus.valueOf(200));
             }
         } catch (Error e) {
