@@ -5,6 +5,10 @@
       <router-link v-bind:to="'/settings/profile/' + this.$route.params.profileId">
         <div class="settingsNavButton">Profile</div>
       </router-link>
+      <hr/>
+      <router-link v-bind:to="'/settings/user_location/' + this.$route.params.profileId">
+        <div class="settingsNavButton" id="navigateToLocationSettings">Location</div>
+      </router-link>
       <hr />
       <router-link v-bind:to="'/settings/email/' + this.$route.params.profileId">
         <div class="settingsNavButton" id="navigateToEmailSettings">Emails</div>

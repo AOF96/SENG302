@@ -1,0 +1,8 @@
+.followBackground{
+    background: #17837b;
+    background: linear-gradient(to right, rgb(19, 162, 116), rgb(27, 101, 130));
+}
+.unfollowBackground{
+    background: #984057;
+    background: linear-gradient(to right, rgb(195, 80, 80), rgb(113, 49, 93));
+}
