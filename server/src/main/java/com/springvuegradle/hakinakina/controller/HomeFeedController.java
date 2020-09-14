@@ -1,7 +1,7 @@
 package com.springvuegradle.hakinakina.controller;
 
 import com.springvuegradle.hakinakina.dto.FeedPostDto;
-import com.springvuegradle.hakinakina.entity.ActivityChange;
+import com.springvuegradle.hakinakina.entity.HomeFeedEntry;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
@@ -66,17 +66,17 @@ public class HomeFeedController {
             } else if (!profileId.equals(sessionRepository.findUserIdByToken(sessionToken).getUser().getUserId())) {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
-                Page<ActivityChange> activityChanges = homeFeedService.getHomeFeed(profileId, page, size);
-                List<ActivityChange> changesList = activityChanges.toList();
+                Page<HomeFeedEntry> feedEntries = homeFeedService.getHomeFeed(profileId, page, size);
+                List<HomeFeedEntry> changesList = feedEntries.toList();
                 List<FeedPostDto> posts = new ArrayList<>();
-                for (ActivityChange activityChange : changesList) {
+                for (HomeFeedEntry feedEntry : changesList) {
                     FeedPostDto newPost = new FeedPostDto();
-                    newPost.activityId = activityChange.getActivity().getId();
-                    newPost.activityName = activityChange.getActivity().getName();
-                    newPost.authorName = activityChange.getAuthor().getFirstName()+" "+activityChange.getAuthor().getLastName();
-                    newPost.dateTime = activityChange.getChangeTime();
-                    newPost.postType = "activityUpdate";
-                    newPost.textContext = activityChange.getDescription();
+                    newPost.activityId = feedEntry.getActivity().getId();
+                    newPost.activityName = feedEntry.getActivity().getName();
+                    newPost.authorName = feedEntry.getUser().getFirstName()+" "+feedEntry.getUser().getLastName();
+                    newPost.dateTime = feedEntry.getDatetime();
+                    newPost.postType = feedEntry.getType();
+                    newPost.textContext = feedEntry.getContent();
                     posts.add(newPost);
                 }
 

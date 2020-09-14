@@ -49,13 +49,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @JsonProperty("currentlocation")
-    @Column(name = "current_location")
-    private Long currentLocation;
-
-    @JsonProperty("homelocation")
-    @Column(name = "home_location")
-    private Long homeLocation;
+    @JsonIgnore
+    @OneToOne
+    private Location location;
 
     @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
@@ -131,8 +127,8 @@ public class User {
     private Set<Activity> authoredActivities = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
-    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -232,20 +228,12 @@ public class User {
         activitiesShared.add(activity);
     }
 
-    public Long getCurrentLocation() {
-        return currentLocation;
+    public Location getLocation() {
+        return this.location;
     }
 
-    public void setCurrentLocation(Long currentLocation) {
-        this.currentLocation = currentLocation;
-    }
-
-    public Long getHomeLocation() {
-        return homeLocation;
-    }
-
-    public void setHomeLocation(Long homeLocation) {
-        this.homeLocation = homeLocation;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     @JsonIgnore
@@ -479,6 +467,9 @@ public class User {
     public boolean equals(Object other){
         if(other instanceof User){
             User otherUser = (User) other;
+            if (otherUser.userId == null || this.userId == null) {
+                return false;
+            }
             return this.userId.equals(otherUser.userId);
         }
         return false;
