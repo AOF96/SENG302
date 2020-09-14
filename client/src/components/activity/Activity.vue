@@ -525,27 +525,25 @@
       /**
        * Format the received location string, ready to be displayed.
        */
-      locationFormat(str) {
-        let separated = str.split(",");
-        let city = "";
-        let state = "";
-        let country = "";
+      locationFormat(location ) {
+        let streetAddress = location.street_address;
+        let city = location.city;
+        let state = location.state;
+        let country = location.country;
         let outputString = "";
 
-        if(typeof separated[0] !== 'undefined'){ city = separated[0] }
-        if(typeof separated[1] !== 'undefined'){ state = separated[1] }
-        if(typeof separated[2] !== 'undefined'){ country = separated[2] }
-
+        outputString += streetAddress;
         if(city !== ""){
-          outputString += city.trim();
+          if(outputString !== ""){outputString += ", "}
+          outputString += city;
         }
         if(state !== ""){
           if(outputString !== ""){outputString += ", "}
-          outputString += state.trim();
+          outputString += state;
         }
         if(country !== ""){
           if(outputString !== ""){outputString += ", "}
-          outputString += country.trim();
+          outputString += country;
         }
         if(outputString === ""){
           outputString = "No Location Set"

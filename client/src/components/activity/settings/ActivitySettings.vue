@@ -124,7 +124,7 @@
               <v-tab-item>
                 <v-card class="py-3" flat>
                   <div>
-                    <ActivityLocationSettings/>
+                    <ActivityLocationSettings v-on:set-location="setLocationFromComponent"/>
                   </div>
                 </v-card>
               </v-tab-item>
@@ -416,16 +416,7 @@
         tempDescription: null,
         tempResultType: null,
         autocomplete: null,
-        location: {
-          street_address: "300 Somewhere Rd",
-          suburb: "Ilam",
-          postcode: 8000,
-          city: "Christchurch",
-          state: "Canterbury",
-          country: "New Zealand",
-          latitude: 0.0,
-          longitude: 0.0,
-        },
+        location: null,
       };
     },
 
@@ -466,7 +457,16 @@
           .catch(error => console.log(error));
       },
 
+      /**
+       * Sets location from edit location component
+       */
+      setLocationFromComponent(newLocation) {
+        this.location = newLocation;
+      },
 
+      /**
+       * Resets achievement input
+       */
       cancelAddAchievement() {
         this.addAchievement = false;
         this.achieveTitle = "";
@@ -477,7 +477,6 @@
       /**
        * The function adds the achievement to the list of achievements.
        * */
-
       addNewAchievement(title, description, type) {
         if (title === null || title.trim() === "") {
           this.displayError("Please enter a title.");

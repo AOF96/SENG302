@@ -14,7 +14,6 @@
 <script>
   export default {
     name: "ActivityLocationSettings",
-
     data() {
       return {
         marker: null,
@@ -118,6 +117,7 @@
       fillInAddress() {
         this.location = this.extractLocationData(this.autocomplete.getPlace());
         this.updateAddressString();
+        this.sendLocationToParent();
       },
 
       /**
@@ -153,13 +153,14 @@
         let thisInner = this;
         this.geocoder.geocode({'location': latlng}, function (results, status) {
           if (status === 'OK') {
-            if(results.length == 0){
+            if(results.length === 0){
               this.snackbarText = "Invalid Location";
               this.snackbarColour = "error";
               this.snackbar = true;
             }else{
               thisInner.location = thisInner.extractLocationData(results[0]);
               thisInner.updateAddressString();
+              thisInner.sendLocationToParent();
             }
           } else {
             this.snackbarText = status;
@@ -192,6 +193,13 @@
           this.address += this.location.country;
         }
       },
+
+      /**
+       * Sends the location to the parent component
+       */
+      sendLocationToParent() {
+        this.$emit('set-location', this.location);
+      }
     }
   }
 </script>
