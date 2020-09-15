@@ -101,6 +101,10 @@ const actions = {
     async checkUserActivityVisibility(data, {'profileId': profileId, 'activityId': activityId }) {
         return await apiActivity.checkUserActivityVisibility(profileId, activityId);
     },
+    async getSearchedActivity(data, {'searchTerm': searchTerm, 'page': page, 'size': size}) {
+        return await apiActivity.getParticipants(searchTerm, page, size);
+    },
+
     /**
      * Calls the api to send a request to add a result
      * @param data
