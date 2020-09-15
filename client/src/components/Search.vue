@@ -21,7 +21,7 @@
                       </v-tab>
 
                       <v-tab style="text-transform: none" href="#mobile-tabs-5-2"
-                             v-on:click="activitySearchTab = true">
+                             v-on:click="loadActivitySearchTab">
                         <h1 class="searchHeading">Activity</h1>
                       </v-tab>
                     </v-tabs>
@@ -424,13 +424,13 @@
        * Initialises search query either by url or history
        */
       initialiser() {
-        console.log(this.activitySearch);
         if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query !== "") {
           this.loadUrlQuery();
         } else if (this.userSearch.searchTerm !== null) {
           this.loadPreviousSearch();
-        }
-        if (this.activitySearch.searchTerm !== null) {
+        } else if (this.activitySearch.searchTerm !== null) {
+          this.activitySearchTab = true;
+          this.tabs = "mobile-tabs-5-2";
           this.loadPreviousActivitySearch();
         }
       },
@@ -484,7 +484,7 @@
                 this.allUsers = response.data.content;
                 this.loading = false;
                 this.disabled = false;
-                setTimeout(this.scrollWindow, 10)
+                setTimeout(this.scrollWindow, 10, this.userSearch.scrollPos);
               }
             }).catch(
             (error) => {
@@ -499,14 +499,59 @@
        * Loads previous activity search
        */
       loadPreviousActivitySearch() {
+        /* Adjust search position */
+        this.searchedActivityTerm = this.activitySearch.searchTerm;
+        this.currentActivitySize = this.activitySearch.size;
+        this.currentActivityPage = this.activitySearch.page;
 
+        /* Change button animation */
+        this.moreHidden = false;
+        this.loading = true;
+        this.disabled = true;
+
+        let searchTermInt = this.searchedActivityTerm;
+        if (this.searchedActivityTerm.trim().length === 0) {
+          searchTermInt = null
+        }
+        apiActivity.getSearchedActivity(searchTermInt, 0, this.activitySearch.size * this.activitySearch.page).then(
+            (response) => {
+              if (response.data.content.length === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.loading = false;
+                this.disabled = false;
+                this.allActivities = response.data.content;
+                setTimeout(this.scrollWindow, 10, this.activitySearch.scrollPos);
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            }
+        )
+      },
+
+      /**
+       * Tries to load previous search after switching to activity search tab
+       */
+      loadActivitySearchTab() {
+        this.activitySearchTab = true;
+
+        if (this.activitySearch.searchTerm !== null) {
+          this.loadPreviousActivitySearch();
+        }
       },
 
       /**
        * Load query from url
        */
       loadUrlQuery() {
-        if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != "") {
+        if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query !== "") {
           this.searchedTerm = this.$route.params.query;
           this.$router.replace('/search');
           this.activity_types_selected = [];
@@ -517,8 +562,12 @@
           })
         }
       },
-      scrollWindow() {
-        window.scrollTo(0, this.userSearch.scrollPos);
+
+      /**
+       * Scrolls window to given scroll position
+       */
+      scrollWindow(scrollPos) {
+        window.scrollTo(0, scrollPos);
       }
     },
     created: async function () {

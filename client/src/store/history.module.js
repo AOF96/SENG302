@@ -119,6 +119,7 @@ const mutations = {
 const actions = {
   setUserSearch({commit}, data) {
     commit('setSearchTerm', data);
+    commit('setSearchType', data);
     commit('setPage', data);
     commit('setSize', data);
     commit('setScrollPos', data);
