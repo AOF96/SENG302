@@ -4,6 +4,7 @@ import Signup from '@/components/Signup.vue'
 import Vuex from 'vuex'
 import user from '@/store/user.module'
 import {apiUser} from "../../api";
+import Vuetify from "vuetify";
 
 //mock api
 jest.mock("@/api")
@@ -20,6 +21,7 @@ const stubs = ['router-link']
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(Vuetify)
 
 const state = {
   user: {
@@ -256,5 +258,52 @@ describe('password error handling', () => {
     input2.trigger('input')
 
     expect(wrapper.vm.validation.password.uppercase).toBe(false)
+  })
+})
+
+describe('submission error should appear when appropriate', () => {
+  apiUser.signUp = jest.fn()
+  const actions = {
+    createUserProfile: jest.fn(),
+    signUp: jest.fn()
+  }
+
+  const getters = {
+    user: () => ({
+      firstname: "Wendy2",
+      lastname: "Lambkins2",
+      middlename: "",
+      nickname: "",
+      gender: "Female",
+      primary_email: "wendy@ac.com",
+      date_of_birth: "2000-01-01",
+      fitness: 1,
+      password: "Water123",
+      bio: ""
+    })
+  }
+  const store = new Vuex.Store({
+    actions,
+    getters
+  })
+
+  actions.signUp.mockRejectedValue({
+    data: {
+      profile_id: 1,
+    },
+    response: {
+      data: {
+        Errors: ["Please provide your name with alphabet. Numbers are not allowed."]
+      }
+    }
+  })
+
+  it('should show submission error when the user names contains numbers', async () => {
+    const wrapper = shallowMount(Signup, {store, localVue, mocks, stubs})
+    wrapper.setData({password1: "Water123", password2: "Water123"})
+
+    await wrapper.find('#signUpButton').trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find("#submissionErrorText").text()).toBe("Please provide your name with alphabet. Numbers are not allowed.")
   })
 })

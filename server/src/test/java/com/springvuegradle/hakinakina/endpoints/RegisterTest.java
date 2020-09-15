@@ -140,4 +140,21 @@ public class RegisterTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void testRegistrationWithFirstNameWithNumberInItShouldFail() throws Exception {
+        u.setFirstName("Fabian123");
+        mockMvc.perform(post("/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(u.toJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegistrationWithLastNameWithNumberInItShouldFail() throws Exception {
+        u.setLastName("Fabian123");
+        mockMvc.perform(post("/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(u.toJson()))
+                .andExpect(status().isBadRequest());
+    }
 }

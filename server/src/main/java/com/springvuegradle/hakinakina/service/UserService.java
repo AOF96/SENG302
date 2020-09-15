@@ -261,7 +261,7 @@ public class UserService {
      * invalid or the given email already exits in the database.
      * @param user the user to be created.
      * @return An error response 400 if the provided data is invalid. 403 response if the given email already exists.
-     * 201 created response if the request was succesful, with the JSON object of the created user and a session token.
+     * 201 created response if the request was successful, with the JSON object of the created user and a session token.
      */
     public ResponseEntity validateCreateProfile(User user,
                                                 HttpServletResponse response) {
@@ -271,6 +271,8 @@ public class UserService {
             messages.add("Please provide your full name. First and last names are required.");
         } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
             messages.add("Please provide your full name. First and last names are required.");
+        } else if (!user.getLastName().matches("^[a-zA-Z]*$") || !user.getFirstName().matches("^[a-zA-Z]*$")) {
+            messages.add("Please provide your name with alphabet. Numbers are not allowed.");
         }
         if (user.getPrimaryEmail() == null) {
             messages.add("Please provide a valid email.");
