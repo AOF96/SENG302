@@ -192,4 +192,50 @@ public class UserDeserializer extends StdDeserializer<User> {
             return userActivityTypes;
         }
     }
+
+    /**
+     * Parses a JsonNode to create and return a Location object.
+     * Parses a JsonNode to create or update and return a Location object.
+     * @param node The JsonNode to parse.
+     * @return A Location object.
+     */
+    public Location createLocation(JsonNode node, String userEmail) {
+        String streetAddress = ParserHelper.getValueString(node, "street_address");
+        String suburb = ParserHelper.getValueString(node, "suburb");
+        int postcode = ParserHelper.getValueInt(node, "postcode");
+        String city = ParserHelper.getValueString(node, "city");
+        String state = ParserHelper.getValueString(node, "state");
+        String country = ParserHelper.getValueString(node, "country");
+        Long latitude = ParserHelper.getValueLong(node, "latitude");
+        Long longitude = ParserHelper.getValueLong(node, "longitude");
+
+        Location location = getOldLocation(userEmail);
+
+        location.setStreetAddress(streetAddress);
+        location.setSuburb(suburb);
+        location.setPostcode(postcode);
+        location.setCity(city);
+        location.setState(state);
+        location.setCountry(country);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+
+        return location;
+    }
+
+    /**
+     * Gets the user's old location or creates a new one if it doesn't exist
+     * @param userEmail the primary email of the user getting updated
+     * @return old location if exists or new location
+     */
+    public Location getOldLocation(String userEmail) {
+        User user = userRepository.findUserByEmail(userEmail);
+        if (user.getHomeLocation() != null) {
+            return user.getHomeLocation();
+        } else {
+            return new Location();
+        }
+    }
+
+
 }

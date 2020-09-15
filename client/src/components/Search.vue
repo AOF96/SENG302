@@ -1,425 +1,631 @@
 <template>
-<div>
-  <div class="searchUserWrapper">
-    <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
-    <v-container lighten-5>
-      <v-row no-gutters style="flex-wrap: nowrap;">
-        <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-          <v-card class="ma-2" style="border-radius:14px;padding:8px;">
-            <form>
-              <h1 style="text-align: center" > Search</h1>
-              <v-toolbar flat height="auto">
-                <template v-slot:extension>
-                  <v-tabs
-                      v-model="tabs"
-                      fixed-tabs
+  <div>
+    <div class="searchUserWrapper">
+      <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
+      <v-container lighten-5>
+        <v-row no-gutters style="flex-wrap: nowrap;">
+          <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
+            <v-card class="ma-2" style="border-radius:14px;padding:8px;">
+              <form>
+                <h1 style="text-align: center"> Search</h1>
+                <v-toolbar flat height="auto">
+                  <template v-slot:extension>
+                    <v-tabs
+                        v-model="tabs"
+                        fixed-tabs
+                    >
+                      <v-tabs-slider/>
+                      <v-tab style="text-transform: none" href="#mobile-tabs-5-1"
+                             v-on:click="activitySearchTab = false">
+                        <h1 class="searchHeading">User</h1>
+                      </v-tab>
+
+                      <v-tab style="text-transform: none" href="#mobile-tabs-5-2"
+                             v-on:click="loadActivitySearchTab">
+                        <h1 class="searchHeading">Activity</h1>
+                      </v-tab>
+                    </v-tabs>
+                  </template>
+                </v-toolbar>
+                <v-tabs-items v-model="tabs">
+                  <v-tab-item
+                      v-for="index in 2"
+                      :key="index"
+                      :value="'mobile-tabs-5-' + index"
                   >
-                    <v-tabs-slider></v-tabs-slider>
-                    <v-tab style="text-transform: none" href="#mobile-tabs-5-1" v-on:click="activitySearchTab = false">
-                      <h1 class="searchHeading">User</h1>
-                    </v-tab>
 
-                    <v-tab style="text-transform: none" href="#mobile-tabs-5-2" v-on:click="activitySearchTab = true">
-                      <h1 class="searchHeading">Activity</h1>
-                    </v-tab>
-                  </v-tabs>
+                    <v-card flat>
+                      <div v-if="index === 1">
+                        <v-col>
+                          <v-text-field id="searchQueryInput" style="margin-top: 20px"
+                                        v-on:keyup="submitSearch" label="Search User"
+                                        v-model="searchedTerm" outlined rounded clearable
+                                        hide-details dense/>
+                        </v-col>
+                        <v-col>
+                          <v-select v-model="searchBy" :items="searchMethods"
+                                    item-text="display" name="searchValue" required
+                                    label="Search By" outlined hide-details dense rounded>
+                          </v-select>
+                        </v-col>
+                        <v-col>
+                          <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)"
+                                 color="#1cca92" outlined block rounded large>Submit
+                          </v-btn>
+                        </v-col>
+                      </div>
+                    </v-card>
+                    <v-card flat>
+                      <div v-if="index === 2">
+                        <v-col>
+                          <v-text-field id="searchActivityQueryInput" style="margin-top: 20px"
+                                        label="Search Activity" v-model="searchedActivityTerm"
+                                        outlined rounded clearable hide-details dense/>
+                        </v-col>
+                        <v-col>
+                          <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize)"
+                                 color="#1cca92" outlined block rounded large>Submit
+                          </v-btn>
+                        </v-col>
+                      </div>
+                    </v-card>
+
+                  </v-tab-item>
+                </v-tabs-items>
+                <div v-if="!activitySearchTab">
+                  <v-row class="searchRow">
+                    <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers"
+                                 :key="user.email" link>
+                      <v-list-item-content>
+                        <v-list-item-title v-if="user.middlename != null">
+                          {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                        </v-list-item-title>
+                        <v-list-item-title v-else>
+                          {{ user.firstname + " " + user.lastname}}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-row>
+                  <v-row class="searchRow">
+                    <v-spacer/>
+                    <v-btn
+                        v-on:click="searchUsers(currentPage + 1, currentSize)"
+                        :hidden="moreHidden"
+                        :loading="loading"
+                        :disabled="disabled"
+                        color="#1cca92"
+                        outlined
+                        rounded
+                        class="searchMoreButton"
+                    >
+                      More Results
+                    </v-btn>
+                    <v-spacer/>
+                  </v-row>
+                </div>
+
+                <div v-if="activitySearchTab">
+                  <v-row class="searchRow">
+                    <v-list-item two-line v-for="activity in allActivities" :key="activity.id" link>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          {{ activity.name}}
+                        </v-list-item-title>
+                        <v-list-item-subtitle
+                            v-if="activity.location !== null && activity.location.city !== null">
+                          {{ activity.location.street_address}}, {{ activity.location.city}},
+                          {{ activity.location.country}}
+                        </v-list-item-subtitle>
+                        <v-list-item-subtitle v-else>
+                          No Location
+                        </v-list-item-subtitle>
+
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-row>
+                  <v-row class="searchRow">
+                    <v-spacer/>
+                    <v-btn
+                        v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize)"
+                        :hidden="moreHidden"
+                        :loading="loading"
+                        :disabled="disabled"
+                        color="#1cca92"
+                        outlined
+                        rounded
+                        class="searchMoreButton"
+                    >
+                      More Results
+                    </v-btn>
+                    <v-spacer/>
+                  </v-row>
+                </div>
+              </form>
+            </v-card>
+          </v-col>
+          <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
+            <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+              <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
+              <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined
+                          rounded label="Activity Type Select" multiple
+                          v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
+                <template v-slot:selection="data">
+                  <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select"
+                          @click:close="remove(data.item)">
+                    {{ data.item }}
+                  </v-chip>
                 </template>
-              </v-toolbar>
-              <v-tabs-items v-model="tabs">
-                <v-tab-item
-                    v-for="index in 2"
-                    :key="index"
-                    :value="'mobile-tabs-5-' + index"
-                >
-
-                  <v-card flat>
-                    <div  v-if="index === 1">
-                    <v-col>
-                      <v-text-field id="searchQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch" label="Search User" v-model="searchedTerm" outlined rounded clearable hide-details dense></v-text-field>
-                    </v-col>
-                    <v-col>
-                      <v-select v-model="searchBy" :items="searchMethods" item-text="display" name="searchValue" required label="Search By" outlined hide-details dense rounded>
-                      </v-select>
-                    </v-col>
-                    <v-col>
-                      <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
-                    </v-col>
-                    </div>
-                  </v-card>
-                  <v-card flat>
-                    <div  v-if="index === 2">
-                      <v-col>
-                        <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
-                      </v-col>
-                      <v-col>
-                        <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
-                      </v-col>
-                    </div>
-                  </v-card>
-
-                </v-tab-item>
-              </v-tabs-items>
-               <div v-if="!activitySearchTab">
-                <v-row class="searchRow">
-                  <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers" :key="user.email" link>
+                <template v-slot:item="data">
+                  <template v-if="typeof data.item !== 'object'">
+                    <v-list-item-content v-text="data.item"/>
+                  </template>
+                  <template v-else>
                     <v-list-item-content>
-                      <v-list-item-title v-if="user.middlename != null">
-                        {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                      </v-list-item-title>
-                      <v-list-item-title v-else>
-                        {{ user.firstname + " " + user.lastname}}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+                      <v-list-item-title v-html="data.item"/>
                     </v-list-item-content>
-                  </v-list-item>
-                </v-row>
-                <v-row class="searchRow">
-                  <v-spacer />
-                  <v-btn
-                      v-on:click="searchUsers(currentPage + 1, currentSize)"
-                      :hidden="moreHidden"
-                      :loading="loading"
-                      :disabled="disabled"
-                      color="#1cca92"
-                      outlined
-                      rounded
-                      class="searchMoreButton"
-                  >
-                    More Results</v-btn>
-                  <v-spacer />
-                </v-row>
-               </div>
-
-              <div v-if="activitySearchTab">
-              <v-row class="searchRow">
-                <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allActivities" :key="user.email" link>
-                  <v-list-item-content>
-                    <v-list-item-title v-if="user.middlename != null">
-                      {{ user.firstname + " " + user.middlename + " " + user.lastname}}
-                    </v-list-item-title>
-                    <v-list-item-title v-else>
-                      {{ user.firstname + " " + user.lastname}}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-row>
-              <v-row class="searchRow">
-                <v-spacer />
-                <v-btn
-                    v-on:click="searchUsers(currentPage + 1, currentSize)"
-                    :hidden="moreHidden"
-                    :loading="loading"
-                    :disabled="disabled"
-                    color="#1cca92"
-                    outlined
-                    rounded
-                    class="searchMoreButton"
-                >
-                  More Results</v-btn>
-                <v-spacer />
-              </v-row>
-              </div>
-            </form>
-          </v-card>
-        </v-col>
-        <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-          <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-            <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
-            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultPage, defaultSize)">
-              <template v-slot:selection="data">
-                <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
-                  {{ data.item }}
-                </v-chip>
-              </template>
-              <template v-slot:item="data">
-                <template v-if="typeof data.item !== 'object'">
-                  <v-list-item-content v-text="data.item"></v-list-item-content>
+                  </template>
                 </template>
-                <template v-else>
-                  <v-list-item-content>
-                    <v-list-item-title v-html="data.item"></v-list-item-title>
-                  </v-list-item-content>
-                </template>
-              </template>
-            </v-combobox>
-            <v-label>Filter method</v-label>
-            <v-radio-group v-model="filterMethod" :mandatory="true" v-on:change="searchUsers(defaultPage, defaultSize)">
-              <v-radio label="Results including all" value="and"></v-radio>
-              <v-radio label="Results including one of" value="or"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+              </v-combobox>
+              <v-label>Filter method</v-label>
+              <v-radio-group v-model="filterMethod" :mandatory="true"
+                             v-on:change="searchUsers(defaultPage, defaultSize)">
+                <v-radio label="Results including all" value="and"/>
+                <v-radio label="Results including one of" value="or"/>
+              </v-radio-group>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
-import {
-  mapGetters,
-  mapState,
-  mapActions
-} from "vuex";
-import {
-  apiUser
-} from "../api";
+  import {
+    mapGetters,
+    mapState,
+    mapActions
+  } from "vuex";
+  import {
+    apiActivity,
+    apiUser
+  } from "../api";
 
-export default {
-  name: "searchUser",
-  computed: {
-    ...mapState(["user", "userSearch"]),
-    ...mapGetters(["user", "userSearch"]),
-  },
-  data: function() {
-    return {
-      searchedTerm: "",
-      searchedActivityTerm: "",
-      searchBy: "fullname",
-      allUsers: [],
-      defaultPage: 1,
-      currentPage: 1,
-      defaultSize: 10,
-      currentSize: 10,
-      loading: false,
-      disabled: false,
-      moreHidden: true,
-      activitySearchTab: false,
-      allActivities : [],
-      errorMessage: null,
-      snackbar: false,
-      timeout: 2000,
-      tabs: null,
-      activities_option: [],
-      activity_types_selected: [],
-      searchInput: "",
-      selected_activity: "Activity Type",
-      filterMethod: "and",
-      searchMethods: [
-        {display: "Full Name", value: "fullname"},
-        {display: "Last Name", value: "lastname"},
-        {display: "Email", value: "email"}
+  export default {
+    name: "searchUser",
+    computed: {
+      ...mapState(["user", "userSearch", "activitySearch"]),
+      ...mapGetters(["user", "userSearch", "activitySearch"]),
+    },
+    data: function () {
+      return {
+        searchedTerm: "",
+        searchedActivityTerm: "",
+        searchBy: "fullname",
+        allUsers: [],
+        defaultPage: 1,
+        currentPage: 1,
+        defaultSize: 10,
+        currentSize: 10,
+        defaultActivityPage: 1,
+        currentActivityPage: 1,
+        defaultActivitySize: 10,
+        currentActivitySize: 10,
+        loading: false,
+        disabled: false,
+        moreHidden: true,
+        activitySearchTab: false,
+        allActivities: [],
+        errorMessage: null,
+        snackbar: false,
+        timeout: 2000,
+        tabs: null,
+        activities_option: [],
+        activity_types_selected: [],
+        searchInput: "",
+        selected_activity: "Activity Type",
+        filterMethod: "and",
+        searchMethods: [
+          {display: "Full Name", value: "fullname"},
+          {display: "Last Name", value: "lastname"},
+          {display: "Email", value: "email"}
         ]
-    }
-  },
-  mounted() {
-      if (!this.user.isLogin) {
-          this.$router.push('/login');
-      } else {
-          this.initialiser();
-          const element = this.$el.querySelector('#searchQueryInput');
-          if (element) this.$nextTick(() => {
-              element.focus()
-          });
-      }
-  },
-  watch: {
-    "$route.params": {
-      handler() {
-        this.loadUrlQuery();
-      }
-    }
-  },
-  methods: {
-    submitButtonCheck(page, size) {
-      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
-        this.errorMessage = "Search is empty";
-        this.snackbar = true;
-      } else {
-        this.searchUsers(page, size);
       }
     },
+    mounted() {
+      if (!this.user.isLogin) {
+        this.$router.push('/login');
+      } else {
+        this.initialiser();
+        const element = this.$el.querySelector('#searchQueryInput');
+        if (element) this.$nextTick(() => {
+          element.focus()
+        });
+      }
+    },
+    watch: {
+      "$route.params": {
+        handler() {
+          this.loadUrlQuery();
+        }
+      }
+    },
+    methods: {
+      ...mapActions(["setUserSearch", "setScrollPosition", "setActivitySearch"]),
 
-    ...mapActions(["setUserSearch", "setScrollPosition"]),
+      /**
+       * Checks if search is valid
+       */
+      submitButtonCheck(page, size) {
+        if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+          this.errorMessage = "Search is empty";
+          this.snackbar = true;
+        } else {
+          this.searchUsers(page, size);
+        }
+      },
+
+      /**
+       * Checks if activity search is valid
+       */
+      submitActivityButtonCheck(page, size) {
+        if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
+          this.errorMessage = "Search is empty";
+          this.snackbar = true;
+        } else {
+          this.searchActivity(page, size);
+        }
+      },
+
+      /**
+       * Searches for activities based on search parameters
+       * @param page
+       * @param size
+       */
+      searchActivity(page, size) {
+        if (page === this.defaultActivityPage) {
+          this.allActivities = [];
+        }
+        /* Adjust search position */
+        this.currentActivitySize = size;
+        this.currentActivityPage = page;
+
+        /* Change button animation */
+        this.moreHidden = false;
+        this.loading = true;
+        this.disabled = true;
+
+        apiActivity.getSearchedActivity(this.searchedActivityTerm, page - 1, size).then(
+            (response) => {
+              if (response.data.content.length === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.loading = false;
+                this.disabled = false;
+                this.allActivities = this.allActivities.concat(response.data.content);
+                this.setActivitySearch({
+                  searchTerm: this.searchedActivityTerm,
+                  page: page,
+                  size: size,
+                  scrollPos: window.scrollY,
+                });
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            }
+        )
+      },
+
+      /**
+       * Search for size amount of users on given page and append to list
+       *
+       * @param page Current page in results
+       * @param size Size of results to retrieve
+       */
+      searchUsers(page, size) {
+        if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+          this.allUsers = [];
+          this.moreHidden = true;
+          return;
+        }
+        if (page === this.defaultPage) {
+          this.allUsers = [];
+        }
+        /* Adjust search position */
+        this.currentSize = size;
+        this.currentPage = page;
+
+        /* Change button animation */
+        this.moreHidden = false;
+        this.loading = true;
+        this.disabled = true;
+
+        /* Search for users */
+        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.filterMethod, page - 1, size).then(
+            (response) => {
+              if (response.data.content.length === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.allUsers = this.allUsers.concat(response.data.content);
+                this.loading = false;
+                this.disabled = false;
+                /* Update search history */
+                this.setUserSearch({
+                  searchTerm: this.searchedTerm,
+                  searchType: this.searchBy,
+                  page: page,
+                  size: size,
+                  scrollPos: window.scrollY,
+                  activityTypesSelected: this.activity_types_selected,
+                  filterMethod: this.filterMethod
+                });
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            }
+        )
+
+      },
+      /**
+       * Gets a users information from their email.
+       *
+       * @param email A users email
+       */
+      getUser(email) {
+        apiUser.getIdByEmail(email).then(
+            (response) => {
+              this.setScrollPosition({
+                scrollPos: window.scrollY
+              });
+              this.$router.push({
+                path: "/profile/" + response.data.id
+              })
+            })
+      },
+
+      /**
+       * Adds activity type to selected options
+       */
+      selectActivityType() {
+        if (this.selected_activity !== undefined) {
+          this.activity_types_selected.push(this.selected_activity);
+          let index = this.activities_option.indexOf(this.selected_activity);
+          if (index !== -1) {
+            this.activities_option.splice(index, 1);
+          }
+        }
+      },
+
+      /**
+       * Removes selected activity type
+       */
+      remove(item) {
+        const index = this.activity_types_selected.indexOf(item);
+        if (index >= 0) this.activity_types_selected.splice(index, 1);
+        this.searchUsers(this.defaultPage, this.defaultSize);
+      },
+
+      /**
+       * Initialises search query either by url or history
+       */
+      initialiser() {
+        if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query !== "") {
+          this.loadUrlQuery();
+        } else if (this.userSearch.searchTerm !== null) {
+          this.loadPreviousSearch();
+        } else if (this.activitySearch.searchTerm !== null) {
+          this.activitySearchTab = true;
+          this.tabs = "mobile-tabs-5-2";
+          this.loadPreviousActivitySearch();
+        }
+      },
+
+      /**
+       *  Submit search query on enter pressed.
+       */
+      submitSearch: function (e) {
+        if (e.keyCode === 13) {
+          this.searchUsers(this.defaultPage, this.defaultSize);
+        }
+      },
+
+      /**
+       * Submit search query on enter pressed.
+       */
+      submitActivitySearch: function (e) {
+        if (e.keyCode === 13) {
+          this.searchActivity(this.defaultActivityPage, this.defaultActivitySize);
+        }
+      },
+
+      /**
+       * Researches the last search done if one exists and updates the search parameters.
+       */
+      loadPreviousSearch() {
+        /* Adjust search position */
+        this.searchedTerm = this.userSearch.searchTerm;
+        this.searchBy = this.userSearch.searchType;
+        this.currentSize = this.userSearch.size;
+        this.currentPage = this.userSearch.page;
+        this.activity_types_selected = this.userSearch.activityTypesSelected;
+        this.filterMethod = this.userSearch.filterMethod;
+
+        /* Change button animation */
+        this.moreHidden = false;
+        this.loading = true;
+
+        let searchTermInt = this.searchedTerm;
+        if (this.searchedTerm.trim().length === 0) {
+          searchTermInt = null
+        }
+        apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+            (response) => {
+              if (response.data.content.size === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.allUsers = response.data.content;
+                this.loading = false;
+                this.disabled = false;
+                setTimeout(this.scrollWindow, 10, this.userSearch.scrollPos);
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            })
+      },
+
+      /**
+       * Loads previous activity search
+       */
+      loadPreviousActivitySearch() {
+        /* Adjust search position */
+        this.searchedActivityTerm = this.activitySearch.searchTerm;
+        this.currentActivitySize = this.activitySearch.size;
+        this.currentActivityPage = this.activitySearch.page;
+
+        /* Change button animation */
+        this.moreHidden = false;
+        this.loading = true;
+        this.disabled = true;
+
+        let searchTermInt = this.searchedActivityTerm;
+        if (this.searchedActivityTerm.trim().length === 0) {
+          searchTermInt = null
+        }
+        apiActivity.getSearchedActivity(searchTermInt, 0, this.activitySearch.size * this.activitySearch.page).then(
+            (response) => {
+              if (response.data.content.length === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.loading = false;
+                this.disabled = false;
+                this.allActivities = response.data.content;
+                setTimeout(this.scrollWindow, 10, this.activitySearch.scrollPos);
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            }
+        )
+      },
+
+      /**
+       * Tries to load previous search after switching to activity search tab
+       */
+      loadActivitySearchTab() {
+        this.activitySearchTab = true;
+
+        if (this.activitySearch.searchTerm !== null) {
+          this.loadPreviousActivitySearch();
+        }
+      },
+
+      /**
+       * Load query from url
+       */
+      loadUrlQuery() {
+        if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query !== "") {
+          this.searchedTerm = this.$route.params.query;
+          this.$router.replace('/search');
+          this.activity_types_selected = [];
+          this.searchUsers(1, this.currentSize);
+          const element = this.$el.querySelector('#searchQueryInput')
+          if (element) this.$nextTick(() => {
+            element.focus()
+          })
+        }
+      },
+
+      /**
+       * Scrolls window to given scroll position
+       */
+      scrollWindow(scrollPos) {
+        window.scrollTo(0, scrollPos);
+      }
+    },
+    created: async function () {
+      /**
+       * The function below gets all the activity types saved in the database
+       */
+      await apiUser
+          .getActivityTypes()
+          .then(response => {
+            this.activities_option = response.data;
+            for (let i = 0; i < this.activities_option.length; i++) {
+              this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
+            }
+          })
+          .catch(error => console.log(error));
+    },
+
     /**
-     * Search for size amount of users on given page and append to list
-     *
-     * @param page Current page in results
-     * @param size Size of results to retrieve
+     * Loads the map onto the page and centres on the users home city.
+     * Adds a marker on the city's centre.
      */
-    searchUsers(page, size) {
-      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
-        this.allUsers = [];
-        this.moreHidden = true;
+    loadMap() {
+      if (!window.google) {
         return;
       }
-      if (page === this.defaultPage) {
-        this.allUsers = [];
-      }
-      /* Adjust search position */
-      this.currentSize = size;
-      this.currentPage = page;
+      this.geocoder = new window.google.maps.Geocoder();
 
-      /* Change button animation */
-      this.moreHidden = false;
-      this.loading = true;
-      this.disabled = true;
+      let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+        center: {
+          lat: -34.397,
+          lng: 150.644
+        },
+        zoom: 9,
+        disableDefaultUI: true
+      });
 
-      /* Search for users */
-      apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.filterMethod, page - 1, size).then(
-        (response) => {
-          if (response.data.content.length === 0) {
-            this.disabled = true;
-            this.loading = false;
-            this.errorMessage = "No more results";
-            this.snackbar = true;
-          } else {
-            this.allUsers = this.allUsers.concat(response.data.content);
-            this.loading = false;
-            this.disabled = false;
-            /* Update search history */
-            this.setUserSearch({
-              searchTerm: this.searchedTerm,
-              searchType: this.searchBy,
-              page: page,
-              size: size,
-              scrollPos: window.scrollY,
-              activityTypesSelected: this.activity_types_selected,
-              filterMethod: this.filterMethod
-            });
-          }
-        }).catch(
-        (error) => {
-          this.disabled = true;
-          this.loading = false;
-          this.errorMessage = error.response.data;
-          this.snackbar = true;
-        }
-      )
+      //Use me once the address is available in the user object
+      //let address = this.user.location.street_address;
+      let address = "Christchurch";
 
-    },
-    /**
-     * Gets a users information from their email.
-     *
-     * @param email A users email
-     */
-    getUser(email) {
-      apiUser.getIdByEmail(email).then(
-        (response) => {
-          this.setScrollPosition({
-            scrollPos: window.scrollY
+      this.geocoder.geocode({'address': address}, function (results, status) {
+        if (status === 'OK') {
+          map.setCenter(results[0].geometry.location);
+          new window.google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
           });
-          this.$router.push({
-            path: "/profile/" + response.data.id
-          })
-        })
-    },
-
-    /**
-     * Adds activity type to selected options
-     */
-    selectActivityType() {
-      if (this.selected_activity !== undefined) {
-        this.activity_types_selected.push(this.selected_activity);
-        let index = this.activities_option.indexOf(this.selected_activity);
-        if (index !== -1) {
-          this.activities_option.splice(index, 1);
-        }
-      }
-    },
-
-    remove(item) {
-      const index = this.activity_types_selected.indexOf(item);
-      if (index >= 0) this.activity_types_selected.splice(index, 1);
-      this.searchUsers(this.defaultPage, this.defaultSize);
-    },
-
-    /**
-     * Initialises search query either by url or history
-     */
-    initialiser(){
-      if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != ""){
-        this.loadUrlQuery();
-      }else if(this.userSearch.searchTerm !== null){
-        this.loadPreviousSearch();
-      }
-    },
-
-    // Submit search query on enter pressed.
-    submitSearch: function(e) {
-      if (e.keyCode === 13) {
-        this.searchUsers(this.defaultPage, this.defaultSize);
-      }
-    },
-
-    /**
-     * Researches the last search done if one exists and updates the search parameters.
-     */
-    loadPreviousSearch() {
-      /* Adjust search position */
-      this.searchedTerm = this.userSearch.searchTerm;
-      this.searchBy = this.userSearch.searchType;
-      this.currentSize = this.userSearch.size;
-      this.currentPage = this.userSearch.page;
-      this.activity_types_selected = this.userSearch.activityTypesSelected;
-      this.filterMethod = this.userSearch.filterMethod;
-
-      /* Change button animation */
-      this.moreHidden = false;
-      this.loading = true;
-
-      let searchTermInt = this.searchedTerm;
-      if (this.searchedTerm.trim().length === 0) {
-        searchTermInt = null
-      }
-      apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
-        (response) => {
-          if (response.data.content.size === 0) {
-            this.disabled = true;
-            this.loading = false;
-            this.errorMessage = "No more results";
-            this.snackbar = true;
-          } else {
-            this.allUsers = response.data.content;
-            this.loading = false;
-            this.disabled = false;
-            setTimeout(this.scrollWindow, 10)
-          }
-        }).catch(
-        (error) => {
-          this.disabled = true;
-          this.loading = false;
-          this.errorMessage = error.response.data;
+        } else {
+          this.snackbarText = status;
+          this.snackbarColour = "error";
           this.snackbar = true;
-        })
-    },
-
-    /**
-     * Load query from url
-     */
-    loadUrlQuery() {
-      if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != ""){
-        this.searchedTerm = this.$route.params.query;
-        this.$router.replace('/search');
-        this.activity_types_selected = [];
-        this.searchUsers(1, this.currentSize);
-        const element = this.$el.querySelector('#searchQueryInput')
-        if (element) this.$nextTick(() => { element.focus() })
-      }
-    },
-    scrollWindow() {
-      window.scrollTo(0, this.userSearch.scrollPos);
-    }
-  },
-  created: async function() {
-    /**
-     * The function below gets all the activity types saved in the database
-     */
-    await apiUser
-      .getActivityTypes()
-      .then(response => {
-        this.activities_option = response.data;
-        for (let i = 0; i < this.activities_option.length; i++) {
-          this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
         }
-      })
-      .catch(error => console.log(error));
-  },
-}
+      });
+    },
+  }
 </script>
 
 <style scoped>
-@import "../../public/styles/pages/searchUserStyle.css";
-@import "../../public/styles/pages/profileStyle.css";
+  @import "../../public/styles/pages/searchUserStyle.css";
+  @import "../../public/styles/pages/profileStyle.css";
 </style>

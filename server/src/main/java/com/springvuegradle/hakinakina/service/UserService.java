@@ -546,7 +546,7 @@ public class UserService {
 
             Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
             location.setUser(user);
-            user.setLocation(location);
+            user.setHomeLocation(location);
 
             locationRepository.save(location);
             userRepository.save(user);

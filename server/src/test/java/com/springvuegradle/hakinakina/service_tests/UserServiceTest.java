@@ -105,7 +105,7 @@ public class UserServiceTest {
 
         service.editLocation("42 manuka Palace", "Twizel", "Mackenzie", 7999, "Mackenzie", "New Zealand", -12.2323, 4.5656, 1L);
 
-        assertEquals("42 manuka Palace", user3.getLocation().getStreetAddress());
+        assertEquals("42 manuka Palace", user3.getHomeLocation().getStreetAddress());
     }
 
     @Test

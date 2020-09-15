@@ -52,7 +52,7 @@ public class Location {
     @OneToOne(mappedBy = "location")
     private Activity activity;
 
-    @OneToOne(mappedBy = "location")
+    @OneToOne(mappedBy = "homeLocation")
     private User user;
 
     public Location() {}
@@ -69,11 +69,11 @@ public class Location {
     }
 
     public User getUserHomeLocation() {
-        return userHomeLocation;
+        return user;
     }
 
     public void setUserHomeLocation(User userHomeLocation) {
-        this.userHomeLocation = userHomeLocation;
+        this.user = userHomeLocation;
     }
 
     public Long getId() {
