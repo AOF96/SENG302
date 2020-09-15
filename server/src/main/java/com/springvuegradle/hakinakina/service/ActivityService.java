@@ -951,4 +951,8 @@ public class ActivityService {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
         }
     }
+
+    public ResponseEntity getActivitiesWithinGivenRange(Double latitude, Double longitude) {
+        return null;
+    }
 }

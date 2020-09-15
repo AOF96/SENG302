@@ -567,4 +567,24 @@ public class ActivityController {
 
         return activityService.addLocationToActivity(activityId, location);
     }
+
+    /***
+     * Handles the request to get all the activities that are located within the given latitude and longitude bound.
+     * @param latitude the given latitude.
+     * @param longitude the given longitude.
+     * @return a 200 response with all results if they exist, 400 for invalid user input, 401 for invalid session,
+     * 403 for forbidden user or 500 for internal server error.
+     */
+    @GetMapping("/activities")
+    public ResponseEntity getActivitiesWithinGivenRange(@RequestParam("latitude") Double latitude,
+                                                        @RequestParam("longitude") Double longitude) {
+        ResponseEntity result;
+        if (latitude == null || longitude == null) {
+            result =  responseHandler.formatErrorResponse(400, "Invalid latitude or longitude values.");
+        } else {
+            result = activityService.getActivitiesWithinGivenRange(latitude, longitude);
+        }
+
+        return result;
+    }
 }
