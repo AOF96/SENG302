@@ -12,6 +12,7 @@ import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
 import com.springvuegradle.hakinakina.util.ParserHelper;
+import com.springvuegradle.hakinakina.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.springvuegradle.hakinakina.util.ParserHelper.*;
@@ -37,6 +38,9 @@ public class UserDeserializer extends StdDeserializer<User> {
 
     @Autowired
     LocationRepository locationRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     public UserDeserializer() {
         this(null);
@@ -87,7 +91,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String middleName = ParserHelper.getValueString(node, "middlename");
         String nickName = ParserHelper.getValueString(node, "nickname");
         String bio = ParserHelper.getValueString(node, "bio");
-        int permission_level = ParserHelper.getValueInt(node, "permission_level");
+        int permissionLevel = ParserHelper.getValueInt(node, "permission_level");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
@@ -116,17 +120,16 @@ public class UserDeserializer extends StdDeserializer<User> {
         if (bio != null) {
             user.setBio(bio);
         }
-        if (permission_level != -1) {
-            user.setPermissionLevel(permission_level);
+        if (permissionLevel != -1) {
+            user.setPermissionLevel(permissionLevel);
         } else {
             user.setPermissionLevel(0);
         }
         if (node.get("location") != null) {
             Location location = ParserHelper.createLocation(node.get("location"));
             locationRepository.save(location);
-            user.setLocation(location);
+            user.setHomeLocation(location);
         }
-
         return user;
     }
 

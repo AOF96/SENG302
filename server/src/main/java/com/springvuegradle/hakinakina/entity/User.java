@@ -51,7 +51,7 @@ public class User {
 
     @JsonIgnore
     @OneToOne
-    private Location location;
+    private Location homeLocation;
 
     @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
@@ -228,12 +228,13 @@ public class User {
         activitiesShared.add(activity);
     }
 
-    public Location getLocation() {
-        return this.location;
+    public Location getHomeLocation() {
+        return homeLocation;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setHomeLocation(Location homeLocation) {
+        this.homeLocation = homeLocation;
+        homeLocation.setUserHomeLocation(this);
     }
 
     @JsonIgnore

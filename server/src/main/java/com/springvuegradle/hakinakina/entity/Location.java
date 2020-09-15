@@ -55,7 +55,7 @@ public class Location {
     @OneToOne(mappedBy = "location")
     private User user;
 
-    protected Location() {}
+    public Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {
         this.streetAddress = streetAddress;
@@ -66,6 +66,14 @@ public class Location {
         this.country = country;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public User getUserHomeLocation() {
+        return userHomeLocation;
+    }
+
+    public void setUserHomeLocation(User userHomeLocation) {
+        this.userHomeLocation = userHomeLocation;
     }
 
     public Long getId() {
