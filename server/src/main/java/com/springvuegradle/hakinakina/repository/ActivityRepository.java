@@ -72,4 +72,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     String getUsersRoleForActivity(Long activityId, Long userId);
 
     Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
+
+    @Query(value = "SELECT location_id FROM Activity WHERE activity_id = ?", nativeQuery = true)
+    Optional<Long> getActivityLocationId(Long activityId);
 }

@@ -66,6 +66,7 @@ public class SearchService {
             SearchActivityDto searchActivityDto = new SearchActivityDto();
             searchActivityDto.setId(activity.getId());
             searchActivityDto.setName(activity.getName());
+            searchActivityDto.setVisibility(activity.getVisibility());
             searchActivityDto.setContinuous(activity.isContinuous());
             searchActivityDto.setStartTime(activity.getStartTime());
             searchActivityDto.setEndTime(activity.getEndTime());

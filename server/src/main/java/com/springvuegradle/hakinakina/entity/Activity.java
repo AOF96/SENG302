@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.springvuegradle.hakinakina.serialize.ActivityDeserializer;
+import com.springvuegradle.hakinakina.serialize.UserDeserializer;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
@@ -16,6 +19,7 @@ import java.util.*;
  * Activities entity class.
  */
 @Entity
+@JsonDeserialize(using= ActivityDeserializer.class)
 public class Activity {
     @Id
     @GeneratedValue

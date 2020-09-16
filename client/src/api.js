@@ -534,16 +534,19 @@ export const apiActivity = {
   }),
 
   /**
-   * Send a request to remove role in an activity
+   * Send a request to search for an activity
    */
     getSearchedActivity: (searchTerm, currentPage, size) => instance.get(`/activities`,{
     params: {
         activitySearchTerm: searchTerm,
         page: currentPage,
         size: size
-    }
+      }
     }),
 
+  /**
+   * Send a request to remove role in an activity
+   */
   optOutOfActivityRole: (activityId, userEmail) => instance.delete(`/activities/${activityId}/roles/${userEmail}`),
 
   /**
@@ -559,5 +562,10 @@ export const apiActivity = {
   /**
    * Check the visibility of an activity for a user
    */
-  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
+  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`),
+
+    /**
+     * Get location for activity with provided id
+      */
+    getLocationForActivity: (activityId) => instance.get(`/activities/${activityId}/location`)
 };
