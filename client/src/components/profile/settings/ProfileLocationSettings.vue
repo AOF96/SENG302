@@ -1,11 +1,8 @@
 <template>
-  <div class="settingsContainer" @click="showLocations = false">
+  <div class="settingsContainer">
     <v-snackbar v-model="snackbar" top :color="snackbarColour">{{ snackbarText }}</v-snackbar>
     <UserSettingsMenu/>
     <div class="settingsContentContainer">
-      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
-      </router-link>
       <h1 class="settingsTitle">Edit Profile Location</h1>
       <hr/>
       <div id="userSettingsMap"></div>
@@ -22,10 +19,11 @@
       <div class="locationFieldDiv">
         <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined dense></v-text-field>
       </div>
-      <button class="genericConfirmButton updatePasswordButton" v-on:click="updateUserLocation()" type="submit">Save
+      <button class="genericConfirmButton updatePasswordButton" style="margin-top: 10px" v-on:click="updateUserLocation()" type="submit">Save
         Location
       </button>
     </div>
+    <div class="floatClear"></div>
   </div>
 </template>
 
