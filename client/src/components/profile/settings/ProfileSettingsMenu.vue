@@ -1,6 +1,6 @@
 <template>
   <div class="settingsNavContainer">
-    <v-btn v-bind:to="'/profile/'+this.$route.params.profileId" class="backToProfile" icon color="#333">
+    <v-btn id="backToProfileArrow" v-bind:to="'/profile/'+this.$route.params.profileId" class="backToProfile" icon color="#333">
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <h1>Settings</h1>
