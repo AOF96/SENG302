@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
+import io.cucumber.java.en_old.Ac;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -280,43 +281,6 @@ public class ActivityServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("false", response.getBody());
     }
-
-    /*@Test
-    public void addActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
-        activityChanges.setId(1L);
-        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        homeFeedRepository.save(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-    }
-
-    @Test
-    public void removeActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
-        activityChanges.setId(1L);
-        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        homeFeedRepository.save(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-        activityChangesList.remove(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(0, activityChangesList.size());
-    }*/
 
     @Test
     public void addResultTest() {
@@ -606,5 +570,22 @@ public class ActivityServiceTest {
         when(activityRepository.getOne(1L)).thenReturn(activity);
 
         assertEquals(HttpStatus.valueOf(201), service.addLocationToActivity(1L, location).getStatusCode());
+    }
+
+    @Test
+    public void getLocationForActivityTest() {
+        Location testLocation = new Location("Street", "Suburb", "City", 8041,
+                "State", "Country", 2350.3, 2350.3);
+        Activity activity = new Activity();
+        activity.setId(1L);
+        testLocation.setId(1L);
+
+        activity.setLocation(testLocation);
+
+        when(activityRepository.getActivityLocationId(1L)).thenReturn(Optional.of(1L));
+        when(locationRepository.getOne(1L)).thenReturn(testLocation);
+
+        assertEquals(HttpStatus.OK, service.getActivityLocation(1L).getStatusCode());
+        assertEquals(testLocation, service.getActivityLocation(1L).getBody());
     }
 }

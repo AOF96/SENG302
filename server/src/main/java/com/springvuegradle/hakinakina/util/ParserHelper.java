@@ -3,6 +3,10 @@ package com.springvuegradle.hakinakina.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springvuegradle.hakinakina.entity.Location;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+
 public class ParserHelper {
     /**
      * Parses a JsonNode to create and return a Location object.
@@ -78,5 +82,15 @@ public class ParserHelper {
         } else {
             return fieldValue.asLong();
         }
+    }
+
+    /**
+     * Converts a date-time string of the formal YYYY-MM-DDTHH:MM:SS into a TimeStamp object.
+     * @param datetime A string
+     * @return A TimeStamp object.
+     */
+    public static Timestamp parseDateTime(String datetime) {
+        LocalDateTime temp = LocalDateTime.parse(datetime).plusHours(12L);
+        return Timestamp.valueOf(temp);
     }
 }
