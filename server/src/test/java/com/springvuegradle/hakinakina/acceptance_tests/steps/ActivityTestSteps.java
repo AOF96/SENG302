@@ -339,10 +339,9 @@ public class ActivityTestSteps {
         System.out.println(result.getResponse().getContentAsString());
     }
 
-    @And("I edit my activity with token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}, {string}")
+    @And("I edit my activity with token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}")
     public void iEditMyActivityWithTokenAndNewValues(String token,  String name, String description, String activityTypes,
-                                                     String continuous,  String startTime, String endTime,
-                                                     String location) throws Exception {
+                                                     String continuous,  String startTime, String endTime) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
         String request = "{\n" +
@@ -354,7 +353,6 @@ public class ActivityTestSteps {
                 "  \"continuous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + startTime + "\", \n" +
                 "  \"end_time\": \"" + endTime + "\",\n" +
-                "  \"location\": \"" + location + "\",\n" +
                 "  \"visibility\": \"private\"" +
                 "}";
 
