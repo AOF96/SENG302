@@ -104,7 +104,7 @@ const mutations = {
     }
   },
   setUserLocation(state, data) {
-    if (data.location !== undefined) {
+    if (data.location !== null) {
       state.user.location.street_address = data.location.street_address;
       state.user.location.suburb = data.location.suburb;
       state.user.location.postcode = data.location.postcode;

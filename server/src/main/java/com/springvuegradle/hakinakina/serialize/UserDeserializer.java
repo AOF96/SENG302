@@ -131,32 +131,6 @@ public class UserDeserializer extends StdDeserializer<User> {
     }
 
     /**
-     * Parses a JsonNode to create and return a Location object.
-     * @param node The JsonNode to parse.
-     * @return A Location object.
-     */
-    public Location createLocation(JsonNode node) {
-        String streetAddress = getValueString(node, "street_address");
-        String suburb = getValueString(node, "suburb");
-        int postcode = getValueInt(node, "postcode");
-        String city = getValueString(node, "city");
-        String state = getValueString(node, "state");
-        String country = getValueString(node, "country");
-        String latitudeString = getValueString(node, "latitude");
-        double latitude = 0;
-        if (!latitudeString.equals("")) {
-            latitude = Double.parseDouble(latitudeString);
-        }
-        String longitudeString = getValueString(node, "longitude");
-        double longitude = 0;
-        if (!longitudeString.equals("")) {
-            longitude = Double.parseDouble(longitudeString);
-        }
-
-        return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
-    }
-
-    /**
      * Returns value of field if it exists
      *
      * @param node

@@ -173,5 +173,4 @@ public class Location {
                 state.equals(location.state) &&
                 country.equals(location.country);
     }
->>>>>>>>> Temporary merge branch 2
 }

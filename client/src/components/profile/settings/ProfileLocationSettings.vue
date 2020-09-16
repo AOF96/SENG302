@@ -84,7 +84,14 @@
         }
         this.geocoder = new window.google.maps.Geocoder();
 
-        let latLng = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
+        let latLng = null;
+
+        if (this.searchedUser.location) {
+          latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+        } else {
+          latLng = new window.google.maps.LatLng(0, 0);
+        }
 
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
           center: latLng,
@@ -99,10 +106,12 @@
         let marker = null;
         let thisInner = this;
 
-        marker = new window.google.maps.Marker({
-          map: map,
-          position: latLng
-        });
+        if (this.searchedUser.location) {
+          marker = new window.google.maps.Marker({
+            map: map,
+            position: latLng
+          });
+        }
 
         map.addListener('click', function (e) {
           if (marker != null) {

@@ -184,7 +184,9 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
+      console.log("AsfaFS")
       await this.loadSearchedUser();
+      console.log(this.searchedUser)
       this.loadMap();
     }
   },
@@ -252,24 +254,26 @@ export default {
         disableDefaultUI: true
       });
 
-      //Use me once the address is available in the user object
-      let address = this.searchedUser.homeLocation.street_address;
+      if (this.searchedUser.location) {
+        //Use me once the address is available in the user object
+        let address = this.searchedUser.location.street_address;
 
-      let latLng = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
+        let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
-      this.geocoder.geocode({'address': address}, function (results, status) {
-        if (status === 'OK') {
-          map.setCenter(latLng);
-          new window.google.maps.Marker({
-            map: map,
-            position: latLng
-          });
-        } else {
-          this.snackbarText = status;
-          this.snackbarColour = "error";
-          this.snackbar = true;
-        }
-      });
+        this.geocoder.geocode({'address': address}, function (results, status) {
+          if (status === 'OK') {
+            map.setCenter(latLng);
+            new window.google.maps.Marker({
+              map: map,
+              position: latLng
+            });
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+          }
+        });
+      }
     },
 
     /**
