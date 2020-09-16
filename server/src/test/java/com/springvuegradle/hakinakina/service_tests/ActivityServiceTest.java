@@ -66,6 +66,9 @@ public class ActivityServiceTest {
     @Mock
     private ResultRepository resultRepository;
 
+    @Mock
+    private ActivityService activityService;
+
     @BeforeAll
     public void setUp(){
         MockitoAnnotations.initMocks(this);
@@ -75,6 +78,7 @@ public class ActivityServiceTest {
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
+        locationRepository.deleteAll();
     }
 
     private Activity createTestActivity() {
@@ -602,9 +606,7 @@ public class ActivityServiceTest {
         Activity activity = createTestActivity();
         Location location = new Location("12 house lane", "house", "city", 7021,
                 "state", "country", 6125.12, 12512.2);
-
         when(activityRepository.getOne(1L)).thenReturn(activity);
-
         assertEquals(HttpStatus.valueOf(201), service.addLocationToActivity(1L, location).getStatusCode());
     }
 }

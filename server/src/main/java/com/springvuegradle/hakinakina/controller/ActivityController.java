@@ -578,7 +578,7 @@ public class ActivityController {
      * or 500 for internal server error.
      */
     @GetMapping("/activities")
-    public ResponseEntity getActivitiesWithinGivenRange(@RequestParam("latitudeTopRight") Double latitudeTopRight,
+    public ResponseEntity<Activity> getActivitiesWithinGivenRange(@RequestParam("latitudeTopRight") Double latitudeTopRight,
                                                         @RequestParam("longitudeTopRight") Double longitudeTopRight,
                                                         @RequestParam("latitudeBottomLeft") Double latitudeBottomLeft,
                                                         @RequestParam("longitudeBottomLeft") Double longitudeBottomLeft,
@@ -589,7 +589,7 @@ public class ActivityController {
         } else if (latitudeTopRight == null || longitudeTopRight == null || latitudeBottomLeft == null || longitudeBottomLeft == null) {
             result =  responseHandler.formatErrorResponse(400, "Invalid latitude or longitude values.");
         } else {
-            result = activityService.getActivitiesWithinGivenRange(latitudeTopRight, longitudeTopRight,latitudeBottomLeft, longitudeBottomLeft);
+            result = activityService.getActivitiesWithinGivenRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
         }
         return result;
     }

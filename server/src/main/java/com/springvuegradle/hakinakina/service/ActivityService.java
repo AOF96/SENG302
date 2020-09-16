@@ -960,9 +960,9 @@ public class ActivityService {
      * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
      * @return the list of all the activities within the range of the coordinates
      */
-    public ResponseEntity getActivitiesWithinGivenRange(Double latitudeTopRight, Double longitudeTopRight, Double latitudeBottomLeft, Double longitudeBottomLeft) {
+    public ResponseEntity getActivitiesWithinGivenRange(double latitudeBottomLeft, double latitudeTopRight, double longitudeBottomLeft, double longitudeTopRight) {
         try {
-            List<Activity> activitiesInRange = activityRepository.getActivitiesinRange(latitudeTopRight, longitudeTopRight, latitudeBottomLeft, longitudeBottomLeft);
+            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
             return new ResponseEntity(activitiesInRange, HttpStatus.valueOf(200));
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
