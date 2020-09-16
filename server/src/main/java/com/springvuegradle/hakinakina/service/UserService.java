@@ -473,6 +473,14 @@ public class UserService {
                     try {
                         String salt = EncryptionUtil.getNewSalt();
                         user.setSalt(salt);
+
+                        // check if the password is in valid format
+                        ArrayList<String> newPasswordValidationError = newPasswordValidation(newPassword);
+
+                        if(!newPasswordValidationError.isEmpty()) {
+                            return responseHandler.formatErrorResponse(400, newPasswordValidationError);
+                        }
+
                         user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
                         userRepository.save(user);
                         response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
@@ -815,5 +823,29 @@ public class UserService {
                     new UserActivityRole(key, dto.getSubscriber().getRole())
             );
         }
+    }
+
+    /***
+     * Helper function to check the password validity.
+     * @param password is the new password the user want to change the password to, in string
+     * @return a array of strings with validation errors if the password is not valid, empty if password is valid
+     */
+
+    public ArrayList<String> newPasswordValidation(String password) {
+
+        ArrayList<String> invalidMessages = new ArrayList<>();
+
+        if(password == null || password.isBlank()) {
+            invalidMessages.add("Please provide your password");
+        } else if(password.length() < 8) {
+            invalidMessages.add("Your password must be at least 8 letters long.");
+        }else if(!password.matches(".*[A-Z].*")) {
+            invalidMessages.add("Your password must include at least one uppercase letter");
+        }else if(!password.matches(".*[a-z].*")) {
+            invalidMessages.add("Your password must include at least one lowercase letter");
+        }else if(!password.matches(".*\\d")) {
+            invalidMessages.add("Your password must include at least one number");
+        }
+        return invalidMessages;
     }
 }

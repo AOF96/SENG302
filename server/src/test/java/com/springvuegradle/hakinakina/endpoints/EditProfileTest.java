@@ -60,7 +60,6 @@ public class EditProfileTest {
                 "  \"gender\": \"male\",\n" +
                 "  \"fitness\": 2\n" +
                 "}";
-
     }
 
     @Test
@@ -72,7 +71,6 @@ public class EditProfileTest {
                 .contentType(MediaType.APPLICATION_JSON).content(String.format(input, birthday)))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("User updated")));
-
     }
 
     @Test
@@ -84,6 +82,113 @@ public class EditProfileTest {
                 .contentType(MediaType.APPLICATION_JSON).content(String.format(input, birthday)))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("User updated")));
+    }
 
+    @Test
+    public void editProfilePasswordWithNumberUpperLowerCaseShouldSucceed() throws Exception {
+
+        String editPasswordJson = "{\n" +
+                "  \"old_password\": \"Password1\",\n" +
+                "  \"new_password\": \"%s\",\n" +
+                "  \"repeat_password\": \"%s\"\n" +
+                "}";
+
+        String editingPassword = "Password2";
+
+        mockMvc.perform(put("/profiles/" + userId + "/password")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(String.format(editPasswordJson, editingPassword, editingPassword)))
+                .andExpect(status().is(200))
+                .andExpect(content().string(containsString("Successfully changed the password")));
+    }
+
+    @Test
+    public void editProfilePasswordWithoutNumberShouldFail() throws Exception {
+
+        String editPasswordJson = "{\n" +
+                "  \"old_password\": \"Password1\",\n" +
+                "  \"new_password\": \"%s\",\n" +
+                "  \"repeat_password\": \"%s\"\n" +
+                "}";
+
+        String editingPassword = "Passwordish";
+
+        mockMvc.perform(put("/profiles/" + userId + "/password")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(String.format(editPasswordJson, editingPassword, editingPassword)))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Your password must include at least one number")));
+    }
+
+    @Test
+    public void editProfilePasswordWithoutUpperCaseLetterShouldFail() throws Exception {
+
+        String editPasswordJson = "{\n" +
+                "  \"old_password\": \"Password1\",\n" +
+                "  \"new_password\": \"%s\",\n" +
+                "  \"repeat_password\": \"%s\"\n" +
+                "}";
+
+        String editingPassword = "password123";
+
+        mockMvc.perform(put("/profiles/" + userId + "/password")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(String.format(editPasswordJson, editingPassword, editingPassword)))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Your password must include at least one uppercase letter")));
+    }
+
+    @Test
+    public void editProfilePasswordWithoutLowerCaseLetterShouldFail() throws Exception {
+
+        String editPasswordJson = "{\n" +
+                "  \"old_password\": \"Password1\",\n" +
+                "  \"new_password\": \"%s\",\n" +
+                "  \"repeat_password\": \"%s\"\n" +
+                "}";
+
+        String editingPassword = "PASSWORD123";
+
+        mockMvc.perform(put("/profiles/" + userId + "/password")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(String.format(editPasswordJson, editingPassword, editingPassword)))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Your password must include at least one lowercase letter")));
+    }
+
+    @Test
+    public void editProfilePasswordWithJustNumbersShouldFail() throws Exception {
+
+        String editPasswordJson = "{\n" +
+                "  \"old_password\": \"Password1\",\n" +
+                "  \"new_password\": \"%s\",\n" +
+                "  \"repeat_password\": \"%s\"\n" +
+                "}";
+
+        String editingPassword = "123456789";
+
+        mockMvc.perform(put("/profiles/" + userId + "/password")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(String.format(editPasswordJson, editingPassword, editingPassword)))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Your password must include at least one uppercase letter")));
+    }
+
+    @Test
+    public void editProfilePasswordWithLessThanEightLettersShouldFail() throws Exception {
+
+        String editPasswordJson = "{\n" +
+                "  \"old_password\": \"Password1\",\n" +
+                "  \"new_password\": \"%s\",\n" +
+                "  \"repeat_password\": \"%s\"\n" +
+                "}";
+
+        String editingPassword = "Short2";
+
+        mockMvc.perform(put("/profiles/" + userId + "/password")
+                .cookie(new Cookie("s_id", "t0k3n"))
+                .contentType(MediaType.APPLICATION_JSON).content(String.format(editPasswordJson, editingPassword, editingPassword)))
+                .andExpect(status().is(400))
+                .andExpect(content().string(containsString("Your password must be at least 8 letters long.")));
     }
 }
