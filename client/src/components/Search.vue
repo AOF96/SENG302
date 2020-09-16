@@ -97,10 +97,11 @@
                     <v-list-item-title>
                       {{ activity.name}}
                     </v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ activity.location.street_address}},  {{ activity.location.city}}, {{ activity.location.country}}
-                    </v-list-item-subtitle>
-
+                    <div v-if="activity.location !== null">
+                      <v-list-item-subtitle>
+                        {{ activity.location.street_address}},  {{ activity.location.city}}, {{ activity.location.country}}
+                      </v-list-item-subtitle>
+                    </div>
                   </v-list-item-content>
                 </v-list-item>
               </v-row>
