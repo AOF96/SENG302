@@ -50,9 +50,12 @@ public class Location {
     @Column(name = "longitude")
     private double longitude;
 
+    @OneToOne(mappedBy = "location")
+    private Activity activity;
+
     @JsonBackReference
-    @OneToOne(mappedBy = "homeLocation")
-    private User userHome;
+    @OneToOne(mappedBy = "location")
+    private User user;
 
     protected Location() {}
 
@@ -139,13 +142,22 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public void setUserHome(User user) {
-        this.userHome = user;
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
-    public User getUserHome() {
-        return userHome;
+    public Activity getActivity() {
+        return this.activity;
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -161,4 +173,5 @@ public class Location {
                 state.equals(location.state) &&
                 country.equals(location.country);
     }
+>>>>>>>>> Temporary merge branch 2
 }

@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.serialize.UserDeserializer;
+import com.springvuegradle.hakinakina.util.ParserHelper;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserDeserializerTest {
-    private UserDeserializer deserializer = new UserDeserializer();
-
+public class ParserHelperTest {
     @Test
     public void getLocationTest() throws JsonProcessingException {
         String json = "{\n" +
@@ -32,7 +31,7 @@ public class UserDeserializerTest {
 
         Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
                 8000, "Canterbury", "New Zealand", 0.0, 0.0);
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"));
+        Location otherLocation = ParserHelper.createLocation(jsonNode.get("location"));
         assertEquals(testLocation, otherLocation);
     }
 }

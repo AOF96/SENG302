@@ -26,7 +26,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -542,7 +541,7 @@ public class UserService {
      * @param userId Long id of user to update
      * @return ResponseEntity of result
      */
-    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, boolean isHomeAddress, Long userId) {
+    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, Long userId) {
         boolean result = false;
 
         Optional<User> userOptional = userRepository.findById(userId);
@@ -550,8 +549,8 @@ public class UserService {
             User user = userOptional.get();
 
             Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
-            location.setUserHome(user);
-            user.setHomeLocation(location);
+            location.setUser(user);
+            user.setLocation(location);
 
             locationRepository.save(location);
             userRepository.save(user);
@@ -724,8 +723,8 @@ public class UserService {
                 if (user.isPresent()) {
                     User validUser = user.get();
                     Hibernate.initialize(validUser.getActivities());
-                    Optional<UserActivityRole> userActivityRoleCheck = userActivityRoleRepository.getByActivityAndUser(activity, validUser);
-                    if (userActivityRoleCheck.isPresent()) {
+                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
+                    if (validUserFollowingList.contains(activity)) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
@@ -737,12 +736,6 @@ public class UserService {
                         userActivityRoleRepository.save(userActivityRole);
                         result = responseHandler.formatSuccessResponse(201, "User " + profileId
                                 + " now follows activity " + activityId);
-                        Date date = new Date();
-                        Timestamp timestamp = new Timestamp(date.getTime());
-                        HomeFeedEntry userChangeToAdd = new HomeFeedEntry("FOLLOW", timestamp,
-                                userRepository.getOne(profileId), activityRepository.getOne(activityId),
-                                FeedEntryType.FOLLOWACTIVITY, FeedEntryScope.PRIVATE);
-                        homeFeedRepository.save(userChangeToAdd);
                     }
                 } else {
                     result = responseHandler.formatErrorResponse(404, "No user with id "

@@ -64,9 +64,9 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title v-if="user.isLogin">{{user.firstname}} {{user.lastname}}</v-list-item-title>
-            <v-list-item-subtitle v-if="user.isLogin">Signed In</v-list-item-subtitle>
-            <v-list-item-subtitle v-if="!user.isLogin">Signed Out</v-list-item-subtitle>
+            <v-list-item-title id="hamburgerName" v-if="user.isLogin">{{user.firstname}} {{user.lastname}}</v-list-item-title>
+            <v-list-item-subtitle id="hamburgerSignedIn" v-if="user.isLogin">Signed In</v-list-item-subtitle>
+            <v-list-item-subtitle id="hamburgerSignedOut" v-if="!user.isLogin">Signed Out</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
@@ -74,7 +74,7 @@
         <v-list-item-group
           active-class="text--accent-4"
         >
-          <v-list-item link class="mt-2" id="homeButton" v-bind:to="'/feed/'" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link v-on:click="$router.push('/feed/')" class="mt-2" id="homeButton"  v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>dashboard</v-icon>
             </v-list-item-icon>
@@ -82,15 +82,15 @@
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" v-bind:to="'/map/'" v-if="user.isLogin">
+          <v-list-item id="hamburgerMap" v-on:click="$router.push('/map/')" link class="mt-2" v-if="user.isLogin">
             <v-list-item-icon>
               <v-icon>map</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>Map</v-list-item-title>
+              <v-list-item-title >Map</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" id="profileButton" v-bind:to="'/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link class="mt-2" id="profileButton" v-on:click="$router.push('/profile/'+user.profile_id)" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>account_box</v-icon>
             </v-list-item-icon>
@@ -98,7 +98,7 @@
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" id="searchButton" v-bind:to="'/search'" v-if="user.isLogin">
+          <v-list-item link class="mt-2" id="searchButton" v-on:click="$router.push('/search')" v-if="user.isLogin">
             <v-list-item-icon>
               <v-icon>search</v-icon>
             </v-list-item-icon>
@@ -106,7 +106,7 @@
               <v-list-item-title>Search</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" id="settingsButton" v-bind:to="'/settings/profile/'+user.profile_id" v-if="user.permission_level < 2 && user.isLogin">
+          <v-list-item link class="mt-2" id="settingsButton" v-on:click="$router.push('/settings/profile/'+user.profile_id)" v-if="user.permission_level < 2 && user.isLogin">
             <v-list-item-icon>
               <v-icon>settings</v-icon>
             </v-list-item-icon>
@@ -114,7 +114,7 @@
               <v-list-item-title>Settings</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" id="adminDashboardButton" v-bind:to="'/settings/admin_dashboard'" v-if="isAdmin && user.isLogin">
+          <v-list-item link class="mt-2" id="adminDashboardButton" v-on:click="$router.push('/settings/admin_dashboard')" v-if="isAdmin && user.isLogin">
             <v-list-item-icon>
               <v-icon>gavel</v-icon>
             </v-list-item-icon>
@@ -122,7 +122,7 @@
               <v-list-item-title>Admin Dashboard</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" to="/login" v-if="!user.isLogin">
+          <v-list-item link class="mt-2" id="hamburgerLogin" v-on:click="$router.push('/login')" v-if="!user.isLogin">
             <v-list-item-icon>
               <v-icon>login</v-icon>
             </v-list-item-icon>
@@ -130,7 +130,7 @@
               <v-list-item-title>Login</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link class="mt-2" to="/signup" v-if="!user.isLogin">
+          <v-list-item link class="mt-2" id="hamburgerSignUp" v-on:click="$router.push('/signup')" v-if="!user.isLogin">
             <v-list-item-icon>
               <v-icon>assignment_ind</v-icon>
             </v-list-item-icon>
@@ -143,7 +143,7 @@
       <template v-slot:append>
         <router-link to="/logout" v-if="user.isLogin">
           <div class="pa-2">
-            <v-btn v-on:click="logoutUser" class="logoutButton" block color="#c9c9c9">Logout</v-btn>
+            <v-btn v-on:click="logoutUser" class="logoutButton" id="hamburgerLogout" block color="#c9c9c9">Logout</v-btn>
           </div>
         </router-link>
       </template>

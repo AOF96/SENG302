@@ -38,15 +38,13 @@ public class ActivityTests {
 
     public Activity createActivity() {
         return new Activity("Climb mount Everest", "Let's climb the mountain",
-                false, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()),
-                "Christchurch, New Zealand");
+                false, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
     }
 
     @Test
     public void testCreatingNewActivity() {
         Activity activity = new Activity("Climb mount Everest", "Let's climb the mountain",
-                false, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()),
-                "Christchurch, New Zealand");
+                false, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
 
         assertNull(activity.getId());
         assertEquals("Climb mount Everest", activity.getName());

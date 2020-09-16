@@ -144,6 +144,25 @@ public class UserTests {
     }
 
     @Test
+    public void testUserCurrentLocation(){
+        Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
+                "Christchurch", 8041, "Canterbury", "New Zealand",
+                -43.522447, 172.579442);
+        testLocation.setId(1L);
+        locationRepository.save(testLocation);
+
+        User testUser2 = new User("James", "Shaw", "james@google.com",
+                "1985-12-20", Gender.MALE, 3,
+                "james'sSecuredPwd");
+
+        testUser2.setUserId(1212L);
+        testUser2.setLocation(testLocation);
+        assertTrue(testUser2.getLocation().equals(testLocation));
+        assertTrue(testUser2.getLocation().getSuburb().equals("Upper Riccarton"));
+
+    }
+
+    @Test
     public void testUserHomeLocation(){
         Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
                 "Christchurch", 8041, "Canterbury", "New Zealand",
@@ -156,14 +175,14 @@ public class UserTests {
                 "james'sSecuredPwd");
 
         testUser2.setUserId(1212L);
-        testUser2.setHomeLocation(testLocation);
-        assertTrue(testUser2.getHomeLocation().equals(testLocation));
-        assertEquals(testUser2.getHomeLocation().getLatitude(),-43.522447);
-        assertEquals(testUser2.getHomeLocation().getLongitude(),172.579442);
-        assertTrue(testUser2.getHomeLocation().getCity().equals("Christchurch"));
-        assertTrue(testUser2.getHomeLocation().getState().equals("Canterbury"));
-        assertTrue(testUser2.getHomeLocation().getCountry().equals("New Zealand"));
-        assertTrue(testUser2.getHomeLocation().getStreetAddress().equals("University of Canterbury"));
+        testUser2.setLocation(testLocation);
+        assertTrue(testUser2.getLocation().equals(testLocation));
+        assertEquals(testUser2.getLocation().getLatitude(),-43.522447);
+        assertEquals(testUser2.getLocation().getLongitude(),172.579442);
+        assertTrue(testUser2.getLocation().getCity().equals("Christchurch"));
+        assertTrue(testUser2.getLocation().getState().equals("Canterbury"));
+        assertTrue(testUser2.getLocation().getCountry().equals("New Zealand"));
+        assertTrue(testUser2.getLocation().getStreetAddress().equals("University of Canterbury"));
 
     }
 
