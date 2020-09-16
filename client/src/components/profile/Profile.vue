@@ -184,9 +184,7 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      console.log("AsfaFS")
       await this.loadSearchedUser();
-      console.log(this.searchedUser)
       this.loadMap();
     }
   },
