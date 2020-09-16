@@ -1,10 +1,17 @@
 package com.springvuegradle.hakinakina.service;
 
+import com.springvuegradle.hakinakina.dto.SearchActivityDto;
+import com.springvuegradle.hakinakina.dto.SearchActivityLocationDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.Activity;
 import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.SearchRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.specification.ActivitySpecification;
 import com.springvuegradle.hakinakina.specification.UserSpecification;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.data.domain.Page;
@@ -14,8 +21,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -27,12 +36,64 @@ public class SearchService {
 
     private UserRepository userRepository;
     private SearchRepository searchRepository;
+    private ActivityRepository activityRepository;
+    private LocationRepository locationRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public SearchService(UserRepository userRepository,
-                         SearchRepository searchRepository) {
+                         SearchRepository searchRepository,
+                         ActivityRepository activityRepository,
+                         LocationRepository locationRepository) {
         this.userRepository = userRepository;
         this.searchRepository = searchRepository;
+        this.activityRepository = activityRepository;
+        this.locationRepository = locationRepository;
+    }
+
+    /**
+     * Returns a list of activities that match the searched term. The returned results are paginated.
+     *
+     * @param activitySearchTerm the search term of the activity that the user is trying to find
+     * @param page the page number the user wants to be at
+     * @param size the number of activities that are returned per page
+     * @return Page object with a list of SearchActivityDtos that will display generic information about the activity
+     */
+    @Transactional
+    public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
+        Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm), PageRequest.of(page, size));
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        for (Activity activity: activityPage) {
+            SearchActivityDto searchActivityDto = new SearchActivityDto();
+            searchActivityDto.setId(activity.getId());
+            searchActivityDto.setName(activity.getName());
+            searchActivityDto.setContinuous(activity.isContinuous());
+            searchActivityDto.setStartTime(activity.getStartTime());
+            searchActivityDto.setEndTime(activity.getEndTime());
+
+            if (activity.getLocation() != null) {
+                if (locationRepository.findById(activity.getLocation().getId()).isPresent()) {
+                    Location activityLocation = locationRepository.getOne(activity.getLocation().getId());
+                    searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
+                }
+            }
+
+            searchActivityDtoList.add(searchActivityDto);
+        }
+        return new PageImpl<>(searchActivityDtoList);
+    }
+
+    /**
+     * Determines if there is a location set for the activity. If there is one, it sets a generic address.
+     *
+     * @param activityLocation The location of the activity that we are setting the DTO for
+     * @return SearchActivityLocationDto that will return a generic address for the activity search results
+     */
+    public SearchActivityLocationDto setLocationForSearchActivityDto(Location activityLocation) {
+        SearchActivityLocationDto searchActivityLocationDto = new SearchActivityLocationDto();
+        searchActivityLocationDto.setStreetAddress(activityLocation.getStreetAddress());
+        searchActivityLocationDto.setCity(activityLocation.getCity());
+        searchActivityLocationDto.setCountry(activityLocation.getCountry());
+        return searchActivityLocationDto;
     }
 
     /**
@@ -93,7 +154,7 @@ public class SearchService {
         return result;
     }
 
-    /***
+    /**
      * Gives a normal user admin rights if the requesting user is authenticated and is an admin.
      * @param lastName last name of the user you are searching
      * @param fullName full name of the user you are searching
@@ -109,5 +170,14 @@ public class SearchService {
                 .and(
                         UserSpecification.searchIsNotAdmin()
                 );
+    }
+
+    /**
+     * Specification for searching an activity by name
+     * @param activityName search term of an activity name
+     * @return Specification object with Activity search request (WHERE part of the query)
+     */
+    private Specification<Activity> generateActivitySpecification(String activityName) {
+        return Specification.where(ActivitySpecification.searchByActivityName(activityName));
     }
 }
