@@ -131,6 +131,56 @@ public class UserDeserializer extends StdDeserializer<User> {
     }
 
     /**
+     * Returns value of field if it exists
+     *
+     * @param node
+     * @param field
+     * @return string value or empty string
+     */
+    public String getValueString(JsonNode node, String field) {
+        JsonNode fieldValue = node.get(field);
+        if (fieldValue == null) {
+            return null;
+        } else if (fieldValue.asText() == "null") {
+            return null;
+        } else {
+            return fieldValue.asText();
+        }
+    }
+
+    /**
+     * Returns value of field if it exists
+     *
+     * @param node
+     * @param field
+     * @return int value or -1
+     */
+    public int getValueInt(JsonNode node, String field) {
+        JsonNode fieldValue = node.get(field);
+        if (fieldValue == null) {
+            return -1;
+        } else {
+            return fieldValue.asInt();
+        }
+    }
+
+    /**
+     * Returns value of field if it exists
+     *
+     * @param node
+     * @param field
+     * @return long value or null
+     */
+    public Long getValueLong(JsonNode node, String field) {
+        JsonNode fieldValue = node.get(field);
+        if (fieldValue == null) {
+            return 0L;
+        } else {
+            return fieldValue.asLong();
+        }
+    }
+
+    /**
      * Returns set of PassportCountry in user creation request
      *
      * @param node
