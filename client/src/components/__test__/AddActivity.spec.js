@@ -1,13 +1,15 @@
 /* eslint-env jest*/
-import Vuex, {mapActions} from "vuex";
+import Vuex from "vuex";
 // import Profile from "../profile/Profile";
 import ActivitySettingsPage from "@/components/activity/settings/ActivitySettings";
-import {createLocalVue, mount} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import {apiUser} from "@/api";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
-import Vue from "vue"
 import Vuetify from "vuetify";
+import ProfileLocationSettings from "../profile/settings/ProfileLocationSettings";
+import {expect} from "@jest/globals";
+import ActivityLocationSettings from "../activity/settings/ActivityLocationSettings";
 localVue.use(Vuetify)
 localVue.use(Vuex);
 
@@ -44,12 +46,12 @@ describe("Check user's edit profile page", () => {
         getActivityTypes: jest.fn()
     };
 
-    let store
-    let wrapper
-    let vuetify
+    let store;
+    let wrapper;
+    let vuetify;
 
     beforeEach(() => {
-        vuetify = new Vuetify()
+        vuetify = new Vuetify();
         store = new Vuex.Store({
             getters: {
                 userSearch: () => ({
@@ -115,111 +117,110 @@ describe("Check user's edit profile page", () => {
             vuetify,
             mocks
         })
-    })
+    });
 
     it("There should be an activity name label on the add activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#ActivityNameLabel").exists()).toBe(true);
-    })
-
+    });
     it("There should be an activity input box to enter activity's name", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#name").exists()).toBe(true);
-    })
+    });
     it("There should be a visibility label on the activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#VisibilityLabel").exists()).toBe(true);
-    })
+    });
     it("There should be a public visibility radio button on the activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#publicVisibility").exists()).toBe(true);
-    })
+    });
     it("There should be a restricted visibility radio button on the activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#restrictedVisibility").exists()).toBe(true);
-    })
+    });
     it("There should be a private visibility radio button on the activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#privateVisibility").exists()).toBe(true);
-    })
+    });
     it("There should be a description label on add Activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#DescriptionLabel").exists()).toBe(true);
-    })
+    });
     it("There should be a text box to write description for an activity", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#desc").exists()).toBe(true);
-    })
+    });
     it("There should be an activity type label on the add activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#ActivityTypeLabel").exists()).toBe(true);
-    })
+    });
     it("There should be a back arrow button to go back to the previous part of the form on activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#ActivityTypeOptions").exists()).toBe(true);
-    })
+    });
     it("There should be a next arrow button to go to the next part of the form on activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#NextArrow").exists()).toBe(true);
-    })
+    });
     it("There should be a Basic Info tab for the activity on the activity page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#BasicInfoTab").exists()).toBe(true);
-    })
+    });
     it("There should be a TIme and date tab to set time for continuous or duration activity", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#TimeDateTab").exists()).toBe(true);
-    })
+    });
     it("There should be a location tab to select the location for your activity", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#LocationTab").exists()).toBe(true);
-    })
+    });
     it("There should be an achievement tab to create achievement for the activity ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#AchievementTab").exists()).toBe(true);
-    })
+    });
     it("There should be a start date label on the activity page ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#startDateLabel").exists()).toBe(true);
-    })
+    });
     it("There should be a end date label on the activity page ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#endDateLabel").exists()).toBe(true);
-    })
+    });
     it("There should be a end date label on the activity page ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#startTimeLabel").exists()).toBe(true);
-    })
+    });
     it("There should be a end date label on the activity page ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#endTimeLabel").exists()).toBe(true);
-    })
-    it("There should be an input field to set the location city for the activity", async () => {
+    });
+    it("There should be an input field to set the location for the activity", async () => {
         await wrapper.vm.$nextTick();
-        expect(wrapper.find("#inputCity").exists()).toBe(true);
-    })
-    it("There should be an input field to set the location state for the activity", async () => {
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#inputState").exists()).toBe(true);
-    })
-    it("There should be an input field to set the location country for the activity", async () => {
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#inputCountry").exists()).toBe(true);
-    })
+        expect(wrapper.find("#activityLocationAutocomplete").exists()).toBe(true);
+    });
     it("There should be an add achievement button on the achievement tab", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#addAchievementLabel").exists()).toBe(true);
-    })
+    });
     it("There should be an input field to enter achievement title", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#achievementTitle").exists()).toBe(true);
-    })
+    });
     it("There should be an text box add enter achievement's description", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#achievementDescription").exists()).toBe(true);
-    })
+    });
     it("There should be a drop down menu to select the type of achievement ", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#achieveType").exists()).toBe(true);
-    })
+    });
+    it("should have a map for the user to set the activity's location", () => {
+        const wrapper = shallowMount(ActivityLocationSettings, { store, localVue, mocks, stubs });
+        expect(wrapper.find("#locationSettingsMap").exists()).toBe(true);
+    });
+    it("should have an input for the user to set the activity's location", () => {
+        const wrapper = shallowMount(ActivityLocationSettings, { store, localVue, mocks, stubs });
+        expect(wrapper.find("#activityLocationAutocomplete").exists()).toBe(true);
+    });
 });
