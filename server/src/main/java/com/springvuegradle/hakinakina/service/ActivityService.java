@@ -952,7 +952,20 @@ public class ActivityService {
         }
     }
 
-    public ResponseEntity getActivitiesWithinGivenRange(Double latitude, Double longitude) {
-        return null;
+    /**
+     *
+     * @param latitudeTopRight the latitude of the top right on the map visible on the screen
+     * @param longitudeTopRight the longitude of the top right of the map visible on the screen
+     * @param latitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @return the list of all the activities within the range of the coordinates
+     */
+    public ResponseEntity getActivitiesWithinGivenRange(Double latitudeTopRight, Double longitudeTopRight, Double latitudeBottomLeft, Double longitudeBottomLeft) {
+        try {
+            List<Activity> activitiesInRange = activityRepository.getActivitiesinRange(latitudeTopRight, longitudeTopRight, latitudeBottomLeft, longitudeBottomLeft);
+            return new ResponseEntity(activitiesInRange, HttpStatus.valueOf(200));
+        } catch (Error e) {
+            return new ResponseEntity("Error", HttpStatus.valueOf(500));
+        }
     }
 }

@@ -569,25 +569,28 @@ public class ActivityController {
     }
 
     /***
-     * Handles the request to get all the activities that are located within the given latitude and longitude bound.
-     * @param latitude the given latitude.
-     * @param longitude the given longitude.
-     * @return a 200 response with all results if they exist, 400 for invalid user input, 401 for invalid session,
+     * Handles the request to get all the activities that are located within the given bounds.
+     * @param latitudeTopRight the given latitude.
+     * @param longitudeTopRight the given longitude.
+     * @param latitudeBottomLeft the given longitude.
+     * @param longitudeBottomLeft the given longitude.
+     * @return a 200 response with the list of all the activities if any exist in the given bound, 400 for invalid user input, 401 for invalid session,
      * or 500 for internal server error.
      */
     @GetMapping("/activities")
-    public ResponseEntity getActivitiesWithinGivenRange(@RequestParam("latitude") Double latitude,
-                                                        @RequestParam("longitude") Double longitude,
+    public ResponseEntity getActivitiesWithinGivenRange(@RequestParam("latitudeTopRight") Double latitudeTopRight,
+                                                        @RequestParam("longitudeTopRight") Double longitudeTopRight,
+                                                        @RequestParam("latitudeBottomLeft") Double latitudeBottomLeft,
+                                                        @RequestParam("longitudeBottomLeft") Double longitudeBottomLeft,
                                                         @CookieValue(value = "s_id") String sessionToken) {
         ResponseEntity result;
         if (sessionToken == null || sessionRepository.findUserIdByToken(sessionToken) == null) {
             result = responseHandler.formatErrorResponse(401, "Invalid Session");
-        } else if (latitude == null || longitude == null) {
+        } else if (latitudeTopRight == null || longitudeTopRight == null || latitudeBottomLeft == null || longitudeBottomLeft == null) {
             result =  responseHandler.formatErrorResponse(400, "Invalid latitude or longitude values.");
         } else {
-            result = activityService.getActivitiesWithinGivenRange(latitude, longitude);
+            result = activityService.getActivitiesWithinGivenRange(latitudeTopRight, longitudeTopRight,latitudeBottomLeft, longitudeBottomLeft);
         }
-
         return result;
     }
 }
