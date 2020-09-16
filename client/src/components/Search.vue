@@ -92,7 +92,7 @@
 
               <div v-if="activitySearchTab">
               <v-row class="searchRow">
-                <v-list-item two-line v-for="activity in allActivities" :key="activity.id" link>
+                <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities" :key="activity.id" link>
                   <v-list-item-content>
                     <v-list-item-title>
                       {{ activity.name}}
@@ -355,6 +355,17 @@ export default {
             path: "/profile/" + response.data.id
           })
         })
+    },
+
+    /**
+     * Directs user to the activity that appears on the search activity results
+     *
+     * @param activityId the id of the activity the user wants to look into
+     */
+    goToActivity(activityId) {
+      this.$router.push({
+        path: "/activity/" + activityId
+      })
     },
 
     /**
