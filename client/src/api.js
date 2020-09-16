@@ -561,5 +561,10 @@ export const apiActivity = {
   /**
    * Check the visibility of an activity for a user
    */
-  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
+  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`),
+
+    /**
+     * Get location for activity with provided id
+      */
+    getLocationForActivity: (activityId) => instance.get(`/activities/${activityId}/location`)
 };
