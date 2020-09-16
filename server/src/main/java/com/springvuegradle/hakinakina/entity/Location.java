@@ -59,7 +59,7 @@ public class Location {
     @JsonIgnore
     private User user;
 
-    protected Location() {}
+    public Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {
         this.streetAddress = streetAddress;
@@ -70,6 +70,14 @@ public class Location {
         this.country = country;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {

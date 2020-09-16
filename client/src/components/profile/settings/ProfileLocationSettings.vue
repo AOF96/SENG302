@@ -52,9 +52,11 @@
           city: null,
           state: null,
           country: null,
-          latitude: null,
-          longitude: null,
+          latitude: -43.5354,
+          longitude: 172.6354,
         },
+        mapMarker: null,
+        map: null,
         autocomplete: null,
         address: ""
       };
@@ -68,9 +70,8 @@
      * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
      * duplicate summaries are removed.
      */
-    async mounted() {
-      await this.loadSearchedUser();
-      this.loadMap();
+    mounted() {
+      this.loadSearchedUser();
     },
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl", "editUserLocation"]),
@@ -84,61 +85,41 @@
         }
         this.geocoder = new window.google.maps.Geocoder();
 
-        let latLng = null;
+        let thisInner = this;
+        let position = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
 
-        if (this.searchedUser.location) {
-          latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
-
-        } else {
-          latLng = new window.google.maps.LatLng(0, 0);
-        }
-
-        let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-          center: latLng,
-          zoom: 9,
+        this.map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
+          center: position,
+          zoom: 10,
           streetViewControl: false,
           fullscreenControl: false,
           rotateControl: false,
           mapTypeControl: false
         });
 
-        let address = this.address;
-        let marker = null;
-        let thisInner = this;
-
-        if (this.searchedUser.location) {
-          marker = new window.google.maps.Marker({
-            map: map,
-            position: latLng
-          });
-        }
-
-        map.addListener('click', function (e) {
-          if (marker != null) {
-            marker.setMap(null);
+        this.map.addListener('click', function (e) {
+          if (thisInner.mapMarker != null) {
+            thisInner.mapMarker.setMap(null);
           }
-          marker = new window.google.maps.Marker({
+          thisInner.mapMarker = new window.google.maps.Marker({
             position: e.latLng,
-            map: map
+            map: thisInner.map
           });
-          map.panTo(e.latLng);
+          position = e.latLng;
+          thisInner.map.panTo(e.latLng);
           thisInner.getLocationFromLatLng(e.latLng);
         });
 
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(latLng);
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
+        this.map.setCenter(position);
+        thisInner.mapMarker = new window.google.maps.Marker({
+          map: thisInner.map,
+          position: position
         });
 
         this.autocomplete = new window.google.maps.places.Autocomplete(
             document.getElementById("locationInput"),
             {
-              types: ["address"],
+              types: [],
             }
         );
 
@@ -149,8 +130,18 @@
        * Fills in address field and location object from address autocomplete
        */
       fillInAddress() {
-        this.location = this.extractLocationData(this.autocomplete.getPlace());
+        let thisInner = this;
+        let place = this.autocomplete.getPlace();
+        this.location = this.extractLocationData(place);
         this.updateAddressString();
+        if (this.mapMarker != null) {
+          this.mapMarker.setMap(null);
+        }
+        this.mapMarker = new window.google.maps.Marker({
+          position: place["geometry"]["location"],
+          map: thisInner.map
+        });
+        thisInner.map.panTo(place["geometry"]["location"]);
       },
 
       /**
@@ -306,6 +297,11 @@
             this.searchedUser = tempUserData;
           }
         }
+        if(this.searchedUser.homeLocation != null){
+          this.location = this.searchedUser.homeLocation;
+        }
+        this.updateAddressString();
+        this.loadMap();
       },
 
     },

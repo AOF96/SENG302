@@ -38,6 +38,9 @@ public class UserDeserializer extends StdDeserializer<User> {
     @Autowired
     LocationRepository locationRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     public UserDeserializer() {
         this(null);
     }
@@ -116,8 +119,8 @@ public class UserDeserializer extends StdDeserializer<User> {
         if (bio != null) {
             user.setBio(bio);
         }
-        if (permission_level != -1) {
-            user.setPermissionLevel(permission_level);
+        if (permissionLevel != -1) {
+            user.setPermissionLevel(permissionLevel);
         } else {
             user.setPermissionLevel(0);
         }
@@ -126,8 +129,25 @@ public class UserDeserializer extends StdDeserializer<User> {
             locationRepository.save(location);
             user.setLocation(location);
         }
-
         return user;
+    }
+
+    /**
+     * Parses a JsonNode to create and return a Location object.
+     * @param node The JsonNode to parse.
+     * @return A Location object.
+     */
+    public Location createLocation(JsonNode node) {
+        String streetAddress = getValueString(node, "street_address");
+        String suburb = getValueString(node, "suburb");
+        int postcode = getValueInt(node, "postcode");
+        String city = getValueString(node, "city");
+        String state = getValueString(node, "state");
+        String country = getValueString(node, "country");
+        Long latitude = getValueLong(node, "latitude");
+        Long longitude = getValueLong(node, "longitude");
+
+        return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
     }
 
     /**
