@@ -247,37 +247,26 @@ export default {
         }
         this.geocoder = new window.google.maps.Geocoder();
 
+        let position = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
+
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
-          center: {
-            lat: this.searchedUser.homeLocation.lat,
-            lng: this.searchedUser.homeLocation.lng
-          },
+          center: position,
           zoom: 8,
           maxZoom: 10,
           minZoom: 3,
           disableDefaultUI: true
         });
 
-        let address = this.getAddressString(this.searchedUser.homeLocation);
-
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
-            new window.google.maps.Marker({
-              map: map,
-              position: results[0].geometry.location
-            });
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
+        map.setCenter(position);
+        new window.google.maps.Marker({
+          map: map,
+          position: position
         });
       }
     },
 
     /**
-     * Updates the address string from the location object
+     * Returns a formatted address string from the location object
      */
     getAddressString(locationObj) {
       let address = "";

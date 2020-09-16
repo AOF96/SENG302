@@ -52,9 +52,11 @@
           city: null,
           state: null,
           country: null,
-          latitude: null,
-          longitude: null,
+          latitude: -43.5354,
+          longitude: 172.6354,
         },
+        mapMarker: null,
+        map: null,
         autocomplete: null,
         address: ""
       };
@@ -70,7 +72,6 @@
      */
     mounted() {
       this.loadSearchedUser();
-      this.loadMap();
     },
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl", "editUserLocation"]),
@@ -84,52 +85,41 @@
         }
         this.geocoder = new window.google.maps.Geocoder();
 
-        let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-          center: {
-            lat: -34.397,
-            lng: 150.644
-          },
-          zoom: 9,
+        let thisInner = this;
+        let position = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
+
+        this.map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
+          center: position,
+          zoom: 10,
           streetViewControl: false,
           fullscreenControl: false,
           rotateControl: false,
           mapTypeControl: false
         });
 
-        let address = this.address;
-        let marker = null;
-        let thisInner = this;
-
-        map.addListener('click', function (e) {
-          if (marker != null) {
-            marker.setMap(null);
+        this.map.addListener('click', function (e) {
+          if (thisInner.mapMarker != null) {
+            thisInner.mapMarker.setMap(null);
           }
-          marker = new window.google.maps.Marker({
+          thisInner.mapMarker = new window.google.maps.Marker({
             position: e.latLng,
-            map: map
+            map: thisInner.map
           });
-          map.panTo(e.latLng);
+          position = e.latLng;
+          thisInner.map.panTo(e.latLng);
           thisInner.getLocationFromLatLng(e.latLng);
         });
 
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
-            marker = new window.google.maps.Marker({
-              map: map,
-              position: results[0].geometry.location
-            });
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
+        this.map.setCenter(position);
+        thisInner.mapMarker = new window.google.maps.Marker({
+          map: thisInner.map,
+          position: position
         });
 
         this.autocomplete = new window.google.maps.places.Autocomplete(
             document.getElementById("locationInput"),
             {
-              types: ["address"],
+              types: [],
             }
         );
 
@@ -140,8 +130,18 @@
        * Fills in address field and location object from address autocomplete
        */
       fillInAddress() {
-        this.location = this.extractLocationData(this.autocomplete.getPlace());
+        let thisInner = this;
+        let place = this.autocomplete.getPlace();
+        this.location = this.extractLocationData(place);
         this.updateAddressString();
+        if (this.mapMarker != null) {
+          this.mapMarker.setMap(null);
+        }
+        this.mapMarker = new window.google.maps.Marker({
+          position: place["geometry"]["location"],
+          map: thisInner.map
+        });
+        thisInner.map.panTo(place["geometry"]["location"]);
       },
 
       /**
@@ -297,6 +297,11 @@
             this.searchedUser = tempUserData;
           }
         }
+        if(this.searchedUser.homeLocation != null){
+          this.location = this.searchedUser.homeLocation;
+        }
+        this.updateAddressString();
+        this.loadMap();
       },
 
     },
