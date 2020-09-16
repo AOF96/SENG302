@@ -78,4 +78,11 @@ describe('NavBar after global admin login is successful', () => {
         const wrapper = mount(NavBar, {store, localVue, router});
         expect(wrapper.find("#homeButton").exists()).toBe(false)
     });
+
+    it('The hamburger menu has a Admin Dashboard button and clicking it takes the user to the Dashboard page.', () => {
+        const wrapper = mount(NavBar, {store, localVue, router});
+        expect(wrapper.find("#adminDashboardButton").exists()).toBe(true);
+        wrapper.find("#adminDashboardButton").trigger('click');
+        expect(window.location.href).toBe('http://localhost/#/settings/admin_dashboard')
+    });
 });

@@ -46,13 +46,14 @@ public class UserService {
     private ActivityTypeRepository activityTypeRepository;
     private SearchRepository searchRepository;
     private UserActivityRoleRepository userActivityRoleRepository;
+    private LocationRepository locationRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
                        ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
                        UserActivityRoleRepository userActivityRoleRepository,
-                       ActivityRepository activityRepository) {
+                       ActivityRepository activityRepository, LocationRepository locationRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
@@ -62,6 +63,7 @@ public class UserService {
         this.activityTypeRepository = activityTypeRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -535,15 +537,18 @@ public class UserService {
      * @param userId Long id of user to update
      * @return ResponseEntity of result
      */
-    public ResponseEntity editLocation(String city, String state, String country, Long userId) {
+    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, Long userId) {
         boolean result = false;
 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setCity(city);
-            user.setState(state);
-            user.setCountry(country);
+
+            Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
+            location.setUser(user);
+            user.setLocation(location);
+
+            locationRepository.save(location);
             userRepository.save(user);
             result = true;
         }

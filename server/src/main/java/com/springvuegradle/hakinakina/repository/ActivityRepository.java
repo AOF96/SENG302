@@ -59,7 +59,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     @Query(value = "DELETE FROM User_Activities", nativeQuery = true)
     void removeAllUserActivities();
 
-    @Query(value = "SELECT count(*) FROM User_Activities WHERE activity_id = ?", nativeQuery = true)
+    @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ?", nativeQuery = true)
     int getNumFollowersForActivity(long activityId);
 
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'PARTICIPANT'", nativeQuery = true)
@@ -67,6 +67,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
 
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'ORGANISER'", nativeQuery = true)
     int getNumOrganisersForActivity(long activityId);
+
+    @Query(value = "SELECT activityRole FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?", nativeQuery = true)
+    String getUsersRoleForActivity(Long activityId, Long userId);
 
     Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
 }

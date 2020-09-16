@@ -17,6 +17,7 @@ import { apiUser } from "./api";
 import AdminDashboard from "./components/AdminDashboard";
 import Search from "./components/Search";
 import Map from "./components/map/Map";
+import ProfileLocationSettings from "./components/profile/settings/ProfileLocationSettings";
 
 Vue.use(VueRouter);
 
@@ -62,6 +63,10 @@ const routes = [
     {
         path: '/settings/activities/:profileId',
         component: UserActivitySettings
+    },
+    {
+        path: '/settings/user_location/:profileId',
+        component: ProfileLocationSettings
     },
     {
         path: "/settings/admin_dashboard",
