@@ -589,7 +589,9 @@ public class ActivityController {
         } else if (latitudeTopRight == null || longitudeTopRight == null || latitudeBottomLeft == null || longitudeBottomLeft == null) {
             result =  responseHandler.formatErrorResponse(400, "Invalid latitude or longitude values.");
         } else {
-            result = activityService.getActivitiesWithinGivenRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+            result = activityService.getActivitiesWithinGivenRange(latitudeBottomLeft, latitudeTopRight,
+                    longitudeBottomLeft, longitudeTopRight,
+                    sessionRepository.findUserIdByToken(sessionToken).getUser().getUserId());
         }
         return result;
     }

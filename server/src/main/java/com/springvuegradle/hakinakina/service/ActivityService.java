@@ -960,12 +960,41 @@ public class ActivityService {
      * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
      * @return the list of all the activities within the range of the coordinates
      */
-    public ResponseEntity getActivitiesWithinGivenRange(double latitudeBottomLeft, double latitudeTopRight, double longitudeBottomLeft, double longitudeTopRight) {
+    public ResponseEntity getActivitiesWithinGivenRange(double latitudeBottomLeft, double latitudeTopRight,
+                                                        double longitudeBottomLeft, double longitudeTopRight,
+                                                        long userId) {
         try {
             List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
-            return new ResponseEntity(activitiesInRange, HttpStatus.valueOf(200));
+            List<Activity> filteredActivitiesInRange = filterActivitiesByVisibility(activitiesInRange, userId);
+            return new ResponseEntity(filteredActivitiesInRange, HttpStatus.valueOf(200));
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
         }
+    }
+
+    /**
+     * Takes an activity list and checks if the given user is shared or author if visibility is not public.
+     * i.e. checks if they should be able to see the activity or not and if not removes from list before
+     * returning
+     * @param activities list of activities in the given area found by the getActivitiesWithinGivenRange method
+     * @param userId id of the user that the viewing permission is being checked for
+     * @return returns a new list of activities minus those that the user is not permitted to view
+     */
+    public List<Activity> filterActivitiesByVisibility(List<Activity> activities, long userId) {
+        User user = userRepository.getOne(userId);
+
+        List<Activity> filteredActivityList = new ArrayList<>();
+
+        for (Activity activity : activities) {
+            if (activity.getVisibility() != Visibility.PUBLIC) {
+                Set<User> activitySharedUsers = activity.getUsersShared();
+                if (activitySharedUsers != null && (activitySharedUsers.contains(user)
+                        || activity.getAuthor().getUserId().equals(user.getUserId()))) {
+                    filteredActivityList.add(activity);
+                }
+            }
+        }
+
+        return filteredActivityList;
     }
 }
