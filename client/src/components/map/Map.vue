@@ -32,6 +32,38 @@
             latitude: -35.0,
             longitude: 151,
             author: 86009
+          },
+          {
+            id: 3,
+            name: "Walking away",
+            visibility: "restricted",
+            latitude: -34.2,
+            longitude: 150.2,
+            author: 86007
+          },
+          {
+            id: 4,
+            name: "Walking towards",
+            visibility: "restricted",
+            latitude: -35.2,
+            longitude: 151.2,
+            author: 86009
+          },
+          {
+            id: 5,
+            name: "Walking away",
+            visibility: "private",
+            latitude: -34.4,
+            longitude: 150.4,
+            author: 86007
+          },
+          {
+            id: 6,
+            name: "Walking towards",
+            visibility: "private",
+            latitude: -35.4,
+            longitude: 151.4,
+            author: 86009
           }
         ]
       }
@@ -202,6 +234,18 @@
               activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
+            }
+          } else if (activity.visibility === "restricted") {
+            if(activity.author === this.user.profile_id) {
+              activityMarkerIcon.url = "https://i.imgur.com/61rB4dm.png"
+            } else {
+              activityMarkerIcon.url = "https://i.imgur.com/Y0JUUox.png"
+            }
+          } else if (activity.visibility === "private") {
+            if(activity.author === this.user.profile_id) {
+              activityMarkerIcon.url = "https://i.imgur.com/jNY9HSw.png"
+            } else {
+              activityMarkerIcon.url = "https://i.imgur.com/lanhJgs.png"
             }
           }
 
