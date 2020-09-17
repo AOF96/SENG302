@@ -297,8 +297,8 @@
             this.searchedUser = tempUserData;
           }
         }
-        if(this.searchedUser.homeLocation != null){
-          this.location = this.searchedUser.homeLocation;
+        if(this.searchedUser.location != null){
+          this.location = this.searchedUser.location;
         }
         this.updateAddressString();
         this.loadMap();

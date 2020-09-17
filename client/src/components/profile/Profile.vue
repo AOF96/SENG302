@@ -117,7 +117,7 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
-      <v-card v-if="this.searchedUser.homeLocation != null" id="profileMapCard">
+      <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
       </v-card>
       <template v-if="searchedUser.passports">
@@ -241,13 +241,13 @@ export default {
      * Adds a marker on the city's centre.
      */
     loadMap() {
-      if(this.searchedUser.homeLocation != null && this.searchedUser.homeLocation.lat != ""){
+      if(this.searchedUser.location != null && this.searchedUser.location.latitude !== ""){
         if (!window.google) {
           return;
         }
         this.geocoder = new window.google.maps.Geocoder();
 
-        let position = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
+        let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
           center: position,

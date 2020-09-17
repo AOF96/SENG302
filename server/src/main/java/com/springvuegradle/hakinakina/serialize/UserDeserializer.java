@@ -11,6 +11,7 @@ import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
+import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.util.ParserHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,7 +91,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String middleName = ParserHelper.getValueString(node, "middlename");
         String nickName = ParserHelper.getValueString(node, "nickname");
         String bio = ParserHelper.getValueString(node, "bio");
-        int permission_level = ParserHelper.getValueInt(node, "permission_level");
+        int permissionLevel = ParserHelper.getValueInt(node, "permission_level");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");
