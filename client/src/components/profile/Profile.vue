@@ -119,6 +119,9 @@
     <div class="rightSidebarContainer">
       <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
+        <router-link v-bind:to="'/map/@' + searchedUser.location.latitude + ',' + searchedUser.location.longitude">
+          <button class="genericConfirmButton profileMapButton" type="button">Full map</button>
+        </router-link>
       </v-card>
       <template v-if="searchedUser.passports">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
