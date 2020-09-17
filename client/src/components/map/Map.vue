@@ -16,6 +16,22 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        activities: [
+          {
+            id: 1,
+            name: "Walking away",
+            visibility: "public",
+            latitude: -34.0,
+            longitude: 150
+          },
+          {
+            id: 2,
+            name: "Walking towards",
+            visibility: "public",
+            latitude: -35.0,
+            longitude: 151
+          }
+        ]
       }
     },
     computed: {
@@ -124,6 +140,7 @@
         });
 
         this.createHomeMarker(map, position);
+        this.createActivityMarkers(map);
       },
 
       /**
@@ -163,6 +180,32 @@
         window.google.maps.event.addListener(map, "click", function() {
           infowindow.close();
         });
+      },
+
+      /**
+       * Creates a green marker for public activities
+       * @param map
+       */
+      createActivityMarkers(map) {
+        var activityMarkerIcon = {
+          url: "https://i.imgur.com/MUWKzz9.png",
+          scaledSize: new window.google.maps.Size(30, 30),
+          origin: new window.google.maps.Point(0, 0),
+          anchor: new window.google.maps.Point(10, 10)
+        };
+
+        for (let activity of this.activities) {
+          if (activity.visibility === "public") {
+            activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
+          }
+
+          let activityPosition = new window.google.maps.LatLng(activity.latitude, activity.longitude);
+          new window.google.maps.Marker({
+            map: map,
+            position: activityPosition,
+            icon: activityMarkerIcon,
+          });
+        }
       },
 
       /**
