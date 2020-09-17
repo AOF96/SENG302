@@ -1,11 +1,8 @@
 <template>
-  <div class="settingsContainer" @click="showLocations = false">
+  <div class="settingsContainer">
     <v-snackbar v-model="snackbar" top :color="snackbarColour">{{ snackbarText }}</v-snackbar>
     <UserSettingsMenu/>
     <div class="settingsContentContainer">
-      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
-      </router-link>
       <h1 class="settingsTitle">Edit Profile Location</h1>
       <hr/>
       <div id="userSettingsMap"></div>
@@ -20,12 +17,14 @@
         </v-row>
       </v-container>
       <div class="locationFieldDiv">
-        <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined dense></v-text-field>
+        <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined
+                      dense></v-text-field>
       </div>
-      <button class="genericConfirmButton updatePasswordButton" v-on:click="updateUserLocation()" type="submit">Save
+      <button class="genericConfirmButton updatePasswordButton" style="margin-top: 10px" v-on:click="updateProfile()" type="submit">Save
         Location
       </button>
     </div>
+    <div class="floatClear"></div>
   </div>
 </template>
 
@@ -67,8 +66,8 @@
      * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
      * duplicate summaries are removed.
      */
-    mounted() {
-      this.loadSearchedUser();
+    async mounted() {
+      await this.loadSearchedUser();
       this.loadMap();
     },
     methods: {
@@ -83,24 +82,37 @@
         }
         this.geocoder = new window.google.maps.Geocoder();
 
+        let latLng = null;
+
+        if (this.searchedUser.location) {
+          latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+        } else {
+          latLng = new window.google.maps.LatLng(0, 0);
+        }
+
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-            center: {
-                lat: -34.397,
-                lng: 150.644
-            },
-            zoom: 9,
-            streetViewControl: false,
-            fullscreenControl: false,
-            rotateControl: false,
-            mapTypeControl: false
+          center: latLng,
+          zoom: 9,
+          streetViewControl: false,
+          fullscreenControl: false,
+          rotateControl: false,
+          mapTypeControl: false
         });
 
         let address = this.address;
         let marker = null;
         let thisInner = this;
 
-        map.addListener('click', function(e) {
-          if(marker != null) {
+        if (this.searchedUser.location) {
+          marker = new window.google.maps.Marker({
+            map: map,
+            position: latLng
+          });
+        }
+
+        map.addListener('click', function (e) {
+          if (marker != null) {
             marker.setMap(null);
           }
           marker = new window.google.maps.Marker({
@@ -113,11 +125,7 @@
 
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
-            marker = new window.google.maps.Marker({
-              map: map,
-              position: results[0].geometry.location
-            });
+            map.setCenter(latLng);
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
@@ -141,7 +149,6 @@
       fillInAddress() {
         this.location = this.extractLocationData(this.autocomplete.getPlace());
         this.updateAddressString();
-        console.log(this.location)
       },
 
       /**
@@ -154,7 +161,7 @@
         newLocation["longitude"] = place["geometry"]["location"].lng();
         let findingRoute = false;
 
-        for(let i = 0; i < addressComponents.length; i++){
+        for (let i = 0; i < addressComponents.length; i++) {
           let content = addressComponents[i]["long_name"];
           if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
           if(addressComponents[i]["types"].includes("route")){
@@ -177,11 +184,11 @@
         let thisInner = this;
         this.geocoder.geocode({'location': latlng}, function (results, status) {
           if (status === 'OK') {
-            if(results.length == 0){
+            if (results.length === 0) {
               this.snackbarText = "Invalid Location";
               this.snackbarColour = "error";
               this.snackbar = true;
-            }else{
+            } else {
               thisInner.location = thisInner.extractLocationData(results[0]);
               thisInner.updateAddressString();
             }
@@ -198,82 +205,43 @@
        */
       updateAddressString() {
         this.address = "";
-        if(this.location.street_address != ""){this.address += this.location.street_address}
-        if(this.location.suburb != ""){
-          if(this.address != ""){this.address += ", "}
+        if (this.location.street_address !== "") {
+          this.address += this.location.street_address
+        }
+        if (this.location.suburb !== "") {
+          if (this.address !== "") {
+            this.address += ", "
+          }
           this.address += this.location.suburb;
         }
-        if(this.location.city != ""){
-          if(this.address != ""){this.address += ", "}
+        if (this.location.city !== "") {
+          if (this.address !== "") {
+            this.address += ", "
+          }
           this.address += this.location.city;
         }
-        if(this.location.state != ""){
-          if(this.address != ""){this.address += ", "}
+        if (this.location.state !== "") {
+          if (this.address !== "") {
+            this.address += ", "
+          }
           this.address += this.location.state;
         }
-        if(this.location.country != ""){
-          if(this.address != ""){this.address += ", "}
+        if (this.location.country !== "") {
+          if (this.address !== "") {
+            this.address += ", "
+          }
           this.address += this.location.country;
         }
       },
 
-      /**
-       * Sets the location and each of the individual components by splitting the comma-separated location. Also resets
-       * the location input.
-       */
-      setLocation(location) {
-        this.location = location;
-        const l = {
-          city: document.getElementById('inputCity').value,
-          state: document.getElementById('inputState').value,
-          country: document.getElementById('inputCountry').value
-        };
-
-        if (l.city.length === 0) {
-          l.city = this.searchedUser.city;
-        }
-        if (l.state.length === 0) {
-          l.state = this.searchedUser.state;
-        }
-        if (l.country.length === 0) {
-          l.country = this.searchedUser.country;
-        }
-        this.searchedUser.location = l;
-      },
-
-      /**
-       * This method filters the the data received from the api and only suggests cities to the user.
-       *
-       */
-      getLocationCity(location) {
-        let city = "Almora";
-        if (location.properties.city !== undefined) {
-          city = location.properties.city;
-          return city
-        }
-        return city;
-      },
-      /**
-       * This method filters the the data received from the api and only suggests states to the user.
-       *
-       */
-      getLocationState(location) {
-        let state = "Angland";
-        if (location.properties.state !== undefined) {
-          state = location.properties.state;
-          return state
-        }
-        return state;
-      },
 
       /**
        Sends a request to the server side to update the searchedUser's profile info. Displays error messages if the update
        was unsuccessful.
        */
       updateProfile() {
-        this.editProfile(
-            this.searchedUser
-        )
+        this.searchedUser.location = this.location;
+        this.editProfile(this.searchedUser)
             .then(
                 response => {
                   this.updateUserProfile(this.searchedUser);
@@ -309,26 +277,6 @@
           }
         }
       },
-
-      /**
-       * Passes the user id and location object to the api to make a request to the server and displays a success or
-       * error message depending on the request response.
-       */
-      updateUserLocation() {
-        this.editUserLocation(this.searchedUser.profileId, this.location)
-          .then(
-             response => {
-               this.snackbarText = response.data;
-               this.snackbarColour = "success";
-               this.snackbar = true;
-             },
-             error => {
-               this.snackbarText = error.response.data.Errors;
-               this.snackbarColour = "error";
-               this.snackbar = true;
-            }
-          )
-      }
     },
   }
 </script>

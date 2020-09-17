@@ -11,6 +11,7 @@ import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.JsonPath;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -566,5 +567,28 @@ public class ActivityController {
         }
 
         return activityService.addLocationToActivity(activityId, location);
+    }
+
+    /**
+     * Endpoint for retrieving an activities location. Performs session checks as well as 404 checks.
+     * @param activityId Location of the activity with this id will be retrieved.
+     * @param sessionToken Session token of the user making the request.
+     * @return Response entity with code value depending on the outcome of the operation, 401 invalid session,
+     * 404 activity not found.
+     */
+    @GetMapping("/activities/{activityId}/location")
+    public ResponseEntity getActivityLocation(@PathVariable Long activityId,
+                                              @CookieValue(value = "s_id") String sessionToken) {
+        Session userWithSession = sessionRepository.findUserIdByToken(sessionToken);
+        if (userWithSession == null) {
+            return responseHandler.formatErrorResponse(401, "Invalid Session");
+        }
+
+        Optional<Activity> optionalActivity = activityRepository.findById(activityId);
+        if (optionalActivity.isEmpty()) {
+            return  responseHandler.formatErrorResponse(404, "Activity not found");
+        } else {
+            return activityService.getActivityLocation(activityId);
+        }
     }
 }
