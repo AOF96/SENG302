@@ -126,6 +126,11 @@
         this.createHomeMarker(map, position);
       },
 
+      /**
+       * Creates a blue marker at the users home location
+       * @param map
+       * @param position
+       */
       createHomeMarker(map, position) {
         var homeIcon = {
           url: "https://i.imgur.com/mNfVgmC.png",
@@ -147,7 +152,7 @@
             '</div>'+
             '</div>';
 
-        var infowindow = new window.google.maps.InfoWindow({
+        let infowindow = new window.google.maps.InfoWindow({
           content: contentString
         });
 
@@ -160,6 +165,11 @@
         });
       },
 
+      /**
+       * Converts given location object to a formatted string
+       * @param location
+       * @returns {string}
+       */
       locationToString(location) {
         let city = location.city;
         let state = location.state;
@@ -190,8 +200,10 @@
         return outputString;
       },
 
+      /**
+       * Navigates to the users profile
+       */
       goToProfile() {
-        console.log("pass")
         this.$router.push('/profile/' + this.user.profile_id)
       }
     }
