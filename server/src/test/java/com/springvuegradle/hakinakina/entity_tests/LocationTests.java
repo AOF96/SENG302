@@ -1,5 +1,7 @@
 package com.springvuegradle.hakinakina.entity_tests;
 
+
+
 import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +24,7 @@ public class LocationTests {
         locationRepository.deleteAll();
     }
 
-    @Test
+   /* @Test
     public void createLocation() {
         Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
                 "Christchurch", 8041, "Canterbury", "New Zealand",
@@ -34,5 +36,5 @@ public class LocationTests {
         assertEquals(testLocation.getPostcode(), locationRepository.findAll().get(0).getPostcode());
         assertEquals(testLocation.getLatitude(), locationRepository.findAll().get(0).getLatitude());
         assertEquals(testLocation.getLongitude(), locationRepository.findAll().get(0).getLongitude());
-    }
+    }*/
 }
