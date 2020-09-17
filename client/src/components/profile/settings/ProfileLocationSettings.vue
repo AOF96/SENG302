@@ -1,11 +1,8 @@
 <template>
-  <div class="settingsContainer" @click="showLocations = false">
+  <div class="settingsContainer">
     <v-snackbar v-model="snackbar" top :color="snackbarColour">{{ snackbarText }}</v-snackbar>
     <UserSettingsMenu/>
     <div class="settingsContentContainer">
-      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
-      </router-link>
       <h1 class="settingsTitle">Edit Profile Location</h1>
       <hr/>
       <div id="userSettingsMap"></div>
@@ -23,10 +20,11 @@
         <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined
                       dense></v-text-field>
       </div>
-      <button class="genericConfirmButton updatePasswordButton" v-on:click="updateProfile()" type="submit">Save
+      <button class="genericConfirmButton updatePasswordButton" style="margin-top: 10px" v-on:click="updateProfile()" type="submit">Save
         Location
       </button>
     </div>
+    <div class="floatClear"></div>
   </div>
 </template>
 
@@ -157,16 +155,7 @@
        * Extractor function that parses the google maps response and returns a location object.
        */
       extractLocationData(place) {
-        let newLocation = {
-          street_address: "",
-          suburb: "",
-          postcode: "",
-          city: "",
-          state: "",
-          country: "",
-          latitude: "",
-          longitude: ""
-        };
+        let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
         let addressComponents = place["address_components"];
         newLocation["latitude"] = place["geometry"]["location"].lat();
         newLocation["longitude"] = place["geometry"]["location"].lng();
@@ -174,32 +163,15 @@
 
         for (let i = 0; i < addressComponents.length; i++) {
           let content = addressComponents[i]["long_name"];
-          if (addressComponents[i]["types"].includes("street_number")) {
-            newLocation.street_address = content + " ";
-            findingRoute = true;
+          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
+          if(addressComponents[i]["types"].includes("route")){
+            if(findingRoute){newLocation.street_address += content}else{newLocation.street_address = content}
           }
-          if (addressComponents[i]["types"].includes("route")) {
-            if (findingRoute) {
-              newLocation.street_address += content
-            } else {
-              newLocation.street_address = content
-            }
-          }
-          if (addressComponents[i]["types"].includes("sublocality")) {
-            newLocation.suburb = content
-          }
-          if (addressComponents[i]["types"].includes("locality")) {
-            newLocation.city = content
-          }
-          if (addressComponents[i]["types"].includes("administrative_area_level_1")) {
-            newLocation.state = content
-          }
-          if (addressComponents[i]["types"].includes("country")) {
-            newLocation.country = content
-          }
-          if (addressComponents[i]["types"].includes("postal_code")) {
-            newLocation.postcode = content
-          }
+          if(addressComponents[i]["types"].includes("sublocality")){newLocation.suburb = content}
+          if(addressComponents[i]["types"].includes("locality")){newLocation.city = content}
+          if(addressComponents[i]["types"].includes("administrative_area_level_1")){newLocation.state = content}
+          if(addressComponents[i]["types"].includes("country")){newLocation.country = content}
+          if(addressComponents[i]["types"].includes("postal_code")){newLocation.postcode = content}
         }
 
         return newLocation;
@@ -269,9 +241,7 @@
        */
       updateProfile() {
         this.searchedUser.location = this.location;
-        this.editProfile(
-            this.searchedUser,
-        )
+        this.editProfile(this.searchedUser)
             .then(
                 response => {
                   this.updateUserProfile(this.searchedUser);
@@ -307,7 +277,6 @@
           }
         }
       },
-
     },
   }
 </script>
