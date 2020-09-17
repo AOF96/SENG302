@@ -223,6 +223,11 @@ export default {
     }
   },
   methods: {
+    /**
+     * Checks if the search term when looking for the user is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
     submitButtonCheck(page, size) {
       if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
         this.errorMessage = "Search is empty";
@@ -231,7 +236,11 @@ export default {
         this.searchUsers(page, size);
       }
     },
-
+    /**
+     * Checks if the search term when looking for an activity is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
     submitActivityButtonCheck(page, size) {
       if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0) && this.searchedActivityTerm.length === 0) {
         this.errorMessage = "Search is empty";
@@ -331,7 +340,9 @@ export default {
         }
       }
     },
-
+    /**
+     * Removes the activity from the activity filter component.
+     **/
     remove(item) {
       const index = this.activity_types_selected.indexOf(item);
       if (index >= 0) this.activity_types_selected.splice(index, 1);
