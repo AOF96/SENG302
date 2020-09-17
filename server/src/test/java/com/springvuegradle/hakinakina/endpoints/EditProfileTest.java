@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.endpoints;
 
 import com.springvuegradle.hakinakina.entity.Gender;
+import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.Session;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
@@ -52,7 +53,6 @@ public class EditProfileTest {
                 "  \"firstname\": \"Jackie\",\n" +
                 "  \"middlename\": \"Danger\",\n" +
                 "  \"nickname\": \"J\",\n" +
-                "  \"location\": \"Auckland, Auckland, New Zealand\",\n" +
                 "  \"primary_email\": \"jqi26@uclive.ac.nz\",\n" +
                 "  \"password\": \"Password1\",\n" +
                 "  \"bio\": \"bio\",\n" +

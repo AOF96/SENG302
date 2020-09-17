@@ -534,21 +534,25 @@
         let streetAddress = this.location.street_address;
         let outputString = "";
 
-        outputString += streetAddress;
-        if(city !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += city;
-        }
-        if(state !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += state;
-        }
-        if(country !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += country;
-        }
-        if(outputString === ""){
+        if (location === null) {
           outputString = "No Location Set"
+        } else {
+          outputString += streetAddress;
+          if(city !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += city;
+          }
+          if(state !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += state;
+          }
+          if(country !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += country;
+          }
+          if(outputString === ""){
+            outputString = "No Location Set"
+          }
         }
         this.locationToDisplay = outputString;
       },
@@ -783,8 +787,14 @@
        * Retrieves the location of the activity
        */
       async getActivityLocation(){
-        await apiActivity.getLocationForActivity(this.$route.params.activityId).then((response) => {
-          this.location = response.data;
+        await apiActivity.getLocationForActivity(this.$route.params.activityId)
+          .then((response) => {
+            this.location = response.data;
+        })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              this.locationToDisplay = "No Location Set"
+            }
         })
         this.locationFormat();
       },

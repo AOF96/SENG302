@@ -18,7 +18,7 @@ public class LocationTests {
     public LocationRepository locationRepository;
 
     @BeforeEach
-    public void cleanDatabase() {
+    public void clearRepository() {
         locationRepository.deleteAll();
     }
 
