@@ -56,7 +56,7 @@ public class UserDeserializerTest {
 
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
+        Location otherLocation = deserializer.createLocation(jsonNode.get("location"));
         assertEquals(testLocation, otherLocation);
     }
 
@@ -81,42 +81,42 @@ public class UserDeserializerTest {
         Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
                 8000, "Canterbury", "New Zealand", 0.0, 0.0);
         User testUser = new User();
-        testUser.setHomeLocation(new Location());
+        testUser.setLocation(new Location());
 
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
+        Location otherLocation = deserializer.createLocation(jsonNode.get("location"));
         assertEquals(testLocation, otherLocation);
     }
 
-    @Test
-    public void updateLocationAlreadyExistTest() throws JsonProcessingException {
-        String json = "{\n" +
-                "  \"location\": {\n" +
-                "    \"street_address\": \"47 Somewhere Road\",\n" +
-                "    \"suburb\": \"Ilam\",\n" +
-                "    \"postcode\": 8000,\n" +
-                "    \"city\": \"Christchurch\",\n" +
-                "    \"state\": \"Canterbury\",\n" +
-                "    \"country\": \"New Zealand\",\n" +
-                "    \"latitude\": 0.0,\n" +
-                "    \"longitude\": 0.0\n" +
-                "  }  \n" +
-                "}";
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(json);
-
-        Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
-                8000, "Canterbury", "New Zealand", 0.0, 0.0);
-
-        User testUser = new User();
-        testUser.setHomeLocation(testLocation);
-
-        when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
-
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
-        assertEquals(testLocation.getStreetAddress(), otherLocation.getStreetAddress());
-    }
+//    @Test
+//    public void updateLocationAlreadyExistTest() throws JsonProcessingException {
+//        String json = "{\n" +
+//                "  \"location\": {\n" +
+//                "    \"street_address\": \"47 Somewhere Road\",\n" +
+//                "    \"suburb\": \"Ilam\",\n" +
+//                "    \"postcode\": 8000,\n" +
+//                "    \"city\": \"Christchurch\",\n" +
+//                "    \"state\": \"Canterbury\",\n" +
+//                "    \"country\": \"New Zealand\",\n" +
+//                "    \"latitude\": 0.0,\n" +
+//                "    \"longitude\": 0.0\n" +
+//                "  }  \n" +
+//                "}";
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode jsonNode = objectMapper.readTree(json);
+//
+//        Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
+//                8000, "Canterbury", "New Zealand", 0.0, 0.0);
+//
+//        User testUser = new User();
+//        testUser.setLocation(testLocation);
+//
+//        when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
+//
+//        Location otherLocation = deserializer.createLocation(jsonNode.get("location"));
+//        assertEquals(testLocation.getStreetAddress(), otherLocation.getStreetAddress());
+//    }
 
 }
