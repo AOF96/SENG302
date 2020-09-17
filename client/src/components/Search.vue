@@ -228,6 +228,11 @@ export default {
     }
   },
   methods: {
+    /**
+     * Checks if the search term when looking for the user is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
     submitButtonCheck(page, size) {
       if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
         this.errorMessage = "Search is empty";
@@ -236,7 +241,11 @@ export default {
         this.searchUsers(page, size);
       }
     },
-
+    /**
+     * Checks if the search term when looking for an activity is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
     submitActivityButtonCheck(page, size) {
       if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
         this.errorMessage = "Search is empty";
@@ -245,6 +254,12 @@ export default {
         this.searchActivity(page, size);
       }
     },
+    /**
+     * Checks if more searched activity result exists and if they don't hides the more results button else shows
+     * more results. Also manages the snack bar and error messages.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
     searchActivity(page, size){
       if (page === this.defaultActivityPage) {
         this.allActivities = [];
@@ -280,8 +295,6 @@ export default {
           }
       )
     },
-
-
     ...mapActions(["setUserSearch", "setScrollPosition"]),
     /**
      * Search for size amount of users on given page and append to list
@@ -453,7 +466,6 @@ export default {
           this.snackbar = true;
         })
     },
-
     /**
      * Load query from url
      */
