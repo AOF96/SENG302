@@ -101,7 +101,7 @@ const routes = [
         component: Search
     },
     {
-        path: '/map',
+        path: '/map/:coordinates',
         component: Map
     },
 ];

@@ -16,6 +16,8 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        latitude: null,
+        longitude: null
       }
     },
     computed: {
@@ -23,6 +25,7 @@
       ...mapGetters(["user"])
     },
     mounted() {
+      this.parseCoordinates();
       this.loadMap();
     },
     methods: {
@@ -34,7 +37,7 @@
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
 
-        let position = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
+        let position = new window.google.maps.LatLng(this.latitude, this.longitude);
 
         const styles = {
           light: [
@@ -205,6 +208,15 @@
        */
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
+      },
+
+      /**
+       * Parses the Coordinates in the URL (@{latitude},{longitude}), extracting the latitude and longitude.
+       */
+      parseCoordinates() {
+        let coordinates = this.$route.params.coordinates.slice(1, this.$route.params.coordinates.length).split(',');
+        this.latitude = coordinates[0];
+        this.longitude = coordinates[1];
       }
     }
   }
