@@ -123,6 +123,10 @@
           styles: styles["light"]
         });
 
+        this.createHomeMarker(map, position);
+      },
+
+      createHomeMarker(map, position) {
         var homeIcon = {
           url: "https://i.imgur.com/mNfVgmC.png",
           scaledSize: new window.google.maps.Size(20, 20),
@@ -130,12 +134,66 @@
           anchor: new window.google.maps.Point(10, 10)
         };
 
-        new window.google.maps.Marker({
+        let marker = new window.google.maps.Marker({
           map: map,
           position: position,
           icon: homeIcon
         });
+
+        let contentString = '<div id="content">'+
+            '<h2>Your Location</h2>'+
+            '<div id="bodyContent">'+
+            this.locationToString(this.user.location) +
+            '</div>'+
+            '</div>';
+
+        var infowindow = new window.google.maps.InfoWindow({
+          content: contentString
+        });
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
+        window.google.maps.event.addListener(map, "click", function() {
+          infowindow.close();
+        });
       },
+
+      locationToString(location) {
+        let city = location.city;
+        let state = location.state;
+        let country = location.country;
+        let streetAddress = location.street_address;
+        let outputString = "";
+
+        if (location === {}) {
+          outputString = "No Location Set"
+        } else {
+          outputString += streetAddress;
+          if(city !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += city;
+          }
+          if(state !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += state;
+          }
+          if(country !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += country;
+          }
+          if(outputString === ""){
+            outputString = "No Location Set"
+          }
+        }
+        return outputString;
+      },
+
+      goToProfile() {
+        console.log("pass")
+        this.$router.push('/profile/' + this.user.profile_id)
+      }
     }
   }
 </script>
