@@ -20,7 +20,11 @@ describe('NavBar after the login is successful', () => {
         isLogin: true,
         permission_level: 0,
         firstname: "John",
-        lastname: "Smith"
+        lastname: "Smith",
+        location: {
+          latitude: 120.47,
+          longitude: -20.12
+        }
       }),
       isAdmin: () => {
         false
@@ -66,7 +70,7 @@ describe('NavBar after the login is successful', () => {
     const wrapper = mount(NavBar, {store, localVue, router});
     expect(wrapper.find("#hamburgerMap").exists()).toBe(true);
     wrapper.find("#hamburgerMap").trigger('click');
-    expect(window.location.href).toBe('http://localhost/#/map/')
+    expect(window.location.href).toBe('http://localhost/#/map/@120.47,-20.12')
     // expect(wrapper.findComponent({name: "Map"}).exists()).toBe(true)
   });
 
