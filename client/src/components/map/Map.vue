@@ -22,14 +22,16 @@
             name: "Walking away",
             visibility: "public",
             latitude: -34.0,
-            longitude: 150
+            longitude: 150,
+            author: 86007
           },
           {
             id: 2,
             name: "Walking towards",
             visibility: "public",
             latitude: -35.0,
-            longitude: 151
+            longitude: 151,
+            author: 86009
           }
         ]
       }
@@ -196,7 +198,11 @@
 
         for (let activity of this.activities) {
           if (activity.visibility === "public") {
-            activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
+            if(activity.author === this.user.profile_id) {
+              activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
+            } else {
+              activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
+            }
           }
 
           let activityPosition = new window.google.maps.LatLng(activity.latitude, activity.longitude);
