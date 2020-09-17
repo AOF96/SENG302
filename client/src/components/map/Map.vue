@@ -16,6 +16,7 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        mapBounds: null
       }
     },
     computed: {
@@ -24,6 +25,7 @@
     },
     mounted() {
       this.loadMap();
+      this.getMapBounds();
     },
     methods: {
       ...mapActions(["getDataFromUrl"]),
@@ -40,10 +42,21 @@
           },
           zoom: 12
         });
+        window.google.maps.event.addListenerOnce(map, 'idle', function(){
+          this.mapBounds = this.getBounds();
+          // var NECorner = this.mapBounds.getNorthEast();
+          // var SWCorner = this.mapBounds.getSouthWest();
+          // // console.log(this.mapBounds);
+          // console.log(NECorner.get);
+          // console.log(SWCorner);
+          console.log(this.mapBounds);
+          // alert(this.mapBounds);
+        });
+
         let address = this.user.location.city;
         this.geocoder.geocode({ 'address': address}, function(results, status) {
           if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
+            this.gmap.setCenter(results[0].geometry.location);
             new window.google.maps.Marker({
               map: map,
               position: results[0].geometry.location
@@ -54,6 +67,9 @@
           }
         });
       },
+      getMapBounds(){
+        // console.log(this.mapBounds);
+      }
     }
   }
 </script>

@@ -101,6 +101,10 @@ const actions = {
     async checkUserActivityVisibility(data, {'profileId': profileId, 'activityId': activityId }) {
         return await apiActivity.checkUserActivityVisibility(profileId, activityId);
     },
+    async getActivityInRange(data, {'latitudeBottomLeft': latitudeBottomLeft, 'latitudeTopRight': latitudeTopRight,
+        'longitudeBottomLeft': longitudeBottomLeft, 'longitudeTopRight': longitudeTopRight}) {
+        return await apiActivity.getActivityInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+    },
     /**
      * Calls the api to send a request to add a result
      * @param data

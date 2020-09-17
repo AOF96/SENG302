@@ -551,5 +551,17 @@ export const apiActivity = {
   /**
    * Check the visibility of an activity for a user
    */
-  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`)
+  checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`),
+
+  /**
+  * Send a request to retrieve the all the activities within the given bound
+  */
+  getActivityInRange: (latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight) => instance.get(`/activities`,{
+    params: {
+        latitudeBottomLeft: latitudeBottomLeft,
+        latitudeTopRight: latitudeTopRight,
+        longitudeBottomLeft: longitudeBottomLeft,
+        longitudeTopRight: longitudeTopRight
+    }
+}),
 };
