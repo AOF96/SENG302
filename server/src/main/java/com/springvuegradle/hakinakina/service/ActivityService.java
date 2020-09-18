@@ -953,52 +953,6 @@ public class ActivityService {
     }
 
     /**
-     *
-     * @param latitudeTopRight the latitude of the top right on the map visible on the screen
-     * @param longitudeTopRight the longitude of the top right of the map visible on the screen
-     * @param latitudeBottomLeft the latitude of the bottom left on the map visible on the screen
-     * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
-     * @return the list of all the activities within the range of the coordinates
-     */
-    public ResponseEntity getActivitiesWithinGivenRange(double latitudeBottomLeft, double latitudeTopRight,
-                                                        double longitudeBottomLeft, double longitudeTopRight,
-                                                        long userId) {
-        try {
-            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
-            List<Activity> filteredActivitiesInRange = filterActivitiesByVisibility(activitiesInRange, userId);
-            return new ResponseEntity(filteredActivitiesInRange, HttpStatus.valueOf(200));
-        } catch (Error e) {
-            return new ResponseEntity("Error", HttpStatus.valueOf(500));
-        }
-    }
-
-    /**
-     * Takes an activity list and checks if the given user is shared or author if visibility is not public.
-     * i.e. checks if they should be able to see the activity or not and if not removes from list before
-     * returning
-     * @param activities list of activities in the given area found by the getActivitiesWithinGivenRange method
-     * @param userId id of the user that the viewing permission is being checked for
-     * @return returns a new list of activities minus those that the user is not permitted to view
-     */
-    public List<Activity> filterActivitiesByVisibility(List<Activity> activities, long userId) {
-        User user = userRepository.getOne(userId);
-
-        List<Activity> filteredActivityList = new ArrayList<>();
-
-        for (Activity activity : activities) {
-            if (activity.getVisibility() != Visibility.PUBLIC) {
-                Set<User> activitySharedUsers = activity.getUsersShared();
-                if (activitySharedUsers != null && (activitySharedUsers.contains(user)
-                        || activity.getAuthor().getUserId().equals(user.getUserId()))) {
-                    filteredActivityList.add(activity);
-                }
-            }
-        }
-
-        return filteredActivityList;
-    }
-
-    /**
      * Service method for retrieving an activities location. First gets location id from the activity and then uses
      * this locationId to get the actual location and return it.
      * @param activityId Location of the activity with this id will be retrieved.
@@ -1019,5 +973,55 @@ public class ActivityService {
         } catch (Error e) {
             return new ResponseEntity("Internal server error", HttpStatus.valueOf(500));
         }
+    }
+
+    /**
+     *
+     * @param latitudeTopRight the latitude of the top right on the map visible on the screen
+     * @param longitudeTopRight the longitude of the top right of the map visible on the screen
+     * @param latitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @return the list of all the activities within the range of the coordinates
+     */
+    public ResponseEntity getActivitiesWithinGivenRange(double latitudeBottomLeft, double latitudeTopRight,
+                                                        double longitudeBottomLeft, double longitudeTopRight,
+                                                        long userId) {
+        try {
+            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+            String filteredActivitiesInRange = filterActivitiesByVisibility(activitiesInRange, userId);
+            return new ResponseEntity(filteredActivitiesInRange, HttpStatus.valueOf(200));
+        } catch (Error e) {
+            return new ResponseEntity("Error", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Takes an activity list and checks if the given user is shared or author if visibility is not public.
+     * i.e. checks if they should be able to see the activity or not and if not removes from list before
+     * returning
+     * @param activities list of activities in the given area found by the getActivitiesWithinGivenRange method
+     * @param userId id of the user that the viewing permission is being checked for
+     * @return returns a new list of activities minus those that the user is not permitted to view
+     */
+    public String filterActivitiesByVisibility(List<Activity> activities, long userId) {
+        User user = userRepository.getOne(userId);
+        String filteredActivityJsonList = "[";
+
+        for (Activity activity : activities) {
+            if (activity.getVisibility() != Visibility.PUBLIC) {
+                Set<User> activitySharedUsers = activity.getUsersShared();
+                if (activitySharedUsers != null && (activitySharedUsers.contains(user)
+                        || activity.getAuthor().getUserId().equals(user.getUserId()))) {
+                    filteredActivityJsonList += activity.getBasicActivityInfo();
+                    filteredActivityJsonList += ", ";
+                }
+            }
+            else{
+                filteredActivityJsonList += activity.getBasicActivityInfo();
+                filteredActivityJsonList += ", ";
+            }
+        }
+        filteredActivityJsonList += "]";
+        return filteredActivityJsonList;
     }
 }
