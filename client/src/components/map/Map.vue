@@ -6,6 +6,7 @@
 
 <script>
   import {mapGetters, mapState, mapActions} from "vuex";
+  import mapStyles from "../../util/mapStyles"
 
   export default {
     name: "Map",
@@ -16,6 +17,7 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        mapStyle: "light"
       }
     },
     computed: {
@@ -36,92 +38,19 @@
 
         let position = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
 
-        const styles = {
-          light: [
-            {
-              featureType: "poi",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-          ],
-          dark: [
-            {
-              featureType: "poi",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-            {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
-            {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
-            {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
-            {
-              featureType: 'road',
-              elementType: 'geometry',
-              stylers: [{color: '#38414e'}]
-            },
-            {
-              featureType: 'road',
-              elementType: 'geometry.stroke',
-              stylers: [{color: '#212a37'}]
-            },
-            {
-              featureType: 'road',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#9ca5b3'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'geometry',
-              stylers: [{color: '#746855'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'geometry.stroke',
-              stylers: [{color: '#1f2835'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#f3d19c'}]
-            },
-            {
-              featureType: 'transit',
-              elementType: 'geometry',
-              stylers: [{color: '#2f3948'}]
-            },
-            {
-              featureType: 'transit.station',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#d59563'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'geometry',
-              stylers: [{color: '#17263c'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#515c6d'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.stroke',
-              stylers: [{color: '#17263c'}]
-            }
-          ]
-        };
-
         let map = new window.google.maps.Map(document.getElementById("map"), {
           center: position,
           zoom: 12,
-          styles: styles["light"]
+          styles: mapStyles[this.mapStyle],
+          zoomControl: false,
+          mapTypeControl: true,
+          scaleControl: false,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: false
         });
+
+        this.createControl(map);
 
         this.createHomeMarker(map, position);
       },
@@ -205,6 +134,49 @@
        */
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
+      },
+
+      /**
+       * Creates a control for swapping the map theme
+       * @param map
+       */
+      createControl(map) {
+        let controlDiv = document.createElement("div");
+
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '22px';
+        controlUI.style.textAlign = 'center';
+        controlUI.title = 'Click to recenter the map';
+        controlDiv.appendChild(controlUI);
+
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.lineHeight = '38px';
+        controlText.style.paddingLeft = '5px';
+        controlText.style.paddingRight = '5px';
+        controlText.textContent = 'Swap Theme';
+        controlUI.appendChild(controlText);
+
+        controlUI.addEventListener('click', function() {
+          if (this.mapStyle === "light") {
+            this.mapStyle = "dark";
+          } else {
+            this.mapStyle = "light";
+          }
+          map.setOptions({
+            styles: mapStyles[this.mapStyle],
+          })
+        });
+
+        controlDiv.index = 1;
+        map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(controlDiv);
       }
     }
   }
