@@ -1,6 +1,7 @@
 <template>
   <div id="map">
     <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+    <div id="hiddenText" hidden="true"></div>
   </div>
 </template>
 
@@ -25,7 +26,6 @@
     },
     mounted() {
       this.loadMap();
-      this.getMapBounds();
     },
     methods: {
       ...mapActions(["getDataFromUrl"]),
@@ -42,16 +42,8 @@
           },
           zoom: 12
         });
-        window.google.maps.event.addListenerOnce(map, 'idle', function(){
-          this.mapBounds = this.getBounds();
-          // var NECorner = this.mapBounds.getNorthEast();
-          // var SWCorner = this.mapBounds.getSouthWest();
-          // // console.log(this.mapBounds);
-          // console.log(NECorner.get);
-          // console.log(SWCorner);
-          console.log(this.mapBounds);
-          // alert(this.mapBounds);
-        });
+
+        setInterval(this.getMapBounds, 2000, map);
 
         let address = this.user.location.city;
         this.geocoder.geocode({ 'address': address}, function(results, status) {
@@ -67,8 +59,17 @@
           }
         });
       },
-      getMapBounds(){
-        // console.log(this.mapBounds);
+      getMapBounds(map){
+        let mapBoundsObject = map.getBounds()
+        let NECorner = mapBoundsObject.getNorthEast();
+        let SWCorner = mapBoundsObject.getSouthWest();
+        this.mapBounds = {
+          NELat: NECorner.lat(),
+          NELong: NECorner.lng(),
+          SWLat: SWCorner.lat(),
+          SWLong: SWCorner.lng()
+        };
+        //apiActivity.getActivityInRange(this.mapBounds.SWLat, this.mapBounds.NELat, this.mapBounds.SWLong, this.mapBounds.NELong);
       }
     }
   }
