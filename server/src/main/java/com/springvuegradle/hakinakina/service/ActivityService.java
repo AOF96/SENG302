@@ -953,6 +953,29 @@ public class ActivityService {
     }
 
     /**
+     * Service method for retrieving an activities location. First gets location id from the activity and then uses
+     * this locationId to get the actual location and return it.
+     * @param activityId Location of the activity with this id will be retrieved.
+     * @return Response entity with code value depending on the outcome of the operation, 404 no location,
+     * 500 internal server error,  200 ok.
+     */
+    public ResponseEntity getActivityLocation(Long activityId) {
+        try {
+            Optional<Long> optionalLocationId = activityRepository.getActivityLocationId(activityId);
+
+            if (optionalLocationId.isEmpty()) {
+                return new ResponseEntity("Activity has no location", HttpStatus.valueOf(404));
+            } else {
+                Long locationId = optionalLocationId.get();
+                Location activityLocation = locationRepository.getOne(locationId);
+                return new ResponseEntity(activityLocation, HttpStatus.valueOf(200));
+            }
+        } catch (Error e) {
+            return new ResponseEntity("Internal server error", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
      *
      * @param latitudeTopRight the latitude of the top right on the map visible on the screen
      * @param longitudeTopRight the longitude of the top right of the map visible on the screen

@@ -124,7 +124,7 @@
               <v-tab-item>
                 <v-card class="py-3" flat>
                   <div>
-                    <ActivityLocationSettings/>
+                    <ActivityLocationSettings v-on:set-location="setLocationFromComponent"/>
                   </div>
                 </v-card>
               </v-tab-item>
@@ -380,7 +380,6 @@
         tabs: null,
         selected_activity: "Activity Type",
         activities_option: [],
-        location: null,
         duration: "duration",
         name: "",
         description: "",
@@ -417,7 +416,7 @@
         tempDescription: null,
         tempResultType: null,
         autocomplete: null,
-        locationString: ""
+        location: null,
       };
     },
 
@@ -458,7 +457,16 @@
           .catch(error => console.log(error));
       },
 
+      /**
+       * Sets location from edit location component
+       */
+      setLocationFromComponent(newLocation) {
+        this.location = newLocation;
+      },
 
+      /**
+       * Resets achievement input
+       */
       cancelAddAchievement() {
         this.addAchievement = false;
         this.achieveTitle = "";
@@ -469,7 +477,6 @@
       /**
        * The function adds the achievement to the list of achievements.
        * */
-
       addNewAchievement(title, description, type) {
         if (title === null || title.trim() === "") {
           this.displayError("Please enter a title.");
@@ -682,7 +689,6 @@
 
         // Sets duration to a boolean for the request
         var tempIsDuration = this.duration !== "duration";
-        this.setLocation(location);
 
         // Send a create request
         apiActivity.addActivity(this.$route.params.profileId, this.name, tempIsDuration, this.combinedStartTime,

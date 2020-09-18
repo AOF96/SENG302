@@ -47,13 +47,12 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
     @Override
     public Activity deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
-        System.out.println(jp);
         JsonNode node = jp.getCodec().readTree(jp);
 
         // Get compulsory attributes
         String name = ParserHelper.getValueString(node, "activity_name");
         String description = ParserHelper.getValueString(node, "description");
-        Set<ActivityType> activityTypes = getActivityTypes(node, "activity_types");
+        Set<ActivityType> activityTypes = getActivityTypes(node, "activity_type");
         boolean continuous = node.get("continuous").asBoolean();
         String startTime = ParserHelper.getValueString(node, "start_time");
         String endTime = ParserHelper.getValueString(node, "end_time");
@@ -61,15 +60,24 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         Set<Achievement> achievements = getAchievements(node, "achievements");
 
         // Create user with compulsory attributes
-        Activity activity = new Activity(name, description, continuous, Timestamp.valueOf(startTime),
-                Timestamp.valueOf(endTime));
+        Activity activity;
+        if (!continuous) {
+            activity = new Activity(name, description, continuous, ParserHelper.parseDateTime(startTime),
+                    ParserHelper.parseDateTime(endTime));
+        } else {
+            activity = new Activity(name, description, continuous, null, null);
+        }
 
         activity.setActivityTypes(activityTypes);
         activity.setVisibility(visibility);
         activity.setAchievements(achievements);
         if (node.get("location") != null) {
             Location location = ParserHelper.createLocation(node.get("location"));
-            locationRepository.save(location);
+            try {
+                locationRepository.save(location);
+            } catch (Exception e) {
+
+            }
             activity.setLocation(location);
         }
 
@@ -106,7 +114,11 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         } else {
             Set<ActivityType> userActivityTypes = new HashSet<>();
             for (JsonNode activityTypeNode : activityTypeNodes) {
-                userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
+                try {
+                    userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
+                } catch (Exception e) {
+
+                }
             }
             return userActivityTypes;
         }

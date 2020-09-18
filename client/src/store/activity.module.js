@@ -101,6 +101,10 @@ const actions = {
     async checkUserActivityVisibility(data, {'profileId': profileId, 'activityId': activityId }) {
         return await apiActivity.checkUserActivityVisibility(profileId, activityId);
     },
+    async getActivityInRange(data, {'latitudeBottomLeft': latitudeBottomLeft, 'latitudeTopRight': latitudeTopRight,
+        'longitudeBottomLeft': longitudeBottomLeft, 'longitudeTopRight': longitudeTopRight}) {
+        return await apiActivity.getActivityInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+    },
     /**
      * Calls the api to send a request to add a result
      * @param data
@@ -131,6 +135,15 @@ const actions = {
      */
     async getResults(data, {'achievementId': achievementId}) {
         return await apiActivity.getResults(achievementId);
+    },
+    /**
+     * Calls the api method to get location for the activity with the provided id
+     * @param data
+     * @param activityId id of the activity that the location for is to be retrieved
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    async getLocationForActivity(data, {'activityId': activityId}) {
+        return await apiActivity.getLocationForActivity(activityId);
     }
 };
 
