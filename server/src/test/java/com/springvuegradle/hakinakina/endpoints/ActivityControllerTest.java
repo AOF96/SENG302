@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.Cookie;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -106,9 +107,10 @@ public class ActivityControllerTest {
             "    \"Fun\",\n" +
             "    \"Relaxing\"\n" +
             "  ],\n" +
-            "  \"continous\": false,\n" +
-            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
+            "  \"continuous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"visibility\": \"private\"" +
             "}";
 
 
@@ -120,9 +122,10 @@ public class ActivityControllerTest {
             "    \"Fun\",\n" +
             "    \"Relaxing\"\n" +
             "  ],\n" +
-            "  \"continous\": false,\n" +
-            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
+            "  \"continuous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"visibility\": \"private\"" +
             "}";
 
     private final String ADD_LOCATION_JSON = "{\n" +
@@ -923,6 +926,19 @@ public class ActivityControllerTest {
                 .content(ADD_LOCATION_JSON))
                 .andExpect(status().isCreated());
 
+    }
+
+    @Test
+    public void getLocationForActivityTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        Activity testActivity = createTestActivity();
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
+        /*when(service.getActivityLocation(any(Long.class)))
+                .thenReturn(new ResponseEntity(any(Location.class), HttpStatus.valueOf(200)));*/
+        this.mockMvc.perform(get("/activities/1/location").cookie(tokenCookie))
+                .andExpect(status().is(200));
     }
 
     @Test

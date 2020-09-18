@@ -553,6 +553,10 @@ export const apiActivity = {
    */
   checkUserActivityVisibility: (profileId, activityId) => instance.get(`/activities/${activityId}/profiles/${profileId}/uservisibility`),
 
+    /**
+     * Get location for activity with provided id
+      */
+    getLocationForActivity: (activityId) => instance.get(`/activities/${activityId}/location`),
   /**
   * Send a request to retrieve the all the activities within the given bound
   */
