@@ -90,6 +90,9 @@ public class ActivityControllerTest {
     @Mock
     private SearchService searchService;
 
+    @Mock
+    private ActivityService activityService;
+
     @BeforeEach
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
@@ -135,6 +138,7 @@ public class ActivityControllerTest {
             "  \"street_address\": \"123 test ave\",\n" +
             "  \"suburb\": \"suburb\"" +
             "}";
+
 
 
     private Activity createTestActivity() {
@@ -925,15 +929,34 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void getLocationForActivityTest() throws Exception {
+    public void getActivitiesWithinGivenRangeTest() throws Exception{
+
+        List<Activity> activityList = new ArrayList<>();
         final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
-        Session testSession = new Session("t0k3n");
-        Activity testActivity = createTestActivity();
-        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
-        when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
-        /*when(service.getActivityLocation(any(Long.class)))
-                .thenReturn(new ResponseEntity(any(Location.class), HttpStatus.valueOf(200)));*/
-        this.mockMvc.perform(get("/activities/1/location").cookie(tokenCookie))
+        Session session1 = new Session("t0k3n");
+        User user = new User();
+        user.setUserId(1L);
+        session1.setUser(user);
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(activityService.getActivitiesWithinGivenRange(-2000.0, 2000.0,
+                -1000.0, 1000.0, 1L)).thenReturn(new ResponseEntity(activityList, HttpStatus.valueOf(200)));
+        //when(sessionRepository.findUserIdByToken("t0k3n").getUser().getUserId()).thenReturn(1L);
+        this.mockMvc.perform(get("/activities/within/range/?latitudeTopRight=-2000.0&longitudeTopRight=2000.0&latitudeBottomLeft=-1000.0&longitudeBottomLeft=1000.0").cookie(tokenCookie))
                 .andExpect(status().is(200));
     }
+
+    @Test
+    public void getActivitiesWithinGivenRangeNullTest() throws Exception{
+
+        List<Activity> activityList = new ArrayList<>();
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(activityService.getActivitiesWithinGivenRange(-2000.0, 2000.0,
+                -1000.0, 1000.0, 1L)).thenReturn(new ResponseEntity(activityList, HttpStatus.valueOf(200)));
+
+        this.mockMvc.perform(get("/activities/within/range/?latitudeTopRight=null.0&longitudeTopRight=2000.0&latitudeBottomLeft=-1000.0&longitudeBottomLeft=1000.0").cookie(tokenCookie))
+            .andExpect(status().is(400));
+    }
+
 }

@@ -76,4 +76,12 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     Optional<Long> getActivityLocationId(Long activityId);
 
     Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
+
+    @Query(value = "SELECT * FROM Activity a JOIN Location l ON a.location_id = l.location_id WHERE (l.latitude BETWEEN ? AND ?) AND (l.longitude BETWEEN ? AND ?)",  nativeQuery = true)
+    List<Activity> getActivitiesInRange(double latitudeBottomLeft, double latitudeTopRight, double longitudeBottomLeft, double longitudeTopRight);
 }
+
+
+
+
+
