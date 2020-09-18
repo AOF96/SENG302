@@ -155,6 +155,20 @@ public class Location {
         this.user = user;
     }
 
+    @Override
+    public String toString() {
+        return "Location{" +
+                "streetAddress='" + streetAddress + '\'' +
+                ", suburb='" + suburb + '\'' +
+                ", city='" + city + '\'' +
+                ", postcode=" + postcode +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
+    }
+
     public User getUser() {
         return this.user;
     }
