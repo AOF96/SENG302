@@ -72,7 +72,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "SELECT activityRole FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?", nativeQuery = true)
     String getUsersRoleForActivity(Long activityId, Long userId);
 
-    @Query(value = "SELECT * FROM Activity a JOIN Location l ON a.location_id = l.location_id WHERE (l.latitude BETWEEN ? AND ?) AND (l.longitude BETWEEN ? AND ?)",  nativeQuery = true)
+    @Query(value = "SELECT a.* FROM Activity a JOIN Location l ON a.location_id = l.location_id WHERE (l.latitude BETWEEN ? AND ?) AND (l.longitude BETWEEN ? AND ?)",  nativeQuery = true)
     List<Activity> getActivitiesInRange(double latitudeBottomLeft, double latitudeTopRight, double longitudeBottomLeft, double longitudeTopRight);
 
     @Query(value = "SELECT location_id FROM Activity WHERE activity_id = ?", nativeQuery = true)

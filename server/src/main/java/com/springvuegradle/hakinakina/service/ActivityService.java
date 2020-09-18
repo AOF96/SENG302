@@ -988,7 +988,7 @@ public class ActivityService {
                                                         long userId) {
         try {
             List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
-            List<Activity> filteredActivitiesInRange = filterActivitiesByVisibility(activitiesInRange, userId);
+            String filteredActivitiesInRange = filterActivitiesByVisibility(activitiesInRange, userId);
             return new ResponseEntity(filteredActivitiesInRange, HttpStatus.valueOf(200));
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
@@ -1003,21 +1003,25 @@ public class ActivityService {
      * @param userId id of the user that the viewing permission is being checked for
      * @return returns a new list of activities minus those that the user is not permitted to view
      */
-    public List<Activity> filterActivitiesByVisibility(List<Activity> activities, long userId) {
+    public String filterActivitiesByVisibility(List<Activity> activities, long userId) {
         User user = userRepository.getOne(userId);
-
-        List<Activity> filteredActivityList = new ArrayList<>();
+        String filteredActivityJsonList = "[";
 
         for (Activity activity : activities) {
             if (activity.getVisibility() != Visibility.PUBLIC) {
                 Set<User> activitySharedUsers = activity.getUsersShared();
                 if (activitySharedUsers != null && (activitySharedUsers.contains(user)
                         || activity.getAuthor().getUserId().equals(user.getUserId()))) {
-                    filteredActivityList.add(activity);
+                    filteredActivityJsonList += activity.getBasicActivityInfo();
+                    filteredActivityJsonList += ", ";
                 }
             }
+            else{
+                filteredActivityJsonList += activity.getBasicActivityInfo();
+                filteredActivityJsonList += ", ";
+            }
         }
-
-        return filteredActivityList;
+        filteredActivityJsonList += "]";
+        return filteredActivityJsonList;
     }
 }
