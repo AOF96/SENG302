@@ -254,7 +254,8 @@ export default {
 
       if (this.searchedUser.location) {
         //Use me once the address is available in the user object
-        let address = this.searchedUser.location.street_address;
+        let address = this.searchedUser.location.street_address + ' ' + this.searchedUser.location.city + ' ' +
+                this.searchedUser.location.country;
 
         let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 

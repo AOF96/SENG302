@@ -40,7 +40,7 @@
           },
           zoom: 12
         });
-        let address = this.user.location.city;
+        let address = this.user.location.street_address + ' ' + this.user.location.city + ' ' + this.user.location.country;
         this.geocoder.geocode({ 'address': address}, function(results, status) {
           if (status === 'OK') {
             map.setCenter(results[0].geometry.location);

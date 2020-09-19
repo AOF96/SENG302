@@ -69,6 +69,7 @@
     async mounted() {
       await this.loadSearchedUser();
       this.loadMap();
+      this.updateAddressString(this.searchedUser.location);
     },
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl", "editUserLocation"]),
@@ -146,15 +147,15 @@
       /**
        * Fills in address field and location object from address autocomplete
        */
-      fillInAddress() {
-        this.location = this.extractLocationData(this.autocomplete.getPlace());
-        this.updateAddressString();
+      async fillInAddress() {
+        this.location = await this.extractLocationData(this.autocomplete.getPlace());
+        this.updateAddressString(this.location);
       },
 
       /**
        * Extractor function that parses the google maps response and returns a location object.
        */
-      extractLocationData(place) {
+      async extractLocationData(place) {
         let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
         let addressComponents = place["address_components"];
         newLocation["latitude"] = place["geometry"]["location"].lat();
@@ -182,15 +183,15 @@
        */
       getLocationFromLatLng(latlng) {
         let thisInner = this;
-        this.geocoder.geocode({'location': latlng}, function (results, status) {
+        this.geocoder.geocode({'location': latlng}, async function (results, status) {
           if (status === 'OK') {
             if (results.length === 0) {
               this.snackbarText = "Invalid Location";
               this.snackbarColour = "error";
               this.snackbar = true;
             } else {
-              thisInner.location = thisInner.extractLocationData(results[0]);
-              thisInner.updateAddressString();
+              thisInner.location = await thisInner.extractLocationData(results[0]);
+              thisInner.updateAddressString(thisInner.location);
             }
           } else {
             this.snackbarText = status;
@@ -201,36 +202,37 @@
       },
 
       /**
-       * Updates the address string from the location object
+       * Updates the address string from the locationObject parameter. Used when the location is changed by clicking
+       * on the map, and when the map is first loaded with the initial location.
        */
-      updateAddressString() {
+      updateAddressString(locationObject) {
         this.address = "";
-        if (this.location.street_address !== "") {
-          this.address += this.location.street_address
+        if (locationObject.street_address !== "") {
+          this.address += locationObject.street_address
         }
-        if (this.location.suburb !== "") {
+        if (locationObject.suburb !== "") {
           if (this.address !== "") {
             this.address += ", "
           }
-          this.address += this.location.suburb;
+          this.address += locationObject.suburb;
         }
-        if (this.location.city !== "") {
+        if (locationObject.city !== "") {
           if (this.address !== "") {
             this.address += ", "
           }
-          this.address += this.location.city;
+          this.address += locationObject.city;
         }
-        if (this.location.state !== "") {
+        if (locationObject.state !== "") {
           if (this.address !== "") {
             this.address += ", "
           }
-          this.address += this.location.state;
+          this.address += locationObject.state;
         }
-        if (this.location.country !== "") {
+        if (locationObject.country !== "") {
           if (this.address !== "") {
             this.address += ", "
           }
-          this.address += this.location.country;
+          this.address += locationObject.country;
         }
       },
 
