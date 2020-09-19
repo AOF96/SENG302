@@ -288,7 +288,7 @@ public class UserService {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
         if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
-            messages.add("Please select the fitness level in the range 0 and 5");
+            messages.add("Please select your fitness level");
         }
         if (user.getBirthDate().after(new Date())) {
             messages.add("Birth date must be in the past");
