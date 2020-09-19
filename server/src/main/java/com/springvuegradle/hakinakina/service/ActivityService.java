@@ -1,11 +1,7 @@
 package com.springvuegradle.hakinakina.service;
 
-import com.springvuegradle.hakinakina.dto.AchievementDto;
+import com.springvuegradle.hakinakina.dto.*;
 import com.springvuegradle.hakinakina.exception.ActivityNotFoundException;
-import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
-import com.springvuegradle.hakinakina.dto.FeedPostDto;
-import com.springvuegradle.hakinakina.dto.SearchUserDto;
-import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
@@ -976,6 +972,33 @@ public class ActivityService {
     }
 
     /**
+     * Maps an activity to an ActivityMapDto which will be used for displaying information about an activity on the map
+     * when markers are placed
+     * @param activity the activity that we are mapping into an ActivityMapDto
+     * @return ActivityMapDto is the response object which displays necessary information about an activity for the map
+     */
+    public ActivityMapDto activityMapResponseMapping(Activity activity) {
+        ActivityMapDto activityMapDto = new ActivityMapDto();
+        activityMapDto.setId(activity.getId());
+        activityMapDto.setName(activity.getName());
+        activityMapDto.setDescription(activity.getDescription());
+        activityMapDto.setContinuous(activity.isContinuous());
+        activityMapDto.setStartTime(activity.getStartTime());
+        activityMapDto.setEndTime(activity.getEndTime());
+        activityMapDto.setVisibility(activity.getVisibility());
+        Set<String> activityTypes = new HashSet<String>();
+        for (ActivityType activityType: activity.getActivityTypes()) {
+            activityTypes.add(activityType.getName());
+        }
+        activityMapDto.setActivityTypes(activityTypes);
+        if (activity.getLocation() != null) {
+            activityMapDto.setLocation(activity.getLocation());
+        }
+        activityMapDto.setNumFollowers(activityRepository.getNumFollowersForActivity(activity.getId()));
+        return activityMapDto;
+    }
+
+    /**
      *
      * @param latitudeTopRight the latitude of the top right on the map visible on the screen
      * @param longitudeTopRight the longitude of the top right of the map visible on the screen
@@ -987,9 +1010,22 @@ public class ActivityService {
                                                         double longitudeBottomLeft, double longitudeTopRight,
                                                         long userId) {
         try {
-            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
-            String filteredActivitiesInRange = filterActivitiesByVisibility(activitiesInRange, userId);
-            return new ResponseEntity(filteredActivitiesInRange, HttpStatus.valueOf(200));
+            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft,
+                    latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+            List<ActivityMapDto> activityMapDtos = new ArrayList<ActivityMapDto>();
+            User user = userRepository.getOne(userId);
+            for (Activity activity: activitiesInRange) {
+                if (activity.getVisibility() != Visibility.PUBLIC) {
+                    Set<User> activitySharedUsers = activity.getUsersShared();
+                    if (activitySharedUsers != null && (activitySharedUsers.contains(user)
+                            || activity.getAuthor().getUserId().equals(user.getUserId()))) {
+                        activityMapDtos.add(activityMapResponseMapping(activity));
+                    }
+                } else {
+                    activityMapDtos.add(activityMapResponseMapping(activity));
+                }
+            }
+            return new ResponseEntity(activityMapDtos, HttpStatus.valueOf(200));
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
         }

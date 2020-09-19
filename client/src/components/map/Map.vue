@@ -56,9 +56,10 @@
                 SWLat: SWCorner.lat(),
                 SWLong: SWCorner.lng()
               };
-            apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)  .then(response => {
-              console.log(response.data);
-              console.log("here")
+            apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+              .then(response => {
+                console.log(response.data);
+                console.log("here")
             })
                 }
             );
