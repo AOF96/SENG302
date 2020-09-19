@@ -4,7 +4,7 @@ import router from './router'
 import store from "./store"
 
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 import VueLogger from 'vuejs-logger';
 import vuetify from './plugins/vuetify';
@@ -26,4 +26,4 @@ new Vue({
   store,
   vuetify,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

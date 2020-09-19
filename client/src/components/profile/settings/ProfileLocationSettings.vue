@@ -1,11 +1,8 @@
 <template>
-  <div class="settingsContainer" @click="showLocations = false">
+  <div class="settingsContainer">
     <v-snackbar v-model="snackbar" top :color="snackbarColour">{{ snackbarText }}</v-snackbar>
     <UserSettingsMenu/>
     <div class="settingsContentContainer">
-      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
-      </router-link>
       <h1 class="settingsTitle">Edit Profile Location</h1>
       <hr/>
       <div id="userSettingsMap"></div>
@@ -23,10 +20,11 @@
         <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined
                       dense></v-text-field>
       </div>
-      <button class="genericConfirmButton updatePasswordButton" v-on:click="updateProfile()" type="submit">Save
+      <button class="genericConfirmButton updatePasswordButton" style="margin-top: 10px" v-on:click="updateProfile()" type="submit">Save
         Location
       </button>
     </div>
+    <div class="floatClear"></div>
   </div>
 </template>
 
@@ -52,8 +50,8 @@
           city: null,
           state: null,
           country: null,
-          latitude: -43.5354,
-          longitude: 172.6354,
+          latitude: null,
+          longitude: null,
         },
         mapMarker: null,
         map: null,
@@ -70,8 +68,9 @@
      * after 1 second. Calls a support function to add a summary key for each of the location objects. Locations with
      * duplicate summaries are removed.
      */
-    mounted() {
-      this.loadSearchedUser();
+    async mounted() {
+      await this.loadSearchedUser();
+      this.loadMap();
     },
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl", "editUserLocation"]),
@@ -86,11 +85,21 @@
         this.geocoder = new window.google.maps.Geocoder();
 
         let thisInner = this;
-        let position = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
 
         this.map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
           center: position,
           zoom: 10,
+        let position = null;
+
+        if (this.searchedUser.location) {
+          position = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
+        } else {
+          position = new window.google.maps.LatLng(0, 0);
+        }
+
+        let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
+          center: position,
+          zoom: 9,
           streetViewControl: false,
           fullscreenControl: false,
           rotateControl: false,
@@ -100,6 +109,20 @@
         this.map.addListener('click', function (e) {
           if (thisInner.mapMarker != null) {
             thisInner.mapMarker.setMap(null);
+        let address = this.address;
+        let marker = null;
+        let thisInner = this;
+
+        if (this.searchedUser.location) {
+          marker = new window.google.maps.Marker({
+            map: map,
+            position: latLng
+          });
+        }
+
+        map.addListener('click', function (e) {
+          if (marker != null) {
+            marker.setMap(null);
           }
           thisInner.mapMarker = new window.google.maps.Marker({
             position: e.latLng,
@@ -110,16 +133,20 @@
           thisInner.getLocationFromLatLng(e.latLng);
         });
 
-        this.map.setCenter(position);
-        thisInner.mapMarker = new window.google.maps.Marker({
-          map: thisInner.map,
-          position: position
+        this.geocoder.geocode({'address': address}, function (results, status) {
+          if (status === 'OK') {
+            map.setCenter(position);
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+          }
         });
 
         this.autocomplete = new window.google.maps.places.Autocomplete(
             document.getElementById("locationInput"),
             {
-              types: [],
+              types: ["address"],
             }
         );
 
@@ -131,8 +158,7 @@
        */
       fillInAddress() {
         let thisInner = this;
-        let place = this.autocomplete.getPlace();
-        this.location = this.extractLocationData(place);
+        this.location = this.extractLocationData(this.autocomplete.getPlace());
         this.updateAddressString();
         if (this.mapMarker != null) {
           this.mapMarker.setMap(null);
@@ -148,16 +174,7 @@
        * Extractor function that parses the google maps response and returns a location object.
        */
       extractLocationData(place) {
-        let newLocation = {
-          street_address: "",
-          suburb: "",
-          postcode: "",
-          city: "",
-          state: "",
-          country: "",
-          latitude: "",
-          longitude: ""
-        };
+        let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
         let addressComponents = place["address_components"];
         newLocation["latitude"] = place["geometry"]["location"].lat();
         newLocation["longitude"] = place["geometry"]["location"].lng();
@@ -165,32 +182,15 @@
 
         for (let i = 0; i < addressComponents.length; i++) {
           let content = addressComponents[i]["long_name"];
-          if (addressComponents[i]["types"].includes("street_number")) {
-            newLocation.street_address = content + " ";
-            findingRoute = true;
+          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
+          if(addressComponents[i]["types"].includes("route")){
+            if(findingRoute){newLocation.street_address += content}else{newLocation.street_address = content}
           }
-          if (addressComponents[i]["types"].includes("route")) {
-            if (findingRoute) {
-              newLocation.street_address += content
-            } else {
-              newLocation.street_address = content
-            }
-          }
-          if (addressComponents[i]["types"].includes("sublocality")) {
-            newLocation.suburb = content
-          }
-          if (addressComponents[i]["types"].includes("locality")) {
-            newLocation.city = content
-          }
-          if (addressComponents[i]["types"].includes("administrative_area_level_1")) {
-            newLocation.state = content
-          }
-          if (addressComponents[i]["types"].includes("country")) {
-            newLocation.country = content
-          }
-          if (addressComponents[i]["types"].includes("postal_code")) {
-            newLocation.postcode = content
-          }
+          if(addressComponents[i]["types"].includes("sublocality")){newLocation.suburb = content}
+          if(addressComponents[i]["types"].includes("locality")){newLocation.city = content}
+          if(addressComponents[i]["types"].includes("administrative_area_level_1")){newLocation.state = content}
+          if(addressComponents[i]["types"].includes("country")){newLocation.country = content}
+          if(addressComponents[i]["types"].includes("postal_code")){newLocation.postcode = content}
         }
 
         return newLocation;
@@ -260,9 +260,7 @@
        */
       updateProfile() {
         this.searchedUser.location = this.location;
-        this.editProfile(
-            this.searchedUser,
-        )
+        this.editProfile(this.searchedUser)
             .then(
                 response => {
                   this.updateUserProfile(this.searchedUser);
@@ -297,13 +295,12 @@
             this.searchedUser = tempUserData;
           }
         }
-        if(this.searchedUser.homeLocation != null){
+        if(this.searchedUser.location != null){
           this.location = this.searchedUser.homeLocation;
         }
         this.updateAddressString();
         this.loadMap();
       },
-
     },
   }
 </script>

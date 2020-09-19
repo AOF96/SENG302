@@ -9,6 +9,7 @@ import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.serialize.UserDeserializer;
 import org.junit.jupiter.api.BeforeAll;
+import com.springvuegradle.hakinakina.util.ParserHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -60,6 +61,7 @@ public class UserDeserializerTest {
         assertEquals(testLocation, otherLocation);
     }
 
+public class ParserHelperTest {
     @Test
     public void getLocationAlreadyExistTest() throws JsonProcessingException {
         String json = "{\n" +
@@ -86,6 +88,7 @@ public class UserDeserializerTest {
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
         Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
+        Location otherLocation = ParserHelper.createLocation(jsonNode.get("location"));
         assertEquals(testLocation, otherLocation);
     }
 

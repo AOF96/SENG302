@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.AchievementRepository;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
+import com.springvuegradle.hakinakina.repository.LocationRepository;
+import com.springvuegradle.hakinakina.util.ParserHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,9 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
     @Autowired
     AchievementRepository achievementRepository;
 
+    @Autowired
+    LocationRepository locationRepository;
+
     public ActivityDeserializer() {
         this(null);
     }
@@ -45,37 +50,37 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         JsonNode node = jp.getCodec().readTree(jp);
 
         // Get compulsory attributes
-        String name = getValueString(node, "activity_name");
-        String description = getValueString(node, "description");
-        Set<ActivityType> activityTypes = getActivityTypes(node, "activity_types");
+        String name = ParserHelper.getValueString(node, "activity_name");
+        String description = ParserHelper.getValueString(node, "description");
+        Set<ActivityType> activityTypes = getActivityTypes(node, "activity_type");
         boolean continuous = node.get("continuous").asBoolean();
-        String startTime = getValueString(node, "start_time");
-        String endTime = getValueString(node, "end_time");
-        String location = getValueString(node, "location");
-        Visibility visibility = getVisibility(getValueString(node, "visibility"));
+        String startTime = ParserHelper.getValueString(node, "start_time");
+        String endTime = ParserHelper.getValueString(node, "end_time");
+        Visibility visibility = getVisibility(ParserHelper.getValueString(node, "visibility"));
         Set<Achievement> achievements = getAchievements(node, "achievements");
 
-        String city;
-        String state;
-        String country;
-        List<String> locationSplit = Arrays.asList(location.split("\\s*,\\s*"));
-        if (locationSplit.size() == 3) {
-            city = locationSplit.get(0);
-            state = locationSplit.get(1);
-            country = locationSplit.get(2);
-        } else {
-            city = locationSplit.get(0);
-            state = null;
-            country = locationSplit.get(1);
-        }
-
         // Create user with compulsory attributes
-        Activity activity = new Activity(name, description, continuous, Timestamp.valueOf(startTime),
-                Timestamp.valueOf(endTime), location);
+        Activity activity;
+        if (!continuous) {
+            activity = new Activity(name, description, continuous, ParserHelper.parseDateTime(startTime),
+                    ParserHelper.parseDateTime(endTime));
+        } else {
+            activity = new Activity(name, description, continuous, null, null);
+        }
 
         activity.setActivityTypes(activityTypes);
         activity.setVisibility(visibility);
         activity.setAchievements(achievements);
+        if (node.get("location") != null) {
+            Location location = ParserHelper.createLocation(node.get("location"));
+            try {
+                locationRepository.save(location);
+            } catch (Exception e) {
+
+            }
+            activity.setLocation(location);
+        }
+
         return activity;
     }
 
@@ -96,24 +101,6 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
     }
 
     /**
-     * Returns value of field if it exists
-     *
-     * @param node
-     * @param field
-     * @return string value or empty string
-     */
-    public String getValueString(JsonNode node, String field) {
-        JsonNode fieldValue = node.get(field);
-        if (fieldValue == null) {
-            return null;
-        } else if (fieldValue.asText().equals("null")) {
-            return null;
-        } else {
-            return fieldValue.asText();
-        }
-    }
-
-    /**
      * Returns set of ActivityTypes in user creation request
      *
      * @param node
@@ -127,7 +114,11 @@ public class ActivityDeserializer extends StdDeserializer<Activity>  {
         } else {
             Set<ActivityType> userActivityTypes = new HashSet<>();
             for (JsonNode activityTypeNode : activityTypeNodes) {
-                userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
+                try {
+                    userActivityTypes.add(activityTypeRepository.findActivityTypeByName(activityTypeNode.asText()));
+                } catch (Exception e) {
+
+                }
             }
             return userActivityTypes;
         }

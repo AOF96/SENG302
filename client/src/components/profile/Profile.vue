@@ -117,7 +117,7 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
-      <v-card v-if="this.searchedUser.homeLocation != null" id="profileMapCard">
+      <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
       </v-card>
       <template v-if="searchedUser.passports">
@@ -180,11 +180,12 @@ export default {
       loadingContinuousActivities: true,
     };
   },
-  mounted() {
+  async mounted() {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.loadSearchedUser();
+      await this.loadSearchedUser();
+      this.loadMap();
     }
   },
   watch: {
@@ -241,13 +242,13 @@ export default {
      * Adds a marker on the city's centre.
      */
     loadMap() {
-      if(this.searchedUser.homeLocation != null && this.searchedUser.homeLocation.lat != ""){
+      if(this.searchedUser.location != null && this.searchedUser.location.lat != ""){
         if (!window.google) {
           return;
         }
         this.geocoder = new window.google.maps.Geocoder();
 
-        let position = new window.google.maps.LatLng(this.searchedUser.homeLocation.latitude, this.searchedUser.homeLocation.longitude);
+        let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
           center: position,
@@ -257,13 +258,26 @@ export default {
           disableDefaultUI: true
         });
 
-        map.setCenter(position);
-        new window.google.maps.Marker({
-          map: map,
-          position: position
+      if (this.searchedUser.location) {
+        //Use me once the address is available in the user object
+        let address = this.searchedUser.location.street_address;
+
+        let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+        this.geocoder.geocode({'address': address}, function (results, status) {
+          if (status === 'OK') {
+            map.setCenter(latLng);
+            new window.google.maps.Marker({
+              map: map,
+              position: position
+            });
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+          }
         });
       }
-    },
 
     /**
      * Returns a formatted address string from the location object
@@ -326,7 +340,6 @@ export default {
             countries.splice(index, 1);
           }
           this.countries_option = countries;
-          this.loadMap();
         })
         .catch(error => console.log(error));
     },

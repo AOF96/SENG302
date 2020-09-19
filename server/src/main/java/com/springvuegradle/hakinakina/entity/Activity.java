@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.springvuegradle.hakinakina.serialize.ActivityDeserializer;
+import com.springvuegradle.hakinakina.serialize.UserDeserializer;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
@@ -16,6 +19,7 @@ import java.util.*;
  * Activities entity class.
  */
 @Entity
+@JsonDeserialize(using= ActivityDeserializer.class)
 public class Activity {
     @Id
     @GeneratedValue
@@ -57,10 +61,6 @@ public class Activity {
     @Column(name = "end_time")
     private java.sql.Timestamp endTime;
 
-    @JsonProperty("location")
-    @Column(name = "location")
-    private String location;
-
     @JsonIgnore
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
@@ -89,15 +89,18 @@ public class Activity {
     @Column(name = "visibility")
     private Visibility visibility;
 
+    @OneToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "location_id")
+    private Location location;
+
     public Activity() {}
 
-    public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
+    public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime) {
         this.name = name;
         this.description = description;
         this.continuous = continuous;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.location = location;
     }
 
     public void addAchievement(Achievement achievement) {
@@ -200,11 +203,11 @@ public class Activity {
         this.endTime = endTime;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -342,5 +345,20 @@ public class Activity {
         }
 
         return differences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Activity activity = (Activity) o;
+        return continuous == activity.continuous &&
+                Objects.equals(name, activity.name) &&
+                Objects.equals(description, activity.description) &&
+                Objects.equals(startTime, activity.startTime) &&
+                Objects.equals(endTime, activity.endTime) &&
+                Objects.equals(author, activity.author) &&
+                visibility == activity.visibility &&
+                Objects.equals(location, activity.location);
     }
 }

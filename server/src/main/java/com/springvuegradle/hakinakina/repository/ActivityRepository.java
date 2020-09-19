@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.repository;
 
 import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.Activity;
+import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ import java.util.Optional;
  * Repository for storing activities that the user can perform.
  */
 @RepositoryRestResource
-public interface ActivityRepository extends JpaRepository<Activity, Long> {
+public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity> {
 
     Activity findActivityById(Long id);
 
@@ -67,4 +68,12 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT count(*) FROM User_Activity_Role WHERE activity_id = ? AND activityRole = 'ORGANISER'", nativeQuery = true)
     int getNumOrganisersForActivity(long activityId);
+
+    @Query(value = "SELECT activityRole FROM User_Activity_Role WHERE activity_id = ? AND user_id = ?", nativeQuery = true)
+    String getUsersRoleForActivity(Long activityId, Long userId);
+
+    @Query(value = "SELECT location_id FROM Activity WHERE activity_id = ?", nativeQuery = true)
+    Optional<Long> getActivityLocationId(Long activityId);
+
+    Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
 }

@@ -41,6 +41,7 @@ public class ActivityService {
     private UserActivityRoleRepository userActivityRoleRepository;
     private HomeFeedRepository homeFeedRepository;
     private SearchService searchService;
+    private LocationRepository locationRepository;
 
     public ActivityService(UserRepository userRepository,
                            ActivityRepository activityRepository,
@@ -52,7 +53,8 @@ public class ActivityService {
                            SearchRepository searchRepository,
                            SearchService searchService,
                            ResultRepository resultRepository,
-                           HomeFeedRepository homeFeedRepository) {
+                           HomeFeedRepository homeFeedRepository,
+                           LocationRepository locationRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
@@ -64,6 +66,7 @@ public class ActivityService {
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
         this.homeFeedRepository = homeFeedRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -923,6 +926,52 @@ public class ActivityService {
             return null;
         } else {
             return userActivityRole.get().getActivityRole();
+        }
+    }
+
+    /***
+     * Handles the request to add a location to an activity and links activity and location tables before saving both
+     * to database.
+     * @param location the location to be added to the activity.
+     * @param activityId the id of the activity that the location will be added too.
+     * @return a response code with a value depending on the operations result, 200 for success
+     * or 500 for internal server error.
+     */
+    public ResponseEntity addLocationToActivity(Long activityId, Location location) {
+        try {
+            Activity activity = activityRepository.getOne(activityId);
+            activity.setLocation(location);
+            location.setActivity(activity);
+
+            activityRepository.save(activity);
+            locationRepository.save(location);
+
+            return new ResponseEntity("Successfully added location", HttpStatus.valueOf(201));
+        } catch (Error e) {
+            return new ResponseEntity("Error", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Service method for retrieving an activities location. First gets location id from the activity and then uses
+     * this locationId to get the actual location and return it.
+     * @param activityId Location of the activity with this id will be retrieved.
+     * @return Response entity with code value depending on the outcome of the operation, 404 no location,
+     * 500 internal server error,  200 ok.
+     */
+    public ResponseEntity getActivityLocation(Long activityId) {
+        try {
+            Optional<Long> optionalLocationId = activityRepository.getActivityLocationId(activityId);
+
+            if (optionalLocationId.isEmpty()) {
+                return new ResponseEntity("Activity has no location", HttpStatus.valueOf(404));
+            } else {
+                Long locationId = optionalLocationId.get();
+                Location activityLocation = locationRepository.getOne(locationId);
+                return new ResponseEntity(activityLocation, HttpStatus.valueOf(200));
+            }
+        } catch (Error e) {
+            return new ResponseEntity("Internal server error", HttpStatus.valueOf(500));
         }
     }
 }

@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
+import io.cucumber.java.en_old.Ac;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,9 @@ public class ActivityServiceTest {
 
     @Mock
     private ActivityRepository activityRepository;
+
+    @Mock
+    private LocationRepository locationRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -83,7 +87,7 @@ public class ActivityServiceTest {
         java.sql.Date startTime = new java.sql.Date(time);
         java.sql.Date endTime = new java.sql.Date(time+1000);
         Activity testActivity = new Activity("name", "description", false,
-                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()), "location");
+                new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         testActivity.setId((long) 1);
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -97,15 +101,13 @@ public class ActivityServiceTest {
         Date startDate1 = new Date(2021, 10, 10);
         Date endDate1 = new Date(2021, 10, 12);
         Activity activity1 = new Activity("Climb Mount Everest", "Let's climb Mount Everest together",
-                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()),
-                "Mount Everest");
+                true, new Timestamp(startDate1.getTime()), new Timestamp(endDate1.getTime()));
         activity1.setId((long) 1);
 
         Date startDate2 = new Date(2021, 10, 11);
         Date endDate2 = new Date(2021, 10, 12);
         Activity activity2 = new Activity("Descend Mount Everest", "Let's descend Mount Everest together",
-                true, new Timestamp(startDate2.getTime()), new Timestamp(endDate2.getTime()),
-                "Mount Everest");
+                true, new Timestamp(startDate2.getTime()), new Timestamp(endDate2.getTime()));
         List<Activity> activities = new ArrayList<>();
         activity2.setId((long) 2);
 
@@ -281,43 +283,6 @@ public class ActivityServiceTest {
     }
 
     @Test
-    public void addActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-        HomeFeedEntry activityChanges = new HomeFeedEntry("Test changes", timestamp, testUser, activity, FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
-        activityChanges.setId(1L);
-        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        homeFeedRepository.save(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-    }
-
-    @Test
-    public void removeActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null, "Ireland");
-        HomeFeedEntry activityChanges = new HomeFeedEntry("Test changes", timestamp, testUser, activity, FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
-        activityChanges.setId(1L);
-        List<HomeFeedEntry> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        homeFeedRepository.save(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-        activityChangesList.remove(activityChanges);
-        when(homeFeedRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(0, activityChangesList.size());
-    }
-
-    @Test
     public void addResultTest() {
         Achievement achievement = new Achievement("Test", "Test", ResultType.TIME);
         User user = new User("Maurice", "Benson", "jacky@google.com",
@@ -336,7 +301,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.PUBLIC);
 
@@ -349,7 +314,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilitySetSharedUsersTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.RESTRICTED);
 
@@ -388,7 +353,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityInvalidRoleTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.RESTRICTED);
 
@@ -407,7 +372,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityNonExistentUserIdTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         ActivityVisibilityDto dto = new ActivityVisibilityDto();
         dto.setVisibility(Visibility.RESTRICTED);
 
@@ -427,7 +392,7 @@ public class ActivityServiceTest {
     @Test
     public void updateActivityVisibilityAddOwnerTest() {
         Activity activity = new Activity("scuba diving", "dive to the bottom of the sea",
-                false, null, null, "Ireland");
+                false, null, null);
         User author = new User("John", "Smith", "john@gmail.com",
                 null, Gender.MALE, 2, "Password1");
         author.setUserId(1L);
@@ -594,5 +559,33 @@ public class ActivityServiceTest {
         when(achievementRepository.getAchievementsByActivityId(activityId)).thenReturn(new ArrayList<>());
 
         assertEquals(HttpStatus.OK, service.getAchievement(userId, activityId, "t0k3n").getStatusCode());
+    }
+
+    @Test
+    public void addLocationToActivityTest() {
+        Activity activity = createTestActivity();
+        Location location = new Location("12 house lane", "house", "city", 7021,
+                "state", "country", 6125.12, 12512.2);
+
+        when(activityRepository.getOne(1L)).thenReturn(activity);
+
+        assertEquals(HttpStatus.valueOf(201), service.addLocationToActivity(1L, location).getStatusCode());
+    }
+
+    @Test
+    public void getLocationForActivityTest() {
+        Location testLocation = new Location("Street", "Suburb", "City", 8041,
+                "State", "Country", 2350.3, 2350.3);
+        Activity activity = new Activity();
+        activity.setId(1L);
+        testLocation.setId(1L);
+
+        activity.setLocation(testLocation);
+
+        when(activityRepository.getActivityLocationId(1L)).thenReturn(Optional.of(1L));
+        when(locationRepository.getOne(1L)).thenReturn(testLocation);
+
+        assertEquals(HttpStatus.OK, service.getActivityLocation(1L).getStatusCode());
+        assertEquals(testLocation, service.getActivityLocation(1L).getBody());
     }
 }
