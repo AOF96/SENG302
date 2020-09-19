@@ -91,7 +91,7 @@ public class UserDeserializer extends StdDeserializer<User> {
         String middleName = ParserHelper.getValueString(node, "middlename");
         String nickName = ParserHelper.getValueString(node, "nickname");
         String bio = ParserHelper.getValueString(node, "bio");
-        int permission_level = ParserHelper.getValueInt(node, "permission_level");
+        int permissionLevel = ParserHelper.getValueInt(node, "permission_level");
         // Get passport countries
         Set<PassportCountry> userCountries = getPassportCountries(node, "passports");
         Set<Email> additionalEmail = getAdditionalEmail(node, "additional_email");

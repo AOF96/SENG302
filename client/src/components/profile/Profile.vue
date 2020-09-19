@@ -242,7 +242,7 @@ export default {
      * Adds a marker on the city's centre.
      */
     loadMap() {
-      if(this.searchedUser.location != null && this.searchedUser.location.lat != ""){
+      if (this.searchedUser.location != null && this.searchedUser.location.lat != "") {
         if (!window.google) {
           return;
         }
@@ -258,26 +258,28 @@ export default {
           disableDefaultUI: true
         });
 
-      if (this.searchedUser.location) {
-        //Use me once the address is available in the user object
-        let address = this.searchedUser.location.street_address;
+        if (this.searchedUser.location) {
+          //Use me once the address is available in the user object
+          let address = this.searchedUser.location.street_address;
 
-        let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+          let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(latLng);
-            new window.google.maps.Marker({
-              map: map,
-              position: position
-            });
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
-        });
+          this.geocoder.geocode({'address': address}, function (results, status) {
+            if (status === 'OK') {
+              map.setCenter(latLng);
+              new window.google.maps.Marker({
+                map: map,
+                position: position
+              });
+            } else {
+              this.snackbarText = status;
+              this.snackbarColour = "error";
+              this.snackbar = true;
+            }
+          });
+        }
       }
+    },
 
     /**
      * Returns a formatted address string from the location object

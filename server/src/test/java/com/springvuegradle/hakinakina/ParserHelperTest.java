@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserDeserializerTest {
+class UserDeserializerTest {
 
     @InjectMocks
     private UserDeserializer deserializer = new UserDeserializer();
@@ -29,7 +29,7 @@ public class UserDeserializerTest {
     private UserRepository userRepository;
 
     @BeforeAll
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
@@ -57,11 +57,10 @@ public class UserDeserializerTest {
 
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
+        Location otherLocation = ParserHelper.createLocation(jsonNode.get("location"));
         assertEquals(testLocation, otherLocation);
     }
 
-public class ParserHelperTest {
     @Test
     public void getLocationAlreadyExistTest() throws JsonProcessingException {
         String json = "{\n" +
@@ -83,11 +82,10 @@ public class ParserHelperTest {
         Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
                 8000, "Canterbury", "New Zealand", 0.0, 0.0);
         User testUser = new User();
-        testUser.setHomeLocation(new Location());
+        testUser.setLocation(new Location());
 
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
         Location otherLocation = ParserHelper.createLocation(jsonNode.get("location"));
         assertEquals(testLocation, otherLocation);
     }
@@ -110,16 +108,15 @@ public class ParserHelperTest {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(json);
 
-        Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
+        Location testLocation = new Location("47 Somewhere Road", "Ilam", "Christchurch",
                 8000, "Canterbury", "New Zealand", 0.0, 0.0);
 
         User testUser = new User();
-        testUser.setHomeLocation(testLocation);
+        testUser.setLocation(testLocation);
 
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
-        Location otherLocation = deserializer.createLocation(jsonNode.get("location"), "email@email.com");
+        Location otherLocation = ParserHelper.createLocation(jsonNode.get("location"));
         assertEquals(testLocation.getStreetAddress(), otherLocation.getStreetAddress());
     }
-
 }
