@@ -16,54 +16,136 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        mapActivities: [],
         activities: [
           {
             id: 1,
             name: "Walking away",
+            continuous: true,
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+            followers: 4,
+            activityTypes: "Team sport, Running",
             visibility: "public",
-            latitude: -34.0,
-            longitude: 150,
-            author: 86007
+            start_time: "",
+            end_time: "",
+            author: 86007,
+            location: {
+              street_address: "Avon River",
+              city: "Christchurch",
+              country: "New Zealand",
+              latitude: -43.1213,
+              longitude: 172.614962,
+            }
           },
           {
             id: 2,
             name: "Walking towards",
             visibility: "public",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
             latitude: -35.0,
             longitude: 151,
-            author: 86009
+            author: 86009,
+            followers: 4,
+            activityTypes: "Team sport, Running",
+            location: {
+              street_address: "Avon River",
+              state: "",
+              city: "Christchurch",
+              country: "New Zealand",
+              latitude: -43.879534,
+              longitude: 172.614962,
+            },
+            continuous: true,
+            start_time: "",
+            end_time: ""
           },
           {
             id: 3,
             name: "Walking away",
             visibility: "restricted",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
             latitude: -34.2,
             longitude: 150.2,
-            author: 86007
+            author: 86007,
+            followers: 4,
+            activityTypes: "Team sport, Running",
+            location: {
+              street_address: "Avon River",
+              city: "Christchurch",
+              state: "",
+              country: "New Zealand",
+              latitude: -43.4568,
+              longitude: 172.614962,
+            },
+            continuous: true,
+            start_time: "",
+            end_time: ""
           },
           {
             id: 4,
             name: "Walking towards",
             visibility: "restricted",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
             latitude: -35.2,
             longitude: 151.2,
-            author: 86009
+            author: 86009,
+            followers: 4,
+            activityTypes: "Team sport, Running",
+            location: {
+              street_address: "Avon River",
+              city: "Christchurch",
+              state: "",
+              country: "New Zealand",
+              latitude: -43.23423,
+              longitude: 172.614962,
+            },
+            continuous: true,
+            start_time: "",
+            end_time: ""
           },
           {
             id: 5,
             name: "Walking away",
             visibility: "private",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
             latitude: -34.4,
             longitude: 150.4,
-            author: 86007
+            author: 86007,
+            followers: 4,
+            activityTypes: "Team sport, Running",
+            location: {
+              street_address: "Avon River",
+              city: "Christchurch",
+              state: "",
+              country: "New Zealand",
+              latitude: -43.234231,
+              longitude: 172.614962,
+            },
+            continuous: true,
+            start_time: "",
+            end_time: ""
           },
           {
             id: 6,
             name: "Walking towards",
             visibility: "private",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
             latitude: -35.4,
             longitude: 151.4,
-            author: 86009
+            author: 86009,
+            followers: 4,
+            activityTypes: "Team sport, Running",
+            location: {
+              street_address: "Avon River",
+              city: "Christchurch",
+              state: "",
+              country: "New Zealand",
+              latitude: -43.23423523,
+              longitude: 172.614962,
+            },
+            continuous: true,
+            start_time: "",
+            end_time: ""
           }
         ]
       }
@@ -89,13 +171,290 @@
         const styles = {
           light: [
             {
-              featureType: "poi",
-              stylers: [
+              "featureType": "administrative",
+              "elementType": "geometry",
+              "stylers": [
                 {
-                  visibility: "off"
+                  "visibility": "off"
                 }
               ]
             },
+            {
+              "featureType": "administrative",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#454545"
+                }
+              ]
+            },
+            {
+              "featureType": "landscape.man_made",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#eaf0ed"
+                }
+              ]
+            },
+            {
+              "featureType": "landscape.natural",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#b0eecb"
+                }
+              ]
+            },
+            {
+              "featureType": "landscape.natural",
+              "elementType": "labels.icon",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "landscape.natural.landcover",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#33ffad"
+                },
+                {
+                  "visibility": "simplified"
+                }
+              ]
+            },
+            {
+              "featureType": "landscape.natural.terrain",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#9ae4be"
+                },
+                {
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "featureType": "poi",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "poi",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.attraction",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#d7e5de"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.business",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#cee3dd"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.government",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#d7e5de"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.medical",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#c7dbd8"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.park",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#8fdbba"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.school",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#d0e2de"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.sports_complex",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#84d2b4"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "road",
+              "elementType": "labels.icon",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "road.arterial",
+              "elementType": "labels",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#ffffff"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "geometry.stroke",
+              "stylers": [
+                {
+                  "visibility": "simplified"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#45696e"
+                }
+              ]
+            },
+            {
+              "featureType": "road.local",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "road.local",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "transit",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "transit.line",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#9cbaae"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "transit.station",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#9cbaae"
+                },
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "transit.station.airport",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#e9f2ef"
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            },
+            {
+              "featureType": "water",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#7abbdc"
+                }
+              ]
+            }
           ],
           dark: [
             {
@@ -221,11 +580,12 @@
        * @param map
        */
       createActivityMarkers(map) {
+        let innerThis = this;
         var activityMarkerIcon = {
           url: "https://i.imgur.com/MUWKzz9.png",
           scaledSize: new window.google.maps.Size(30, 30),
           origin: new window.google.maps.Point(0, 0),
-          anchor: new window.google.maps.Point(10, 10)
+          anchor: new window.google.maps.Point(15, 30)
         };
 
         for (let activity of this.activities) {
@@ -249,11 +609,33 @@
             }
           }
 
-          let activityPosition = new window.google.maps.LatLng(activity.latitude, activity.longitude);
-          new window.google.maps.Marker({
+          let activityPosition = new window.google.maps.LatLng(activity.location.latitude, activity.location.longitude);
+          let pos = this.mapActivities.length;
+          innerThis.mapActivities.push(new window.google.maps.Marker({
             map: map,
             position: activityPosition,
             icon: activityMarkerIcon,
+          }));
+
+          let contentString = '<div id="content">'+
+              '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
+              '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
+              '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
+              '<div id="activityPopupDescription">'+ activity.description + '</div>'+
+              '<div id="activityPopupActivityTypes">'+ activity.activityTypes + '</div>'+
+              '<div id="activityPopupActivityFollowers">'+ activity.followers + ' followers</div>'+
+              '</div>';
+
+          let infowindow = new window.google.maps.InfoWindow({
+            content: contentString
+          });
+
+          innerThis.mapActivities[pos].addListener('click', function() {
+            infowindow.open(map, innerThis.mapActivities[pos]);
+          });
+
+          window.google.maps.event.addListener(map, "click", function() {
+            infowindow.close();
           });
         }
       },
