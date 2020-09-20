@@ -202,6 +202,7 @@
     transform: translateY(-50%);
     font-size: 13px;
     padding: 5px 12px;
+    border-radius: 20px !important;
 }
 .profileActivityDescription {
     color: #7f7f7f;

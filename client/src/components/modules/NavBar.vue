@@ -82,7 +82,7 @@
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item id="hamburgerMap" v-on:click="$router.push('/map/@' + user.location.latitude + ',' + user.location.longitude)" link class="mt-2" v-if="user.isLogin">
+          <v-list-item id="hamburgerMap" v-on:click="$router.push('/map/')" link class="mt-2" v-if="user.isLogin">
             <v-list-item-icon>
               <v-icon>map</v-icon>
             </v-list-item-icon>

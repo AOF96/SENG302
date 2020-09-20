@@ -119,9 +119,7 @@
     <div class="rightSidebarContainer">
       <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
-        <router-link v-bind:to="'/map/@' + searchedUser.location.latitude + ',' + searchedUser.location.longitude">
-          <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button">Full Map</button>
-        </router-link>
+        <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
       </v-card>
       <template v-if="searchedUser.passports">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
@@ -141,10 +139,9 @@ import {
 
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
+import {apiUser} from "../../api";
+
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import {
-  apiUser
-} from "../../api";
 
 export default {
   name: "Profile",
@@ -204,7 +201,7 @@ export default {
           Uses user id from url to request user data.
        */
     async loadSearchedUser() {
-      if (this.user.permission_level == 2 && this.user.profile_id == this.$route.params.profileId) {
+      if (this.user.permission_level === 2 && this.user.profile_id === this.$route.params.profileId) {
         this.$router.push('/settings/admin_dashboard');
       } else if (
         this.$route.params.profileId === null ||
@@ -260,12 +257,43 @@ export default {
           disableDefaultUI: true
         });
 
-        map.setCenter(position);
-        new window.google.maps.Marker({
-          map: map,
-          position: position
-        });
+        this.positionMap(map, position);
       }
+    },
+
+    /**
+     * Positions map from location depending on if logged in user or searching
+     */
+    positionMap(map, position) {
+      let outer = this;
+      if (this.user.profile_id !== this.searchedUser.profile_id) {
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.setLocationMarker(map, results[0].geometry.location);
+            map.setCenter(results[0].geometry.location);
+          }
+        });
+      } else {
+        this.setLocationMarker(map, position);
+      }
+    },
+
+    /**
+     * Sets location marker at position given
+     */
+    setLocationMarker(map, position) {
+      var homeIcon = {
+        url: "https://i.imgur.com/mNfVgmC.png",
+        scaledSize: new window.google.maps.Size(20, 20),
+        origin: new window.google.maps.Point(0, 0),
+        anchor: new window.google.maps.Point(10, 10)
+      };
+
+      new window.google.maps.Marker({
+        map: map,
+        position: position,
+        icon: homeIcon
+      });
     },
 
     /**
@@ -352,6 +380,19 @@ export default {
       }
       this.showResult = true;
       setTimeout(() => this.showResult = false, 5000)
+    },
+
+    goToFullMap()  {
+      if (this.user.profile_id === this.searchedUser.profile_id) {
+        this.$router.push('/map/');
+      } else {
+        let outer = this;
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.$router.push('/map/user@' + results[0].geometry.location.lat() + ',' + results[0].geometry.location.lng());
+          }
+        });
+      }
     }
   }
 };
