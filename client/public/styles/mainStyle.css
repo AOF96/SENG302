@@ -61,10 +61,9 @@ input, select, textarea {
     height:100%;
 }
 #pageContent{
-    top:61px;
-    height:calc(100% - 61px);
+    top:58px;
+    height:calc(100% - 58px);
     position: relative;
-    display: inline;
 }
 .floatClear {
     clear:both;

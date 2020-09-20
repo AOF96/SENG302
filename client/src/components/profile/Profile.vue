@@ -117,7 +117,7 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
-      <v-card id="profileMapCard">
+      <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
       </v-card>
       <template v-if="searchedUser.passports">
@@ -242,37 +242,79 @@ export default {
      * Adds a marker on the city's centre.
      */
     loadMap() {
-      if (!window.google) {
-        return;
-      }
-      this.geocoder = new window.google.maps.Geocoder();
+      if (this.searchedUser.location != null && this.searchedUser.location.lat != "") {
+        if (!window.google) {
+          return;
+        }
+        this.geocoder = new window.google.maps.Geocoder();
 
-      let map = new window.google.maps.Map(document.getElementById("profileMap"), {
-        zoom: 9,
-        disableDefaultUI: true
-      });
+        let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+        let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          center: position,
+          zoom: 8,
+          maxZoom: 10,
+          minZoom: 3,
+          disableDefaultUI: true
+        });
 
       if (this.searchedUser.location) {
         //Use me once the address is available in the user object
         let address = this.searchedUser.location.street_address + ' ' + this.searchedUser.location.city + ' ' +
                 this.searchedUser.location.country;
 
-        let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+          let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(latLng);
-            new window.google.maps.Marker({
-              map: map,
-              position: latLng
-            });
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
-        });
+          this.geocoder.geocode({'address': address}, function (results, status) {
+            if (status === 'OK') {
+              map.setCenter(latLng);
+              new window.google.maps.Marker({
+                map: map,
+                position: position
+              });
+            } else {
+              this.snackbarText = status;
+              this.snackbarColour = "error";
+              this.snackbar = true;
+            }
+          });
+        }
       }
+    },
+
+    /**
+     * Returns a formatted address string from the location object
+     */
+    getAddressString(locationObj) {
+      let address = "";
+      if (locationObj.street_address !== "") {
+        address += locationObj.street_address
+      }
+      if (locationObj.suburb !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.suburb;
+      }
+      if (locationObj.city !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.city;
+      }
+      if (locationObj.state !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.state;
+      }
+      if (locationObj.country !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.country;
+      }
+      return address;
     },
 
     /**

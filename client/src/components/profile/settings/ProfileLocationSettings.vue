@@ -53,6 +53,8 @@
           latitude: null,
           longitude: null,
         },
+        mapMarker: null,
+        map: null,
         autocomplete: null,
         address: ""
       };
@@ -83,17 +85,23 @@
         }
         this.geocoder = new window.google.maps.Geocoder();
 
-        let latLng = null;
+        let thisInner = this;
+
+        this.map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
+          center: position,
+          zoom: 10,
+        });
+
+        let position = null;
 
         if (this.searchedUser.location) {
-          latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
-
+          position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
         } else {
-          latLng = new window.google.maps.LatLng(0, 0);
+          position = new window.google.maps.LatLng(0, 0);
         }
 
         let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
-          center: latLng,
+          center: position,
           zoom: 9,
           streetViewControl: false,
           fullscreenControl: false,
@@ -103,12 +111,12 @@
 
         let address = this.address;
         let marker = null;
-        let thisInner = this;
 
         if (this.searchedUser.location) {
+          const latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
           marker = new window.google.maps.Marker({
-            map: map,
-            position: latLng
+            position: latLng,
+            map: map
           });
         }
 
@@ -124,9 +132,10 @@
           thisInner.getLocationFromLatLng(e.latLng);
         });
 
+
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
-            map.setCenter(latLng);
+            map.setCenter(position);
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
@@ -144,12 +153,23 @@
         this.autocomplete.addListener("place_changed", this.fillInAddress);
       },
 
+
       /**
        * Fills in address field and location object from address autocomplete
        */
-      async fillInAddress() {
-        this.location = await this.extractLocationData(this.autocomplete.getPlace());
-        this.updateAddressString(this.location);
+      fillInAddress() {
+        let thisInner = this;
+        const place = this.autocomplete.getPlace();
+        this.location = this.extractLocationData(this.autocomplete.getPlace());
+        this.updateAddressString();
+        if (this.mapMarker != null) {
+          this.mapMarker.setMap(null);
+        }
+        this.mapMarker = new window.google.maps.Marker({
+          position: place["geometry"]["location"],
+          map: thisInner.map
+        });
+        thisInner.map.panTo(place["geometry"]["location"]);
       },
 
       /**
@@ -205,34 +225,36 @@
        * Updates the address string from the locationObject parameter. Used when the location is changed by clicking
        * on the map, and when the map is first loaded with the initial location.
        */
-      updateAddressString(locationObject) {
-        this.address = "";
-        if (locationObject.street_address !== "") {
-          this.address += locationObject.street_address
-        }
-        if (locationObject.suburb !== "") {
-          if (this.address !== "") {
-            this.address += ", "
+      updateAddressString() {
+        if (this.searchedUser.location) {
+          this.address = "";
+          if (this.searchedUser.location.street_address !== "") {
+            this.address += this.searchedUser.location.street_address
           }
-          this.address += locationObject.suburb;
-        }
-        if (locationObject.city !== "") {
-          if (this.address !== "") {
-            this.address += ", "
+          if (this.searchedUser.location.suburb !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += this.searchedUser.location.suburb;
           }
-          this.address += locationObject.city;
-        }
-        if (locationObject.state !== "") {
-          if (this.address !== "") {
-            this.address += ", "
+          if (this.searchedUser.location.city !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += this.searchedUser.location.city;
           }
-          this.address += locationObject.state;
-        }
-        if (locationObject.country !== "") {
-          if (this.address !== "") {
-            this.address += ", "
+          if (this.searchedUser.location.state !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += this.searchedUser.location.state;
           }
-          this.address += locationObject.country;
+          if (this.searchedUser.location.country !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += this.searchedUser.location.country;
+          }
         }
       },
 
@@ -278,7 +300,12 @@
             this.searchedUser = tempUserData;
           }
         }
-      },
+        if (this.searchedUser.location != null) {
+          this.location = this.searchedUser.homeLocation;
+        }
+        this.updateAddressString();
+        this.loadMap();
+      }
     },
   }
 </script>
