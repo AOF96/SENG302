@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="searchUserWrapper">
-    <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
+    <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
     <v-container lighten-5>
       <v-row no-gutters style="flex-wrap: nowrap;">
         <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">

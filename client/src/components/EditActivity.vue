@@ -1,17 +1,20 @@
 <template>
   <div @click="showLocations = false">
-    <v-snackbar
-        v-model="snackbar"
-    >
-      {{ snackbarText }}
-      <v-btn
-          color="primary"
-          text
-          @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </v-snackbar>
+    <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
+<!--    <v-snackbar-->
+<!--        v-model="snackbar"-->
+<!--    >-->
+<!--      {{ snackbarText }}-->
+<!--      <v-btn-->
+<!--          color="primary"-->
+<!--          text-->
+<!--          @click="snackbar = false"-->
+<!--      >-->
+<!--        Close-->
+<!--      </v-btn>-->
+<!--    </v-snackbar>-->
     <v-overlay style="z-index: 1000" :value="overlayLoader">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
@@ -471,6 +474,8 @@
         confirmDelete: false,
         visibilityUpdateDialog: false,
         visibilityUpdateMessage: "",
+        alertComponent: false,
+        errorMessage: null,
         groups: [
           {name: "followers", active: true, amount: 0},
           {name: "participants", active: true, amount: 0},
@@ -486,7 +491,6 @@
       },
     },
     created: async function () {
-      console.log("pass")
       await this.loadActivity();
       // Ensures only activity types from the database can be selected and cannot select ones already selected
       await apiUser

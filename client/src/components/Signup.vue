@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
     <div class="signUpContainer">
       <div class="signUpFormContainer">
         <h1>Sign Up</h1>
@@ -97,6 +100,8 @@ export default {
   name: "Signup",
   data() {
     return {
+      alertComponent: false,
+      errorMessage: null,
       firstOccurrence: true,
       errorMessages: [],
       submissionError: "",
@@ -116,7 +121,7 @@ export default {
           length: ERR_MSG_PASS_LENGTH,
           lowercase: ERR_MSG_PASS_LOWERCASE,
           uppercase: ERR_MSG_PASS_UPPERCASE
-        }
+        },
       },
     };
   },

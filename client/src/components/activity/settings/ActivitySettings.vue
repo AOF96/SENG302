@@ -1,17 +1,20 @@
 <template>
   <div @click="showLocations = false">
-    <v-snackbar
-      v-model="snackbar"
-    >
-      {{ snackbarText }}
-      <v-btn
-        @click="snackbar = false"
-        color="primary"
-        text
-      >
-        Close
-      </v-btn>
-    </v-snackbar>
+<!--    <v-snackbar-->
+<!--      v-model="snackbar"-->
+<!--    >-->
+<!--      {{ snackbarText }}-->
+<!--      <v-btn-->
+<!--        @click="snackbar = false"-->
+<!--        color="primary"-->
+<!--        text-->
+<!--      >-->
+<!--        Close-->
+<!--      </v-btn>-->
+<!--    </v-snackbar>-->
+    <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
     <v-overlay :value="overlayLoader" style="z-index: 1000">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
@@ -417,6 +420,8 @@
         tempResultType: null,
         autocomplete: null,
         location: null,
+        alertComponent: false,
+        errorMessage: null,
       };
     },
 
@@ -645,6 +650,7 @@
         if (this.name === null || this.name.trim() === "") {
           // Name is empty
           this.displayError("Please select an activity name.");
+
           this.tabs = 0;
           return false;
         } else if (this.activity_types_selected.length < 1) {
@@ -718,7 +724,7 @@
             error => {
               this.overlayLoader = true;
               if (error) {
-                this.displayError("An error occurred.");
+                this.displayError(error)
               }
             });
       },
@@ -727,8 +733,8 @@
        * @param error
        */
       displayError(error) {
-        this.snackbar = true;
-        this.snackbarText = error;
+        this.alertComponent = true;
+        this.errorMessage = error;
       },
     },
   };

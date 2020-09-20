@@ -1,6 +1,8 @@
 <template>
   <div class="settingsContainer" @click="showLocations = false">
+
     <UserSettingsMenu />
+
     <div class="settingsContentContainer">
       <h1 class="settingsTitle">Edit Profile Info</h1>
       <hr />
@@ -128,7 +130,26 @@
       </form>
     </div>
     <div class="floatClear"></div>
+<!--    <v-alert type="success" v-model="successComponent" :timeout="timeout" dismissible prominent>-->
+<!--      {{successMessage}}-->
+<!--    </v-alert>-->
+<!--    <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>-->
+<!--      {{alertMessage}}-->
+<!--    </v-alert>-->
+        <v-snackbar
+          v-model="snackbar"
+        >
+          {{ snackbarText }}
+          <v-btn
+            @click="snackbar = false"
+            color="primary"
+            text
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
   </div>
+
 </template>
 
 <script>
@@ -147,11 +168,19 @@ export default {
 
     data: function() {
       return {
+        alertComponent: false,
+        successComponent: false,
+        successMessage: null,
+        alertMessage: null,
         searchedUser: {},
         showAdmin: false,
         dialog: false,
         isLoading: false,
         descriptionLimit: 60,
+        snackbar: false,
+        snackbarText: null,
+        snackbarColour: "primary",
+
       };
     },
     methods: {
@@ -168,18 +197,25 @@ export default {
                 .then(
                         response => {
                           this.updateUserProfile(this.searchedUser);
-                          document.getElementById("success").hidden = false;
-                          document.getElementById("success").innerText =
-                                  "Updated Successfully";
-                          document.getElementById("error").hidden = true;
+                          this.snackbarText = "Updated Successfully";
+                          this.snackbarColour = "success";
+                          this.snackbar = true;
+                          // this.displaySuccessMessage("Updated Successfully");
+
+                          // document.getElementById("success").hidden = false;
+                          // document.getElementById("success").innerText =
+                          //         "Updated Successfully";
+                          // document.getElementById("error").hidden = true;
                           console.log(response.data)
                         },
                         error => {
-                          document.getElementById("error").hidden = false;
-                          document.getElementById("error").innerText =
-                                  error.response.data.Errors;
-                          document.getElementById("success").hidden = true;
-                          console.log(error);
+                          this.snackbarText = error.response.data.Errors[0];
+                          this.snackbar = true;
+                          // document.getElementById("error").hidden = false;
+                          // document.getElementById("error").innerText =
+                          //         error.response.data.Errors;
+                          // document.getElementById("success").hidden = true;
+                          // console.log(error);
                         }
                 );
       },
@@ -234,6 +270,18 @@ export default {
           }
         }
         this.showAdmin = true;
+      },
+
+      /**
+       * Shows error text for given error string
+       * @param error
+       */
+      displaySuccessMessage(message) {
+        // this.successComponent = true;
+        // this.successMessage = message;
+        this.snackbarText = message;
+        // this.snackbarColour = "success";
+        this.snackbar = true;
       },
     },
 

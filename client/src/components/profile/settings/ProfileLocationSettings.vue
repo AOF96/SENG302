@@ -1,6 +1,5 @@
 <template>
   <div class="settingsContainer">
-    <v-snackbar v-model="snackbar" top :color="snackbarColour">{{ snackbarText }}</v-snackbar>
     <UserSettingsMenu/>
     <div class="settingsContentContainer">
       <h1 class="settingsTitle">Edit Profile Location</h1>
@@ -15,6 +14,7 @@
         <v-row justify="center" align="center">
           <v-icon large>mdi-arrow-down-thick</v-icon>
         </v-row>
+
       </v-container>
       <div class="locationFieldDiv">
         <v-text-field id="locationInput" v-model="address" class="locationInput" label="Address" outlined
@@ -25,6 +25,9 @@
       </button>
     </div>
     <div class="floatClear"></div>
+    <div>
+      <v-alert v-model="snackbar" top :color="snackbarColour" >{{ snackbarText }}</v-alert>
+    </div>
   </div>
 </template>
 
