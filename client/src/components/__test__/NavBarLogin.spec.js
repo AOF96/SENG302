@@ -70,7 +70,7 @@ describe('NavBar after the login is successful', () => {
     const wrapper = mount(NavBar, {store, localVue, router});
     expect(wrapper.find("#hamburgerMap").exists()).toBe(true);
     wrapper.find("#hamburgerMap").trigger('click');
-    expect(window.location.href).toBe('http://localhost/#/map/@120.47,-20.12')
+    expect(window.location.href).toBe('http://localhost/#/map/')
     // expect(wrapper.findComponent({name: "Map"}).exists()).toBe(true)
   });
 

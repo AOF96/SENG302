@@ -382,6 +382,9 @@ export default {
       setTimeout(() => this.showResult = false, 5000)
     },
 
+    /**
+     * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+     */
     goToFullMap()  {
       if (this.user.profile_id === this.searchedUser.profile_id) {
         this.$router.push('/map/');

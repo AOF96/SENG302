@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import Profile from "../profile/Profile";
 import {createLocalVue, mount} from "@vue/test-utils";
 import flushPromises from 'flush-promises'
-//import VueRouter from "vue-router";
+import VueRouter from "vue-router";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
 // localVue.use(VueRouter);
@@ -46,16 +46,16 @@ describe("Check user profile page", () => {
                     password: "anything",
                     permission_level: 0,
                     isLogin: true,
-                    // location: {
-                    //     street_address: "300 Somewhere Road",
-                    //     suburb: "Somewhere",
-                    //     city: "Christchurch",
-                    //     postcode: 8000,
-                    //     state: "Canterbury",
-                    //     country: "New Zealand",
-                    //     latitude: 120.47,
-                    //     longitude: -20.12
-                    // },
+                    location: {
+                        street_address: "300 Somewhere Road",
+                        suburb: "Somewhere",
+                        city: "Christchurch",
+                        postcode: 8000,
+                        state: "Canterbury",
+                        country: "New Zealand",
+                        latitude: 120.47,
+                        longitude: -20.12
+                    },
                 }),
                 isAdmin: () => false,
             },
@@ -94,17 +94,16 @@ describe("Check user profile page", () => {
                     id: "4",
                 },
             ],
-            location: {city: null, state: null, county: null},
-            // location: {
-            //     street_address: "300 Somewhere Road",
-            //     suburb: "Somewhere",
-            //     city: "Christchurch",
-            //     postcode: 8000,
-            //     state: "Canterbury",
-            //     country: "New Zealand",
-            //     latitude: 120.47,
-            //     longitude: -20.12
-            // },
+            location: {
+                street_address: "300 Somewhere Road",
+                suburb: "Somewhere",
+                city: "Christchurch",
+                postcode: 8000,
+                state: "Canterbury",
+                country: "New Zealand",
+                latitude: 120.47,
+                longitude: -20.12
+            },
         });
         actions.getUserContinuousActivities.mockResolvedValue({data: []});
         actions.getUserDurationActivities.mockResolvedValue({data: []});
@@ -147,10 +146,92 @@ describe("Check user profile page", () => {
         expect(wrapper.find("#profileFullMapButton").exists()).toBe(true);
     });
 
-    // it('should take the user to the full map page with the correct coordinates when the Full Map button is clicked.', async () => {
-    //     const wrapper = mount(Profile, {store, localVue, mocks, stubs, router});
-    //     await flushPromises();
-    //     wrapper.find("#profileFullMapButton").trigger('click');
-    //     expect(window.location.href).toBe('http://localhost/#/map/@120.47,-20.12')
-    // });
+    it('should take the user to the full map page with the correct coordinates when the Full Map button is clicked.', async () => {
+        localVue.use(VueRouter);
+        const router = new VueRouter();
+
+        store = new Vuex.Store({
+            getters: {
+                userSearch: () => ({
+                    searchTerm: null,
+                }),
+                user: () => ({
+                    profile_id: 2,
+                    primary_email: "test@test.com",
+                    password: "anything",
+                    permission_level: 0,
+                    isLogin: true,
+                    location: {
+                        street_address: "300 Somewhere Road",
+                        suburb: "Somewhere",
+                        city: "Christchurch",
+                        postcode: 8000,
+                        state: "Canterbury",
+                        country: "New Zealand",
+                        latitude: 120.47,
+                        longitude: -20.12
+                    },
+                }),
+                isAdmin: () => false,
+            },
+            actions,
+        });
+        actions.getUserById.mockResolvedValue({
+            firstname: "John",
+            lastname: "Doe",
+            middlename: "hi",
+            nickname: "hi",
+            gender: "Female",
+            primary_email: "jd@12uclive.ac.nz",
+            additional_email: [],
+            date_of_birth: "1995-01-11",
+            bio: "nanana",
+            isLogin: true,
+            fitness: 1,
+            profile_id: 2,
+            password: "Water123",
+            passports: ["Afghanistan"],
+            tmp_passports: [],
+            permission_level: 1,
+            activities: [],
+            tmp_activities: [],
+            cont_activities: [
+                {
+                    name: "Go to disneyland",
+                    description: "Dont go on the Space Mountain, will make you vomit.",
+                    id: "1001",
+                },
+            ],
+            dur_activities: [
+                {
+                    name: "Create shortcut",
+                    description: "You go to nano bashrc first",
+                    id: "4",
+                },
+            ],
+            location: {
+                street_address: "300 Somewhere Road",
+                suburb: "Somewhere",
+                city: "Christchurch",
+                postcode: 8000,
+                state: "Canterbury",
+                country: "New Zealand",
+                latitude: 120.47,
+                longitude: -20.12
+            },
+        });
+        actions.getUserContinuousActivities.mockResolvedValue({data: []});
+        actions.getUserDurationActivities.mockResolvedValue({data: []});
+        actions.getDataFromUrl.mockResolvedValue({
+            data: [{
+                name: "Afghanistan",
+                alpha3Code: "AFG"
+            }],
+        });
+
+        const wrapper = mount(Profile, {store, localVue, mocks, stubs, router});
+        await flushPromises();
+        wrapper.find("#profileFullMapButton").trigger('click');
+        expect(window.location.href).toBe('http://localhost/#/map/')
+    });
 });
