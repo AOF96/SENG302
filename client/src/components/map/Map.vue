@@ -1,6 +1,14 @@
 <template>
-  <div id="map">
-    <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+  <div class="mapPageContainer">
+    <div id="styleSelectorDiv" class="styleSelectorDiv">
+      <v-radio-group id="styleSelector" v-model="mapStyle">
+        <v-radio value="light" label="Light"></v-radio>
+        <v-radio value="dark" label="Dark"></v-radio>
+      </v-radio-group>
+    </div>
+    <div id="map">
+      <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+    </div>
   </div>
 </template>
 
@@ -141,42 +149,19 @@
        * @param map
        */
       createControl(map) {
-        let controlDiv = document.createElement("div");
+        const styleControl = document.getElementById("styleSelectorDiv");
+        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
 
-        var controlUI = document.createElement('div');
-        controlUI.style.backgroundColor = '#fff';
-        controlUI.style.border = '2px solid #fff';
-        controlUI.style.borderRadius = '3px';
-        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
-        controlUI.style.cursor = 'pointer';
-        controlUI.style.marginBottom = '22px';
-        controlUI.style.textAlign = 'center';
-        controlUI.title = 'Click to recenter the map';
-        controlDiv.appendChild(controlUI);
-
-        var controlText = document.createElement('div');
-        controlText.style.color = 'rgb(25,25,25)';
-        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
-        controlText.style.fontSize = '16px';
-        controlText.style.lineHeight = '38px';
-        controlText.style.paddingLeft = '5px';
-        controlText.style.paddingRight = '5px';
-        controlText.textContent = 'Swap Theme';
-        controlUI.appendChild(controlText);
-
-        controlUI.addEventListener('click', function() {
-          if (this.mapStyle === "light") {
-            this.mapStyle = "dark";
-          } else {
-            this.mapStyle = "light";
-          }
-          map.setOptions({
-            styles: mapStyles[this.mapStyle],
-          })
+        const styleSelector = document.getElementById("styleSelector");
+        map.setOptions({
+          styles: mapStyles[this.mapStyle]
         });
 
-        controlDiv.index = 1;
-        map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(controlDiv);
+        styleSelector.addEventListener("click", () => {
+          map.setOptions({
+            styles: mapStyles[this.mapStyle]
+          });
+        });
       }
     }
   }
