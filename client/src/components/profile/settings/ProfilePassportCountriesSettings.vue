@@ -2,9 +2,6 @@
     <div class="settingsContainer">
         <UserSettingsMenu />
         <div class="settingsContentContainer">
-            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-                <button class="genericConfirmButton backButton">Back to Profile</button>
-            </router-link>
             <h1>Edit Passport Countries</h1>
             <hr>
             <div class="itemContainer" v-for="country in searchedUser.passports" v-bind:key="country">

@@ -102,7 +102,7 @@ const actions = {
         return await apiActivity.checkUserActivityVisibility(profileId, activityId);
     },
     async getSearchedActivity(data, {'searchTerm': searchTerm, 'page': page, 'size': size}) {
-        return await apiActivity.getParticipants(searchTerm, page, size);
+        return await apiActivity.getSearchedActivity(searchTerm, page, size);
     },
 
     /**

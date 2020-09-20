@@ -2,6 +2,7 @@
 .settingsNavContainer {
     float: left;
     width: 250px;
+    position: fixed;
 }
 .settingsNavContainer h1 {
     font-size: 20px;
@@ -59,7 +60,7 @@
   font-weight: 400;
 }
 .settingsContentContainer h3 {
-  margin: 0 20px;
+  margin: 0 5px;
   font-size: 15px;
   color: rgba(0, 0, 0, 0.75);
   font-weight: 500;
@@ -136,7 +137,7 @@
 
 /* Email settings */
 .primaryEmailContainer {
-    border-radius: 20px;
+    border-radius: 35px;
     background: #1cca92;
     min-height: 40px;
 }
@@ -149,18 +150,20 @@
 .secondaryEmailContainer {
     border: 1px solid #d2d2d2;
     background: white;
-    border-radius: 20px;
+    border-radius: 35px;
     overflow: hidden;
     position: relative;
     margin-bottom: 10px;
     min-height: 40px;
 }
 .secondaryEmailContainer h4 {
-  font-weight: 500;
-  font-size: 15px;
-  color:rgba(0,0,0,0.75);
-  cursor:pointer;
-    margin-left: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    color:rgba(0,0,0,0.75);
+    cursor:pointer;
+    margin-left: 20px;
+    display: inline-block;
+    padding: 11px 0;
 }
 .secondaryEmailContainer:hover .editIcon, .secondaryEmailContainer:hover .genericButton {
     opacity: 1;
@@ -171,35 +174,46 @@
     opacity: 0;
     transition: all .15s ease;
     margin-left: 10px;
+    transform: translateY(6px);
 }
 .secondaryEmailContainer .removeEmailButton {
-  background: #ee5e5e;
-  fill: white;
-  cursor: pointer;
-  transition:all .2s ease;
+    background: #ee5e5e;
+    fill: white;
+    cursor: pointer;
+    transition:all .2s ease;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 100px;
+    padding: 5px;
+    width: 34px;
+    height: 34px;
+    margin: 5px;
 }
 .secondaryEmailContainer .genericButton {
-  position: absolute;
-  transform: translateY(-50%);
-  padding: 2px 10px;
-  border: 2px solid #7a7a7a;
-  color: #575757;
-  background: none;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  transition:all .2s ease;
-  cursor:pointer;
-    margin-left: 30px;
+    position: absolute;
+    top: 50%;
+    right: 55px;
+    transform: translateY(-50%);
+    padding: 2px 10px;
+    border: 2px solid #7a7a7a;
+    color: #575757;
+    background: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    transition:all .2s ease;
+    cursor:pointer;
 }
 .secondaryEmailContainer .genericButton:hover {
     color: white;
     background-color: #7a7a7a;
 }
 .addEmailInput {
-    width: 100%;
+    width: calc(100% - 79px) !important;
     border-radius: 21px !important;
     border: 1px solid #d8d8d8 !important;
+    margin-right:10px;
 }
 
 .addAchievementInput {
@@ -217,7 +231,6 @@
     display: inline;
     padding: 8px 16px;
     float: right;
-    margin-top: 20px;
 }
 .transparentCover {
     width:100%;
@@ -242,10 +255,10 @@
     padding: 20px;
 }
 .editEmailContainer h1{
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 19px;
+    font-weight: 400;
+    margin-left: 5px;
     color: rgba(0,0,0,0.85);
-    padding: 15px;
 }
 .fade-enter-active, .fade-leave-active{
     transition:all .25s ease;
@@ -260,6 +273,11 @@
     opacity: 0;
     transform:translate(-50%, calc(-50% + 50px));
 }
+.addEmailForm{
+    margin-bottom:20px;
+    margin-top:10px;
+}
+
 .addEmailForm h1 {
     font-size: 20px;
     font-weight: 500;
@@ -457,4 +475,93 @@
 
 .locationInput {
     margin-top: 5px !important;
+}
+.settingsNavContainer h1{
+    display: inline-block;
+    padding: 15px 8px;
+    font-size: 21px;
+}
+.backToProfile{
+    margin-top: -7px;
+}
+/*Mobile Friendly Operations*/
+@media only screen and (max-width: 800px) {
+    .settingsNavContainer{
+        width:100%;
+        float: none;
+        margin-bottom:15px;
+        position: relative;
+    }
+    .settingsContentContainer{
+        width:100%;
+        float: none;
+        display: inline-block;
+    }
+    .settingsContainer{
+        width:calc(100% - 20px);
+        margin: 15px auto;
+    }
+    .navButtonContainer{
+        background:none;
+        box-shadow: none;
+        white-space: nowrap;
+        overflow-x: auto;
+        box-sizing: content-box;
+        padding: 0 10px;
+        position: relative;
+        left: -10px;
+        border-radius: 0;
+    }
+    .navButtonContainer hr{
+        display: none;
+    }
+    .settingsNavButton{
+        padding:9px 20px;
+        margin:5px;
+        background: white;
+        border-radius: 35px;
+        display: inline-block;
+        box-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+    }
+    .settingsNavContainer h1{
+        font-size: 24px;
+        padding:15px 5px;
+    }
+    .editForm{
+        padding: 0 10px;
+    }
+    #userSettingsMap{
+        height:220px;
+    }
+    .locationFieldDiv{
+        margin:10px;
+    }
+    .updatePasswordButton{
+        width:calc(100% - 20px);
+        margin:10px auto;
+    }
+    .locationFieldDiv{
+        margin-top: 0;
+    }
+    .addEmailForm{
+        margin-bottom: 10px;
+    }
+    .changePasswordInput{
+        width:calc(100% - 20px);
+    }
+    .saveButton{
+        width:calc(100% - 20px);
+        margin:10px 10px;
+    }
+    .itemSelect{
+        margin:0 0 10px 10px;
+        width:calc(100% - 103px);
+    }
+    .addItemButton {
+        padding: 7px 16px;
+        margin: 0 10px 10px 0;
+    }
+    .editIcon{
+        opacity: 1;
+    }
 }

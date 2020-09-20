@@ -184,7 +184,8 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.loadSearchedUser();
+      await this.loadSearchedUser();
+      this.loadMap();
     }
   },
   watch: {

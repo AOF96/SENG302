@@ -49,10 +49,10 @@
                   <v-card flat>
                     <div  v-if="index === 2">
                       <v-col>
-                        <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
+                        <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
+                        <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
                       </v-col>
                     </div>
                   </v-card>
@@ -92,22 +92,18 @@
 
               <div v-if="activitySearchTab">
               <v-row class="searchRow">
-                <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allActivities" :key="user.email" link>
+                <v-list-item two-line v-for="activity in allActivities" :key="activity.name" link>
                   <v-list-item-content>
-                    <v-list-item-title v-if="user.middlename != null">
-                      {{ user.firstname + " " + user.middlename + " " + user.lastname}}
+                    <v-list-item-title>
+                      {{ activity.name}}
                     </v-list-item-title>
-                    <v-list-item-title v-else>
-                      {{ user.firstname + " " + user.lastname}}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-row>
               <v-row class="searchRow">
                 <v-spacer />
                 <v-btn
-                    v-on:click="searchUsers(currentPage + 1, currentSize)"
+                    v-on:click="searchUsers(currentActivityPage + 1, currentActivitySize)"
                     :hidden="moreHidden"
                     :loading="loading"
                     :disabled="disabled"
@@ -126,7 +122,7 @@
         <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
           <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
             <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
-            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultPage, defaultSize)">
+            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
               <template v-slot:selection="data">
                 <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
                   {{ data.item }}
@@ -163,6 +159,7 @@ import {
   mapActions
 } from "vuex";
 import {
+  apiActivity,
   apiUser
 } from "../api";
 
@@ -182,6 +179,10 @@ export default {
       currentPage: 1,
       defaultSize: 10,
       currentSize: 10,
+      defaultActivityPage: 0,
+      currentActivityPage: 1,
+      defaultActivitySize: 10,
+      currentActivitySize: 10,
       loading: false,
       disabled: false,
       moreHidden: true,
@@ -222,6 +223,11 @@ export default {
     }
   },
   methods: {
+    /**
+     * Checks if the search term when looking for the user is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
     submitButtonCheck(page, size) {
       if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
         this.errorMessage = "Search is empty";
@@ -230,7 +236,23 @@ export default {
         this.searchUsers(page, size);
       }
     },
-
+    /**
+     * Checks if the search term when looking for an activity is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    submitActivityButtonCheck(page, size) {
+      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0) && this.searchedActivityTerm.length === 0) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        apiActivity.getSearchedActivity(this.searchedActivityTerm, page, size).then(
+            (response) => {
+              this.allActivities = response.data.content;
+            })
+      }
+    }
+      ,
     ...mapActions(["setUserSearch", "setScrollPosition"]),
     /**
      * Search for size amount of users on given page and append to list
@@ -318,7 +340,9 @@ export default {
         }
       }
     },
-
+    /**
+     * Removes the activity from the activity filter component.
+     **/
     remove(item) {
       const index = this.activity_types_selected.indexOf(item);
       if (index >= 0) this.activity_types_selected.splice(index, 1);
@@ -340,6 +364,13 @@ export default {
     submitSearch: function(e) {
       if (e.keyCode === 13) {
         this.searchUsers(this.defaultPage, this.defaultSize);
+      }
+    },
+
+    // Submit search query on enter pressed.
+    submitActivitySearch: function(e) {
+      if (e.keyCode === 13) {
+        this.searchUsers(this.defaultActivityPage, this.defaultActivitySize);
       }
     },
 
