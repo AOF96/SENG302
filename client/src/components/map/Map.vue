@@ -1,21 +1,25 @@
 <template>
   <div id="map">
     <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+    <div id="hiddenText" hidden="true"></div>
   </div>
 </template>
 
 <script>
   import {mapGetters, mapState, mapActions} from "vuex";
+  import {apiActivity} from "@/api";
+  // import {apiActivity} from "@/api";
 
   export default {
     name: "Map",
-    data: function () {
+    data: function() {
       return {
         map: null,
         geocoder: null,
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        // mapBounds: null
         mapActivities: [],
         activities: [
           {
@@ -532,6 +536,26 @@
           styles: styles["light"]
         });
 
+
+        window.google.maps.event.addListener(map, 'idle', function(){
+
+              let mapBounds = this.getBounds();
+              let NECorner = mapBounds.getNorthEast();
+              let SWCorner = mapBounds.getSouthWest();
+              let coordinates = {
+                NELat: NECorner.lat(),
+                NELong: NECorner.lng(),
+                SWLat: SWCorner.lat(),
+                SWLong: SWCorner.lng()
+              };
+              apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+                  .then(response => {
+                    console.log(response.data);
+                    console.log("here")
+                  })
+            }
+        );
+
         this.createHomeMarker(map, position);
         this.createActivityMarkers(map);
       },
@@ -681,6 +705,19 @@
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
       }
+      // getMapBounds(map){
+      //   let mapBoundsObject = map.getBounds()
+      //   let NECorner = mapBoundsObject.getNorthEast();
+      //   let SWCorner = mapBoundsObject.getSouthWest();
+      //   this.mapBounds = {
+      //     NELat: NECorner.lat(),
+      //     NELong: NECorner.lng(),
+      //     SWLat: SWCorner.lat(),
+      //     SWLong: SWCorner.lng()
+      //   };
+      //   console.log(this.mapBounds);
+      //   apiActivity.getActivityInRange(this.mapBounds.SWLat, this.mapBounds.NELat, this.mapBounds.SWLong, this.mapBounds.NELong);
+      // }
     }
   }
 </script>
