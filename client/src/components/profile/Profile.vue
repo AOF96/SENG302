@@ -184,8 +184,7 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      await this.loadSearchedUser();
-      this.loadMap();
+      this.loadSearchedUser();
     }
   },
   watch: {
@@ -283,7 +282,7 @@ export default {
      * Sets location marker at position given
      */
     setLocationMarker(map, position) {
-      var homeIcon = {
+      let homeIcon = {
         url: "https://i.imgur.com/mNfVgmC.png",
         scaledSize: new window.google.maps.Size(20, 20),
         origin: new window.google.maps.Point(0, 0),
@@ -341,6 +340,9 @@ export default {
       }
     },
 
+    /**
+     * Loads country information and map
+     */
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
       this.getDataFromUrl(COUNTRIES_URL)
@@ -362,6 +364,7 @@ export default {
         })
         .catch(error => console.log(error));
     },
+
     /***
      * Makes a request to the server to give the searched user admin rights given the user is not already an admin and
      * the requesting user is already an admin.

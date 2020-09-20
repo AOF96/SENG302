@@ -234,16 +234,26 @@
       },
 
       /**
-       * Creates a search marker and centers the map on the search
+       * Creates a search marker and centers the map on the search. Changes pin depending on what the searched location is
        * @param map
        */
       createSearchMarker(map) {
-        let icon = {
-          url: "https://i.imgur.com/jNY9HSw.png", // Change this icon
-          scaledSize: new window.google.maps.Size(26, 26),
-          origin: new window.google.maps.Point(0, 0),
-          anchor: new window.google.maps.Point(13, 26)
-        };
+        let icon;
+        if (this.searchedType === "user") {
+          icon = {
+            url: "https://i.imgur.com/jNY9HSw.png", // Change this icon
+            scaledSize: new window.google.maps.Size(26, 26),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+        } else {
+          icon = {
+            url: "https://i.imgur.com/MUWKzz9.png", // Change this icon
+            scaledSize: new window.google.maps.Size(26, 26),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+        }
 
         let searchPosition = new window.google.maps.LatLng(this.searchLatitude, this.searchLongitude);
 
