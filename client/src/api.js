@@ -566,5 +566,16 @@ export const apiActivity = {
     /**
      * Get location for activity with provided id
       */
-    getLocationForActivity: (activityId) => instance.get(`/activities/${activityId}/location`)
+    getLocationForActivity: (activityId) => instance.get(`/activities/${activityId}/location`),
+  /**
+  * Send a request to retrieve the all the activities within the given bound
+  */
+  getActivityInRange: (latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight) => instance.get(`/activities/within/range`,{
+    params: {
+        latitudeBottomLeft: latitudeBottomLeft,
+        latitudeTopRight: latitudeTopRight,
+        longitudeBottomLeft: longitudeBottomLeft,
+        longitudeTopRight: longitudeTopRight
+    }
+}),
 };
