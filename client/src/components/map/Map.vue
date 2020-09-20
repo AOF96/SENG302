@@ -8,7 +8,6 @@
 <script>
   import {mapGetters, mapState, mapActions} from "vuex";
   import {apiActivity} from "@/api";
-  // import {apiActivity} from "@/api";
 
   export default {
     name: "Map",
@@ -21,6 +20,7 @@
         timeout: 2000,
         // mapBounds: null
         mapActivities: [],
+        // activities: [],
         activities: [
           {
             id: 1,
@@ -151,7 +151,7 @@
             start_time: "",
             end_time: ""
           }
-        ]
+        ],
       }
     },
     computed: {
@@ -165,11 +165,10 @@
       ...mapActions(["getDataFromUrl"]),
       /**
        * Loads the map onto the page and centres on the users home city.
-       * Adds a marker on the city's centre.
+       * Adds a marker on the user's location and all the activities near them that appear within the range of the map
        */
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
-
         let position = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
 
         const styles = {
@@ -537,25 +536,23 @@
         });
 
 
-        window.google.maps.event.addListener(map, 'idle', function(){
+        window.google.maps.event.addListener(map, 'idle', function () {
 
-              let mapBounds = this.getBounds();
-              let NECorner = mapBounds.getNorthEast();
-              let SWCorner = mapBounds.getSouthWest();
-              let coordinates = {
-                NELat: NECorner.lat(),
-                NELong: NECorner.lng(),
-                SWLat: SWCorner.lat(),
-                SWLong: SWCorner.lng()
-              };
-              apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
-                  .then(response => {
-                    console.log(response.data);
-                    console.log("here")
-                  })
-            }
-        );
-
+          let mapBounds = this.getBounds();
+          let NECorner = mapBounds.getNorthEast();
+          let SWCorner = mapBounds.getSouthWest();
+          let coordinates = {
+            NELat: NECorner.lat(),
+            NELong: NECorner.lng(),
+            SWLat: SWCorner.lat(),
+            SWLong: SWCorner.lng()
+          };
+          apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+            .then(response => {
+              // this.activities = response.data;
+              console.log(this.activities);
+            })
+        });
         this.createHomeMarker(map, position);
         this.createActivityMarkers(map);
       },
@@ -600,7 +597,7 @@
       },
 
       /**
-       * Creates a green marker for public activities
+       * Creates markers for the activities on the map
        * @param map
        */
       createActivityMarkers(map) {
@@ -705,19 +702,6 @@
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
       }
-      // getMapBounds(map){
-      //   let mapBoundsObject = map.getBounds()
-      //   let NECorner = mapBoundsObject.getNorthEast();
-      //   let SWCorner = mapBoundsObject.getSouthWest();
-      //   this.mapBounds = {
-      //     NELat: NECorner.lat(),
-      //     NELong: NECorner.lng(),
-      //     SWLat: SWCorner.lat(),
-      //     SWLong: SWCorner.lng()
-      //   };
-      //   console.log(this.mapBounds);
-      //   apiActivity.getActivityInRange(this.mapBounds.SWLat, this.mapBounds.NELat, this.mapBounds.SWLong, this.mapBounds.NELong);
-      // }
     }
   }
 </script>
