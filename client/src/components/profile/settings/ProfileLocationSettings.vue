@@ -69,9 +69,8 @@
      * duplicate summaries are removed.
      */
     async mounted() {
-      await this.loadSearchedUser();
+      this.loadSearchedUser();
       this.loadMap();
-      this.updateAddressString(this.searchedUser.location);
     },
     methods: {
       ...mapActions(["logout", "updateUserProfile", "getUserById", "editProfile", "getDataFromUrl", "editUserLocation"]),
@@ -157,11 +156,11 @@
       /**
        * Fills in address field and location object from address autocomplete
        */
-      fillInAddress() {
+      async fillInAddress() {
         let thisInner = this;
         const place = this.autocomplete.getPlace();
-        this.location = this.extractLocationData(this.autocomplete.getPlace());
-        this.updateAddressString();
+        this.location = await this.extractLocationData(this.autocomplete.getPlace());
+        this.updateAddressString(this.location);
         if (this.mapMarker != null) {
           this.mapMarker.setMap(null);
         }
@@ -225,35 +224,35 @@
        * Updates the address string from the locationObject parameter. Used when the location is changed by clicking
        * on the map, and when the map is first loaded with the initial location.
        */
-      updateAddressString() {
-        if (this.searchedUser.location) {
+      updateAddressString(locationObject) {
+        if (locationObject) {
           this.address = "";
-          if (this.searchedUser.location.street_address !== "") {
-            this.address += this.searchedUser.location.street_address
+          if (locationObject.street_address !== "") {
+            this.address += locationObject.street_address
           }
-          if (this.searchedUser.location.suburb !== "") {
+          if (locationObject.suburb !== "") {
             if (this.address !== "") {
               this.address += ", "
             }
-            this.address += this.searchedUser.location.suburb;
+            this.address += locationObject.suburb;
           }
-          if (this.searchedUser.location.city !== "") {
+          if (locationObject.city !== "") {
             if (this.address !== "") {
               this.address += ", "
             }
-            this.address += this.searchedUser.location.city;
+            this.address += locationObject.city;
           }
-          if (this.searchedUser.location.state !== "") {
+          if (locationObject.state !== "") {
             if (this.address !== "") {
               this.address += ", "
             }
-            this.address += this.searchedUser.location.state;
+            this.address += locationObject.state;
           }
-          if (this.searchedUser.location.country !== "") {
+          if (locationObject.country !== "") {
             if (this.address !== "") {
               this.address += ", "
             }
-            this.address += this.searchedUser.location.country;
+            this.address += locationObject.country;
           }
         }
       },
@@ -303,7 +302,7 @@
         if (this.searchedUser.location != null) {
           this.location = this.searchedUser.homeLocation;
         }
-        this.updateAddressString();
+        this.updateAddressString(this.searchedUser.location);
         this.loadMap();
       }
     },
