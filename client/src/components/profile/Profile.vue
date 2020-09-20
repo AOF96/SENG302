@@ -184,7 +184,8 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.loadSearchedUser();
+      await this.loadSearchedUser();
+      this.loadMap();
     }
   },
   watch: {
@@ -257,11 +258,26 @@ export default {
           disableDefaultUI: true
         });
 
-        map.setCenter(position);
-        new window.google.maps.Marker({
-          map: map,
-          position: position
-        });
+        if (this.searchedUser.location) {
+          //Use me once the address is available in the user object
+          let address = this.searchedUser.location.street_address;
+
+          let latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+          this.geocoder.geocode({'address': address}, function (results, status) {
+            if (status === 'OK') {
+              map.setCenter(latLng);
+              new window.google.maps.Marker({
+                map: map,
+                position: position
+              });
+            } else {
+              this.snackbarText = status;
+              this.snackbarColour = "error";
+              this.snackbar = true;
+            }
+          });
+        }
       }
     },
 
@@ -326,7 +342,6 @@ export default {
             countries.splice(index, 1);
           }
           this.countries_option = countries;
-          this.loadMap();
         })
         .catch(error => console.log(error));
     },

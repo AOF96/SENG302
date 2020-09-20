@@ -13,6 +13,7 @@ import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.util.ParserHelper;
+import com.springvuegradle.hakinakina.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.springvuegradle.hakinakina.util.ParserHelper.*;
@@ -131,24 +132,6 @@ public class UserDeserializer extends StdDeserializer<User> {
             user.setLocation(location);
         }
         return user;
-    }
-
-    /**
-     * Parses a JsonNode to create and return a Location object.
-     * @param node The JsonNode to parse.
-     * @return A Location object.
-     */
-    public Location createLocation(JsonNode node) {
-        String streetAddress = getValueString(node, "street_address");
-        String suburb = getValueString(node, "suburb");
-        int postcode = getValueInt(node, "postcode");
-        String city = getValueString(node, "city");
-        String state = getValueString(node, "state");
-        String country = getValueString(node, "country");
-        Long latitude = getValueLong(node, "latitude");
-        Long longitude = getValueLong(node, "longitude");
-
-        return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
     }
 
     /**
