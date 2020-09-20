@@ -120,8 +120,8 @@
           </v-card>
         </v-col>
         <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-          <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-            <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
+          <v-card v-if="!activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+            <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity type</h1>
             <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
               <template v-slot:selection="data">
                 <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
@@ -140,7 +140,39 @@
               </template>
             </v-combobox>
             <v-label>Filter method</v-label>
+            <v-tooltip bottom max-width="500px">
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+              </template>
+              <span style="color: white;">You can filter users by the activity types that they have on their profiles, using
+                      these buttons. There are two options results including all and results including one of. Filtering
+              by activity types fun, extreme with the results including all option selected will mean that a search will
+              return only users who have both fun and extreme on their profiles. While filtering by activity types fun,
+              extreme with the results including one of option selected means that all users with either fun or extreme
+              on their profiles will be returned.</span>
+            </v-tooltip>
             <v-radio-group v-model="filterMethod" :mandatory="true" v-on:change="searchUsers(defaultPage, defaultSize)">
+              <v-radio label="Results including all" value="and"></v-radio>
+              <v-radio label="Results including one of" value="or"></v-radio>
+            </v-radio-group>
+          </v-card>
+          <v-card v-if="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+            <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
+            <v-row class="ml-1">
+                  <v-label style="margin-right: 5px">Filter method</v-label>
+                  <v-tooltip bottom max-width="500px">
+                    <template v-slot:activator="{ on }">
+                      <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                    </template>
+                    <span style="color: white;">You can search for multiple activities or just a single activity using
+                      these buttons, when searching for searching multiple activities you have two options. Results
+                    including all which means a search for fun, scary will return all activities that include both fun and scary in
+                    the title. Whereas the other option results including one of meaning a search for fun, scary will
+                    return all activities that include either fun or scary in the title.</span>
+                  </v-tooltip>
+            </v-row>
+            <v-radio-group v-model="multipleActivityFilterMethod" :mandatory="true">
+              <v-radio label="Search for single activity" value="single"></v-radio>
               <v-radio label="Results including all" value="and"></v-radio>
               <v-radio label="Results including one of" value="or"></v-radio>
             </v-radio-group>
@@ -197,6 +229,7 @@ export default {
       searchInput: "",
       selected_activity: "Activity Type",
       filterMethod: "and",
+      multipleActivityFilterMethod: "single",
       searchMethods: [
         {display: "Full Name", value: "fullname"},
         {display: "Last Name", value: "lastname"},
@@ -451,6 +484,6 @@ export default {
 </script>
 
 <style scoped>
-@import "../../public/styles/pages/searchUserStyle.css";
 @import "../../public/styles/pages/profileStyle.css";
+@import "../../public/styles/pages/searchUserStyle.css";
 </style>
