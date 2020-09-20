@@ -617,13 +617,15 @@
             icon: activityMarkerIcon,
           }));
 
-          let contentString = '<div id="content">'+
-              '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
-              '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
-              '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
-              '<div id="activityPopupDescription">'+ activity.description + '</div>'+
-              '<div id="activityPopupActivityTypes">'+ activity.activityTypes + '</div>'+
-              '<div id="activityPopupActivityFollowers">'+ activity.followers + ' followers</div>'+
+          let contentString = '<div class="content">'+
+              '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
+              '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
+              '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
+              '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
+              '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
+              '<h1 class="activityPopupActivityFollowers">'+ activity.followers + ' followers</h1>'+
+              '<hr class="activityPopupActivityLine">'+
+              '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
               '</div>';
 
           let infowindow = new window.google.maps.InfoWindow({
@@ -638,6 +640,27 @@
             infowindow.close();
           });
         }
+      },
+
+      /**
+       * Returns the correct colour for a given activity visibility
+       * @param visibility
+       * @returns {string}
+       */
+      getVisibilityColour(visibility) {
+        let colour = "#1dca92";
+        switch(visibility) {
+          case "private":
+            colour = "#ff4f4a";
+            break;
+          case "restricted":
+            colour = "#ff843c";
+            break;
+          case "public":
+            colour = "#1dca92";
+            break;
+        }
+        return colour;
       },
 
       /**
