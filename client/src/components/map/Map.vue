@@ -63,7 +63,7 @@
 
         this.createControl(map);
 
-        this.createHomeMarker(map, position);
+        this.createHomeMarker(map, userPosition);
 
         this.createSearch(map);
       },
