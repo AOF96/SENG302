@@ -25,9 +25,19 @@
       </button>
     </div>
     <div class="floatClear"></div>
-    <div>
-      <v-alert v-model="snackbar" top :color="snackbarColour" >{{ snackbarText }}</v-alert>
-    </div>
+    <v-snackbar
+        v-model="snackbar"
+        :color="snackbarColour"
+    >
+      {{ snackbarText }}
+      <v-btn
+          @click="snackbar = false"
+          color="white"
+          text
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -45,7 +55,7 @@
         searchedUser: {},
         snackbar: false,
         snackbarText: null,
-        snackbarColour: "primary",
+        snackbarColour: '',
         location: {
           street_address: null,
           suburb: null,

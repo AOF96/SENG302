@@ -3,7 +3,6 @@
         <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
             {{errorMessage}}
         </v-alert>
-<!--        <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>-->
         <div class="loginContainer">
             <div class="loginFormContainer">
                 <h1>Login</h1>
@@ -113,22 +112,18 @@
               if (responseCode === 403 && responseData === "Email does not exist") {
                 this.errorMessage = "Account does not exist";
                 this.alertComponent = true;
-                // this.topErrorMsg = "Account does not exist"
 
               } else if (responseCode === 403 && responseData === "Incorrect password") {
                 this.errorMessage = "Incorrect Password";
                 this.alertComponent = true;
-                    // this.passwordErrorMsg = "Incorrect Password"
 
               } else if (responseCode === 403 && responseData === "Please enter email/password") {
                 this.errorMessage = "Please enter email/password";
                 this.alertComponent = true;
-                // this.topErrorMsg = "Please enter email/password"
 
               } else {
                 this.errorMessage = "Please enter email/password";
                 this.alertComponent = true;
-                // this.otherErrorMsg = responseData
               }
             })
 
