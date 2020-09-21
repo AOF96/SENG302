@@ -567,8 +567,27 @@
         this.createHomeMarker(this.gmap, position);
       },
 
+      /**
+       * Formats Date object to pretty English
+       * @param date
+       */
+      dateFormatterToEnglish: function(date) {
+        const options = {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+          hour12: true,
+          hour: "2-digit",
+          minute: "2-digit"
+      };
+        return date.toLocaleTimeString("en-US", options);
+      },
 
 
+      /**
+       * Gets activities within the bounds of the map
+       */
       getActivitiesInRange(){
 
         let NECorner = this.mapBounds.getNorthEast();
@@ -668,14 +687,33 @@
             icon: activityMarkerIcon,
           }));
 
-          let contentString = '<div id="content">'+
-              '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
-              '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
-              '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
-              '<div id="activityPopupDescription">'+ activity.description + '</div>'+
-              '<div id="activityPopupActivityTypes">'+ activity.activityTypes + '</div>'+
-              '<div id="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</div>'+
-              '</div>';
+          let contentString
+
+          if (activity.continuous === true) {
+            contentString = '<div id="content">'+
+                '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
+                '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
+                '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
+                '<div id="activityPopupDescription">'+ activity.description + '</div>'+
+                '<div id="activityPopupActivityTypes">'+ activity.activity_types + '</div>'+
+                '<div id="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</div>'+
+                '</div>';
+          } else {
+
+            let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time))
+            let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time))
+
+            contentString = '<div id="content">'+
+                '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
+                '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
+                '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
+                '<div id="activityPopupDescription">' + activity.description + '</div>'+
+                '<div id="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</div>'+
+                '<div id="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</div>'+
+                '<div id="activityPopupActivityTypes">'+ activity.activity_types + '</div>'+
+                '<div id="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</div>'+
+                '</div>';
+          }
 
           let infowindow = new window.google.maps.InfoWindow({
             content: contentString
