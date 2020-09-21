@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -61,6 +58,30 @@ public class SearchService {
     @Transactional
     public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
         Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm), PageRequest.of(page, size));
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        for (Activity activity: activityPage) {
+            SearchActivityDto searchActivityDto = new SearchActivityDto();
+            searchActivityDto.setId(activity.getId());
+            searchActivityDto.setName(activity.getName());
+            searchActivityDto.setContinuous(activity.isContinuous());
+            searchActivityDto.setStartTime(activity.getStartTime());
+            searchActivityDto.setEndTime(activity.getEndTime());
+
+            if (activity.getLocation() != null) {
+                if (locationRepository.findById(activity.getLocation().getId()).isPresent()) {
+                    Location activityLocation = locationRepository.getOne(activity.getLocation().getId());
+                    searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
+                }
+            }
+
+            searchActivityDtoList.add(searchActivityDto);
+        }
+        return new PageImpl<>(searchActivityDtoList);
+    }
+
+    @Transactional
+    public Page<SearchActivityDto> findActivityPaginatedByQuery(Set<String> searchTerms, String method, int page, int size) {
+        Page<Activity> activityPage = activityRepository.getActivityWithNameAnd(PageRequest.of(page,size), searchTerms, searchTerms.size());
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
             SearchActivityDto searchActivityDto = new SearchActivityDto();

@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.repository;
 
 import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.Activity;
+import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository for storing activities that the user can perform.
@@ -76,4 +78,10 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     Optional<Long> getActivityLocationId(Long activityId);
 
     Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
+
+    @Query(value = "SELECT activity_id FROM Activity "
+            + "WHERE activity_name IN (:searchTerms) " +
+            "GROUP BY activity_id " +
+            "HAVING count(Distinct activity_name) = :size", nativeQuery = true)
+    Page<Activity> getActivityWithNameAnd(Pageable pageable, Set<String> searchTerms, int size);
 }

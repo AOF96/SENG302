@@ -14,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Rest controller class for controlling requests related to searching
@@ -81,7 +79,7 @@ public class SearchController {
     @GetMapping("/activities")
     public ResponseEntity findActivityPaginated(
             @RequestParam(required = false) String activitySearchTerm,
-            @RequestParam(required = false) ArrayList<String> activitySearchTerms,
+            @RequestParam(required = false) String activitySearchTerms,
             @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size,
@@ -90,8 +88,20 @@ public class SearchController {
             if (sessionRepository.findUserIdByToken(sessionToken) == null) {
                 return new ResponseEntity("Session invalid", HttpStatus.UNAUTHORIZED);
             }
-            Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size);
-            return new ResponseEntity(results, HttpStatus.OK);
+            if (method.equals("single")) {
+                Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size);
+                return new ResponseEntity(results, HttpStatus.OK);
+            } else {
+                System.out.println(activitySearchTerms);
+                String[] str = activitySearchTerms.split(" ");
+                List<String> activitySearchTermsList = new ArrayList<String>();
+                activitySearchTermsList = Arrays.asList(str);
+                Set<String> activitySearchTermsSet = new HashSet<String>(activitySearchTermsList);
+
+                Page<SearchActivityDto> results = searchService.findActivityPaginatedByQuery(activitySearchTermsSet,
+                        method, page, size);
+                return new ResponseEntity(results, HttpStatus.OK);
+            }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "could not search for activity");
             return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
