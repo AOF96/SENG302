@@ -13,145 +13,145 @@
     name: "Map",
     data: function() {
       return {
-        map: null,
+        gmap: null,
         geocoder: null,
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
-        // mapBounds: null
+        mapBounds: null,
         mapActivities: [],
-        // activities: [],
-        activities: [
-          {
-            id: 1,
-            name: "Walking away",
-            continuous: true,
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-            followers: 4,
-            activityTypes: "Team sport, Running",
-            visibility: "public",
-            start_time: "",
-            end_time: "",
-            author: 86007,
-            location: {
-              street_address: "Avon River",
-              city: "Christchurch",
-              country: "New Zealand",
-              latitude: -43.1213,
-              longitude: 172.614962,
-            }
-          },
-          {
-            id: 2,
-            name: "Walking towards",
-            visibility: "public",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-            latitude: -35.0,
-            longitude: 151,
-            author: 86009,
-            followers: 4,
-            activityTypes: "Team sport, Running",
-            location: {
-              street_address: "Avon River",
-              state: "",
-              city: "Christchurch",
-              country: "New Zealand",
-              latitude: -43.879534,
-              longitude: 172.614962,
-            },
-            continuous: true,
-            start_time: "",
-            end_time: ""
-          },
-          {
-            id: 3,
-            name: "Walking away",
-            visibility: "restricted",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-            latitude: -34.2,
-            longitude: 150.2,
-            author: 86007,
-            followers: 4,
-            activityTypes: "Team sport, Running",
-            location: {
-              street_address: "Avon River",
-              city: "Christchurch",
-              state: "",
-              country: "New Zealand",
-              latitude: -43.4568,
-              longitude: 172.614962,
-            },
-            continuous: true,
-            start_time: "",
-            end_time: ""
-          },
-          {
-            id: 4,
-            name: "Walking towards",
-            visibility: "restricted",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-            latitude: -35.2,
-            longitude: 151.2,
-            author: 86009,
-            followers: 4,
-            activityTypes: "Team sport, Running",
-            location: {
-              street_address: "Avon River",
-              city: "Christchurch",
-              state: "",
-              country: "New Zealand",
-              latitude: -43.23423,
-              longitude: 172.614962,
-            },
-            continuous: true,
-            start_time: "",
-            end_time: ""
-          },
-          {
-            id: 5,
-            name: "Walking away",
-            visibility: "private",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-            latitude: -34.4,
-            longitude: 150.4,
-            author: 86007,
-            followers: 4,
-            activityTypes: "Team sport, Running",
-            location: {
-              street_address: "Avon River",
-              city: "Christchurch",
-              state: "",
-              country: "New Zealand",
-              latitude: -43.234231,
-              longitude: 172.614962,
-            },
-            continuous: true,
-            start_time: "",
-            end_time: ""
-          },
-          {
-            id: 6,
-            name: "Walking towards",
-            visibility: "private",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-            latitude: -35.4,
-            longitude: 151.4,
-            author: 86009,
-            followers: 4,
-            activityTypes: "Team sport, Running",
-            location: {
-              street_address: "Avon River",
-              city: "Christchurch",
-              state: "",
-              country: "New Zealand",
-              latitude: -43.23423523,
-              longitude: 172.614962,
-            },
-            continuous: true,
-            start_time: "",
-            end_time: ""
-          }
-        ],
+        activities: [],
+      //   activities: [
+      //     {
+      //       id: 1,
+      //       name: "Walking away",
+      //       continuous: true,
+      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+      //       followers: 4,
+      //       activityTypes: "Team sport, Running",
+      //       visibility: "public",
+      //       start_time: "",
+      //       end_time: "",
+      //       author: 86007,
+      //       location: {
+      //         street_address: "Avon River",
+      //         city: "Christchurch",
+      //         country: "New Zealand",
+      //         latitude: -43.1213,
+      //         longitude: 172.614962,
+      //       }
+      //     },
+      //     {
+      //       id: 2,
+      //       name: "Walking towards",
+      //       visibility: "public",
+      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+      //       latitude: -35.0,
+      //       longitude: 151,
+      //       author: 86009,
+      //       followers: 4,
+      //       activityTypes: "Team sport, Running",
+      //       location: {
+      //         street_address: "Avon River",
+      //         state: "",
+      //         city: "Christchurch",
+      //         country: "New Zealand",
+      //         latitude: -43.879534,
+      //         longitude: 172.614962,
+      //       },
+      //       continuous: true,
+      //       start_time: "",
+      //       end_time: ""
+      //     },
+      //     {
+      //       id: 3,
+      //       name: "Walking away",
+      //       visibility: "restricted",
+      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+      //       latitude: -34.2,
+      //       longitude: 150.2,
+      //       author: 86007,
+      //       followers: 4,
+      //       activityTypes: "Team sport, Running",
+      //       location: {
+      //         street_address: "Avon River",
+      //         city: "Christchurch",
+      //         state: "",
+      //         country: "New Zealand",
+      //         latitude: -43.4568,
+      //         longitude: 172.614962,
+      //       },
+      //       continuous: true,
+      //       start_time: "",
+      //       end_time: ""
+      //     },
+      //     {
+      //       id: 4,
+      //       name: "Walking towards",
+      //       visibility: "restricted",
+      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+      //       latitude: -35.2,
+      //       longitude: 151.2,
+      //       author: 86009,
+      //       followers: 4,
+      //       activityTypes: "Team sport, Running",
+      //       location: {
+      //         street_address: "Avon River",
+      //         city: "Christchurch",
+      //         state: "",
+      //         country: "New Zealand",
+      //         latitude: -43.23423,
+      //         longitude: 172.614962,
+      //       },
+      //       continuous: true,
+      //       start_time: "",
+      //       end_time: ""
+      //     },
+      //     {
+      //       id: 5,
+      //       name: "Walking away",
+      //       visibility: "private",
+      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+      //       latitude: -34.4,
+      //       longitude: 150.4,
+      //       author: 86007,
+      //       followers: 4,
+      //       activityTypes: "Team sport, Running",
+      //       location: {
+      //         street_address: "Avon River",
+      //         city: "Christchurch",
+      //         state: "",
+      //         country: "New Zealand",
+      //         latitude: -43.234231,
+      //         longitude: 172.614962,
+      //       },
+      //       continuous: true,
+      //       start_time: "",
+      //       end_time: ""
+      //     },
+      //     {
+      //       id: 6,
+      //       name: "Walking towards",
+      //       visibility: "private",
+      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
+      //       latitude: -35.4,
+      //       longitude: 151.4,
+      //       author: 86009,
+      //       followers: 4,
+      //       activityTypes: "Team sport, Running",
+      //       location: {
+      //         street_address: "Avon River",
+      //         city: "Christchurch",
+      //         state: "",
+      //         country: "New Zealand",
+      //         latitude: -43.23423523,
+      //         longitude: 172.614962,
+      //       },
+      //       continuous: true,
+      //       start_time: "",
+      //       end_time: ""
+      //     }
+      //   ],
       }
     },
     computed: {
@@ -160,7 +160,17 @@
     },
     mounted() {
       this.loadMap();
+     },
+
+    watch: {
+      mapBounds: function(){
+        this.mapActivities = [];
+        this.getActivitiesInRange();
+        console.log("I AM HHHEEEEEEEEEEEEEEEERRRRRRRRRRRRRREEEEEEEEEE");
+        console.log(this.mapActivities.length);
+     }
     },
+
     methods: {
       ...mapActions(["getDataFromUrl"]),
       /**
@@ -529,18 +539,18 @@
           ]
         };
 
-        let map = new window.google.maps.Map(document.getElementById("map"), {
+        this.gmap = new window.google.maps.Map(document.getElementById("map"), {
           center: position,
           zoom: 12,
           styles: styles["light"]
         });
 
-
-        window.google.maps.event.addListener(map, 'idle', function () {
-
-          let mapBounds = this.getBounds();
-          let NECorner = mapBounds.getNorthEast();
-          let SWCorner = mapBounds.getSouthWest();
+        let self = this;
+        window.google.maps.event.addListener(this.gmap, 'idle', function() {
+          self.mapBounds = this.getBounds();
+          console.log(self.mapBounds);
+          let NECorner = self.mapBounds.getNorthEast();
+          let SWCorner = self.mapBounds.getSouthWest();
           let coordinates = {
             NELat: NECorner.lat(),
             NELong: NECorner.lng(),
@@ -549,12 +559,32 @@
           };
           apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
             .then(response => {
-              // this.activities = response.data;
-              console.log(this.activities);
+              self.activities = response.data;
+              console.log(self.activities);
+              self.createActivityMarkers(self.gmap);
             })
         });
-        this.createHomeMarker(map, position);
-        this.createActivityMarkers(map);
+        this.createHomeMarker(this.gmap, position);
+      },
+
+
+
+      getActivitiesInRange(){
+
+        let NECorner = this.mapBounds.getNorthEast();
+        let SWCorner = this.mapBounds.getSouthWest();
+        let coordinates = {
+          NELat: NECorner.lat(),
+          NELong: NECorner.lng(),
+          SWLat: SWCorner.lat(),
+          SWLong: SWCorner.lng()
+        };
+        apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+            .then(response => {
+              this.activities = response.data;
+
+              this.createActivityMarkers(this.gmap);
+            })
       },
 
       /**
@@ -631,7 +661,7 @@
           }
 
           let activityPosition = new window.google.maps.LatLng(activity.location.latitude, activity.location.longitude);
-          let pos = this.mapActivities.length;
+          let pos = innerThis.mapActivities.length;
           innerThis.mapActivities.push(new window.google.maps.Marker({
             map: map,
             position: activityPosition,
@@ -644,7 +674,7 @@
               '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
               '<div id="activityPopupDescription">'+ activity.description + '</div>'+
               '<div id="activityPopupActivityTypes">'+ activity.activityTypes + '</div>'+
-              '<div id="activityPopupActivityFollowers">'+ activity.followers + ' followers</div>'+
+              '<div id="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</div>'+
               '</div>';
 
           let infowindow = new window.google.maps.InfoWindow({

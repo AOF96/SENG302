@@ -14,7 +14,6 @@ import java.util.Set;
 
 
 public class ActivityMapDto {
-    private ActivityRepository activityRepository;
 
     private Long id;
     private String name;
