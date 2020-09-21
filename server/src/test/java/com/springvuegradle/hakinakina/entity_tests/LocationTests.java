@@ -27,7 +27,6 @@ public class LocationTests {
         Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
                 "Christchurch", 8041, "Canterbury", "New Zealand",
                 -43.522447, 172.579442);
-        testLocation.setId(1L);
         locationRepository.save(testLocation);
         assertEquals(testLocation.getStreetAddress(), locationRepository.findAll().get(0).getStreetAddress());
         assertEquals(testLocation.getCity(), locationRepository.findAll().get(0).getCity());
