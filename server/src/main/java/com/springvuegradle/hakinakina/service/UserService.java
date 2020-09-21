@@ -733,8 +733,8 @@ public class UserService {
                 if (user.isPresent()) {
                     User validUser = user.get();
                     Hibernate.initialize(validUser.getActivities());
-                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
-                    if (validUserFollowingList.contains(activity)) {
+                    Optional<UserActivityRole> userActivityRoleCheck = userActivityRoleRepository.getByActivityAndUser(activity, validUser);
+                    if (userActivityRoleCheck.isPresent()) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
