@@ -25,6 +25,9 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        searchLatitude: null,
+        searchLongitude: null,
+        searchedType: null,
         mapStyle: "light"
       }
     },
@@ -44,10 +47,10 @@
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
 
-        let position = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
+        let userPosition = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
 
         let map = new window.google.maps.Map(document.getElementById("map"), {
-          center: position,
+          center: userPosition,
           zoom: 12,
           styles: mapStyles[this.mapStyle],
           zoomControl: false,
@@ -61,6 +64,8 @@
         this.createControl(map);
 
         this.createHomeMarker(map, position);
+
+        this.createSearch(map);
       },
 
       /**
@@ -69,7 +74,7 @@
        * @param position
        */
       createHomeMarker(map, position) {
-        var homeIcon = {
+        let homeIcon = {
           url: "https://i.imgur.com/mNfVgmC.png",
           scaledSize: new window.google.maps.Size(20, 20),
           origin: new window.google.maps.Point(0, 0),
@@ -162,6 +167,60 @@
             styles: mapStyles[this.mapStyle]
           });
         });
+      },
+
+      /**
+       * Checks if search exists and creates marker if it does
+       */
+      createSearch(map) {
+        if (this.$route.params.coordinates !== null) {
+          this.parseCoordinates();
+          this.createSearchMarker(map);
+        }
+      },
+
+      /**
+       * Parses the Coordinates in the URL (@{latitude},{longitude}), extracting the latitude and longitude.
+       */
+      parseCoordinates() {
+        let searchVars = this.$route.params.coordinates.split('@');
+        this.searchedType = searchVars[0];
+        let coordinates = searchVars[1].split(',');
+        this.searchLatitude = coordinates[0];
+        this.searchLongitude = coordinates[1];
+      },
+
+      /**
+       * Creates a search marker and centers the map on the search. Changes pin depending on what the searched location is
+       * @param map
+       */
+      createSearchMarker(map) {
+        let icon;
+        if (this.searchedType === "user") {
+          icon = {
+            url: "https://i.imgur.com/jNY9HSw.png", // Change this icon
+            scaledSize: new window.google.maps.Size(26, 26),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+        } else {
+          icon = {
+            url: "https://i.imgur.com/MUWKzz9.png", // Change this icon
+            scaledSize: new window.google.maps.Size(26, 26),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+        }
+
+        let searchPosition = new window.google.maps.LatLng(this.searchLatitude, this.searchLongitude);
+
+        new window.google.maps.Marker({
+          map: map,
+          position: searchPosition,
+          icon: icon
+        });
+
+        map.setCenter(searchPosition);
       }
     }
   }

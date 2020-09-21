@@ -20,7 +20,11 @@ describe('NavBar after the login is successful', () => {
         isLogin: true,
         permission_level: 0,
         firstname: "John",
-        lastname: "Smith"
+        lastname: "Smith",
+        location: {
+          latitude: 120.47,
+          longitude: -20.12
+        }
       }),
       isAdmin: () => {
         false

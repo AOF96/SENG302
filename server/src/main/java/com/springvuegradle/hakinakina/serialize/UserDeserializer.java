@@ -11,7 +11,6 @@ import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.LocationRepository;
 import com.springvuegradle.hakinakina.repository.PassportCountryRepository;
-import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.util.ParserHelper;
 import com.springvuegradle.hakinakina.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
