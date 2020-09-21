@@ -730,6 +730,27 @@
       },
 
       /**
+       * Returns the correct colour for a given activity visibility
+       * @param visibility
+       * @returns {string}
+       */
+      getVisibilityColour(visibility) {
+        let colour = "#1dca92";
+        switch(visibility) {
+          case "private":
+            colour = "#ff4f4a";
+            break;
+          case "restricted":
+            colour = "#ff843c";
+            break;
+          case "public":
+            colour = "#1dca92";
+            break;
+        }
+        return colour;
+      },
+
+      /**
        * Converts given location object to a formatted string
        * @param location
        * @returns {string}
