@@ -578,7 +578,7 @@ public class ActivityController {
      * @return a 200 response with the list of all the activities if any exist in the given bound, 400 for invalid user input, 401 for invalid session,
      * or 500 for internal server error.
      */
-    @GetMapping("/activities")
+    @GetMapping("/activities/within/range")
     public ResponseEntity<Activity> getActivitiesWithinGivenRange(@RequestParam("latitudeTopRight") Double latitudeTopRight,
                                                         @RequestParam("longitudeTopRight") Double longitudeTopRight,
                                                         @RequestParam("latitudeBottomLeft") Double latitudeBottomLeft,
