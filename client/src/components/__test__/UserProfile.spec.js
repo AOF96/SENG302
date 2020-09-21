@@ -6,8 +6,6 @@ import flushPromises from 'flush-promises'
 import VueRouter from "vue-router";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
-// localVue.use(VueRouter);
-// const router = new VueRouter();
 localVue.use(Vuex);
 //mock api
 jest.mock("@/api");
