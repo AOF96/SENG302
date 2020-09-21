@@ -1,11 +1,20 @@
 <template>
-  <div id="map">
-    <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+  <div class="mapPageContainer">
+    <div id="styleSelectorDiv" class="styleSelectorDiv">
+      <v-radio-group id="styleSelector" v-model="mapStyle">
+        <v-radio value="light" label="Light"></v-radio>
+        <v-radio value="dark" label="Dark"></v-radio>
+      </v-radio-group>
+    </div>
+    <div id="map">
+      <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+    </div>
   </div>
 </template>
 
 <script>
   import {mapGetters, mapState, mapActions} from "vuex";
+  import mapStyles from "../../util/mapStyles"
 
   export default {
     name: "Map",
@@ -19,6 +28,7 @@
         searchLatitude: null,
         searchLongitude: null,
         searchedType: null,
+        mapStyle: "light"
       }
     },
     computed: {
@@ -35,87 +45,6 @@
        * Adds a marker on the city's centre.
        */
       loadMap() {
-        const styles = {
-          light: [
-            {
-              featureType: "poi",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-          ],
-          dark: [
-            {
-              featureType: "poi",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-            {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
-            {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
-            {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
-            {
-              featureType: 'road',
-              elementType: 'geometry',
-              stylers: [{color: '#38414e'}]
-            },
-            {
-              featureType: 'road',
-              elementType: 'geometry.stroke',
-              stylers: [{color: '#212a37'}]
-            },
-            {
-              featureType: 'road',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#9ca5b3'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'geometry',
-              stylers: [{color: '#746855'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'geometry.stroke',
-              stylers: [{color: '#1f2835'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#f3d19c'}]
-            },
-            {
-              featureType: 'transit',
-              elementType: 'geometry',
-              stylers: [{color: '#2f3948'}]
-            },
-            {
-              featureType: 'transit.station',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#d59563'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'geometry',
-              stylers: [{color: '#17263c'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#515c6d'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.stroke',
-              stylers: [{color: '#17263c'}]
-            }
-          ]
-        };
-
         this.geocoder = new window.google.maps.Geocoder();
 
         let userPosition = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
@@ -123,8 +52,16 @@
         let map = new window.google.maps.Map(document.getElementById("map"), {
           center: userPosition,
           zoom: 12,
-          styles: styles["light"]
+          styles: mapStyles[this.mapStyle],
+          zoomControl: false,
+          mapTypeControl: true,
+          scaleControl: false,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: false
         });
+
+        this.createControl(map);
 
         this.createHomeMarker(map, userPosition);
 
@@ -210,6 +147,26 @@
        */
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
+      },
+
+      /**
+       * Creates a control for swapping the map theme
+       * @param map
+       */
+      createControl(map) {
+        const styleControl = document.getElementById("styleSelectorDiv");
+        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
+
+        const styleSelector = document.getElementById("styleSelector");
+        map.setOptions({
+          styles: mapStyles[this.mapStyle]
+        });
+
+        styleSelector.addEventListener("click", () => {
+          map.setOptions({
+            styles: mapStyles[this.mapStyle]
+          });
+        });
       },
 
       /**
