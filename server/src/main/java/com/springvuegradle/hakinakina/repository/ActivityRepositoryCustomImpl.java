@@ -24,7 +24,7 @@ public class ActivityRepositoryCustomImpl implements ActivityRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
         for (String term : searchTerms) {
-            predicates.add(cb.like(namePath, term));
+            predicates.add(cb.like(namePath, "%" + term + "%"));
         }
         query.select(activity)
                 .where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
@@ -35,19 +35,20 @@ public class ActivityRepositoryCustomImpl implements ActivityRepositoryCustom {
 
     @Override
     public List<Activity> findActivityNamesAnd(Set<String> searchTerms) {
-        StringBuilder queryString = new StringBuilder();
-        queryString.append("SELECT a FROM Activity a WHERE activity_name ");
-        ArrayList<String> searchTermsList = new ArrayList<>(searchTerms);
-        for (int i = 0; i < searchTermsList.size(); i++) {
-            if (i != searchTermsList.size() - 1) {
-                queryString.append("LIKE '%").append(searchTermsList.get(i)).append("%' AND activity_name ");
-            } else {
-                queryString.append("LIKE '%").append(searchTermsList.get(i)).append("%'");
-            }
+        CriteriaBuilder  cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Activity> query = cb.createQuery(Activity.class);
+        Root<Activity> activity = query.from(Activity.class);
+
+        Path<String> namePath = activity.get("name");
+
+        List<Predicate> predicates = new ArrayList<>();
+        for (String term : searchTerms) {
+            predicates.add(cb.like(namePath, "%" + term + "%"));
         }
+        query.select(activity)
+                .where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
 
-        TypedQuery<Activity> query = entityManager.createQuery(queryString.toString(), Activity.class);
-
-        return query.getResultList();
+        return entityManager.createQuery(query)
+                .getResultList();
     }
 }
