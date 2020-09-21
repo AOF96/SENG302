@@ -23,7 +23,7 @@ import java.util.Set;
  * Repository for storing activities that the user can perform.
  */
 @RepositoryRestResource
-public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity> {
+public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity>, ActivityRepositoryCustom {
 
     Activity findActivityById(Long id);
 
@@ -79,9 +79,4 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
 
     Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
 
-    @Query(value = "SELECT activity_id FROM Activity "
-            + "WHERE activity_name IN (:searchTerms) " +
-            "GROUP BY activity_id " +
-            "HAVING count(Distinct activity_name) = :size", nativeQuery = true)
-    Page<Activity> getActivityWithNameAnd(Pageable pageable, Set<String> searchTerms, int size);
 }

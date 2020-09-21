@@ -92,7 +92,6 @@ public class SearchController {
                 Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size);
                 return new ResponseEntity(results, HttpStatus.OK);
             } else {
-                System.out.println(activitySearchTerms);
                 String[] str = activitySearchTerms.split(" ");
                 List<String> activitySearchTermsList = new ArrayList<String>();
                 activitySearchTermsList = Arrays.asList(str);

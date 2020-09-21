@@ -81,25 +81,33 @@ public class SearchService {
 
     @Transactional
     public Page<SearchActivityDto> findActivityPaginatedByQuery(Set<String> searchTerms, String method, int page, int size) {
-        Page<Activity> activityPage = activityRepository.getActivityWithNameAnd(PageRequest.of(page,size), searchTerms, searchTerms.size());
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
-        for (Activity activity: activityPage) {
-            SearchActivityDto searchActivityDto = new SearchActivityDto();
-            searchActivityDto.setId(activity.getId());
-            searchActivityDto.setName(activity.getName());
-            searchActivityDto.setContinuous(activity.isContinuous());
-            searchActivityDto.setStartTime(activity.getStartTime());
-            searchActivityDto.setEndTime(activity.getEndTime());
-
-            if (activity.getLocation() != null) {
-                if (locationRepository.findById(activity.getLocation().getId()).isPresent()) {
-                    Location activityLocation = locationRepository.getOne(activity.getLocation().getId());
-                    searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
-                }
-            }
-
-            searchActivityDtoList.add(searchActivityDto);
+        List<Activity> activityList = new ArrayList<>();
+        if (method.equals("or")) {
+            activityList = activityRepository.findActivityNamesOr(searchTerms);
+        } else if (method.equals("and")){
+            activityList = activityRepository.findActivityNamesAnd(searchTerms);
         }
+            int start = page * 10;
+            int end = start + size;
+            if (activityList.size() < end) {
+                end = activityList.size();
+            }
+            for (int i = start; i<end; i++) {
+                SearchActivityDto searchActivityDto = new SearchActivityDto();
+                searchActivityDto.setId(activityList.get(i).getId());
+                searchActivityDto.setName(activityList.get(i).getName());
+                searchActivityDto.setContinuous(activityList.get(i).isContinuous());
+                searchActivityDto.setStartTime(activityList.get(i).getStartTime());
+                searchActivityDto.setEndTime(activityList.get(i).getEndTime());
+                if (activityList.get(i).getLocation() != null) {
+                    if (locationRepository.findById(activityList.get(i).getLocation().getId()).isPresent()) {
+                        Location activityLocation = locationRepository.getOne(activityList.get(i).getLocation().getId());
+                        searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
+                    }
+                }
+                searchActivityDtoList.add(searchActivityDto);
+            }
         return new PageImpl<>(searchActivityDtoList);
     }
 

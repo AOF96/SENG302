@@ -226,6 +226,7 @@ export default {
       tabs: null,
       activities_option: [],
       activity_types_selected: [],
+      names_selected: [],
       searchInput: "",
       selected_activity: "Activity Type",
       filterMethod: "and",
@@ -281,13 +282,16 @@ export default {
         this.snackbar = true;
       } else {
         if (method !== "single") {
-          const searchedActivityTerms = this.searchedActivityTerm.trim().split(",");
-          apiActivity.getSearchedActivity(searchedActivityTerms, method, page, size).then(
+          this.names_selected = this.searchedActivityTerm.trim().split(",");
+          for (let i = 0; i<this.names_selected.length; i++) {
+            this.names_selected[i] = this.names_selected[i].trim();
+          }
+          apiActivity.getSearchedActivity(null, this.names_selected, method, page, size).then(
               (response) => {
                 this.allActivities = response.data.content;
               });
           } else {
-            apiActivity.getSearchedActivity(this.searchedActivityTerm, method, page, size).then(
+            apiActivity.getSearchedActivity(this.searchedActivityTerm, [], method, page, size).then(
               (response) => {
                 this.allActivities = response.data.content;
               })
@@ -303,6 +307,7 @@ export default {
      * @param size Size of results to retrieve
      */
     searchUsers(page, size) {
+      console.log(this.activity_types_selected)
       if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
         this.allUsers = [];
         this.moreHidden = true;

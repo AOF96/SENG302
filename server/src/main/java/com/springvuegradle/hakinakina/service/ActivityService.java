@@ -228,7 +228,6 @@ public class ActivityService {
      */
     private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
         Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
-        System.out.println(activityChanges);
         StringBuilder description = new StringBuilder();
         for (ActivityAttribute attribute : activityChanges) {
             if (attribute == ActivityAttribute.NAME) {
