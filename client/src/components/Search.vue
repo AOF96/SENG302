@@ -52,7 +52,7 @@
                         <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" label="Search Activity" v-model="searchedActivityTerm" outlined rounded clearable hide-details dense></v-text-field>
                       </v-col>
                       <v-col>
-                        <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize)" color="#1cca92" outlined block rounded large>Submit</v-btn>
+                        <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize, multipleActivityFilterMethod)" color="#1cca92" outlined block rounded large>Submit</v-btn>
                       </v-col>
                     </div>
                   </v-card>
@@ -273,16 +273,25 @@ export default {
      * Checks if the search term when looking for an activity is not empty or invalid.
      * @param page Current page in results
      * @param size Size of results to retrieve
+     * @param method determines whether the search is for a single activity or multiple with and or or
      */
-    submitActivityButtonCheck(page, size) {
+    submitActivityButtonCheck(page, size, method) {
       if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0) && this.searchedActivityTerm.length === 0) {
         this.errorMessage = "Search is empty";
         this.snackbar = true;
       } else {
-        apiActivity.getSearchedActivity(this.searchedActivityTerm, page, size).then(
-            (response) => {
-              this.allActivities = response.data.content;
-            })
+        if (method !== "single") {
+          const searchedActivityTerms = this.searchedActivityTerm.trim().split(",");
+          apiActivity.getSearchedActivity(searchedActivityTerms, method, page, size).then(
+              (response) => {
+                this.allActivities = response.data.content;
+              });
+          } else {
+            apiActivity.getSearchedActivity(this.searchedActivityTerm, method, page, size).then(
+              (response) => {
+                this.allActivities = response.data.content;
+              })
+        }
       }
     }
       ,

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,6 +81,8 @@ public class SearchController {
     @GetMapping("/activities")
     public ResponseEntity findActivityPaginated(
             @RequestParam(required = false) String activitySearchTerm,
+            @RequestParam(required = false) ArrayList<String> activitySearchTerms,
+            @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @CookieValue(value = "s_id") String sessionToken) {
