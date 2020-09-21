@@ -89,6 +89,14 @@
   margin: 15px auto 0;
 }
 
+#submissionErrorText {
+  font-weight: 600;
+  font-size: 15px;
+  color: #f06a6a;
+  margin-bottom: 19px;
+  margin-left: 10px;
+}
+
 @media only screen and (max-height: 935px) {
   .signUpContainer {
     position: relative;

@@ -97,8 +97,9 @@ const routes = [
         component: Search
     },
     {
-        path: '/search',
-        component: Search
+       name: "searchPage",
+       path: '/search',
+       component: Search
     },
     {
         path: '/map',
@@ -120,6 +121,8 @@ router.beforeEach((to, from, next) => {
   const isAdmin = store ? store.getters.isAdmin : null;
   const isLoggedIn = store ? store.getters.isLoggedIn : null;
   const isAuthPath = to.path === "/signup" || to.path === "/login";
+
+  clearSearchResult(to, from);
 
   if (firstLoad === true) {
     firstLoad = false;
@@ -168,6 +171,15 @@ function updatePageHistory(to, from) {
   } else if (to.path !== from.path && from.path !== "/login" && from.path !== "/signup") {
     store._actions.clearNextHistory[0]();
     store._actions.addPreviousPage[0](from.path);
+  }
+}
+
+function clearSearchResult(to, from) {
+  const fromSearchToProfile = to.name == "profilePage" && from.name == "searchPage";
+  const fromProfileToSearch = to.name == "searchPage" && from.name == "profilePage"
+
+  if(!(fromSearchToProfile || fromProfileToSearch)) {
+    store._actions.resetSearch[0]();
   }
 }
 

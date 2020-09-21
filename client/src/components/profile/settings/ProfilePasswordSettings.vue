@@ -73,7 +73,8 @@ export default {
         match: this.newPassword === this.confirmPassword,
         length: /.{8,}/.test(this.newPassword),
         number: /\d/.test(this.newPassword),
-        uppercase: /[A-Z]/.test(this.newPassword)
+        uppercase: /[A-Z]/.test(this.newPassword),
+        lowercase: /[a-z]/.test(this.newPassword)
       };
     }
   },
@@ -179,6 +180,10 @@ export default {
         this.setError("Must contain at least one uppercase character");
         return false;
       }
+        if (!this.validation.lowercase) {
+            this.setError("Must contain at least one lowercase character");
+            return false;
+        }
       return true;
     },
     setError(errorMessage) {
