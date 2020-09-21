@@ -13,7 +13,7 @@ import Activity from './components/activity/Activity.vue'
 import store from './store/index.js';
 import ActivitySettings from "./components/activity/settings/ActivitySettings";
 import EditActivity from "./components/EditActivity";
-import { apiUser } from "./api";
+import {apiUser} from "./api";
 import AdminDashboard from "./components/AdminDashboard";
 import Search from "./components/Search";
 import Map from "./components/map/Map";
@@ -24,95 +24,98 @@ Vue.use(VueRouter);
 const baseUrl = process.env.BASE_URL;
 
 const routes = [
-    {
-        name: "profilePage",
-        path: '/profile/:profileId',
-        component: Profile
-    },
-    {
-        path: '/signup',
-        component: Signup
-    },
-    {
-        path: '/login',
-        component: Login
-    },
-    {
-        path: '/feed',
-        component: Feed
-    },
-    {
-        path: '/logout',
-    },
-    {
-        path: '/settings/profile/:profileId',
-        component: UserProfileSettings
-    },
-    {
-        path: '/settings/password/:profileId',
-        component: UserPasswordSettings
-    },
-    {
-        path: '/settings/email/:profileId',
-        component: UserEmailSettings
-    },
-    {
-        path: '/settings/passport_countries/:profileId',
-        component: UserPassportCountriesSettings
-    },
-    {
-        path: '/settings/activities/:profileId',
-        component: UserActivitySettings
-    },
-    {
-        path: '/settings/user_location/:profileId',
-        component: ProfileLocationSettings
-    },
-    {
-        path: "/settings/admin_dashboard",
-        component: AdminDashboard,
-    },
-    {
-        path: "/profile*",
-        component: Profile,
-    },
-    {
-        path: "*",
-        redirect: "/feed/",
-    },
-    {
-        path: '/activity/:activityId',
-        component: Activity
-    },
-    {
-        path: '/activity_settings/:profileId',
-        component: ActivitySettings
-    },
-    {
-        path: '/activity_editing/:activityId',
-        component: EditActivity
-    },
-    {
-        path: '/search/:query',
-        component: Search
-    },
-    {
-       name: "searchPage",
-       path: '/search',
-       component: Search
-    },
-    {
-        path: '/map',
-        component: Map
-    },
+  {
+    name: "profilePage",
+    path: '/profile/:profileId',
+    component: Profile
+  },
+  {
+    path: '/signup',
+    component: Signup
+  },
+  {
+    path: '/login',
+    component: Login
+  },
+  {
+    path: '/feed',
+    component: Feed
+  },
+  {
+    path: '/logout',
+  },
+  {
+    path: '/settings/profile/:profileId',
+    component: UserProfileSettings
+  },
+  {
+    path: '/settings/password/:profileId',
+    component: UserPasswordSettings
+  },
+  {
+    path: '/settings/email/:profileId',
+    component: UserEmailSettings
+  },
+  {
+    path: '/settings/passport_countries/:profileId',
+    component: UserPassportCountriesSettings
+  },
+  {
+    path: '/settings/activities/:profileId',
+    component: UserActivitySettings
+  },
+  {
+    path: '/settings/user_location/:profileId',
+    component: ProfileLocationSettings
+  },
+  {
+    path: "/settings/admin_dashboard",
+    component: AdminDashboard,
+  },
+  {
+    path: "/profile*",
+    component: Profile,
+  },
+  {
+    path: "*",
+    redirect: "/feed/",
+  },
+  {
+    path: '/activity/:activityId',
+    component: Activity
+  },
+  {
+    path: '/activity_settings/:profileId',
+    component: ActivitySettings
+  },
+  {
+    path: '/activity_editing/:activityId',
+    component: EditActivity
+  },
+  {
+    path: '/search/:query',
+    component: Search
+  },
+  {
+    name: "searchPage",
+    path: '/search',
+    component: Search
+  },
+  {
+    path: '/map/:coordinates',
+    component: Map
+  },
+  {
+    path: '/map/',
+    component: Map
+  },
 ];
 
 
-
 const router = new VueRouter({
-    routes,
-    base: baseUrl,
-    mode: 'history'
+  routes,
+  base: baseUrl,
+  mode: 'history'
 });
 
 let firstLoad = true;
@@ -127,31 +130,31 @@ router.beforeEach((to, from, next) => {
   if (firstLoad === true) {
     firstLoad = false;
     apiUser.getUserByToken().then(
-      (response) => {
-        const responseData = response.data;
-        store._actions.updateUserProfile[0](responseData);
-        isAuthPath ? next("/profile") : next();
-      }).catch(
-      (error) => {
-        console.log("Not logged in: " + error);
-        next();
-      });
+        (response) => {
+          const responseData = response.data;
+          store._actions.updateUserProfile[0](responseData);
+          isAuthPath ? next("/profile") : next();
+        }).catch(
+        (error) => {
+          console.log("Not logged in: " + error);
+          next();
+        });
   } else {
     if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level === 2 && isLoggedIn) {
       updatePageHistory(to, from);
       next();
     } else if (isAuthPath) {
       store._actions.resetPageHistory[0]();
-      if(store.getters.user.permission_level === 2){
+      if (store.getters.user.permission_level === 2) {
         isLoggedIn ? next("/settings/admin_dashboard") : next();
-      }else{
+      } else {
         isLoggedIn ? next("/profile") : next();
       }
     } else if (to.path !== "/logout" && isLoggedIn) {
       updatePageHistory(to, from);
-      if((to.path == "/profile" || to.path == "/profile/"+store.getters.user.profileId) && store.getters.user.permission_level === 2){
+      if ((to.path === "/profile" || to.path === "/profile/" + store.getters.user.profileId) && store.getters.user.permission_level === 2) {
         next("/settings/admin_dashboard");
-      }else{
+      } else {
         next();
       }
     } else {

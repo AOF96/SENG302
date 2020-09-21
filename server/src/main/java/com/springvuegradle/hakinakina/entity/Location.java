@@ -72,6 +72,14 @@ public class Location {
         this.longitude = longitude;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }
@@ -150,14 +158,6 @@ public class Location {
 
     public Activity getActivity() {
         return this.activity;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public User getUser() {
-        return this.user;
     }
 
 
