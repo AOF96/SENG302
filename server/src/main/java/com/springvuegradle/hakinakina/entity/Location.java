@@ -1,5 +1,6 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -58,7 +59,7 @@ public class Location {
     @JsonIgnore
     private User user;
 
-    protected Location() {}
+    public Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {
         this.streetAddress = streetAddress;

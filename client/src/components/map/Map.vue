@@ -17,7 +17,6 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
-        // mapBounds: null
       }
     },
     computed: {
@@ -59,10 +58,11 @@
             })
         });
 
-        let address = this.user.location.city;
+        let address = this.user.location.street_address + ' ' + this.user.location.city + ' ' + this.user.location.country;
+
         this.geocoder.geocode({ 'address': address}, function(results, status) {
           if (status === 'OK') {
-            this.gmap.setCenter(results[0].geometry.location);
+            map.setCenter(results[0].geometry.location);
             new window.google.maps.Marker({
               map: map,
               position: results[0].geometry.location

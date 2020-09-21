@@ -46,6 +46,7 @@ public class UserService {
     private ActivityTypeRepository activityTypeRepository;
     private SearchRepository searchRepository;
     private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
     private LocationRepository locationRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
@@ -53,7 +54,9 @@ public class UserService {
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
                        ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
                        UserActivityRoleRepository userActivityRoleRepository,
-                       ActivityRepository activityRepository, LocationRepository locationRepository) {
+                       ActivityRepository activityRepository,
+                       HomeFeedRepository homeFeedRepository,
+                       LocationRepository locationRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
@@ -63,6 +66,7 @@ public class UserService {
         this.activityTypeRepository = activityTypeRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
+        this.homeFeedRepository = homeFeedRepository;
         this.locationRepository = locationRepository;
     }
 

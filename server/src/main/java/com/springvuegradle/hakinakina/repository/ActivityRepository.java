@@ -21,7 +21,7 @@ import java.util.Optional;
  * Repository for storing activities that the user can perform.
  */
 @RepositoryRestResource
-public interface ActivityRepository extends JpaRepository<Activity, Long> {
+public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity> {
 
     Activity findActivityById(Long id);
 
@@ -77,4 +77,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "SELECT location_id FROM Activity WHERE activity_id = ?", nativeQuery = true)
     Optional<Long> getActivityLocationId(Long activityId);
+
+    Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
 }

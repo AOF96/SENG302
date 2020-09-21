@@ -312,7 +312,11 @@
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
-          <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
+        <v-card id="profileMapCard" class="activityPageMapCard">
+          <div id="profileMap" style="height: 350px"></div>
+        </v-card>
+
+        <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
             <h2 style="padding-bottom:10px;">Latest Changes</h2>
             <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
               <v-timeline-item
@@ -439,11 +443,14 @@
         })
     },
 
-    mounted: function () {
+    updated() {
       if (!this.user.isLogin) {
         this.$router.push('/login');
+      } else {
+        this.loadMap();
       }
     },
+
     created: function () {
       this.getActivityLocation();
       this.loadActivity();
@@ -534,21 +541,25 @@
         let streetAddress = this.location.street_address;
         let outputString = "";
 
-        outputString += streetAddress;
-        if(city !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += city;
-        }
-        if(state !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += state;
-        }
-        if(country !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += country;
-        }
-        if(outputString === ""){
+        if (location === null) {
           outputString = "No Location Set"
+        } else {
+          outputString += streetAddress;
+          if(city !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += city;
+          }
+          if(state !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += state;
+          }
+          if(country !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += country;
+          }
+          if(outputString === ""){
+            outputString = "No Location Set"
+          }
         }
         this.locationToDisplay = outputString;
       },
@@ -783,8 +794,14 @@
        * Retrieves the location of the activity
        */
       async getActivityLocation(){
-        await apiActivity.getLocationForActivity(this.$route.params.activityId).then((response) => {
-          this.location = response.data;
+        await apiActivity.getLocationForActivity(this.$route.params.activityId)
+          .then((response) => {
+            this.location = response.data;
+        })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              this.locationToDisplay = "No Location Set"
+            }
         })
         this.locationFormat();
       },
@@ -830,7 +847,40 @@
             this.loadingFollowButton = false;
           }
         });
-      }
+      },
+
+      /**
+       * Loads the map onto the page and centres on the activity's location.
+       * Adds a marker on the city's centre.
+       */
+      loadMap() {
+        if (!window.google) {
+          return;
+        }
+        this.geocoder = new window.google.maps.Geocoder();
+
+        let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          zoom: 9,
+          disableDefaultUI: true
+        });
+
+        let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
+        let latLng = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
+
+        this.geocoder.geocode({'address': address}, function (results, status) {
+          if (status === 'OK') {
+            map.setCenter(latLng);
+            new window.google.maps.Marker({
+              map: map,
+              position: latLng
+            });
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+          }
+        });
+      },
     }
   }
 </script>

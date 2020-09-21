@@ -104,7 +104,8 @@ const mutations = {
     }
   },
   setUserLocation(state, data) {
-    if (data.location !== undefined) {
+    if (data.location !== null) {
+      console.log(data)
       state.user.location.street_address = data.location.street_address;
       state.user.location.suburb = data.location.suburb;
       state.user.location.postcode = data.location.postcode;
@@ -328,6 +329,9 @@ const actions = {
   },
   async getUserFeed(data, {'id': id, 'page': page, 'size': size}) {
     return await apiUser.getUserFeed(id, page, size);
+  },
+  async editUserLocation(data, profileId, location) {
+    return await apiUser.editUserLocation(profileId, location);
   }
 };
 

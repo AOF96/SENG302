@@ -2,12 +2,14 @@
 import Vuex from "vuex";
 // import Profile from "../profile/Profile";
 import {createLocalVue, shallowMount} from "@vue/test-utils";
+import Vuetify from "vuetify";
 import ProfileInfoSettings from "../profile/settings/ProfileInfoSettings";
 import ProfileSettingsMenu from "../profile/settings/ProfileSettingsMenu";
 import {expect} from "@jest/globals";
 import ProfileLocationSettings from "../profile/settings/ProfileLocationSettings";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
+localVue.use(Vuetify);
 localVue.use(Vuex);
 //mock api
 jest.mock("@/api");
@@ -38,8 +40,10 @@ describe("Check user's edit profile page", () => {
 
     let store;
     let wrapper;
+    let vuetify;
 
     beforeEach(() => {
+        vuetify = new Vuetify();
         store = new Vuex.Store({
             getters: {
                 userSearch: () => ({
@@ -104,18 +108,14 @@ describe("Check user's edit profile page", () => {
             localVue,
             store,
             mocks,
-            stubs
+            stubs,
+            vuetify
         })
     });
 
     it("There should be an update profile button on the edit profile page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#profileUpdateButton").exists()).toBe(true);
-    });
-
-    it("There should be an back to  profile button on the edit profile page", async () => {
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#backToProfileButton").exists()).toBe(true);
     });
 
     it("should have an input field with the user's first name ", () => {

@@ -21,12 +21,12 @@ public class LocationTests {
     public ActivityRepository activityRepository;
 
     @BeforeEach
-    public void cleanDatabase() {
+    public void clearRepository() {
         activityRepository.deleteAll();
         locationRepository.deleteAll();
     }
 
-   @Test
+    @Test
     public void createLocation() {
         Location testLocation = new Location("University of Canterbury", "Upper Riccarton",
                 "Christchurch", 8041, "Canterbury", "New Zealand",

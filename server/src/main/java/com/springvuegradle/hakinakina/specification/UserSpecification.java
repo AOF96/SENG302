@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.specification;
 
 import com.springvuegradle.hakinakina.entity.Email;
 import com.springvuegradle.hakinakina.entity.User;
+import com.springvuegradle.hakinakina.util.SearchUtil;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Expression;
@@ -19,7 +20,7 @@ public class UserSpecification {
             if (lastName == null) {
                 return criteriaBuilder.and();
             }
-            if (isWithinQuotation(lastName)) {
+            if (SearchUtil.isWithinQuotation(lastName)) {
                 String lastNameWithoutQuotation = lastName.substring(1, lastName.length() - 1);
 
                 return criteriaBuilder.equal(root.get("lastName"), lastNameWithoutQuotation);
@@ -46,7 +47,7 @@ public class UserSpecification {
             Expression<String> fullNameQuery = criteriaBuilder.concat(criteriaBuilder.concat(fName, mName), lName);
             Expression<String> fullWithoutMiddleNameQuery = criteriaBuilder.concat(fName, lName);
 
-            if (isWithinQuotation(fullName)) {
+            if (SearchUtil.isWithinQuotation(fullName)) {
                 String fullNameWithoutQuotation = fullName.substring(1, fullName.length() - 1);
                 return criteriaBuilder.or(
                         criteriaBuilder.equal(fullNameQuery, fullNameWithoutQuotation),
@@ -73,7 +74,7 @@ public class UserSpecification {
                 return null;
             }
             SetJoin<User, Email> userJoinEmail = root.joinSet("emails", JoinType.LEFT);
-            if (isWithinQuotation(email)) {
+            if (SearchUtil.isWithinQuotation(email)) {
                 String emailWithoutQuotation = email.substring(1, email.length() - 1);
                 return criteriaBuilder.or(
                         criteriaBuilder.equal(root.get("primaryEmail"), emailWithoutQuotation),
@@ -95,19 +96,5 @@ public class UserSpecification {
         return(root, query, criteriaBuilder) -> {
             return criteriaBuilder.lessThan(root.get("permissionLevel"), 2);
         };
-    }
-
-
-    /**
-     * Helper function used in findPaginatedByQuery,
-     * checks whether the strings given has quotation marks (" or ') around the search term string.
-     * @param searchText text(string) you are using to search users
-     * @return true if quotation wraps the search term, false otherwise
-     */
-    private static boolean isWithinQuotation(String searchText) {
-        if (searchText != null && searchText.length() > 1) {
-            return searchText.startsWith("\"") && searchText.endsWith("\"") || searchText.startsWith("'") && searchText.endsWith("'");
-        }
-        return false;
     }
 }
