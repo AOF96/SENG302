@@ -312,7 +312,7 @@
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
-        <v-card id="profileMapCard" class="activityPageMapCard">
+        <v-card id="profileMapCard" :loading="mapLoading" class="activityPageMapCard">
           <div id="profileMap" style="height: 350px"></div>
           <button class="genericConfirmButton profileMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
         </v-card>
@@ -420,6 +420,7 @@
         achievements: [],
         loadingFollowButton: false,
         locationToDisplay: "",
+        mapLoading: true
       }
     },
 
@@ -868,6 +869,7 @@
         let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
         let latLng = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
 
+        let outer = this;
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
             map.setCenter(latLng);
@@ -875,10 +877,12 @@
               map: map,
               position: latLng
             });
+            outer.mapLoading = false;
           } else {
             this.snackbarText = status;
             this.snackbarColour = "error";
             this.snackbar = true;
+            outer.mapLoading = false;
           }
         });
       },
