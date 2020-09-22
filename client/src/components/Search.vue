@@ -164,7 +164,71 @@
                     <v-list-item-content>
                       <v-list-item-title v-html="data.item"/>
                     </v-list-item-content>
-                  </template>
+                  </v-list-item>
+                </v-row>
+                <v-row class="searchRow">
+                  <v-spacer />
+                  <v-btn
+                      v-on:click="searchUsers(currentPage + 1, currentSize)"
+                      :hidden="moreHidden"
+                      :loading="loading"
+                      :disabled="disabled"
+                      color="#1cca92"
+                      outlined
+                      rounded
+                      class="searchMoreButton"
+                  >
+                    More Results</v-btn>
+                  <v-spacer />
+                </v-row>
+               </div>
+
+              <div v-if="activitySearchTab">
+              <v-row class="searchRow">
+                <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities" :key="activity.id" link>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ activity.name}}
+                    </v-list-item-title>
+                    <div v-if="activity.location !== null">
+                      <v-list-item-subtitle>
+                        {{ activity.location.street_address}},  {{ activity.location.city}}, {{ activity.location.country}}
+                      </v-list-item-subtitle>
+                    </div>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-row>
+              <v-row class="searchRow">
+                <v-spacer />
+                <v-btn
+                    v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize)"
+                    :hidden="moreHidden"
+                    :loading="loading"
+                    :disabled="disabled"
+                    color="#1cca92"
+                    outlined
+                    rounded
+                    class="searchMoreButton"
+                >
+                  More Results</v-btn>
+                <v-spacer />
+              </v-row>
+              </div>
+            </form>
+          </v-card>
+        </v-col>
+        <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
+          <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+            <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
+            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
+              <template v-slot:selection="data">
+                <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
+                  {{ data.item }}
+                </v-chip>
+              </template>
+              <template v-slot:item="data">
+                <template v-if="typeof data.item !== 'object'">
+                  <v-list-item-content v-text="data.item"></v-list-item-content>
                 </template>
               </v-combobox>
               <v-label>Filter method</v-label>
@@ -243,16 +307,55 @@
           element.focus()
         });
       }
-    },
-    watch: {
-      "$route.params": {
-        handler() {
-          this.loadUrlQuery();
-        }
+  },
+  watch: {
+    "$route.params": {
+      handler() {
+        this.loadUrlQuery();
+      }
+    }
+  },
+  methods: {
+    /**
+     * Checks if the search term when looking for the user is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    submitButtonCheck(page, size) {
+      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        this.searchUsers(page, size);
       }
     },
-    methods: {
+    /**
+     * Checks if the search term when looking for an activity is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    submitActivityButtonCheck(page, size) {
+      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        this.searchActivity(page, size);
+      }
+    },
       ...mapActions(["setUserSearch", "setScrollPosition", "setActivitySearch"]),
+    /**
+     * Checks if more searched activity result exists and if they don't hides the more results button else shows
+     * more results. Also manages the snack bar and error messages.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    searchActivity(page, size){
+      if (page === this.defaultActivityPage) {
+        this.allActivities = [];
+      }
+      /* Adjust search position */
+      this.currentActivitySize = size;
+      this.currentActivityPage = page;
 
       /**
        * Checks if search is valid
@@ -434,6 +537,27 @@
           this.loadPreviousActivitySearch();
         }
       },
+      )
+    },
+    ...mapActions(["setUserSearch", "setScrollPosition"]),
+    /**
+     * Search for size amount of users on given page and append to list
+     *
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    searchUsers(page, size) {
+      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+        this.allUsers = [];
+        this.moreHidden = true;
+        return;
+      }
+      if (page === this.defaultPage) {
+        this.allUsers = [];
+      }
+      /* Adjust search position */
+      this.currentSize = size;
+      this.currentPage = page;
 
       /**
        *  Submit search query on enter pressed.
@@ -465,6 +589,26 @@
         this.activity_types_selected = this.userSearch.activityTypesSelected;
         this.filterMethod = this.userSearch.filterMethod;
 
+    /**
+     * Directs user to the activity that appears on the search activity results
+     *
+     * @param activityId the id of the activity the user wants to look into
+     */
+    goToActivity(activityId) {
+      this.$router.push({
+        path: "/activity/" + activityId
+      })
+    },
+
+    /**
+     * Adds activity type to selected options
+     */
+    selectActivityType() {
+      if (this.selected_activity !== undefined) {
+        this.activity_types_selected.push(this.selected_activity);
+        let index = this.activities_option.indexOf(this.selected_activity);
+        if (index !== -1) {
+          this.activities_option.splice(index, 1);
         /* Change button animation */
         this.moreHidden = false;
         this.loading = true;
@@ -473,6 +617,16 @@
         if (this.searchedTerm.trim().length === 0) {
           searchTermInt = null
         }
+      }
+    },
+    /**
+     * Removes the activity from the activity filter component.
+     **/
+    remove(item) {
+      const index = this.activity_types_selected.indexOf(item);
+      if (index >= 0) this.activity_types_selected.splice(index, 1);
+      this.searchUsers(this.defaultPage, this.defaultSize);
+    },
         apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
             (response) => {
               if (response.data.content.size === 0) {
@@ -570,6 +724,18 @@
         window.scrollTo(0, scrollPos);
       }
     },
+    /**
+     * Load query from url
+     */
+    loadUrlQuery() {
+      if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != ""){
+        this.searchedTerm = this.$route.params.query;
+        this.$router.replace('/search');
+        this.activity_types_selected = [];
+        this.searchUsers(1, this.currentSize);
+        const element = this.$el.querySelector('#searchQueryInput')
+        if (element) this.$nextTick(() => { element.focus() })
+      }
     created: async function () {
       /**
        * The function below gets all the activity types saved in the database

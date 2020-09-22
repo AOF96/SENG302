@@ -117,6 +117,10 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
+      <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
+        <div id="profileMap"></div>
+        <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
+      </v-card>
       <template v-if="searchedUser.passports">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
       </template>
@@ -135,10 +139,9 @@ import {
 
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
+import {apiUser} from "../../api";
+
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import {
-  apiUser
-} from "../../api";
 
 export default {
   name: "Profile",
@@ -177,7 +180,7 @@ export default {
       loadingContinuousActivities: true,
     };
   },
-  mounted() {
+  async mounted() {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
@@ -198,7 +201,7 @@ export default {
           Uses user id from url to request user data.
        */
     async loadSearchedUser() {
-      if (this.user.permission_level == 2 && this.user.profile_id == this.$route.params.profileId) {
+      if (this.user.permission_level === 2 && this.user.profile_id === this.$route.params.profileId) {
         this.$router.push('/settings/admin_dashboard');
       } else if (
         this.$route.params.profileId === null ||
@@ -234,6 +237,101 @@ export default {
     },
 
     /**
+     * Loads the map onto the page and centres on the users home city.
+     * Adds a marker on the city's centre.
+     */
+    loadMap() {
+      if(this.searchedUser.location != null && this.searchedUser.location.latitude !== ""){
+        if (!window.google) {
+          return;
+        }
+        this.geocoder = new window.google.maps.Geocoder();
+
+        let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+        let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          center: position,
+          zoom: 8,
+          maxZoom: 10,
+          minZoom: 3,
+          disableDefaultUI: true
+        });
+
+        this.positionMap(map, position);
+      }
+    },
+
+    /**
+     * Positions map from location depending on if logged in user or searching
+     */
+    positionMap(map, position) {
+      let outer = this;
+      if (this.user.profile_id !== this.searchedUser.profile_id) {
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.setLocationMarker(map, results[0].geometry.location);
+            map.setCenter(results[0].geometry.location);
+          }
+        });
+      } else {
+        this.setLocationMarker(map, position);
+      }
+    },
+
+    /**
+     * Sets location marker at position given
+     */
+    setLocationMarker(map, position) {
+      let homeIcon = {
+        url: "https://i.imgur.com/mNfVgmC.png",
+        scaledSize: new window.google.maps.Size(20, 20),
+        origin: new window.google.maps.Point(0, 0),
+        anchor: new window.google.maps.Point(10, 10)
+      };
+
+      new window.google.maps.Marker({
+        map: map,
+        position: position,
+        icon: homeIcon
+      });
+    },
+
+    /**
+     * Returns a formatted address string from the location object
+     */
+    getAddressString(locationObj) {
+      let address = "";
+      if (locationObj.street_address !== "") {
+        address += locationObj.street_address
+      }
+      if (locationObj.suburb !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.suburb;
+      }
+      if (locationObj.city !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.city;
+      }
+      if (locationObj.state !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.state;
+      }
+      if (locationObj.country !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.country;
+      }
+      return address;
+    },
+
+    /**
      * Takes a list of strings and replaces all dashes with spaces
      */
     replaceDashesWithSpaces(list) {
@@ -242,6 +340,9 @@ export default {
       }
     },
 
+    /**
+     * Loads country information and map
+     */
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
       this.getDataFromUrl(COUNTRIES_URL)
@@ -259,9 +360,11 @@ export default {
             countries.splice(index, 1);
           }
           this.countries_option = countries;
+          this.loadMap();
         })
         .catch(error => console.log(error));
     },
+
     /***
      * Makes a request to the server to give the searched user admin rights given the user is not already an admin and
      * the requesting user is already an admin.
@@ -281,6 +384,22 @@ export default {
       }
       this.showResult = true;
       setTimeout(() => this.showResult = false, 5000)
+    },
+
+    /**
+     * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+     */
+    goToFullMap()  {
+      if (this.user.profile_id === this.searchedUser.profile_id) {
+        this.$router.push('/map/');
+      } else {
+        let outer = this;
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.$router.push('/map/user@' + results[0].geometry.location.lat() + ',' + results[0].geometry.location.lng());
+          }
+        });
+      }
     }
   }
 };

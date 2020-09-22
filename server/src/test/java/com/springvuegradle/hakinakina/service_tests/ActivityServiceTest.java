@@ -5,6 +5,7 @@ import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
+import io.cucumber.java.en_old.Ac;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,16 +44,19 @@ public class ActivityServiceTest {
     private ActivityRepository activityRepository;
 
     @Mock
+    private LocationRepository locationRepository;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
     private SessionRepository sessionRepository;
 
     @Mock
-    private ActivityChangeRepository activityChangeRepository;
+    private UserActivityRoleRepository userActivityRoleRepository;
 
     @Mock
-    private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
 
     @Captor
     ArgumentCaptor<List<UserActivityRole>> userActivityRoleListCaptor;
@@ -72,7 +76,6 @@ public class ActivityServiceTest {
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
-        activityChangeRepository.deleteAll();
     }
 
     private Activity createTestActivity() {
@@ -237,12 +240,16 @@ public class ActivityServiceTest {
         activities.add(newActivity);
         testUser.setActivities(activities);
 
+        UserActivityKey userActivityKey = new UserActivityKey(testUser.getUserId(), newActivity.getId());
+        UserActivityRole userActivityRole = new UserActivityRole(userActivityKey, ActivityRole.FOLLOWER);
         activityRepository.save(newActivity);
         userRepository.save(testUser);
+        userActivityRoleRepository.save(userActivityRole);
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
         when(activityRepository.findActivityById((long) 1)).thenReturn(newActivity);
         when(userRepository.getUserById((long) 1)).thenReturn(Optional.of(testUser));
+        when(userActivityRoleRepository.getByActivityAndUser(newActivity, testUser)).thenReturn(Optional.of(userActivityRole));
 
         ResponseEntity<String> response = service.checkFollowing((long) 1, (long) 1, "t0k3n");
 
@@ -273,43 +280,6 @@ public class ActivityServiceTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("false", response.getBody());
-    }
-
-    @Test
-    public void addActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
-        activityChanges.setId(1L);
-        List<ActivityChange> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        activityChangeRepository.save(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-    }
-
-    @Test
-    public void removeActivityChangesTest() {
-        java.util.Date date = new java.util.Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        User testUser = new User("Maurice", "Benson", "jacky@google.com",
-                "1985-12-20", Gender.MALE, 3,
-                "jacky'sSecuredPwd");
-        Activity activity = new Activity("scuba diving", "dive to the bottom of the sea", false, null, null);
-        ActivityChange activityChanges = new ActivityChange("Test changes", timestamp, testUser, activity);
-        activityChanges.setId(1L);
-        List<ActivityChange> activityChangesList = new ArrayList<>();
-        activityChangesList.add(activityChanges);
-        activityChangeRepository.save(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(1, activityChangesList.size());
-        activityChangesList.remove(activityChanges);
-        when(activityChangeRepository.findAll()).thenReturn(activityChangesList);
-        assertEquals(0, activityChangesList.size());
     }
 
     @Test
@@ -589,5 +559,33 @@ public class ActivityServiceTest {
         when(achievementRepository.getAchievementsByActivityId(activityId)).thenReturn(new ArrayList<>());
 
         assertEquals(HttpStatus.OK, service.getAchievement(userId, activityId, "t0k3n").getStatusCode());
+    }
+
+    @Test
+    public void addLocationToActivityTest() {
+        Activity activity = createTestActivity();
+        Location location = new Location("12 house lane", "house", "city", 7021,
+                "state", "country", 6125.12, 12512.2);
+
+        when(activityRepository.getOne(1L)).thenReturn(activity);
+
+        assertEquals(HttpStatus.valueOf(201), service.addLocationToActivity(1L, location).getStatusCode());
+    }
+
+    @Test
+    public void getLocationForActivityTest() {
+        Location testLocation = new Location("Street", "Suburb", "City", 8041,
+                "State", "Country", 2350.3, 2350.3);
+        Activity activity = new Activity();
+        activity.setId(1L);
+        testLocation.setId(1L);
+
+        activity.setLocation(testLocation);
+
+        when(activityRepository.getActivityLocationId(1L)).thenReturn(Optional.of(1L));
+        when(locationRepository.getOne(1L)).thenReturn(testLocation);
+
+        assertEquals(HttpStatus.OK, service.getActivityLocation(1L).getStatusCode());
+        assertEquals(testLocation, service.getActivityLocation(1L).getBody());
     }
 }

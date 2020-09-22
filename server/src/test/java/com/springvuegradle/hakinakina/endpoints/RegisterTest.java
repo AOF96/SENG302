@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.endpoints;
 
 import com.springvuegradle.hakinakina.entity.Gender;
+import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.entity.User;
@@ -47,9 +48,14 @@ public class RegisterTest {
         sessionRepo.deleteAll();
         userRepo.deleteAll();
 
+
+        Location location = new Location("Street", "Suburb", "City", 7201,
+                "State", "Country", 0, 0);
         u = new User("Mayuko", "Williams",
                 "mwi@williams.com", "1970-01-01", Gender.FEMALE,
                 3, "P@ssw0rd!123");
+        location.setUser(u);
+        u.setLocation(location);
         u.setUserId(-1L);
     }
 
@@ -67,6 +73,7 @@ public class RegisterTest {
                 "  \"gender\": \"female\",\n" +
                 "  \"fitness\": 3\n" +
                 "}";
+
 
         mockMvc.perform(post("/profiles")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -140,4 +147,21 @@ public class RegisterTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void testRegistrationWithFirstNameWithNumberInItShouldFail() throws Exception {
+        u.setFirstName("Fabian123");
+        mockMvc.perform(post("/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(u.toJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegistrationWithLastNameWithNumberInItShouldFail() throws Exception {
+        u.setLastName("Fabian123");
+        mockMvc.perform(post("/profiles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(u.toJson()))
+                .andExpect(status().isBadRequest());
+    }
 }

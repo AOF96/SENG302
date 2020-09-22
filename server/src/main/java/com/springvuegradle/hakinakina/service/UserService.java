@@ -46,13 +46,17 @@ public class UserService {
     private ActivityTypeRepository activityTypeRepository;
     private SearchRepository searchRepository;
     private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
+    private LocationRepository locationRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
 
     public UserService(UserRepository userRepository, EmailRepository emailRepository,
                        PassportCountryRepository countryRepository, SessionRepository sessionRepository,
                        ActivityTypeRepository activityTypeRepository, SearchRepository searchRepository,
                        UserActivityRoleRepository userActivityRoleRepository,
-                       ActivityRepository activityRepository) {
+                       ActivityRepository activityRepository,
+                       HomeFeedRepository homeFeedRepository,
+                       LocationRepository locationRepository) {
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
@@ -62,6 +66,8 @@ public class UserService {
         this.activityTypeRepository = activityTypeRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
+        this.homeFeedRepository = homeFeedRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -259,7 +265,7 @@ public class UserService {
      * invalid or the given email already exits in the database.
      * @param user the user to be created.
      * @return An error response 400 if the provided data is invalid. 403 response if the given email already exists.
-     * 201 created response if the request was succesful, with the JSON object of the created user and a session token.
+     * 201 created response if the request was successful, with the JSON object of the created user and a session token.
      */
     public ResponseEntity validateCreateProfile(User user,
                                                 HttpServletResponse response) {
@@ -269,6 +275,8 @@ public class UserService {
             messages.add("Please provide your full name. First and last names are required.");
         } else if (user.getLastName().isBlank() || user.getFirstName().isBlank()) {
             messages.add("Please provide your full name. First and last names are required.");
+        } else if (!user.getLastName().matches("^[a-zA-Z]*$") || !user.getFirstName().matches("^[a-zA-Z]*$")) {
+            messages.add("Please provide your name with alphabet. Numbers are not allowed.");
         }
         if (user.getPrimaryEmail() == null) {
             messages.add("Please provide a valid email.");
@@ -284,7 +292,7 @@ public class UserService {
             messages.add("Please provide a valid gender. male, female or non-binary.");
         }
         if (user.getFitnessLevel() < 0 || user.getFitnessLevel() > 4) {
-            messages.add("Please select the fitness level in the range 0 and 5");
+            messages.add("Please select your fitness level");
         }
         if (user.getBirthDate().after(new Date())) {
             messages.add("Birth date must be in the past");
@@ -469,6 +477,14 @@ public class UserService {
                     try {
                         String salt = EncryptionUtil.getNewSalt();
                         user.setSalt(salt);
+
+                        // check if the password is in valid format
+                        ArrayList<String> newPasswordValidationError = newPasswordValidation(newPassword);
+
+                        if(!newPasswordValidationError.isEmpty()) {
+                            return responseHandler.formatErrorResponse(400, newPasswordValidationError);
+                        }
+
                         user.setEncryptedPassword(EncryptionUtil.getEncryptedPassword(newPassword, user.getSalt()));
                         userRepository.save(user);
                         response = responseHandler.formatSuccessResponse(200, "Successfully changed the password");
@@ -535,15 +551,18 @@ public class UserService {
      * @param userId Long id of user to update
      * @return ResponseEntity of result
      */
-    public ResponseEntity editLocation(String city, String state, String country, Long userId) {
+    public ResponseEntity editLocation(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude, Long userId) {
         boolean result = false;
 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setCity(city);
-            user.setState(state);
-            user.setCountry(country);
+
+            Location location = new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
+            location.setUser(user);
+            user.setLocation(location);
+
+            locationRepository.save(location);
             userRepository.save(user);
             result = true;
         }
@@ -697,8 +716,7 @@ public class UserService {
      */
     @Transactional
     public ResponseEntity subscribeToActivity(Long profileId, Long activityId, String sessionToken) {
-        ResponseEntity result;
-
+        ResponseEntity result = null;
         try {
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             Activity activity = activityRepository.findActivityById(activityId);
@@ -709,13 +727,18 @@ public class UserService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else if (activity == null) {
                 result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else if (activity.getVisibility() == Visibility.PRIVATE) {
+                long activityAuthorId = activity.getAuthor().getUserId();
+                if (activityAuthorId != profileId) {
+                    result = responseHandler.formatErrorResponseString(400, "Can't follow private activity");
+                }
             } else {
                 Optional<User> user = userRepository.getUserById(profileId);
                 if (user.isPresent()) {
                     User validUser = user.get();
                     Hibernate.initialize(validUser.getActivities());
-                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
-                    if (validUserFollowingList.contains(activity)) {
+                    Optional<UserActivityRole> userActivityRoleCheck = userActivityRoleRepository.getByActivityAndUser(activity, validUser);
+                    if (userActivityRoleCheck.isPresent()) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {
@@ -808,5 +831,29 @@ public class UserService {
                     new UserActivityRole(key, dto.getSubscriber().getRole())
             );
         }
+    }
+
+    /***
+     * Helper function to check the password validity.
+     * @param password is the new password the user want to change the password to, in string
+     * @return a array of strings with validation errors if the password is not valid, empty if password is valid
+     */
+
+    public ArrayList<String> newPasswordValidation(String password) {
+
+        ArrayList<String> invalidMessages = new ArrayList<>();
+
+        if(password == null || password.isBlank()) {
+            invalidMessages.add("Please provide your password");
+        } else if(password.length() < 8) {
+            invalidMessages.add("Your password must be at least 8 letters long.");
+        }else if(!password.matches(".*[A-Z].*")) {
+            invalidMessages.add("Your password must include at least one uppercase letter");
+        }else if(!password.matches(".*[a-z].*")) {
+            invalidMessages.add("Your password must include at least one lowercase letter");
+        }else if(!password.matches(".*\\d")) {
+            invalidMessages.add("Your password must include at least one number");
+        }
+        return invalidMessages;
     }
 }

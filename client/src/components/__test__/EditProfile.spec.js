@@ -1,11 +1,15 @@
 /* eslint-env jest*/
 import Vuex from "vuex";
 // import Profile from "../profile/Profile";
-import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
+import {createLocalVue, shallowMount} from "@vue/test-utils";
+import Vuetify from "vuetify";
 import ProfileInfoSettings from "../profile/settings/ProfileInfoSettings";
 import ProfileSettingsMenu from "../profile/settings/ProfileSettingsMenu";
+import {expect} from "@jest/globals";
+import ProfileLocationSettings from "../profile/settings/ProfileLocationSettings";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
+localVue.use(Vuetify);
 localVue.use(Vuex);
 //mock api
 jest.mock("@/api");
@@ -34,10 +38,12 @@ describe("Check user's edit profile page", () => {
         getDataFromUrl: jest.fn(),
     };
 
-    let store
-    let wrapper
+    let store;
+    let wrapper;
+    let vuetify;
 
     beforeEach(() => {
+        vuetify = new Vuetify();
         store = new Vuex.Store({
             getters: {
                 userSearch: () => ({
@@ -90,7 +96,7 @@ describe("Check user's edit profile page", () => {
             ],
             location: {city: null, state: null, county: null},
         });
-        actions.updateUserProfile.mockResolvedValue({data: []})
+        actions.updateUserProfile.mockResolvedValue({data: []});
 
         actions.getDataFromUrl.mockResolvedValue({
             data: [{
@@ -102,88 +108,81 @@ describe("Check user's edit profile page", () => {
             localVue,
             store,
             mocks,
-            stubs
+            stubs,
+            vuetify
         })
-    })
+    });
 
     it("There should be an update profile button on the edit profile page", async () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.find("#profileUpdateButton").exists()).toBe(true);
-    })
-
-    it("There should be an back to  profile button on the edit profile page", async () => {
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#backToProfileButton").exists()).toBe(true);
-    })
+    });
 
     it("should have an input field with the user's first name ", () => {
         expect(wrapper.find("#firstName").exists()).toBe(true);
-    })
+    });
 
     it("should have an input field with the user's middle name ", () => {
         expect(wrapper.find("#middleName").exists()).toBe(true);
-    })
+    });
 
     it("should have an input field with the user's last name ", () => {
         expect(wrapper.find("#lastName").exists()).toBe(true);
-    })
+    });
 
     it("should have an input field with the user's nick name ", () => {
         expect(wrapper.find("#nickName").exists()).toBe(true);
-    })
-
-    it("should have an input field for user to set their current city", () => {
-        expect(wrapper.find("#inputCity").exists()).toBe(true);
-    })
-
-    it("should have an input field for user to set their current state", () => {
-        expect(wrapper.find("#inputState").exists()).toBe(true);
-    })
-
-    it("should have an input field for user to set their current country", () => {
-        expect(wrapper.find("#inputCountry").exists()).toBe(true);
-    })
+    });
 
     it("should have a drop down field for user to set their gender", () => {
         expect(wrapper.find("#userGender").exists()).toBe(true);
-    })
+    });
 
     it("should have a drop down field for user to set fitness level", () => {
         expect(wrapper.find("#userFitnessLevel").exists()).toBe(true);
-    })
+    });
 
     it("should have a calender drop down field for user to set their date of birthday", () => {
         expect(wrapper.find("#userBirthday").exists()).toBe(true);
-    })
+    });
 
     it("should have a input text field for user to set a bio for their profile", () => {
         expect(wrapper.find("#userBio").exists()).toBe(true);
-    })
+    });
 
     it("should have a input text field for user to set a bio for their profile", () => {
         expect(wrapper.find("#userBio").exists()).toBe(true);
-    })
+    });
 
     it("should have a quick navigation Settings info panel to navigate to different setting pages ", () => {
         const wrapper = shallowMount(ProfileSettingsMenu, { store, localVue, mocks, stubs });
         expect(wrapper.find("#settingContainer").exists()).toBe(true);
-    })
+    });
 
     it('A link to the Email settings page exists in the navigation panel ', async () => {
         const wrapper = shallowMount(ProfileSettingsMenu, { store, localVue, mocks, stubs });
         expect(wrapper.find("#navigateToEmailSettings").exists()).toBe(true);
-
-    })
+    });
     it('A link to the Activity settings page exists in the navigation panel ', async () => {
         const wrapper = shallowMount(ProfileSettingsMenu, { store, localVue, mocks, stubs });
         expect(wrapper.find("#navigateToActivityTypesSettings").exists()).toBe(true);
-    })
+    });
     it('A link to the Passport settings page exists in the navigation panel ', async () => {
         const wrapper = shallowMount(ProfileSettingsMenu, { store, localVue, mocks, stubs });
         expect(wrapper.find("#navigateToPassportSettings").exists()).toBe(true);
-    })
+    });
     it('A link to the Password settings page exists in the navigation panel ', async () => {
         const wrapper = shallowMount(ProfileSettingsMenu, { store, localVue, mocks, stubs });
         expect(wrapper.find("#navigateToPasswordSettings").exists()).toBe(true);
-    })
+    });
+
+    it("should have an input field for user to set their location", () => {
+        const wrapper = shallowMount(ProfileLocationSettings, { store, localVue, mocks, stubs });
+        expect(wrapper.find("#locationInput").exists()).toBe(true);
+    });
+
+    it("should have a map for the user to set their location", () => {
+        const wrapper = shallowMount(ProfileLocationSettings, { store, localVue, mocks, stubs });
+        expect(wrapper.find("#userSettingsMap").exists()).toBe(true);
+    });
 });

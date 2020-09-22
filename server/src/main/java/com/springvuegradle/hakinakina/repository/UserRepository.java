@@ -2,6 +2,7 @@ package com.springvuegradle.hakinakina.repository;
 
 import com.springvuegradle.hakinakina.entity.ActivityRole;
 import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Session;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +32,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     // Automatically generates query that finds user based on their permission level :D
     User findByPermissionLevelEquals(int permissionLevel);
+
+    // find users by their session
+    User findUserBySessions(Session session);
 
     @Query(value = "select * from User where user_id = ?", nativeQuery = true)
     Optional<User> getUserById(long profileId);

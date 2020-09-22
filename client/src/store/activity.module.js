@@ -135,6 +135,15 @@ const actions = {
      */
     async getResults(data, {'achievementId': achievementId}) {
         return await apiActivity.getResults(achievementId);
+    },
+    /**
+     * Calls the api method to get location for the activity with the provided id
+     * @param data
+     * @param activityId id of the activity that the location for is to be retrieved
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    async getLocationForActivity(data, {'activityId': activityId}) {
+        return await apiActivity.getLocationForActivity(activityId);
     }
 };
 

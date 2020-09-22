@@ -1,8 +1,12 @@
 package com.springvuegradle.hakinakina.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Location entity class
@@ -48,9 +52,14 @@ public class Location {
     private double longitude;
 
     @OneToOne(mappedBy = "location")
+    @JsonIgnore
     private Activity activity;
 
-    protected Location() {}
+    @OneToOne(mappedBy = "location")
+    @JsonIgnore
+    private User user;
+
+    public Location() {}
 
     public Location(String streetAddress, String suburb, String city, int postcode, String state, String country, double latitude, double longitude) {
         this.streetAddress = streetAddress;
@@ -133,5 +142,36 @@ public class Location {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public Activity getActivity() {
+        return this.activity;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return postcode == location.postcode &&
+                Double.compare(location.latitude, latitude) == 0 &&
+                Double.compare(location.longitude, longitude) == 0 &&
+                streetAddress.equals(location.streetAddress) &&
+                suburb.equals(location.suburb) &&
+                city.equals(location.city) &&
+                state.equals(location.state) &&
+                country.equals(location.country);
     }
 }

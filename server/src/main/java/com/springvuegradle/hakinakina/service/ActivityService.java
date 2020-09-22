@@ -35,12 +35,13 @@ public class ActivityService {
     public PassportCountryRepository countryRepository;
     public SessionRepository sessionRepository;
     public SearchRepository searchRepository;
-    public ActivityChangeRepository activityChangeRepository;
     public AchievementRepository achievementRepository;
     public ResultRepository resultRepository;
     private ResponseHandler responseHandler = new ResponseHandler();
     private UserActivityRoleRepository userActivityRoleRepository;
+    private HomeFeedRepository homeFeedRepository;
     private SearchService searchService;
+    private LocationRepository locationRepository;
 
     public ActivityService(UserRepository userRepository,
                            ActivityRepository activityRepository,
@@ -48,22 +49,24 @@ public class ActivityService {
                            PassportCountryRepository countryRepository,
                            SessionRepository sessionRepository,
                            AchievementRepository achievementRepository,
-                           ActivityChangeRepository activityChangeRepository,
                            UserActivityRoleRepository userActivityRoleRepository,
                            SearchRepository searchRepository,
                            SearchService searchService,
-                           ResultRepository resultRepository) {
+                           ResultRepository resultRepository,
+                           HomeFeedRepository homeFeedRepository,
+                           LocationRepository locationRepository) {
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.activityTypeRepository = activityTypeRepository;
         this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.achievementRepository = achievementRepository;
-        this.activityChangeRepository = activityChangeRepository;
         this.resultRepository = resultRepository;
         this.searchRepository = searchRepository;
         this.userActivityRoleRepository = userActivityRoleRepository;
         this.searchService = searchService;
+        this.homeFeedRepository = homeFeedRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -252,9 +255,10 @@ public class ActivityService {
         }
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
-        ActivityChange activityChangesToAdd = new ActivityChange(description.toString(), timestamp,
-                userRepository.getOne(profileId), activityRepository.getOne(activityId));
-        activityChangeRepository.save(activityChangesToAdd);
+        HomeFeedEntry activityChangesToAdd = new HomeFeedEntry(description.toString(), timestamp,
+                userRepository.getOne(profileId), activityRepository.getOne(activityId), FeedEntryType.ACTIVITYUPDATE,
+                FeedEntryScope.ACTIVITY);
+        homeFeedRepository.save(activityChangesToAdd);
     }
 
     /**
@@ -619,13 +623,13 @@ public class ActivityService {
             else if (activityId == null || activityRepository.findActivityById(activityId) == null) {
                 result = responseHandler.formatErrorResponse(404, "Activity not found");
             } else {
-                Page<ActivityChange> activityChanges = activityChangeRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
-                List<ActivityChange> changesList = activityChanges.toList();
+                Page<HomeFeedEntry> activityChanges = homeFeedRepository.getChangesForActivity(PageRequest.of(page, size), activityId);
+                List<HomeFeedEntry> changesList = activityChanges.toList();
                 List<FeedPostDto> posts = new ArrayList<>();
-                for (ActivityChange activityChange : changesList) {
+                for (HomeFeedEntry feedEntry : changesList) {
 
                     FeedPostDto newPost = new FeedPostDto();
-                    newPost.setContent(activityChange);
+                    newPost.setContent(feedEntry);
                     posts.add(newPost);
                 }
                 result = new ResponseEntity(posts, HttpStatus.OK);
@@ -703,6 +707,12 @@ public class ActivityService {
                 activityRepository.save(activity);
                 userRepository.save(user);
                 result = responseHandler.formatSuccessResponseString(200, "Unfollowed activity");
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                HomeFeedEntry userChangeToAdd = new HomeFeedEntry("UNFOLLOW", timestamp,
+                        userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                        FeedEntryType.FOLLOWACTIVITY, FeedEntryScope.PRIVATE);
+                homeFeedRepository.save(userChangeToAdd);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot unfollow");
@@ -731,8 +741,8 @@ public class ActivityService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else {
                 User user = userRepository.getUserById(profileId).get();
-                boolean following = activity.getUsers().contains(user);
-                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(following));
+                Optional<UserActivityRole> userActivityRole = userActivityRoleRepository.getByActivityAndUser(activity, user);
+                result = responseHandler.formatSuccessResponseString(200, Boolean.toString(userActivityRole.isPresent()));
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot check following");
@@ -916,6 +926,52 @@ public class ActivityService {
             return null;
         } else {
             return userActivityRole.get().getActivityRole();
+        }
+    }
+
+    /***
+     * Handles the request to add a location to an activity and links activity and location tables before saving both
+     * to database.
+     * @param location the location to be added to the activity.
+     * @param activityId the id of the activity that the location will be added too.
+     * @return a response code with a value depending on the operations result, 200 for success
+     * or 500 for internal server error.
+     */
+    public ResponseEntity addLocationToActivity(Long activityId, Location location) {
+        try {
+            Activity activity = activityRepository.getOne(activityId);
+            activity.setLocation(location);
+            location.setActivity(activity);
+
+            activityRepository.save(activity);
+            locationRepository.save(location);
+
+            return new ResponseEntity("Successfully added location", HttpStatus.valueOf(201));
+        } catch (Error e) {
+            return new ResponseEntity("Error", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Service method for retrieving an activities location. First gets location id from the activity and then uses
+     * this locationId to get the actual location and return it.
+     * @param activityId Location of the activity with this id will be retrieved.
+     * @return Response entity with code value depending on the outcome of the operation, 404 no location,
+     * 500 internal server error,  200 ok.
+     */
+    public ResponseEntity getActivityLocation(Long activityId) {
+        try {
+            Optional<Long> optionalLocationId = activityRepository.getActivityLocationId(activityId);
+
+            if (optionalLocationId.isEmpty()) {
+                return new ResponseEntity("Activity has no location", HttpStatus.valueOf(404));
+            } else {
+                Long locationId = optionalLocationId.get();
+                Location activityLocation = locationRepository.getOne(locationId);
+                return new ResponseEntity(activityLocation, HttpStatus.valueOf(200));
+            }
+        } catch (Error e) {
+            return new ResponseEntity("Internal server error", HttpStatus.valueOf(500));
         }
     }
 }

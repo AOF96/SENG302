@@ -10,7 +10,7 @@
                activityVisibilityLabelRed: visibility === 'private',
                activityVisibilityLabelOrange: visibility === 'restricted',
                activityVisibilityLabelGreen: visibility === 'public'}">{{visibility}}</div>
-          <div id="activityPageLocation" class="activityLocationLabel">{{ locationFormat(location) }}</div>
+          <div id="activityPageLocation" class="activityLocationLabel">{{ locationToDisplay }}</div>
           <h3 id="activityPageTitle" class="activityTitle"> {{ activity_name }} </h3>
           <div id="activityPageDescription" class="activityDescriptionLabel">{{ description }}</div>
           <h3 id="activityPageStartDate" class="activityStartLabel" v-if="continuous === false && loaded === true"><b>Starts:</b> {{ start_date }}</h3>
@@ -47,8 +47,8 @@
           <v-row no-gutters justify="center" class="activityPageBottomButtons">
             <v-btn style="margin: 5px" v-if="user.profile_id === authorId || userRole === 'creator' || userRole === 'organiser' || user.permission_level > 0" v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit</v-btn>
             <v-spacer></v-spacer>
-            <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary" outlined rounded>Follow</v-btn>
-            <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled>Un-follow</v-btn>
+            <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary" outlined rounded :loading="loadingFollowButton">Follow</v-btn>
+            <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0" color="primary" flat rounded filled :loading="loadingFollowButton">Unfollow</v-btn>
           </v-row>
         </v-card>
         <v-card :disabled="roleChanging" style="padding:20px;border-radius: 15px" class="activityContainer">
@@ -312,7 +312,12 @@
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
-          <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
+        <v-card id="profileMapCard" class="activityPageMapCard">
+          <div id="profileMap" style="height: 350px"></div>
+          <button class="genericConfirmButton profileMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
+        </v-card>
+
+        <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
             <h2 style="padding-bottom:10px;">Latest Changes</h2>
             <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
               <v-timeline-item
@@ -365,7 +370,7 @@
         visibility: "",
         start_date: null,
         end_date: null,
-        location: "",
+        location: null,
         loaded: false,
         authorId: null,
         activityId: null,
@@ -413,6 +418,8 @@
         roleDisabled: true,
         roleChanging: false,
         achievements: [],
+        loadingFollowButton: false,
+        locationToDisplay: "",
       }
     },
 
@@ -437,12 +444,16 @@
         })
     },
 
-    mounted: function () {
+    updated() {
       if (!this.user.isLogin) {
         this.$router.push('/login');
+      } else {
+        this.loadMap();
       }
     },
+
     created: function () {
+      this.getActivityLocation();
       this.loadActivity();
       this.getParticipants();
       this.getOrganisers();
@@ -465,7 +476,7 @@
     },
     methods: {
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
-        'getParticipants', 'getOrganisers', 'checkUserActivityVisibility']),
+        'getParticipants', 'getOrganisers', 'checkUserActivityVisibility', 'getLocationForActivity']),
 
       /**
        * Loads the role of the currently logged in user.
@@ -524,32 +535,34 @@
       /**
        * Format the received location string, ready to be displayed.
        */
-      locationFormat(str) {
-        let separated = str.split(",");
-        let city = "";
-        let state = "";
-        let country = "";
+      locationFormat() {
+        let city = this.location.city;
+        let state = this.location.state;
+        let country = this.location.country;
+        let streetAddress = this.location.street_address;
         let outputString = "";
 
-        if(typeof separated[0] !== 'undefined'){ city = separated[0] }
-        if(typeof separated[1] !== 'undefined'){ state = separated[1] }
-        if(typeof separated[2] !== 'undefined'){ country = separated[2] }
-
-        if(city !== ""){
-          outputString += city.trim();
-        }
-        if(state !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += state.trim();
-        }
-        if(country !== ""){
-          if(outputString !== ""){outputString += ", "}
-          outputString += country.trim();
-        }
-        if(outputString === ""){
+        if (location === null) {
           outputString = "No Location Set"
+        } else {
+          outputString += streetAddress;
+          if(city !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += city;
+          }
+          if(state !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += state;
+          }
+          if(country !== ""){
+            if(outputString !== ""){outputString += ", "}
+            outputString += country;
+          }
+          if(outputString === ""){
+            outputString = "No Location Set"
+          }
         }
-        return outputString;
+        this.locationToDisplay = outputString;
       },
 
       /**
@@ -741,7 +754,6 @@
 
       /**
        * Requests the activity and loads its information
-       * @returns {Promise<void>}
        */
       async loadActivity() {
         if (this.$route.params.activityId == null || this.$route.params.activityId === "") {
@@ -769,7 +781,6 @@
             }
             this.start_date = dateUtil.getFormatDate(new Date(tempActivityData.start_time));
             this.end_date = dateUtil.getFormatDate(new Date(tempActivityData.end_time));
-            this.location = tempActivityData.location;
             this.activity_author_firstname = tempActivityData.author.firstname;
             this.activity_author_lastname = tempActivityData.author.lastname;
             this.authorId = tempActivityData.author.profile_id;
@@ -781,12 +792,27 @@
       },
 
       /**
+       * Retrieves the location of the activity
+       */
+      async getActivityLocation(){
+        await apiActivity.getLocationForActivity(this.$route.params.activityId)
+          .then((response) => {
+            this.location = response.data;
+        })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              this.locationToDisplay = "No Location Set"
+            }
+        })
+        this.locationFormat();
+      },
+
+      /**
        * Checks if user is following current activity and sets userFollowing which is used to determine if
        * the follow button should be for following or unfollowing
-       * @returns {Promise<void>}
        */
       async checkFollowing() {
-        await apiUser.isUserFollowingActivitiy(this.user.profile_id, this.$route.params.activityId)
+        await apiUser.isUserFollowingActivity(this.user.profile_id, this.$route.params.activityId)
           .then((response) => {
             this.userFollowing = response.data !== false;
           })
@@ -798,28 +824,70 @@
       },
       /**
        * Makes api call to allow a user to follow current activity after follow button is pressed
-       * @returns {Promise<void>}
        */
       async followCurrentActivity() {
+        this.loadingFollowButton = true;
         await apiActivity.followActivity(this.user.profile_id, this.$route.params.activityId).then(response => {
           if (response.status === 201) {
             this.userFollowing = true;
             this.getStats();
+            this.loadingFollowButton = false;
           }
         });
       },
 
       /**
        * Makes api call to allow a user to un follow current activity after un follow button is pressed
-       * @returns {Promise<void>}
        */
       async unFollowCurrentActivity() {
+        this.loadingFollowButton = true;
         await apiActivity.unfollowActivity(this.user.profile_id, this.$route.params.activityId).then(response => {
           if (response.status === 200) {
             this.userFollowing = false;
             this.getStats();
+            this.loadingFollowButton = false;
           }
         });
+      },
+
+      /**
+       * Loads the map onto the page and centres on the activity's location.
+       * Adds a marker on the city's centre.
+       */
+      loadMap() {
+        if (!window.google) {
+          return;
+        }
+        this.geocoder = new window.google.maps.Geocoder();
+
+        let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          zoom: 9,
+          disableDefaultUI: true
+        });
+
+        let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
+        let latLng = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
+
+        this.geocoder.geocode({'address': address}, function (results, status) {
+          if (status === 'OK') {
+            map.setCenter(latLng);
+            new window.google.maps.Marker({
+              map: map,
+              position: latLng
+            });
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+          }
+        });
+      },
+
+      /**
+       * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+       */
+      goToFullMap()  {
+        this.$router.push('/map/activity@' + this.location.latitude + ',' + this.location.longitude);
       }
     }
   }

@@ -8,6 +8,7 @@ import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import io.cucumber.java.en_old.Ac;
 import org.hibernate.sql.Delete;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.Cookie;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -50,9 +52,6 @@ public class ActivityControllerTest {
     private ActivityRepository activityRepository;
 
     @MockBean
-    private ActivityChangeRepository activityChangeRepository;
-
-    @MockBean
     private UserRepository userRepository;
 
     @MockBean
@@ -69,6 +68,9 @@ public class ActivityControllerTest {
 
     @MockBean
     private SearchRepository searchRepository;
+
+    @MockBean
+    private HomeFeedRepository homeFeedRepository;
 
     @MockBean
     private UserActivityRoleRepository userActivityRoleRepository;
@@ -102,9 +104,10 @@ public class ActivityControllerTest {
             "    \"Fun\",\n" +
             "    \"Relaxing\"\n" +
             "  ],\n" +
-            "  \"continous\": false,\n" +
-            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
+            "  \"continuous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"visibility\": \"private\"" +
             "}";
 
 
@@ -116,10 +119,23 @@ public class ActivityControllerTest {
             "    \"Fun\",\n" +
             "    \"Relaxing\"\n" +
             "  ],\n" +
-            "  \"continous\": false,\n" +
-            "  \"start_time\": \"2020-02-20T08:00:00+1300\", \n" +
-            "  \"end_time\": \"2020-02-20T08:00:00+1300\"" +
+            "  \"continuous\": false,\n" +
+            "  \"start_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"end_time\": \"2020-02-20T08:00:00\", \n" +
+            "  \"visibility\": \"private\"" +
             "}";
+
+    private final String ADD_LOCATION_JSON = "{\n" +
+            "  \"city\": \"city\",\n" +
+            "  \"country\": \"country\",\n" +
+            "  \"latitude\": 4,\n" +
+            "  \"longitude\": 4,\n" +
+            "  \"postcode\": 4,\n" +
+            "  \"state\": \"state\",\n" +
+            "  \"street_address\": \"123 test ave\",\n" +
+            "  \"suburb\": \"suburb\"" +
+            "}";
+
 
     private Activity createTestActivity() {
         // add test activity and connect it to the test user
@@ -871,5 +887,53 @@ public class ActivityControllerTest {
         this.mockMvc.perform(get("/activities/1/role/1"))
                 .andExpect(status().is(404))
                 .andExpect(content().string(containsString("User not found")));
+    }
+
+    @Test
+    public void addLocationToActivityTest() throws Exception {
+        Activity dummyActivity = new Activity();
+        dummyActivity.setId(1L);
+
+        User testUser = new User();
+        testUser.setUserId(1L);
+        dummyActivity.setAuthor(testUser);
+
+
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session session1 = new Session("t0k3n");
+        session1.setUser(testUser);
+
+       /* Activity activity = activityRepository.getOne(activityId);
+        User userAuthoringChange = userWithSession.getUser();
+        boolean isActivityAuthor = activity.getAuthor().getUserId().equals(userAuthoringChange.getUserId());
+        boolean isAdmin = userAuthoringChange.getPermissionLevel() == 1;
+        boolean isDefaultAdmin = userAuthoringChange.getPermissionLevel() == 2;
+        boolean isOrganiser = activityRepository.getUsersRoleForActivity(activityId, userAuthoringChange.getUserId()).equals("ORGANISER");*/
+
+        activityRepository.save(dummyActivity);
+
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
+        when(activityRepository.getOne((long) 1)).thenReturn(dummyActivity);
+        when(activityRepository.getUsersRoleForActivity(1L, 1L)).thenReturn("ORGANISER");
+        when(service.addLocationToActivity(any(Long.class), any(Location.class))).thenReturn(new ResponseEntity("Success", HttpStatus.valueOf(201)));
+
+        this.mockMvc.perform(post("/activities/1/location").cookie(tokenCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ADD_LOCATION_JSON))
+                .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    public void getLocationForActivityTest() throws Exception {
+        final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
+        Session testSession = new Session("t0k3n");
+        Activity testActivity = createTestActivity();
+        when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(testSession);
+        when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
+        /*when(service.getActivityLocation(any(Long.class)))
+                .thenReturn(new ResponseEntity(any(Location.class), HttpStatus.valueOf(200)));*/
+        this.mockMvc.perform(get("/activities/1/location").cookie(tokenCookie))
+                .andExpect(status().is(200));
     }
 }

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.springvuegradle.hakinakina.serialize.ActivityDeserializer;
+import com.springvuegradle.hakinakina.serialize.UserDeserializer;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
@@ -16,6 +19,7 @@ import java.util.*;
  * Activities entity class.
  */
 @Entity
+@JsonDeserialize(using= ActivityDeserializer.class)
 public class Activity {
     @Id
     @GeneratedValue
@@ -79,8 +83,8 @@ public class Activity {
     private Set<User> usersShared = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "activity")
-    private Set<ActivityChange> changes = new HashSet<>();
+    @OneToMany(mappedBy = "activity", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE, orphanRemoval = true)
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 
     @Column(name = "visibility")
     private Visibility visibility;
@@ -341,5 +345,20 @@ public class Activity {
         }
 
         return differences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Activity activity = (Activity) o;
+        return continuous == activity.continuous &&
+                Objects.equals(name, activity.name) &&
+                Objects.equals(description, activity.description) &&
+                Objects.equals(startTime, activity.startTime) &&
+                Objects.equals(endTime, activity.endTime) &&
+                Objects.equals(author, activity.author) &&
+                visibility == activity.visibility &&
+                Objects.equals(location, activity.location);
     }
 }

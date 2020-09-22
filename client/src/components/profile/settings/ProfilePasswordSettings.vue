@@ -2,9 +2,6 @@
     <div class="settingsContainer">
         <UserSettingsMenu/>
         <div class="settingsContentContainer">
-            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-                <button class="genericConfirmButton backButton">Back to Profile</button>
-            </router-link>
             <h1>Change Password</h1>
             <hr>
             <div>
@@ -76,7 +73,8 @@ export default {
         match: this.newPassword === this.confirmPassword,
         length: /.{8,}/.test(this.newPassword),
         number: /\d/.test(this.newPassword),
-        uppercase: /[A-Z]/.test(this.newPassword)
+        uppercase: /[A-Z]/.test(this.newPassword),
+        lowercase: /[a-z]/.test(this.newPassword)
       };
     }
   },
@@ -182,6 +180,10 @@ export default {
         this.setError("Must contain at least one uppercase character");
         return false;
       }
+        if (!this.validation.lowercase) {
+            this.setError("Must contain at least one lowercase character");
+            return false;
+        }
       return true;
     },
     setError(errorMessage) {
