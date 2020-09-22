@@ -141,9 +141,17 @@
         </v-list-item-group>
       </v-list>
       <template v-slot:append>
+        <v-switch
+                id="darkModeToggle"
+                inset
+                class="darkToggle"
+                v-model="darkMode"
+                label="Dark Mode"
+                v-on:click="updateDarkModeLocalVar"
+        ></v-switch>
         <router-link to="/logout" v-if="user.isLogin">
           <div class="pa-2">
-            <v-btn v-on:click="logoutUser" class="logoutButton" id="hamburgerLogout" block color="#c9c9c9">Logout</v-btn>
+            <v-btn v-on:click="logoutUser" rounded class="logoutButton" id="hamburgerLogout" block color="primary">Logout</v-btn>
           </div>
         </router-link>
       </template>
@@ -163,7 +171,8 @@
           return {
             navDrawer: false,
             searchQuery: "",
-            rootLocation: process.env.VUE_APP_BASE_URL
+            rootLocation: process.env.VUE_APP_BASE_URL,
+            darkMode: false
           }
         },
         components: {
@@ -198,6 +207,12 @@
                 this.$router.push('/search/'+encodeURIComponent(this.searchQuery));
                 this.searchQuery = "";
               }
+            },
+            /*
+                 Updates the local variable storing weather or not dark mode is enabled.
+            */
+            updateDarkModeLocalVar() {
+              localStorage.setItem("darkMode", this.darkMode);
             },
             /*
                Sends a request to the server side when to log a user out when the log out button is pressed.

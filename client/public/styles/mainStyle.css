@@ -68,6 +68,24 @@ input, select, textarea {
 .floatClear {
     clear:both;
 }
+.darkToggle{
+    border: 1px solid #7f7f7f78;
+    border-radius: 100px;
+    margin: 4px 8px;
+    padding:10px 12px !important;
+}
+.darkToggle label{
+    text-align: right;
+    display: initial !important;
+    padding-right:6px;
+}
+.darkToggle .v-input__slot{
+    padding:0 !important;
+    margin:0 !important;
+}
+.darkToggle .v-messages{
+    display:none;
+}
 
 /* -- Buttons ---- */
 .navBarButton {
