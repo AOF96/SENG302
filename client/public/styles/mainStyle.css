@@ -3,6 +3,9 @@
     margin:0;
     padding:0;
 }
+body{
+    background-color: var(--v-background-base);
+}
 p, h1, h2, h3, h4, h5, h6, span, a, li, button, textarea, input, label{
     font-family: Roboto, sans-serif !important;
     text-decoration: none;
