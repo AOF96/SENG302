@@ -33,8 +33,9 @@ backButton {
 .editActivityLabel {
     padding: 0 20px;
     font-size: 14px;
-    color: #5c5c5c;
+    color: var(--v-primaryText);
     font-weight: 400;
+    opacity: 0.7;
 }
 
 #addAchievementBox .v-text-field__details{
