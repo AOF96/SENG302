@@ -117,8 +117,9 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
-      <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
+      <v-card :loading="mapLoading" v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
+        <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
       </v-card>
       <template v-if="searchedUser.passports">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
@@ -138,10 +139,9 @@ import {
 
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
+import {apiUser} from "../../api";
+
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import {
-  apiUser
-} from "../../api";
 
 export default {
   name: "Profile",
@@ -178,6 +178,7 @@ export default {
       loadingProfileInfo: true,
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
+      mapLoading: true
     };
   },
   async mounted() {
@@ -201,7 +202,7 @@ export default {
           Uses user id from url to request user data.
        */
     async loadSearchedUser() {
-      if (this.user.permission_level == 2 && this.user.profile_id == this.$route.params.profileId) {
+      if (this.user.permission_level === 2 && this.user.profile_id === this.$route.params.profileId) {
         this.$router.push('/settings/admin_dashboard');
       } else if (
         this.$route.params.profileId === null ||
@@ -257,12 +258,44 @@ export default {
           disableDefaultUI: true
         });
 
-        map.setCenter(position);
-        new window.google.maps.Marker({
-          map: map,
-          position: position
-        });
+        this.positionMap(map, position);
       }
+    },
+
+    /**
+     * Positions map from location depending on if logged in user or searching
+     */
+    positionMap(map, position) {
+      let outer = this;
+      if (this.user.profile_id !== this.searchedUser.profile_id) {
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.setLocationMarker(map, results[0].geometry.location);
+            map.setCenter(results[0].geometry.location);
+          }
+        });
+      } else {
+        this.setLocationMarker(map, position);
+      }
+    },
+
+    /**
+     * Sets location marker at position given
+     */
+    setLocationMarker(map, position) {
+      let homeIcon = {
+        url: "https://i.imgur.com/mNfVgmC.png",
+        scaledSize: new window.google.maps.Size(20, 20),
+        origin: new window.google.maps.Point(0, 0),
+        anchor: new window.google.maps.Point(10, 10)
+      };
+
+      new window.google.maps.Marker({
+        map: map,
+        position: position,
+        icon: homeIcon
+      });
+      this.mapLoading = false;
     },
 
     /**
@@ -309,6 +342,9 @@ export default {
       }
     },
 
+    /**
+     * Loads country information and map
+     */
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
       this.getDataFromUrl(COUNTRIES_URL)
@@ -330,6 +366,7 @@ export default {
         })
         .catch(error => console.log(error));
     },
+
     /***
      * Makes a request to the server to give the searched user admin rights given the user is not already an admin and
      * the requesting user is already an admin.
@@ -349,6 +386,22 @@ export default {
       }
       this.showResult = true;
       setTimeout(() => this.showResult = false, 5000)
+    },
+
+    /**
+     * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+     */
+    goToFullMap()  {
+      if (this.user.profile_id === this.searchedUser.profile_id) {
+        this.$router.push('/map/');
+      } else {
+        let outer = this;
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.$router.push('/map/user@' + results[0].geometry.location.lat() + ',' + results[0].geometry.location.lng());
+          }
+        });
+      }
     }
   }
 };

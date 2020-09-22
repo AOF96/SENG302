@@ -312,7 +312,12 @@
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
-          <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
+        <v-card id="profileMapCard" :loading="mapLoading" class="activityPageMapCard">
+          <div id="profileMap" style="height: 350px"></div>
+          <button class="genericConfirmButton profileMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
+        </v-card>
+
+        <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
             <h2 style="padding-bottom:10px;">Latest Changes</h2>
             <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
               <v-timeline-item
@@ -415,6 +420,7 @@
         achievements: [],
         loadingFollowButton: false,
         locationToDisplay: "",
+        mapLoading: true
       }
     },
 
@@ -439,11 +445,14 @@
         })
     },
 
-    mounted: function () {
+    updated() {
       if (!this.user.isLogin) {
         this.$router.push('/login');
+      } else {
+        this.loadMap();
       }
     },
+
     created: function () {
       this.getActivityLocation();
       this.loadActivity();
@@ -840,6 +849,49 @@
             this.loadingFollowButton = false;
           }
         });
+      },
+
+      /**
+       * Loads the map onto the page and centres on the activity's location.
+       * Adds a marker on the city's centre.
+       */
+      loadMap() {
+        if (!window.google) {
+          return;
+        }
+        this.geocoder = new window.google.maps.Geocoder();
+
+        let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          zoom: 9,
+          disableDefaultUI: true
+        });
+
+        let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
+        let latLng = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
+
+        let outer = this;
+        this.geocoder.geocode({'address': address}, function (results, status) {
+          if (status === 'OK') {
+            map.setCenter(latLng);
+            new window.google.maps.Marker({
+              map: map,
+              position: latLng
+            });
+            outer.mapLoading = false;
+          } else {
+            this.snackbarText = status;
+            this.snackbarColour = "error";
+            this.snackbar = true;
+            outer.mapLoading = false;
+          }
+        });
+      },
+
+      /**
+       * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+       */
+      goToFullMap()  {
+        this.$router.push('/map/activity@' + this.location.latitude + ',' + this.location.longitude);
       }
     }
   }

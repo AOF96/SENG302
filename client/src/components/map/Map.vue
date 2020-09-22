@@ -1,14 +1,21 @@
 <template>
-  <div id="map">
-    <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
-    <div id="hiddenText" hidden="true"></div>
+  <div class="mapPageContainer">
+    <div id="styleSelectorDiv" class="styleSelectorDiv">
+      <v-radio-group id="styleSelector" v-model="mapStyle">
+        <v-radio value="light" label="Light"></v-radio>
+        <v-radio value="dark" label="Dark"></v-radio>
+      </v-radio-group>
+    </div>
+    <div id="map">
+      <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+    </div>
   </div>
 </template>
 
 <script>
   import {mapGetters, mapState, mapActions} from "vuex";
   import {apiActivity} from "@/api";
-
+  import mapStyles from "../../util/mapStyles"
   export default {
     name: "Map",
     data: function() {
@@ -18,140 +25,13 @@
         errorMessage: null,
         snackbar: false,
         timeout: 2000,
+        searchLatitude: null,
+        searchLongitude: null,
+        searchedType: null,
+        mapStyle: "light",
         mapBounds: null,
         mapActivities: [],
         activities: [],
-      //   activities: [
-      //     {
-      //       id: 1,
-      //       name: "Walking away",
-      //       continuous: true,
-      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-      //       followers: 4,
-      //       activityTypes: "Team sport, Running",
-      //       visibility: "public",
-      //       start_time: "",
-      //       end_time: "",
-      //       author: 86007,
-      //       location: {
-      //         street_address: "Avon River",
-      //         city: "Christchurch",
-      //         country: "New Zealand",
-      //         latitude: -43.1213,
-      //         longitude: 172.614962,
-      //       }
-      //     },
-      //     {
-      //       id: 2,
-      //       name: "Walking towards",
-      //       visibility: "public",
-      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-      //       latitude: -35.0,
-      //       longitude: 151,
-      //       author: 86009,
-      //       followers: 4,
-      //       activityTypes: "Team sport, Running",
-      //       location: {
-      //         street_address: "Avon River",
-      //         state: "",
-      //         city: "Christchurch",
-      //         country: "New Zealand",
-      //         latitude: -43.879534,
-      //         longitude: 172.614962,
-      //       },
-      //       continuous: true,
-      //       start_time: "",
-      //       end_time: ""
-      //     },
-      //     {
-      //       id: 3,
-      //       name: "Walking away",
-      //       visibility: "restricted",
-      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-      //       latitude: -34.2,
-      //       longitude: 150.2,
-      //       author: 86007,
-      //       followers: 4,
-      //       activityTypes: "Team sport, Running",
-      //       location: {
-      //         street_address: "Avon River",
-      //         city: "Christchurch",
-      //         state: "",
-      //         country: "New Zealand",
-      //         latitude: -43.4568,
-      //         longitude: 172.614962,
-      //       },
-      //       continuous: true,
-      //       start_time: "",
-      //       end_time: ""
-      //     },
-      //     {
-      //       id: 4,
-      //       name: "Walking towards",
-      //       visibility: "restricted",
-      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-      //       latitude: -35.2,
-      //       longitude: 151.2,
-      //       author: 86009,
-      //       followers: 4,
-      //       activityTypes: "Team sport, Running",
-      //       location: {
-      //         street_address: "Avon River",
-      //         city: "Christchurch",
-      //         state: "",
-      //         country: "New Zealand",
-      //         latitude: -43.23423,
-      //         longitude: 172.614962,
-      //       },
-      //       continuous: true,
-      //       start_time: "",
-      //       end_time: ""
-      //     },
-      //     {
-      //       id: 5,
-      //       name: "Walking away",
-      //       visibility: "private",
-      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-      //       latitude: -34.4,
-      //       longitude: 150.4,
-      //       author: 86007,
-      //       followers: 4,
-      //       activityTypes: "Team sport, Running",
-      //       location: {
-      //         street_address: "Avon River",
-      //         city: "Christchurch",
-      //         state: "",
-      //         country: "New Zealand",
-      //         latitude: -43.234231,
-      //         longitude: 172.614962,
-      //       },
-      //       continuous: true,
-      //       start_time: "",
-      //       end_time: ""
-      //     },
-      //     {
-      //       id: 6,
-      //       name: "Walking towards",
-      //       visibility: "private",
-      //       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec libero magna, vulputate vitae molestie quis, vulputate a justo.",
-      //       latitude: -35.4,
-      //       longitude: 151.4,
-      //       author: 86009,
-      //       followers: 4,
-      //       activityTypes: "Team sport, Running",
-      //       location: {
-      //         street_address: "Avon River",
-      //         city: "Christchurch",
-      //         state: "",
-      //         country: "New Zealand",
-      //         latitude: -43.23423523,
-      //         longitude: 172.614962,
-      //       },
-      //       continuous: true,
-      //       start_time: "",
-      //       end_time: ""
-      //     }
-      //   ],
       }
     },
     computed: {
@@ -173,382 +53,28 @@
       ...mapActions(["getDataFromUrl"]),
       /**
        * Loads the map onto the page and centres on the users home city.
-       * Adds a marker on the user's location and all the activities near them that appear within the range of the map
+       * Adds a marker on the city's centre. Uses bounds of the viewport to retrieve activities in that range.
        */
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
-        let position = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
-
-        const styles = {
-          light: [
-            {
-              "featureType": "administrative",
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "administrative",
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#454545"
-                }
-              ]
-            },
-            {
-              "featureType": "landscape.man_made",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#eaf0ed"
-                }
-              ]
-            },
-            {
-              "featureType": "landscape.natural",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#b0eecb"
-                }
-              ]
-            },
-            {
-              "featureType": "landscape.natural",
-              "elementType": "labels.icon",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "landscape.natural.landcover",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#33ffad"
-                },
-                {
-                  "visibility": "simplified"
-                }
-              ]
-            },
-            {
-              "featureType": "landscape.natural.terrain",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#9ae4be"
-                },
-                {
-                  "weight": 1
-                }
-              ]
-            },
-            {
-              "featureType": "poi",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "poi",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.attraction",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#d7e5de"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.business",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#cee3dd"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.government",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#d7e5de"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.medical",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#c7dbd8"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.park",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#8fdbba"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.school",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#d0e2de"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "poi.sports_complex",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#84d2b4"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "road",
-              "elementType": "labels.icon",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "road.arterial",
-              "elementType": "labels",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "road.highway",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#ffffff"
-                }
-              ]
-            },
-            {
-              "featureType": "road.highway",
-              "elementType": "geometry.stroke",
-              "stylers": [
-                {
-                  "visibility": "simplified"
-                }
-              ]
-            },
-            {
-              "featureType": "road.highway",
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#45696e"
-                }
-              ]
-            },
-            {
-              "featureType": "road.local",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "road.local",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "transit",
-              "stylers": [
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "transit.line",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#9cbaae"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "transit.station",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#9cbaae"
-                },
-                {
-                  "visibility": "off"
-                }
-              ]
-            },
-            {
-              "featureType": "transit.station.airport",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#e9f2ef"
-                },
-                {
-                  "visibility": "on"
-                }
-              ]
-            },
-            {
-              "featureType": "water",
-              "elementType": "geometry.fill",
-              "stylers": [
-                {
-                  "color": "#7abbdc"
-                }
-              ]
-            }
-          ],
-          dark: [
-            {
-              featureType: "poi",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-            {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
-            {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
-            {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
-            {
-              featureType: 'road',
-              elementType: 'geometry',
-              stylers: [{color: '#38414e'}]
-            },
-            {
-              featureType: 'road',
-              elementType: 'geometry.stroke',
-              stylers: [{color: '#212a37'}]
-            },
-            {
-              featureType: 'road',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#9ca5b3'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'geometry',
-              stylers: [{color: '#746855'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'geometry.stroke',
-              stylers: [{color: '#1f2835'}]
-            },
-            {
-              featureType: 'road.highway',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#f3d19c'}]
-            },
-            {
-              featureType: 'transit',
-              elementType: 'geometry',
-              stylers: [{color: '#2f3948'}]
-            },
-            {
-              featureType: 'transit.station',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#d59563'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'geometry',
-              stylers: [{color: '#17263c'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.fill',
-              stylers: [{color: '#515c6d'}]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.stroke',
-              stylers: [{color: '#17263c'}]
-            }
-          ]
-        };
-
+        let userPosition = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
         this.gmap = new window.google.maps.Map(document.getElementById("map"), {
-          center: position,
+          center: userPosition,
           zoom: 12,
-          styles: styles["light"]
+          styles: mapStyles[this.mapStyle],
+          zoomControl: false,
+          mapTypeControl: true,
+          scaleControl: false,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: false
         });
 
         let self = this;
-        window.google.maps.event.addListener(this.gmap, 'idle', function() {
-          self.mapBounds = this.getBounds();
-          console.log(self.mapBounds);
-          let NECorner = self.mapBounds.getNorthEast();
-          let SWCorner = self.mapBounds.getSouthWest();
+        window.google.maps.event.addListener(this.gmap, 'idle', function(){
+          let mapBounds = this.getBounds();
+          let NECorner = mapBounds.getNorthEast();
+          let SWCorner = mapBounds.getSouthWest();
           let coordinates = {
             NELat: NECorner.lat(),
             NELong: NECorner.lng(),
@@ -558,50 +84,13 @@
           apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
             .then(response => {
               self.activities = response.data;
-              console.log(self.activities);
               self.createActivityMarkers(self.gmap);
             })
         });
-        this.createHomeMarker(this.gmap, position);
-      },
 
-      /**
-       * Formats Date object to pretty English
-       * @param date
-       */
-      dateFormatterToEnglish: function(date) {
-        const options = {
-          weekday: "long",
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-          hour12: true,
-          hour: "2-digit",
-          minute: "2-digit"
-      };
-        return date.toLocaleTimeString("en-US", options);
-      },
-
-
-      /**
-       * Gets activities within the bounds of the map
-       */
-      getActivitiesInRange(){
-
-        let NECorner = this.mapBounds.getNorthEast();
-        let SWCorner = this.mapBounds.getSouthWest();
-        let coordinates = {
-          NELat: NECorner.lat(),
-          NELong: NECorner.lng(),
-          SWLat: SWCorner.lat(),
-          SWLong: SWCorner.lng()
-        };
-        apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
-            .then(response => {
-              this.activities = response.data;
-
-              this.createActivityMarkers(this.gmap);
-            })
+        this.createControl(this.gmap);
+        this.createHomeMarker(this.gmap, userPosition);
+        this.createSearch(this.gmap);
       },
 
       /**
@@ -610,7 +99,7 @@
        * @param position
        */
       createHomeMarker(map, position) {
-        var homeIcon = {
+        let homeIcon = {
           url: "https://i.imgur.com/mNfVgmC.png",
           scaledSize: new window.google.maps.Size(20, 20),
           origin: new window.google.maps.Point(0, 0),
@@ -644,6 +133,42 @@
       },
 
       /**
+       * Formats Date object to pretty English
+       * @param date
+       */
+      dateFormatterToEnglish: function(date) {
+        const options = {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+          hour12: true,
+          hour: "2-digit",
+          minute: "2-digit"
+        };
+        return date.toLocaleTimeString("en-US", options);
+      },
+
+      /**
+       * Gets activities within the bounds of the map
+       */
+      getActivitiesInRange(){
+        let NECorner = this.mapBounds.getNorthEast();
+        let SWCorner = this.mapBounds.getSouthWest();
+        let coordinates = {
+          NELat: NECorner.lat(),
+          NELong: NECorner.lng(),
+          SWLat: SWCorner.lat(),
+          SWLong: SWCorner.lng()
+        };
+        apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+            .then(response => {
+              this.activities = response.data;
+              this.createActivityMarkers(this.gmap);
+            })
+      },
+
+      /**
        * Creates markers for the activities on the map
        * @param map
        */
@@ -658,6 +183,8 @@
 
         for (let activity of this.activities) {
           if (activity.visibility === "public") {
+            console.log(activity.author === this.user.profile_id);
+            console.log(activity.author, this.user.profile_id);
             if(activity.author === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
             } else {
@@ -694,7 +221,7 @@
                     '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
                     '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
                     '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
-                    '<h1 class="activityPopupActivityFollowers">'+ activity.followers + ' followers</h1>'+
+                    '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
                     '<hr class="activityPopupActivityLine">'+
                     '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
                     '</div>';
@@ -712,7 +239,7 @@
                     '<h1 id="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</h1>'+
                     '<h1 id="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</h1>'+
                     '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
-                    '<h1 class="activityPopupActivityFollowers">'+ activity.followers + ' followers</h1>'+
+                    '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
                     '<hr class="activityPopupActivityLine">'+
                     '<a href="/activity/'+activity.id+'">' +
                     '<button class="activityPopupActivityButton">Go to Activity</button></a>'+
@@ -794,6 +321,80 @@
        */
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
+      },
+
+      /**
+       * Creates a control for swapping the map theme
+       * @param map
+       */
+      createControl(map) {
+        const styleControl = document.getElementById("styleSelectorDiv");
+        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
+
+        const styleSelector = document.getElementById("styleSelector");
+        map.setOptions({
+          styles: mapStyles[this.mapStyle]
+        });
+
+        styleSelector.addEventListener("click", () => {
+          map.setOptions({
+            styles: mapStyles[this.mapStyle]
+          });
+        });
+      },
+
+      /**
+       * Checks if search exists and creates marker if it does
+       */
+      createSearch(map) {
+        if (this.$route.params.coordinates !== null) {
+          this.parseCoordinates();
+          this.createSearchMarker(map);
+        }
+      },
+
+      /**
+       * Parses the Coordinates in the URL (@{latitude},{longitude}), extracting the latitude and longitude.
+       */
+      parseCoordinates() {
+        let searchVars = this.$route.params.coordinates.split('@');
+        this.searchedType = searchVars[0];
+        let coordinates = searchVars[1].split(',');
+        this.searchLatitude = coordinates[0];
+        this.searchLongitude = coordinates[1];
+      },
+
+      /**
+       * Creates a search marker and centers the map on the search. Changes pin depending on what the searched location is
+       * @param map
+       */
+      createSearchMarker(map) {
+        let icon;
+        if (this.searchedType === "user") {
+          icon = {
+            url: "https://i.imgur.com/jNY9HSw.png", // Change this icon
+            scaledSize: new window.google.maps.Size(26, 26),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+        } else {
+          icon = {
+            url: "https://i.imgur.com/MUWKzz9.png", // Change this icon
+            scaledSize: new window.google.maps.Size(26, 26),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+        }
+
+        let searchPosition = new window.google.maps.LatLng(this.searchLatitude, this.searchLongitude);
+
+        new window.google.maps.Marker({
+          map: map,
+          position: searchPosition,
+          icon: icon
+        });
+
+        map.setCenter(searchPosition);
       }
     }
   }

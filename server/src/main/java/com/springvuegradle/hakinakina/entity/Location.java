@@ -152,6 +152,10 @@ public class Location {
         return this.activity;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -169,11 +173,6 @@ public class Location {
                 ", longitude=" + longitude +
                 '}';
     }
-
-    public User getUser() {
-        return this.user;
-    }
-
 
     @Override
     public boolean equals(Object o) {

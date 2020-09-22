@@ -465,3 +465,10 @@
         width:100%;
     }
 }
+
+.activityPageMapCard{
+    height: fit-content;
+    width: calc(100% - 20px);
+    margin:20px 10px;
+    border-radius: 15px !important;
+}

@@ -7,10 +7,9 @@ import {apiUser} from "@/api";
 // creates Vue object (whole page)
 const localVue = createLocalVue();
 import Vuetify from "vuetify";
-import ProfileLocationSettings from "../profile/settings/ProfileLocationSettings";
 import {expect} from "@jest/globals";
 import ActivityLocationSettings from "../activity/settings/ActivityLocationSettings";
-localVue.use(Vuetify)
+localVue.use(Vuetify);
 localVue.use(Vuex);
 
 //mock api

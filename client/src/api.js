@@ -536,8 +536,9 @@ export const apiActivity = {
   /**
    * Send a request to search for an activity
    */
-    getSearchedActivity: (searchTerm, currentPage, size) => instance.get(`/activities?name=${searchTerm}`,{
+    getSearchedActivity: (searchTerm, currentPage, size) => instance.get(`/activities`,{
     params: {
+        activitySearchTerm: searchTerm,
         page: currentPage,
         size: size
       }

@@ -163,12 +163,15 @@ public class ActivityControllerTest {
 //    @Test
 //    public void getOneActivitySuccessTest() throws Exception {
 //        Activity testActivity = createTestActivity();
+//        Activity dummyActivity = new Activity();
+//        dummyActivity.setId(1L);
 //
 //        String activityStr = "{\"id\":1,\"achievements\":[],\"author\":null,\"visibility\":null,\"location\":null,\"activity_name\":\"name\",\"description\":\"description\",\"activity_type\":[{\"name\":\"Fun\",\"users\":[]}],\"continuous\":false,\"start_time\":1000000000,\"end_time\":1000001000";
+//        String  description = "New activity";
 //        when(activityRepository.findById((long) 1)).thenReturn(Optional.of(testActivity));
 //        this.mockMvc.perform(get("/activities/1"))
 //                .andExpect(status().isOk())
-//                .andExpect(content().string(containsString(activityStr)));
+//                .andExpect(content().string(containsString("1")));
 //    }
 
     @Test

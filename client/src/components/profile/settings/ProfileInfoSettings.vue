@@ -2,9 +2,6 @@
   <div class="settingsContainer" @click="showLocations = false">
     <UserSettingsMenu />
     <div class="settingsContentContainer">
-      <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-        <button class="genericConfirmButton backButton" id="backToProfileButton">Back to Profile</button>
-      </router-link>
       <h1 class="settingsTitle">Edit Profile Info</h1>
       <hr />
       <form @submit.prevent class="editForm">
@@ -127,6 +124,7 @@
           v-on:click="updateProfile()"
           type="submit"
         >Save Changes</button>
+        <div class="floatClear"></div>
       </form>
     </div>
     <div class="floatClear"></div>
