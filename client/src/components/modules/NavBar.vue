@@ -234,6 +234,7 @@
       updateDarkModeLocalVar() {
         localStorage.setItem("darkMode", this.darkMode);
         this.$vuetify.theme.dark = this.darkMode;
+        this.$emit('set-theme', this.darkMode);
       },
 
       /**
@@ -252,6 +253,7 @@
           this.darkMode = false;
         }
         this.$vuetify.theme.dark = this.darkMode;
+        this.$emit('set-theme', this.darkMode);
       }
     },
   }

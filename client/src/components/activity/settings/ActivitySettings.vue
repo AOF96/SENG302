@@ -130,7 +130,7 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat>
-                  <v-card-text style="text-align: center;color:grey;" v-if="achievements.length == 0">No Achievements
+                  <v-card-text style="text-align: center;color:grey;" v-if="achievements.length === 0">No Achievements
                     Yet
                   </v-card-text>
                   <v-row align="center" justify="center" no-gutters v-bind:key="index"

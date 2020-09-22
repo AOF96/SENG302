@@ -1,11 +1,5 @@
 <template>
   <div class="mapPageContainer">
-    <div id="styleSelectorDiv" class="styleSelectorDiv">
-      <v-radio-group id="styleSelector" v-model="mapStyle">
-        <v-radio value="light" label="Light"></v-radio>
-        <v-radio value="dark" label="Dark"></v-radio>
-      </v-radio-group>
-    </div>
     <div id="map">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
     </div>
@@ -16,6 +10,7 @@
   import {mapGetters, mapState, mapActions} from "vuex";
   import {apiActivity} from "@/api";
   import mapStyles from "../../util/mapStyles"
+
   export default {
     name: "Map",
     data: function () {
@@ -28,18 +23,19 @@
         searchLatitude: null,
         searchLongitude: null,
         searchedType: null,
-        mapStyle: "light"
       }
     },
+    props: ['darkModeGlobal'],
     computed: {
       ...mapState(["user"]),
-      ...mapGetters(["user"])
+      ...mapGetters(["user"]),
     },
     mounted() {
       this.loadMap();
     },
     methods: {
       ...mapActions(["getDataFromUrl"]),
+
       /**
        * Loads the map onto the page and centres on the users home city.
        * Adds a marker on the city's centre. Uses bounds of the viewport to retrieve activities in that range.
@@ -52,7 +48,7 @@
         let map = new window.google.maps.Map(document.getElementById("map"), {
           center: userPosition,
           zoom: 12,
-          styles: mapStyles[this.mapStyle],
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           zoomControl: false,
           mapTypeControl: true,
           scaleControl: false,
@@ -61,7 +57,7 @@
           fullscreenControl: false
         });
 
-        window.google.maps.event.addListener(map, 'idle', function(){
+        window.google.maps.event.addListener(map, 'idle', function () {
           let mapBounds = this.getBounds();
           let NECorner = mapBounds.getNorthEast();
           let SWCorner = mapBounds.getSouthWest();
@@ -72,12 +68,12 @@
             SWLong: SWCorner.lng()
           };
           apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
-            .then(response => {
-              console.log(response.data);
-            })
+              .then(response => {
+                console.log(response.data);
+              })
         });
 
-        this.createControl(map);
+        this.setThemeCheckEvent(map);
         this.createHomeMarker(map, userPosition);
         this.createSearch(map);
       },
@@ -101,22 +97,22 @@
           icon: homeIcon
         });
 
-        let contentString = '<div id="content">'+
-            '<h2>Your Location</h2>'+
-            '<div id="bodyContent">'+
+        let contentString = '<div id="content">' +
+            '<h2>Your Location</h2>' +
+            '<div id="bodyContent">' +
             this.locationToString(this.user.location) +
-            '</div>'+
+            '</div>' +
             '</div>';
 
         let infowindow = new window.google.maps.InfoWindow({
           content: contentString
         });
 
-        marker.addListener('click', function() {
+        marker.addListener('click', function () {
           infowindow.open(map, marker);
         });
 
-        window.google.maps.event.addListener(map, "click", function() {
+        window.google.maps.event.addListener(map, "click", function () {
           infowindow.close();
         });
       },
@@ -137,19 +133,25 @@
           outputString = "No Location Set"
         } else {
           outputString += streetAddress;
-          if(city !== ""){
-            if(outputString !== ""){outputString += ", "}
+          if (city !== "") {
+            if (outputString !== "") {
+              outputString += ", "
+            }
             outputString += city;
           }
-          if(state !== ""){
-            if(outputString !== ""){outputString += ", "}
+          if (state !== "") {
+            if (outputString !== "") {
+              outputString += ", "
+            }
             outputString += state;
           }
-          if(country !== ""){
-            if(outputString !== ""){outputString += ", "}
+          if (country !== "") {
+            if (outputString !== "") {
+              outputString += ", "
+            }
             outputString += country;
           }
-          if(outputString === ""){
+          if (outputString === "") {
             outputString = "No Location Set"
           }
         }
@@ -164,21 +166,14 @@
       },
 
       /**
-       * Creates a control for swapping the map theme
+       * Creates an event handler to check if the theme has changed
        * @param map
        */
-      createControl(map) {
-        const styleControl = document.getElementById("styleSelectorDiv");
-        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
-
-        const styleSelector = document.getElementById("styleSelector");
-        map.setOptions({
-          styles: mapStyles[this.mapStyle]
-        });
-
-        styleSelector.addEventListener("click", () => {
+      setThemeCheckEvent(map) {
+        let outer = this;
+        window.google.maps.event.addDomListener(window, 'click', function() {
           map.setOptions({
-            styles: mapStyles[this.mapStyle]
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
           });
         });
       },
@@ -187,7 +182,7 @@
        * Checks if search exists and creates marker if it does
        */
       createSearch(map) {
-        if (this.$route.params.coordinates !== null) {
+        if (this.$route.params.coordinates !== undefined) {
           this.parseCoordinates();
           this.createSearchMarker(map);
         }
