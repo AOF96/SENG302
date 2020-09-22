@@ -569,6 +569,34 @@ public class ActivityController {
         return activityService.addLocationToActivity(activityId, location);
     }
 
+    /***
+     * Handles the request to get all the activities that are located within the given bounds.
+     * @param latitudeTopRight the given latitude.
+     * @param longitudeTopRight the given longitude.
+     * @param latitudeBottomLeft the given longitude.
+     * @param longitudeBottomLeft the given longitude.
+     * @return a 200 response with the list of all the activities if any exist in the given bound, 400 for invalid user input, 401 for invalid session,
+     * or 500 for internal server error.
+     */
+    @GetMapping("/activities/within/range")
+    public ResponseEntity<Activity> getActivitiesWithinGivenRange(@RequestParam("latitudeTopRight") Double latitudeTopRight,
+                                                        @RequestParam("longitudeTopRight") Double longitudeTopRight,
+                                                        @RequestParam("latitudeBottomLeft") Double latitudeBottomLeft,
+                                                        @RequestParam("longitudeBottomLeft") Double longitudeBottomLeft,
+                                                        @CookieValue(value = "s_id") String sessionToken) {
+        ResponseEntity result;
+        if (sessionToken == null || sessionRepository.findUserIdByToken(sessionToken) == null) {
+            result = responseHandler.formatErrorResponse(401, "Invalid Session");
+        } else if (latitudeTopRight == null || longitudeTopRight == null || latitudeBottomLeft == null || longitudeBottomLeft == null) {
+            result =  responseHandler.formatErrorResponse(400, "Invalid latitude or longitude values.");
+        } else {
+            result = activityService.getActivitiesWithinGivenRange(latitudeBottomLeft, latitudeTopRight,
+                    longitudeBottomLeft, longitudeTopRight,
+                    sessionRepository.findUserIdByToken(sessionToken).getUser().getUserId());
+        }
+        return result;
+    }
+
     /**
      * Endpoint for retrieving an activities location. Performs session checks as well as 404 checks.
      * @param activityId Location of the activity with this id will be retrieved.

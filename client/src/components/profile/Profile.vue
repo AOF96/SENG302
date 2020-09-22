@@ -117,7 +117,7 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
-      <v-card v-if="this.searchedUser.location != null" id="profileMapCard">
+      <v-card :loading="mapLoading" v-if="this.searchedUser.location != null" id="profileMapCard">
         <div id="profileMap"></div>
         <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
       </v-card>
@@ -178,6 +178,7 @@ export default {
       loadingProfileInfo: true,
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
+      mapLoading: true
     };
   },
   async mounted() {
@@ -294,6 +295,7 @@ export default {
         position: position,
         icon: homeIcon
       });
+      this.mapLoading = false;
     },
 
     /**
