@@ -14,14 +14,13 @@
                         v-model="tabs"
                         fixed-tabs
                     >
-                      <v-tabs-slider/>
+                      <v-tabs-slider></v-tabs-slider>
                       <v-tab style="text-transform: none" href="#mobile-tabs-5-1"
                              v-on:click="activitySearchTab = false">
                         <h1 class="searchHeading">User</h1>
                       </v-tab>
 
-                      <v-tab style="text-transform: none" href="#mobile-tabs-5-2"
-                             v-on:click="loadActivitySearchTab">
+                      <v-tab style="text-transform: none" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
                         <h1 class="searchHeading">Activity</h1>
                       </v-tab>
                     </v-tabs>
@@ -37,20 +36,18 @@
                     <v-card flat>
                       <div v-if="index === 1">
                         <v-col>
-                          <v-text-field id="searchQueryInput" style="margin-top: 20px"
-                                        v-on:keyup="submitSearch" label="Search User"
-                                        v-model="searchedTerm" outlined rounded clearable
-                                        hide-details dense/>
+                          <v-text-field id="searchQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch"
+                                        label="Search User" v-model="searchedTerm" outlined rounded clearable
+                                        hide-details dense></v-text-field>
                         </v-col>
                         <v-col>
-                          <v-select v-model="searchBy" :items="searchMethods"
-                                    item-text="display" name="searchValue" required
-                                    label="Search By" outlined hide-details dense rounded>
+                          <v-select v-model="searchBy" :items="searchMethods" item-text="display" name="searchValue"
+                                    required label="Search By" outlined hide-details dense rounded>
                           </v-select>
                         </v-col>
                         <v-col>
-                          <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)"
-                                 color="#1cca92" outlined block rounded large>Submit
+                          <v-btn v-on:click="submitButtonCheck(defaultPage, defaultSize)" color="#1cca92" outlined block
+                                 rounded large>Submit
                           </v-btn>
                         </v-col>
                       </div>
@@ -58,9 +55,9 @@
                     <v-card flat>
                       <div v-if="index === 2">
                         <v-col>
-                          <v-text-field id="searchActivityQueryInput" style="margin-top: 20px"
-                                        label="Search Activity" v-model="searchedActivityTerm"
-                                        outlined rounded clearable hide-details dense/>
+                          <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" label="Search Activity"
+                                        v-model="searchedActivityTerm" outlined rounded clearable hide-details
+                                        dense></v-text-field>
                         </v-col>
                         <v-col>
                           <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize)"
@@ -74,8 +71,8 @@
                 </v-tabs-items>
                 <div v-if="!activitySearchTab">
                   <v-row class="searchRow">
-                    <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers"
-                                 :key="user.email" link>
+                    <v-list-item v-on:click="getUser(user.email)" two-line v-for="user in allUsers" :key="user.email"
+                                 link>
                       <v-list-item-content>
                         <v-list-item-title v-if="user.middlename != null">
                           {{ user.firstname + " " + user.middlename + " " + user.lastname}}
@@ -107,20 +104,18 @@
 
                 <div v-if="activitySearchTab">
                   <v-row class="searchRow">
-                    <v-list-item two-line v-for="activity in allActivities" :key="activity.id" link>
+                    <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
+                                 :key="activity.id" link>
                       <v-list-item-content>
                         <v-list-item-title>
                           {{ activity.name}}
                         </v-list-item-title>
-                        <v-list-item-subtitle
-                            v-if="activity.location !== null && activity.location.city !== null">
-                          {{ activity.location.street_address}}, {{ activity.location.city}},
-                          {{ activity.location.country}}
-                        </v-list-item-subtitle>
-                        <v-list-item-subtitle v-else>
-                          No Location
-                        </v-list-item-subtitle>
-
+                        <div v-if="activity.location !== null">
+                          <v-list-item-subtitle>
+                            {{ activity.location.street_address}}, {{ activity.location.city}}, {{
+                            activity.location.country}}
+                          </v-list-item-subtitle>
+                        </div>
                       </v-list-item-content>
                     </v-list-item>
                   </v-row>
@@ -147,8 +142,8 @@
           <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
             <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
               <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
-              <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined
-                          rounded label="Activity Type Select" multiple
+              <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
+                          label="Activity Type Select" multiple
                           v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
                 <template v-slot:selection="data">
                   <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select"
@@ -158,84 +153,20 @@
                 </template>
                 <template v-slot:item="data">
                   <template v-if="typeof data.item !== 'object'">
-                    <v-list-item-content v-text="data.item"/>
+                    <v-list-item-content v-text="data.item"></v-list-item-content>
                   </template>
                   <template v-else>
                     <v-list-item-content>
-                      <v-list-item-title v-html="data.item"/>
+                      <v-list-item-title v-html="data.item"></v-list-item-title>
                     </v-list-item-content>
-                  </v-list-item>
-                </v-row>
-                <v-row class="searchRow">
-                  <v-spacer />
-                  <v-btn
-                      v-on:click="searchUsers(currentPage + 1, currentSize)"
-                      :hidden="moreHidden"
-                      :loading="loading"
-                      :disabled="disabled"
-                      color="#1cca92"
-                      outlined
-                      rounded
-                      class="searchMoreButton"
-                  >
-                    More Results</v-btn>
-                  <v-spacer />
-                </v-row>
-               </div>
-
-              <div v-if="activitySearchTab">
-              <v-row class="searchRow">
-                <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities" :key="activity.id" link>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ activity.name}}
-                    </v-list-item-title>
-                    <div v-if="activity.location !== null">
-                      <v-list-item-subtitle>
-                        {{ activity.location.street_address}},  {{ activity.location.city}}, {{ activity.location.country}}
-                      </v-list-item-subtitle>
-                    </div>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-row>
-              <v-row class="searchRow">
-                <v-spacer />
-                <v-btn
-                    v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize)"
-                    :hidden="moreHidden"
-                    :loading="loading"
-                    :disabled="disabled"
-                    color="#1cca92"
-                    outlined
-                    rounded
-                    class="searchMoreButton"
-                >
-                  More Results</v-btn>
-                <v-spacer />
-              </v-row>
-              </div>
-            </form>
-          </v-card>
-        </v-col>
-        <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-          <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-            <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
-            <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded label="Activity Type Select" multiple v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
-              <template v-slot:selection="data">
-                <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
-                  {{ data.item }}
-                </v-chip>
-              </template>
-              <template v-slot:item="data">
-                <template v-if="typeof data.item !== 'object'">
-                  <v-list-item-content v-text="data.item"></v-list-item-content>
+                  </template>
                 </template>
               </v-combobox>
               <v-label>Filter method</v-label>
               <v-radio-group v-model="filterMethod" :mandatory="true"
                              v-on:change="searchUsers(defaultPage, defaultSize)">
-                <v-radio label="Results including all" value="and"/>
-                <v-radio label="Results including one of" value="or"/>
+                <v-radio label="Results including all" value="and"></v-radio>
+                <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
             </v-card>
           </v-col>
@@ -259,8 +190,8 @@
   export default {
     name: "searchUser",
     computed: {
-      ...mapState(["user", "userSearch", "activitySearch"]),
-      ...mapGetters(["user", "userSearch", "activitySearch"]),
+      ...mapState(["user", "userSearch"]),
+      ...mapGetters(["user", "userSearch"]),
     },
     data: function () {
       return {
@@ -307,58 +238,21 @@
           element.focus()
         });
       }
-  },
-  watch: {
-    "$route.params": {
-      handler() {
-        this.loadUrlQuery();
-      }
-    }
-  },
-  methods: {
-    /**
-     * Checks if the search term when looking for the user is not empty or invalid.
-     * @param page Current page in results
-     * @param size Size of results to retrieve
-     */
-    submitButtonCheck(page, size) {
-      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
-        this.errorMessage = "Search is empty";
-        this.snackbar = true;
-      } else {
-        this.searchUsers(page, size);
+    },
+    watch: {
+      "$route.params": {
+        handler() {
+          this.loadUrlQuery();
+        }
       }
     },
-    /**
-     * Checks if the search term when looking for an activity is not empty or invalid.
-     * @param page Current page in results
-     * @param size Size of results to retrieve
-     */
-    submitActivityButtonCheck(page, size) {
-      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
-        this.errorMessage = "Search is empty";
-        this.snackbar = true;
-      } else {
-        this.searchActivity(page, size);
-      }
-    },
+    methods: {
       ...mapActions(["setUserSearch", "setScrollPosition", "setActivitySearch"]),
-    /**
-     * Checks if more searched activity result exists and if they don't hides the more results button else shows
-     * more results. Also manages the snack bar and error messages.
-     * @param page Current page in results
-     * @param size Size of results to retrieve
-     */
-    searchActivity(page, size){
-      if (page === this.defaultActivityPage) {
-        this.allActivities = [];
-      }
-      /* Adjust search position */
-      this.currentActivitySize = size;
-      this.currentActivityPage = page;
 
       /**
-       * Checks if search is valid
+       * Checks if the search term when looking for the user is not empty or invalid.
+       * @param page Current page in results
+       * @param size Size of results to retrieve
        */
       submitButtonCheck(page, size) {
         if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
@@ -370,7 +264,9 @@
       },
 
       /**
-       * Checks if activity search is valid
+       * Checks if the search term when looking for an activity is not empty or invalid.
+       * @param page Current page in results
+       * @param size Size of results to retrieve
        */
       submitActivityButtonCheck(page, size) {
         if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
@@ -382,9 +278,10 @@
       },
 
       /**
-       * Searches for activities based on search parameters
-       * @param page
-       * @param size
+       * Checks if more searched activity result exists and if they don't hides the more results button else shows
+       * more results. Also manages the snack bar and error messages.
+       * @param page Current page in results
+       * @param size Size of results to retrieve
        */
       searchActivity(page, size) {
         if (page === this.defaultActivityPage) {
@@ -502,6 +399,17 @@
       },
 
       /**
+       * Directs user to the activity that appears on the search activity results
+       *
+       * @param activityId the id of the activity the user wants to look into
+       */
+      goToActivity(activityId) {
+        this.$router.push({
+          path: "/activity/" + activityId
+        })
+      },
+
+      /**
        * Adds activity type to selected options
        */
       selectActivityType() {
@@ -515,8 +423,8 @@
       },
 
       /**
-       * Removes selected activity type
-       */
+       * Removes the activity from the activity filter component.
+       **/
       remove(item) {
         const index = this.activity_types_selected.indexOf(item);
         if (index >= 0) this.activity_types_selected.splice(index, 1);
@@ -537,30 +445,9 @@
           this.loadPreviousActivitySearch();
         }
       },
-      )
-    },
-    ...mapActions(["setUserSearch", "setScrollPosition"]),
-    /**
-     * Search for size amount of users on given page and append to list
-     *
-     * @param page Current page in results
-     * @param size Size of results to retrieve
-     */
-    searchUsers(page, size) {
-      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
-        this.allUsers = [];
-        this.moreHidden = true;
-        return;
-      }
-      if (page === this.defaultPage) {
-        this.allUsers = [];
-      }
-      /* Adjust search position */
-      this.currentSize = size;
-      this.currentPage = page;
 
       /**
-       *  Submit search query on enter pressed.
+       * Submit search query on enter pressed.
        */
       submitSearch: function (e) {
         if (e.keyCode === 13) {
@@ -589,26 +476,6 @@
         this.activity_types_selected = this.userSearch.activityTypesSelected;
         this.filterMethod = this.userSearch.filterMethod;
 
-    /**
-     * Directs user to the activity that appears on the search activity results
-     *
-     * @param activityId the id of the activity the user wants to look into
-     */
-    goToActivity(activityId) {
-      this.$router.push({
-        path: "/activity/" + activityId
-      })
-    },
-
-    /**
-     * Adds activity type to selected options
-     */
-    selectActivityType() {
-      if (this.selected_activity !== undefined) {
-        this.activity_types_selected.push(this.selected_activity);
-        let index = this.activities_option.indexOf(this.selected_activity);
-        if (index !== -1) {
-          this.activities_option.splice(index, 1);
         /* Change button animation */
         this.moreHidden = false;
         this.loading = true;
@@ -617,16 +484,6 @@
         if (this.searchedTerm.trim().length === 0) {
           searchTermInt = null
         }
-      }
-    },
-    /**
-     * Removes the activity from the activity filter component.
-     **/
-    remove(item) {
-      const index = this.activity_types_selected.indexOf(item);
-      if (index >= 0) this.activity_types_selected.splice(index, 1);
-      this.searchUsers(this.defaultPage, this.defaultSize);
-    },
         apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
             (response) => {
               if (response.data.content.size === 0) {
@@ -638,7 +495,7 @@
                 this.allUsers = response.data.content;
                 this.loading = false;
                 this.disabled = false;
-                setTimeout(this.scrollWindow, 10, this.userSearch.scrollPos);
+                setTimeout(this.scrollWindow, 10)
               }
             }).catch(
             (error) => {
@@ -724,18 +581,6 @@
         window.scrollTo(0, scrollPos);
       }
     },
-    /**
-     * Load query from url
-     */
-    loadUrlQuery() {
-      if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query != ""){
-        this.searchedTerm = this.$route.params.query;
-        this.$router.replace('/search');
-        this.activity_types_selected = [];
-        this.searchUsers(1, this.currentSize);
-        const element = this.$el.querySelector('#searchQueryInput')
-        if (element) this.$nextTick(() => { element.focus() })
-      }
     created: async function () {
       /**
        * The function below gets all the activity types saved in the database
