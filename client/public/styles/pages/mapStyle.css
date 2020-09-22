@@ -38,3 +38,8 @@
     float: right;
     text-align: left;
 }
+#legendButton {
+    visibility: hidden;
+    margin-bottom: -335px;
+    margin-right: 10px;
+}

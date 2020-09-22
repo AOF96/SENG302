@@ -9,11 +9,13 @@
     <div id="map">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
     </div>
-    <div id="legend" v-if="showLegend">
+    <div id="legend">
       <h2>Legend</h2>
-      <v-icon v-on:click="showLegend = false" style="font-size: 20px;">mdi-window-minimize</v-icon>
+      <v-icon v-on:click="toggleLegend" style="font-size: 20px;">mdi-window-minimize</v-icon>
     </div>
-    <v-btn v-else v-on:click="showLegend = true">Show Legend</v-btn>
+    <div id="legendButton">
+      <v-btn v-on:click="toggleLegend">Show Legend</v-btn>
+    </div>
   </div>
 </template>
 
@@ -86,6 +88,7 @@
 
         this.createControl(map);
         this.createLegend(map);
+        this.createLegendButton(map);
         this.createHomeMarker(map, userPosition);
         this.createSearch(map);
       },
@@ -233,6 +236,39 @@
           legend.appendChild(div);
         }
         map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById('legend'));
+      },
+
+      /**
+       * Creates a button control to show the legend
+       */
+      createLegendButton(map) {
+        map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById('legendButton'));
+      },
+
+      /**
+       * Toggles whether to show the Legend or the button. Works by setting the button, the Legend, and the Legend's
+       * children's visibility.
+       */
+      toggleLegend() {
+        this.showLegend = !this.showLegend;
+        let legend = document.getElementById('legend');
+        let legendButton = document.getElementById('legendButton');
+        if (this.showLegend) {
+          legend.style.visibility = "visible";
+          legendButton.style.visibility = "hidden";
+        } else {
+          legend.style.visibility = "hidden";
+          legendButton.style.visibility = "visible";
+        }
+
+        let legendChildren = legend.children;
+        for (let child of legendChildren) {
+          if (!this.showLegend) {
+            child.style.visibility = "hidden";
+          } else {
+            child.style.visibility = "visible";
+          }
+        }
       },
 
       /**
