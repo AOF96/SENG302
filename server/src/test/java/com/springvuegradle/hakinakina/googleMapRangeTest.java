@@ -61,10 +61,8 @@ public class googleMapRangeTest {
                 -1,
                 1
         );
-
         assertEquals(1, activitiesInRange.size());
     }
-
 
     @Test
     void testSpecifyLocationWithNoActivitiesShouldReturnNone() {
@@ -74,7 +72,6 @@ public class googleMapRangeTest {
                 -2,
                 -1
         );
-
         assertEquals(0, activitiesInRange.size());
     }
 
@@ -87,7 +84,6 @@ public class googleMapRangeTest {
                 -2,
                 2
         );
-
         assertEquals(2, activitiesInRange.size());
     }
 }
