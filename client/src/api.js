@@ -4,7 +4,7 @@ const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
 
 var instance = axios.create({
   baseURL: SERVER_URL,
-  timeout: 5000,
+  timeout: 5000000,
   withCredentials: true,
 });
 
