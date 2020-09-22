@@ -3,6 +3,8 @@ package com.springvuegradle.hakinakina.controller;
 import com.springvuegradle.hakinakina.dto.SearchActivityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Session;
+import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
@@ -92,6 +94,8 @@ public class SearchController {
             if (sessionRepository.findUserIdByToken(sessionToken) == null) {
                 return new ResponseEntity("Session invalid", HttpStatus.UNAUTHORIZED);
             }
+            Session userSession = sessionRepository.findUserIdByToken(sessionToken);
+            User searchingUser = userRepository.findUserBySessions(userSession);
             if (method.equals("single")) {
                 Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size);
                 return new ResponseEntity(results, HttpStatus.OK);

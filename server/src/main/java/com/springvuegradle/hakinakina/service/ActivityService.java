@@ -1,11 +1,7 @@
 package com.springvuegradle.hakinakina.service;
 
-import com.springvuegradle.hakinakina.dto.AchievementDto;
+import com.springvuegradle.hakinakina.dto.*;
 import com.springvuegradle.hakinakina.exception.ActivityNotFoundException;
-import com.springvuegradle.hakinakina.dto.ActivityVisibilityDto;
-import com.springvuegradle.hakinakina.dto.FeedPostDto;
-import com.springvuegradle.hakinakina.dto.SearchUserDto;
-import com.springvuegradle.hakinakina.dto.ResultDto;
 import com.springvuegradle.hakinakina.entity.*;
 import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
@@ -972,5 +968,95 @@ public class ActivityService {
         } catch (Error e) {
             return new ResponseEntity("Internal server error", HttpStatus.valueOf(500));
         }
+    }
+
+    /**
+     * Maps an activity to an ActivityMapDto which will be used for displaying information about an activity on the map
+     * when markers are placed
+     * @param activity the activity that we are mapping into an ActivityMapDto
+     * @return ActivityMapDto is the response object which displays necessary information about an activity for the map
+     */
+    public ActivityMapDto activityMapResponseMapping(Activity activity) {
+        ActivityMapDto activityMapDto = new ActivityMapDto();
+        activityMapDto.setId(activity.getId());
+        activityMapDto.setName(activity.getName());
+        activityMapDto.setDescription(activity.getDescription());
+        activityMapDto.setContinuous(activity.isContinuous());
+        activityMapDto.setStartTime(activity.getStartTime());
+        activityMapDto.setEndTime(activity.getEndTime());
+        activityMapDto.setVisibility(activity.getVisibility());
+        Set<String> activityTypes = new HashSet<String>();
+        for (ActivityType activityType: activity.getActivityTypes()) {
+            activityTypes.add(activityType.getName());
+        }
+        activityMapDto.setActivityTypes(activityTypes);
+        if (activity.getLocation() != null) {
+            activityMapDto.setLocation(activity.getLocation());
+        }
+        activityMapDto.setNumFollowers(activityRepository.getNumFollowersForActivity(activity.getId()));
+        return activityMapDto;
+    }
+
+    /**
+     *
+     * @param latitudeTopRight the latitude of the top right on the map visible on the screen
+     * @param longitudeTopRight the longitude of the top right of the map visible on the screen
+     * @param latitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @return the list of all the activities within the range of the coordinates
+     */
+    public ResponseEntity getActivitiesWithinGivenRange(double latitudeBottomLeft, double latitudeTopRight,
+                                                        double longitudeBottomLeft, double longitudeTopRight,
+                                                        long userId) {
+        try {
+            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft,
+                    latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+            List<ActivityMapDto> activityMapDtos = new ArrayList<ActivityMapDto>();
+            User user = userRepository.getOne(userId);
+            for (Activity activity: activitiesInRange) {
+                if (activity.getVisibility() != Visibility.PUBLIC) {
+                    Set<User> activitySharedUsers = activity.getUsersShared();
+                    if (activitySharedUsers != null && (activitySharedUsers.contains(user)
+                            || activity.getAuthor().getUserId().equals(user.getUserId()))) {
+                        activityMapDtos.add(activityMapResponseMapping(activity));
+                    }
+                } else {
+                    activityMapDtos.add(activityMapResponseMapping(activity));
+                }
+            }
+            return new ResponseEntity(activityMapDtos, HttpStatus.valueOf(200));
+        } catch (Error e) {
+            return new ResponseEntity("Error", HttpStatus.valueOf(500));
+        }
+    }
+
+    /**
+     * Takes an activity list and checks if the given user is shared or author if visibility is not public.
+     * i.e. checks if they should be able to see the activity or not and if not removes from list before
+     * returning
+     * @param activities list of activities in the given area found by the getActivitiesWithinGivenRange method
+     * @param userId id of the user that the viewing permission is being checked for
+     * @return returns a new list of activities minus those that the user is not permitted to view
+     */
+    public String filterActivitiesByVisibility(List<Activity> activities, long userId) {
+        User user = userRepository.getOne(userId);
+        String filteredActivityJsonList = "[";
+
+        for (Activity activity : activities) {
+            if (activity.getVisibility() != Visibility.PUBLIC) {
+                Set<User> activitySharedUsers = activity.getUsersShared();
+                if (activitySharedUsers != null && (activitySharedUsers.contains(user)
+                        || activity.getAuthor().getUserId().equals(user.getUserId()))) {
+                    filteredActivityJsonList += activity.getBasicActivityInfo();
+                    filteredActivityJsonList += ", ";
+                }
+            }
+            else{
+                filteredActivityJsonList += activity.getBasicActivityInfo();
+                filteredActivityJsonList += ", ";
+            }
+        }
+        filteredActivityJsonList += "]";
+        return filteredActivityJsonList;
     }
 }

@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springvuegradle.hakinakina.entity.Visibility;
 
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.Optional;
 public class SearchActivityDto {
     private Long id;
     private String name;
+    private Visibility visibility;
     private boolean continuous;
 
     @JsonProperty("start_time")
@@ -37,6 +39,10 @@ public class SearchActivityDto {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Visibility getVisibility() { return visibility; }
+
+    public void setVisibility(Visibility visibility) { this.visibility = visibility; }
 
     public boolean isContinuous() {
         return continuous;
@@ -74,6 +80,7 @@ public class SearchActivityDto {
     public String toString() {
         return "{" +
                 "name='" + name + '\'' +
+                ", visibility=" + visibility +
                 ", continuous=" + continuous +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +

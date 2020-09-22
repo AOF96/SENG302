@@ -53,16 +53,17 @@ public class SearchService {
      * @param activitySearchTerm the search term of the activity that the user is trying to find
      * @param page the page number the user wants to be at
      * @param size the number of activities that are returned per page
-     * @return Page object with a list of SearchActivityDtos that will display generic information about the activity
+     * @return Page object with a list of SearchActivity Dtos that will display generic information about the activity
      */
     @Transactional
-    public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
-        Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm), PageRequest.of(page, size));
+    public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size, User searchingUser) {
+        Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm, searchingUser), PageRequest.of(page, size));
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
             SearchActivityDto searchActivityDto = new SearchActivityDto();
             searchActivityDto.setId(activity.getId());
             searchActivityDto.setName(activity.getName());
+            searchActivityDto.setVisibility(activity.getVisibility());
             searchActivityDto.setContinuous(activity.isContinuous());
             searchActivityDto.setStartTime(activity.getStartTime());
             searchActivityDto.setEndTime(activity.getEndTime());
@@ -212,11 +213,27 @@ public class SearchService {
     }
 
     /**
-     * Specification for searching an activity by name
+     * Specification for searching an activity by name which are either public, shared or user is the creator of the activity
      * @param activityName search term of an activity name
+     * @param searchingUser user object of the user who is doing the search
      * @return Specification object with Activity search request (WHERE part of the query)
      */
-    private Specification<Activity> generateActivitySpecification(String activityName) {
-        return Specification.where(ActivitySpecification.searchByActivityName(activityName));
+    private Specification<Activity> generateActivitySpecification(String activityName, User searchingUser) {
+        Specification<Activity> activitySpecification;
+        activitySpecification = Specification.where(ActivitySpecification.searchByActivityName(activityName));
+
+        // if you are not admin, your search is limited
+        if (searchingUser.getPermissionLevel() == 0) {
+            Specification<Activity> additionalSpecification = Specification.where(
+                    ActivitySpecification.searchPublicActivity()
+            ).or(
+                    ActivitySpecification.searchIsActivityAuthor(searchingUser)
+            ).or(
+                    ActivitySpecification.searchIsActivityShared(searchingUser)
+            );
+            activitySpecification = activitySpecification.and(additionalSpecification);
+        }
+
+        return activitySpecification;
     }
 }
