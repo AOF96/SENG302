@@ -104,7 +104,10 @@ const actions = {
     async getSearchedActivity(data, {'searchTerm': searchTerm, 'page': page, 'size': size}) {
         return await apiActivity.getSearchedActivity(searchTerm, page, size);
     },
-
+    async getActivityInRange(data, {'latitudeBottomLeft': latitudeBottomLeft, 'latitudeTopRight': latitudeTopRight,
+        'longitudeBottomLeft': longitudeBottomLeft, 'longitudeTopRight': longitudeTopRight}) {
+        return await apiActivity.getActivityInRange(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+    },
     /**
      * Calls the api to send a request to add a result
      * @param data

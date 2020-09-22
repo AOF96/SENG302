@@ -346,6 +346,21 @@ public class Activity {
 
         return differences;
     }
+//    Returns a json string of the activity including the basic info needed for map pins
+    public String getBasicActivityInfo(){
+        String response = "" +
+                "id: " + id +
+                ", authorId: " + author.getUserId() +
+                ", name: '" + name + '\'' +
+                ", description: '" + description + '\'' +
+                ", continuous: " + continuous +
+                ", startTime: " + startTime +
+                ", endTime: " + endTime +
+                ", latitude: '" + location.getLatitude() + '\'' +
+                ", longitude: '" + location.getLongitude() + '\'' +
+                '}';
+        return response;
+    }
 
     @Override
     public boolean equals(Object o) {
