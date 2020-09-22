@@ -247,7 +247,7 @@
        * Sets the theme based on the stored cookie, if doesn't exist it defaults to light
        */
       setTheme() {
-        this.darkMode = localStorage.getItem("darkMode");
+        this.darkMode = (localStorage.getItem("darkMode") === 'true');
         if (this.darkMode === null) {
           this.darkMode = false;
         }
