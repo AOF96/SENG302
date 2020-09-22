@@ -14,8 +14,8 @@
 
 <script>
   import {mapGetters, mapState, mapActions} from "vuex";
+  import {apiActivity} from "@/api";
   import mapStyles from "../../util/mapStyles"
-
   export default {
     name: "Map",
     data: function () {
@@ -42,7 +42,7 @@
       ...mapActions(["getDataFromUrl"]),
       /**
        * Loads the map onto the page and centres on the users home city.
-       * Adds a marker on the city's centre.
+       * Adds a marker on the city's centre. Uses bounds of the viewport to retrieve activities in that range.
        */
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
@@ -61,10 +61,24 @@
           fullscreenControl: false
         });
 
+        window.google.maps.event.addListener(map, 'idle', function(){
+          let mapBounds = this.getBounds();
+          let NECorner = mapBounds.getNorthEast();
+          let SWCorner = mapBounds.getSouthWest();
+          let coordinates = {
+            NELat: NECorner.lat(),
+            NELong: NECorner.lng(),
+            SWLat: SWCorner.lat(),
+            SWLong: SWCorner.lng()
+          };
+          apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+            .then(response => {
+              console.log(response.data);
+            })
+        });
+
         this.createControl(map);
-
         this.createHomeMarker(map, userPosition);
-
         this.createSearch(map);
       },
 

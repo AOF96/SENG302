@@ -6,6 +6,7 @@ import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
 import io.cucumber.java.en_old.Ac;
+import org.apache.tomcat.util.json.JSONParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,9 @@ public class ActivityServiceTest {
     @Mock
     private ResultRepository resultRepository;
 
+    @Mock
+    private ActivityService activityService;
+
     @BeforeAll
     public void setUp(){
         MockitoAnnotations.initMocks(this);
@@ -76,6 +80,7 @@ public class ActivityServiceTest {
     public void deleteUser() throws Exception {
         sessionRepository.deleteAll();
         userRepository.deleteAll();
+        locationRepository.deleteAll();
     }
 
     private Activity createTestActivity() {
@@ -94,6 +99,19 @@ public class ActivityServiceTest {
         activityTypes.add(new ActivityType("Fun"));
         testActivity.setActivityTypes(activityTypes);
         return testActivity;
+    }
+
+    void setupUser(User user, String fName, String mName, String lName, String email, int pLevel) {
+        user.setFirstName(fName);
+        user.setMiddleName(mName);
+        user.setLastName(lName);
+        user.setPrimaryEmail(email);
+        user.setPermissionLevel(pLevel);
+        userRepository.save(user);
+
+        Session testSession = new Session(fName); // your first name is your token
+        testSession.setUser(user);
+        sessionRepository.save(testSession);
     }
 
     @Test
@@ -566,9 +584,7 @@ public class ActivityServiceTest {
         Activity activity = createTestActivity();
         Location location = new Location("12 house lane", "house", "city", 7021,
                 "state", "country", 6125.12, 12512.2);
-
         when(activityRepository.getOne(1L)).thenReturn(activity);
-
         assertEquals(HttpStatus.valueOf(201), service.addLocationToActivity(1L, location).getStatusCode());
     }
 
@@ -587,5 +603,54 @@ public class ActivityServiceTest {
 
         assertEquals(HttpStatus.OK, service.getActivityLocation(1L).getStatusCode());
         assertEquals(testLocation, service.getActivityLocation(1L).getBody());
+    }
+
+    @Test
+    public void testFilterActivities() {
+        User user = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+        User user2 = new User("John", "Smith", "john@gmail.com", null,
+                Gender.MALE, 2, "Password1");
+
+        Session testSession = new Session("t0k3n");
+        testSession.setUser(user);
+
+        user.setUserId(1L);
+        user2.setUserId(2L);
+
+        userRepository.save(user);
+        userRepository.save(user2);
+
+        Set<User> testUserSet = new HashSet<>();
+        Set<User> testUserSet2 = new HashSet<>();
+
+        testUserSet.add(user);
+        testUserSet2.add(user2);
+
+        Date startTime = new Date(2021, 10, 10);
+        Date endTime = new Date(2021, 10, 11);
+        Activity activity1 = new Activity("Storm area 51", "Let's unfold the truth together",
+                true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
+
+        Activity activity = new Activity("Storm area 52", "Let's unfold the truth together",
+                true, new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
+
+        activity.setAuthor(user2);
+
+        activity1.setId(1L);
+        activity.setId(2L);
+        activity1.setVisibility(Visibility.PRIVATE);
+        activity.setVisibility(Visibility.PRIVATE);
+        activity1.setUsersShared(testUserSet);
+        activity.setUsersShared(testUserSet2);
+        List<Activity> testActivityList = new ArrayList<>();
+        testActivityList.add(activity1);
+        testActivityList.add(activity);
+//        JSONParser parser = new JSONParser(activity1);
+        when(userRepository.getOne(1L)).thenReturn(user);
+        when(userRepository.getOne(2L)).thenReturn(user2);
+//
+//        assertEquals(1L, service.filterActivitiesByVisibility(testActivityList, 1L).get(0).getId());
+//        assertEquals(1, service.filterActivitiesByVisibility(testActivityList, 1L).size());
     }
 }
