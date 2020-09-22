@@ -16,8 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Rest controller class for controlling requests related to searching
@@ -116,6 +115,9 @@ public class SearchController {
             @RequestParam(required = false) String fullname,
             @RequestParam(required = false) String lastname,
             @RequestParam(required = false) String activity,
+            @RequestParam(required = false) String searchTerms,
+            @RequestParam("searchTypes") String searchTypes,
+            @RequestParam("searchTermsMethod") String searchTermsMethod,
             @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size) {
@@ -131,8 +133,16 @@ public class SearchController {
         if(activityTypes.size() == 0){
             activityTypes = null;
         }
+
+        String[] str = searchTerms.split(" ");
+        List<String> activitySearchTermsList = new ArrayList<String>();
+        activitySearchTermsList = Arrays.asList(str);
+        Set<String> activitySearchTermsSet = new HashSet<String>(activitySearchTermsList);
+
+
         if (email != null || fullname != null || lastname != null || activityTypes != null) {
-            resultPage = searchService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
+            resultPage = searchService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes,
+                    activitySearchTermsSet, searchTypes, searchTermsMethod, method);
         } else {
             resultPage = searchService.findPaginated(page, size);
         }

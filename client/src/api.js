@@ -177,12 +177,15 @@ export const apiUser = {
   /**
    * Sends a search request for users
    */
-  searchUsers: (searchTerm, searchType, activityTypes, method, page, size) => instance.get('/profiles/',
+  searchUsers: (searchTerm, searchType, activityTypes, searchTerms, searchTypes, searchTermsMethod, method, page, size) => instance.get('/profiles/',
     {
       params: {
         [searchType]: searchTerm,
         method: method,
         activity: activitiesAddDashes(activityTypes).join(" "),
+          searchTerms: searchTerms.join(" "),
+          searchTypes: searchTypes,
+          searchTermsMethod: searchTermsMethod,
         page: page,
         size: size,
       }

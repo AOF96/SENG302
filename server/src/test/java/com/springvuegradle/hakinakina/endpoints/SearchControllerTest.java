@@ -187,26 +187,26 @@ public class SearchControllerTest {
 
     @Test
     public void findPaginatedInvalidMethodTest() throws Exception {
-        when(searchService.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anyString()))
+        when(searchService.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyString(), anyString()))
                 .thenReturn(null);
-        this.mockMvc.perform(get("/profiles/?method=random&activity=Adventurous&page=0&size=10"))
+        this.mockMvc.perform(get("/profiles/?searchTerms=\"\"&searchTypes=fullname&searchTermsMethod=single&method=random&activity=Adventurous&page=0&size=10"))
                 .andExpect(status().is(400))
                 .andExpect(content().string(containsString("Method must either be 'or' or 'and'")));
     }
 
     @Test
     public void findPaginatedORTest() throws Exception {
-        when(searchService.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anyString()))
+        when(searchService.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyString(), anyString()))
                 .thenReturn(null);
-        this.mockMvc.perform(get("/profiles/?method=or&activity=Adventurous&page=0&size=10"))
+        this.mockMvc.perform(get("/profiles/?searchTerms=\"\"&searchTypes=fullname&searchTermsMethod=single&method=or&activity=Adventurous&page=0&size=10"))
                 .andExpect(status().is(200));
     }
 
     @Test
     public void findPaginatedANDTest() throws Exception {
-        when(searchService.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anyString()))
+        when(searchService.findPaginatedByQuery(anyInt(), anyInt(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyString(), anyString()))
                 .thenReturn(null);
-        this.mockMvc.perform(get("/profiles/?method=and&activity=Adventurous&page=0&size=10"))
+        this.mockMvc.perform(get("/profiles/?searchTerms=\"\"&searchTypes=fullname&searchTermsMethod=single&method=or&activity=Adventurous&page=0&size=10"))
                 .andExpect(status().is(200));
     }
 

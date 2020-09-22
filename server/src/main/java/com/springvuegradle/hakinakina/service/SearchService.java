@@ -121,19 +121,94 @@ public class SearchService {
      * @param method
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
-        Page<User> userPage;
-        if (activityTypes != null) {
-            if (method.equals("or")) {
-                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname,
+                                                    Set<ActivityType> activityTypes, Set<String> searchTerms,
+                                                    String searchTypes, String searchTermsMethod, String method) {
+        System.out.println(searchTypes);
+        if (searchTermsMethod.equals("single")) {
+            Page<User> userPage;
+            if (activityTypes != null) {
+                if (method.equals("or")) {
+                    userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                } else {
+                    userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                }
             } else {
-                userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
             }
+            return responseHandler.userPageToSearchResponsePage(userPage);
         } else {
-            userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
+            List<User> userList = new ArrayList<>();
+            if (searchTermsMethod.equals("and")) {
+                userList = userRepository.findUserNamesAnd(searchTerms, searchTypes);
+            } else {
+                userList = userRepository.findUserNamesOr(searchTerms, searchTypes);
+            }
+            Page<User> userPage2;
+            List<User> userList2 = new ArrayList<>();
+            Page<User> userPageFinal = null;
+            ArrayList<String> searchTermsList = new ArrayList<>(searchTerms);
+            if (activityTypes != null) {
+                if (method.equals("or")) {
+                    if (searchTypes.equals("email")) {
+                        for (int i =0; i<searchTerms.size(); i++) {
+                            userPage2 = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), searchTermsList.get(i), fullname, lastname, activityTypes);
+                            userList2.addAll(userPage2.getContent());
+                        }
+                        userPage2 = new PageImpl<>(userList2);
+                    } else if (searchTypes.equals("lastname")) {
+                        for (int i =0; i<searchTerms.size(); i++) {
+                            userPage2 = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, searchTermsList.get(i), activityTypes);
+                            userList2.addAll(userPage2.getContent());
+                        }
+                        userPage2 = new PageImpl<>(userList2);
+                    } else {
+                        userPage2 = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                    }
+                } else {
+                    if (searchTypes.equals("email")) {
+                        for (int i =0; i<searchTerms.size(); i++) {
+                            userPage2 = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), searchTermsList.get(i), fullname, lastname, activityTypes);
+                            userList2.addAll(userPage2.getContent());
+                        }
+                        userPage2 = new PageImpl<>(userList2);
+                    } else if (searchTypes.equals("lastname")) {
+                        for (int i =0; i<searchTerms.size(); i++) {
+                            userPage2 = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, searchTermsList.get(i), activityTypes);
+                            userList2.addAll(userPage2.getContent());
+                        }
+                        userPage2 = new PageImpl<>(userList2);
+                    } else {
+                        userPage2 = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                    }
+                }
+                List<User> userList1 = userPage2.getContent();
+                List<User> userListFinal = new ArrayList<>();
+                if (userList1.size() != 0 && userList.size() != 0) {
+                    for (User user : userList1) {
+                        for (User user1 : userList) {
+                            if (user.getUserId().equals(user1.getUserId())) {
+                                userListFinal.add(user1);
+                                break;
+                            }
+                        }
+                    }
+                    //userList1.retainAll(userList);
+                    System.out.println(userListFinal);
+                    userPageFinal = new PageImpl<>(userListFinal);
+                } else if (userList1.size() != 0 && userList.size() == 0) {
+                    userPageFinal = new PageImpl<>(userList);
+                } else if (userList1.size() == 0 && userList.size() != 0) {
+                    userPageFinal = new PageImpl<>(userList1);
+                }
+            } else {
+                userPageFinal = new PageImpl<>(userList);
+            }
+
+            return responseHandler.userPageToSearchResponsePage(userPageFinal);
         }
-        return responseHandler.userPageToSearchResponsePage(userPage);
     }
+
 
     /**
      * Finds the intersection of a List of Sets of Users. Much of this code was adapted from

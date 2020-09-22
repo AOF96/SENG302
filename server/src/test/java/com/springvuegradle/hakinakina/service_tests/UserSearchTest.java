@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -64,6 +65,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         List<SearchUserDto> content = page.getContent();
@@ -80,6 +84,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         List<SearchUserDto> content = page.getContent();
@@ -96,6 +103,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -112,6 +122,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -128,6 +141,9 @@ public class UserSearchTest {
                 null,
                 "Gilson",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         List<SearchUserDto> content = page.getContent();
@@ -144,6 +160,9 @@ public class UserSearchTest {
                 null,
                 "\"Gilson\"",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -160,6 +179,9 @@ public class UserSearchTest {
                 null,
                 "\'Gilson\'",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -176,6 +198,9 @@ public class UserSearchTest {
                 null,
                 "a",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -192,6 +217,9 @@ public class UserSearchTest {
                 null,
                 "\"a\"",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -208,6 +236,9 @@ public class UserSearchTest {
                 null,
                 "Golson",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -224,6 +255,9 @@ public class UserSearchTest {
                 "Mayuko Williams",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -240,6 +274,9 @@ public class UserSearchTest {
                 "\"Mayuko Williams\"",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -256,6 +293,9 @@ public class UserSearchTest {
                 "Fabian Scrum Gilson",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -272,6 +312,9 @@ public class UserSearchTest {
                 "\"Fabian Scrum Gilson\"",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -288,6 +331,9 @@ public class UserSearchTest {
                 null,
                 "a",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -304,6 +350,9 @@ public class UserSearchTest {
                 "\"a\"",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -321,7 +370,11 @@ public class UserSearchTest {
                     null,
                     "Williams",
                     null,
+                    new HashSet<>(),
+                    null,
+                    "single",
                     null
+
             );
             fail("Should not reach this, exception should be thrown");
         } catch (IllegalArgumentException e) {
@@ -333,12 +386,16 @@ public class UserSearchTest {
     public void testSearchUserWithInvalidSizeShouldReturnNoUser() {
         try {
             service.findPaginatedByQuery(
+
                     1,
                     -5,
                     null,
                     null,
                     "Williams",
                     null,
+                    new HashSet<>(),
+                    null,
+                    "single",
                     null
             );
             fail("Should not reach this, exception should be thrown");
@@ -356,6 +413,9 @@ public class UserSearchTest {
                 "Marina Ski Filipovic",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();

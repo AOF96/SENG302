@@ -87,7 +87,7 @@
                   <v-row class="searchRow">
                     <v-spacer/>
                     <v-btn
-                        v-on:click="searchUsers(currentPage + 1, currentSize)"
+                        v-on:click="searchUsers(currentPage + 1, currentSize, multipleUserSearchTermMethod)"
                         :hidden="moreHidden"
                         :loading="loading"
                         :disabled="disabled"
@@ -144,7 +144,7 @@
               <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
               <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
                           label="Activity Type Select" multiple
-                          v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
+                          v-on:change="searchUsers(defaultActivityPage, defaultActivityPage, multipleUserSearchTermMethod)">
                 <template v-slot:selection="data">
                   <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select"
                           @click:close="remove(data.item)">
@@ -164,7 +164,28 @@
               </v-combobox>
               <v-label>Filter method</v-label>
               <v-radio-group v-model="filterMethod" :mandatory="true"
-                             v-on:change="searchUsers(defaultPage, defaultSize)">
+                             v-on:change="searchUsers(defaultPage, defaultSize, multipleUserSearchTermMethod)">
+                <v-radio label="Results including all" value="and"></v-radio>
+                <v-radio label="Results including one of" value="or"></v-radio>
+              </v-radio-group>
+            </v-card>
+            <v-card v-if="!activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+              <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
+              <v-row class="ml-1">
+                <v-label style="margin-right: 5px">Filter method</v-label>
+                <v-tooltip bottom max-width="500px">
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                  </template>
+                  <span style="color: white;">You can search for multiple activities or just a single activity using
+                      these buttons, when searching for searching multiple activities you have two options. Results
+                    including all which means a search for fun, scary will return all activities that include both fun and scary in
+                    the title. Whereas the other option results including one of meaning a search for fun, scary will
+                    return all activities that include either fun or scary in the title.</span>
+                </v-tooltip>
+              </v-row>
+              <v-radio-group v-model="multipleUserSearchTermMethod" :mandatory="true">
+                <v-radio label="Search for single activity" value="single"></v-radio>
                 <v-radio label="Results including all" value="and"></v-radio>
                 <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
@@ -221,6 +242,8 @@
         searchInput: "",
         selected_activity: "Activity Type",
         filterMethod: "and",
+        multipleUserSearchTermMethod: "single",
+        userSearchTerms: [],
         searchMethods: [
           {display: "Full Name", value: "fullname"},
           {display: "Last Name", value: "lastname"},
@@ -259,7 +282,7 @@
           this.errorMessage = "Search is empty";
           this.snackbar = true;
         } else {
-          this.searchUsers(page, size);
+          this.searchUsers(page, size, this.multipleUserSearchTermMethod);
         }
       },
 
@@ -330,7 +353,7 @@
        * @param page Current page in results
        * @param size Size of results to retrieve
        */
-      searchUsers(page, size) {
+      searchUsers(page, size, method) {
         if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
           this.allUsers = [];
           this.moreHidden = true;
@@ -348,37 +371,75 @@
         this.loading = true;
         this.disabled = true;
 
-        /* Search for users */
-        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.filterMethod, page - 1, size).then(
-            (response) => {
-              if (response.data.content.length === 0) {
+        if (method === "single") {
+          /* Search for users */
+          apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, [], this.searchBy, this.multipleUserSearchTermMethod, this.filterMethod, page - 1, size).then(
+              (response) => {
+                if (response.data.content.length === 0) {
+                  this.disabled = true;
+                  this.loading = false;
+                  this.errorMessage = "No more results";
+                  this.snackbar = true;
+                } else {
+                  this.allUsers = this.allUsers.concat(response.data.content);
+                  this.loading = false;
+                  this.disabled = false;
+                  /* Update search history */
+                  this.setUserSearch({
+                    searchTerm: this.searchedTerm,
+                    searchType: this.searchBy,
+                    page: page,
+                    size: size,
+                    scrollPos: window.scrollY,
+                    activityTypesSelected: this.activity_types_selected,
+                    filterMethod: this.filterMethod
+                  });
+                }
+              }).catch(
+              (error) => {
                 this.disabled = true;
                 this.loading = false;
-                this.errorMessage = "No more results";
+                this.errorMessage = error.response.data;
                 this.snackbar = true;
-              } else {
-                this.allUsers = this.allUsers.concat(response.data.content);
-                this.loading = false;
-                this.disabled = false;
-                /* Update search history */
-                this.setUserSearch({
-                  searchTerm: this.searchedTerm,
-                  searchType: this.searchBy,
-                  page: page,
-                  size: size,
-                  scrollPos: window.scrollY,
-                  activityTypesSelected: this.activity_types_selected,
-                  filterMethod: this.filterMethod
-                });
               }
-            }).catch(
-            (error) => {
-              this.disabled = true;
-              this.loading = false;
-              this.errorMessage = error.response.data;
-              this.snackbar = true;
-            }
-        )
+          )
+        } else {
+          this.userSearchTerms = this.searchedTerm.trim().split(",");
+          for (let i = 0; i < this.userSearchTerms.length; i++) {
+            this.userSearchTerms[i] = this.userSearchTerms[i].trim();
+          }
+
+          apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.userSearchTerms, this.searchBy, this.multipleUserSearchTermMethod, this.filterMethod, page - 1, size).then(
+              (response) => {
+                if (response.data.content.length === 0) {
+                  this.disabled = true;
+                  this.loading = false;
+                  this.errorMessage = "No more results";
+                  this.snackbar = true;
+                } else {
+                  this.allUsers = this.allUsers.concat(response.data.content);
+                  this.loading = false;
+                  this.disabled = false;
+                  /* Update search history */
+                  this.setUserSearch({
+                    searchTerm: this.searchedTerm,
+                    searchType: this.searchBy,
+                    page: page,
+                    size: size,
+                    scrollPos: window.scrollY,
+                    activityTypesSelected: this.activity_types_selected,
+                    filterMethod: this.filterMethod
+                  });
+                }
+              }).catch(
+              (error) => {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = error.response.data;
+                this.snackbar = true;
+              }
+          )
+        }
 
       },
       /**
@@ -428,7 +489,7 @@
       remove(item) {
         const index = this.activity_types_selected.indexOf(item);
         if (index >= 0) this.activity_types_selected.splice(index, 1);
-        this.searchUsers(this.defaultPage, this.defaultSize);
+        this.searchUsers(this.defaultPage, this.defaultSize, this.multipleUserSearchTermMethod);
       },
 
       /**
@@ -451,7 +512,7 @@
        */
       submitSearch: function (e) {
         if (e.keyCode === 13) {
-          this.searchUsers(this.defaultPage, this.defaultSize);
+          this.searchUsers(this.defaultPage, this.defaultSize, this.multipleUserSearchTermMethod);
         }
       },
 
@@ -484,7 +545,7 @@
         if (this.searchedTerm.trim().length === 0) {
           searchTermInt = null
         }
-        apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+            apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, [], this.searchBy, this.multipleUserSearchTermMethod,  this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
             (response) => {
               if (response.data.content.size === 0) {
                 this.disabled = true;
@@ -566,7 +627,7 @@
           this.searchedTerm = this.$route.params.query;
           this.$router.replace('/search');
           this.activity_types_selected = [];
-          this.searchUsers(1, this.currentSize);
+          this.searchUsers(1, this.currentSize, this.multipleUserSearchTermMethod);
           const element = this.$el.querySelector('#searchQueryInput')
           if (element) this.$nextTick(() => {
             element.focus()
