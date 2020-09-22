@@ -174,7 +174,7 @@
        */
       createActivityMarkers(map) {
         let innerThis = this;
-        var activityMarkerIcon = {
+        let activityMarkerIcon = {
           url: "https://i.imgur.com/MUWKzz9.png",
           scaledSize: new window.google.maps.Size(30, 30),
           origin: new window.google.maps.Point(0, 0),
@@ -183,21 +183,19 @@
 
         for (let activity of this.activities) {
           if (activity.visibility === "public") {
-            console.log(activity.author === this.user.profile_id);
-            console.log(activity.author, this.user.profile_id);
-            if(activity.author === this.user.profile_id) {
+            if(activity.authorId === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
             }
           } else if (activity.visibility === "restricted") {
-            if(activity.author === this.user.profile_id) {
+            if(activity.authorId === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/61rB4dm.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/Y0JUUox.png"
             }
           } else if (activity.visibility === "private") {
-            if(activity.author === this.user.profile_id) {
+            if(activity.authorId === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/jNY9HSw.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/lanhJgs.png"
@@ -213,14 +211,13 @@
           }));
 
           let contentString
-
           if (activity.continuous === true) {
             contentString = '<div class="content">'+
                     '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
                     '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
                     '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
                     '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
-                    '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
+                    '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
                     '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
                     '<hr class="activityPopupActivityLine">'+
                     '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
@@ -236,9 +233,9 @@
                     '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
                     '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
                     '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
-                    '<h1 id="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</h1>'+
-                    '<h1 id="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</h1>'+
-                    '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
+                    '<h1 class="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</h1>'+
+                    '<h1 class="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</h1>'+
+                    '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
                     '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
                     '<hr class="activityPopupActivityLine">'+
                     '<a href="/activity/'+activity.id+'">' +

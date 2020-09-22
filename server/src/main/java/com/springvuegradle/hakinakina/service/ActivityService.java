@@ -986,6 +986,7 @@ public class ActivityService {
         activityMapDto.setStartTime(activity.getStartTime());
         activityMapDto.setEndTime(activity.getEndTime());
         activityMapDto.setVisibility(activity.getVisibility());
+        activityMapDto.setAuthorId(activity.getAuthor().getUserId());
         Set<String> activityTypes = new HashSet<String>();
         for (ActivityType activityType: activity.getActivityTypes()) {
             activityTypes.add(activityType.getName());
@@ -999,6 +1000,7 @@ public class ActivityService {
     }
 
     /**
+     * Retrieves all the activities that are within the specified range
      *
      * @param latitudeTopRight the latitude of the top right on the map visible on the screen
      * @param longitudeTopRight the longitude of the top right of the map visible on the screen
@@ -1029,35 +1031,5 @@ public class ActivityService {
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
         }
-    }
-
-    /**
-     * Takes an activity list and checks if the given user is shared or author if visibility is not public.
-     * i.e. checks if they should be able to see the activity or not and if not removes from list before
-     * returning
-     * @param activities list of activities in the given area found by the getActivitiesWithinGivenRange method
-     * @param userId id of the user that the viewing permission is being checked for
-     * @return returns a new list of activities minus those that the user is not permitted to view
-     */
-    public String filterActivitiesByVisibility(List<Activity> activities, long userId) {
-        User user = userRepository.getOne(userId);
-        String filteredActivityJsonList = "[";
-
-        for (Activity activity : activities) {
-            if (activity.getVisibility() != Visibility.PUBLIC) {
-                Set<User> activitySharedUsers = activity.getUsersShared();
-                if (activitySharedUsers != null && (activitySharedUsers.contains(user)
-                        || activity.getAuthor().getUserId().equals(user.getUserId()))) {
-                    filteredActivityJsonList += activity.getBasicActivityInfo();
-                    filteredActivityJsonList += ", ";
-                }
-            }
-            else{
-                filteredActivityJsonList += activity.getBasicActivityInfo();
-                filteredActivityJsonList += ", ";
-            }
-        }
-        filteredActivityJsonList += "]";
-        return filteredActivityJsonList;
     }
 }

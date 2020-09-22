@@ -18,6 +18,10 @@
 #map .styleSelectorDiv {
     display: block;
 }
+
+.content{
+    width: 400px;
+}
 .activityPopupActivityVisibility{
     width: 100%;
     border-radius: 50px;
@@ -44,6 +48,18 @@
     font-size: 16px;
     font-weight: 400;
     padding: 0 0px 8px;
+}
+.activityPopupStartTime {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 0px 8px;
+    color: #379142;
+}
+.activityPopupEndTime {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 0px 8px;
+    color: #d34343;
 }
 .activityPopupActivityTypes{
     font-size: 16px;
