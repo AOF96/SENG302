@@ -169,7 +169,7 @@
                 <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
             </v-card>
-            <v-card v-if="!activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+            <v-card :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
               <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
               <v-row class="ml-1">
                 <v-label style="margin-right: 5px">Filter method</v-label>
