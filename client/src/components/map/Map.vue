@@ -166,8 +166,6 @@
       mapBounds: function(){
         this.mapActivities = [];
         this.getActivitiesInRange();
-        console.log("I AM HHHEEEEEEEEEEEEEEEERRRRRRRRRRRRRREEEEEEEEEE");
-        console.log(this.mapActivities.length);
      }
     },
 
@@ -690,29 +688,35 @@
           let contentString
 
           if (activity.continuous === true) {
-            contentString = '<div id="content">'+
-                '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
-                '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
-                '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
-                '<div id="activityPopupDescription">'+ activity.description + '</div>'+
-                '<div id="activityPopupActivityTypes">'+ activity.activity_types + '</div>'+
-                '<div id="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</div>'+
-                '</div>';
+            contentString = '<div class="content">'+
+                    '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
+                    '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
+                    '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
+                    '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
+                    '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
+                    '<h1 class="activityPopupActivityFollowers">'+ activity.followers + ' followers</h1>'+
+                    '<hr class="activityPopupActivityLine">'+
+                    '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
+                    '</div>';
+
           } else {
 
-            let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time))
-            let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time))
+            let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time));
+            let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time));
 
-            contentString = '<div id="content">'+
-                '<div id="activityPopupActivityVisibility">'+ activity.visibility+ '</div>'+
-                '<div id="activityPopupLocation">'+ this.locationToString(activity.location) + '</div>'+
-                '<h2 class="activityPopupTitle">'+ activity.name +'</h2>'+
-                '<div id="activityPopupDescription">' + activity.description + '</div>'+
-                '<div id="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</div>'+
-                '<div id="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</div>'+
-                '<div id="activityPopupActivityTypes">'+ activity.activity_types + '</div>'+
-                '<div id="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</div>'+
-                '</div>';
+            contentString = '<div class="content">'+
+                    '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
+                    '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
+                    '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
+                    '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
+                    '<h1 id="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</h1>'+
+                    '<h1 id="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</h1>'+
+                    '<h1 class="activityPopupActivityTypes">'+ activity.activityTypes + '</h1>'+
+                    '<h1 class="activityPopupActivityFollowers">'+ activity.followers + ' followers</h1>'+
+                    '<hr class="activityPopupActivityLine">'+
+                    '<a href="/activity/'+activity.id+'">' +
+                    '<button class="activityPopupActivityButton">Go to Activity</button></a>'+
+                    '</div>';
           }
 
           let infowindow = new window.google.maps.InfoWindow({
