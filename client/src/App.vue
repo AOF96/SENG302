@@ -22,6 +22,9 @@ export default {
     darkModeGlobal: false
   }),
   methods: {
+    /**
+     * Updates global theme variable that is used as a prop on other pages
+     */
     updateTheme() {
       this.darkModeGlobal = (localStorage.getItem("darkMode") === 'true')
     }
