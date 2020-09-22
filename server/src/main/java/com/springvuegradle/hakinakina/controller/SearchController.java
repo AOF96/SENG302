@@ -97,7 +97,7 @@ public class SearchController {
             Session userSession = sessionRepository.findUserIdByToken(sessionToken);
             User searchingUser = userRepository.findUserBySessions(userSession);
             if (method.equals("single")) {
-                Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size);
+                Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size, searchingUser);
                 return new ResponseEntity(results, HttpStatus.OK);
             } else {
                 String[] str = activitySearchTerms.split(" ");

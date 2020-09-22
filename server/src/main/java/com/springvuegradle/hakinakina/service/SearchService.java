@@ -99,7 +99,7 @@ public class SearchService {
         } else if (method.equals("and")){
             activityList = activityRepository.findActivityNamesAnd(searchTerms);
         }
-            int start = page * 10;
+            int start = (page - 1) * 10;
             int end = start + size;
             if (activityList.size() < end) {
                 end = activityList.size();

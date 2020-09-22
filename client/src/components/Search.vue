@@ -335,8 +335,29 @@
         }
         apiActivity.getSearchedActivity(null, this.names_selected, method, page, size).then(
             (response) => {
-              this.allActivities = response.data.content;
-            });
+              if (response.data.content.length === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.loading = false;
+                this.disabled = false;
+                this.allActivities = this.allActivities.concat(response.data.content);
+                this.setActivitySearch({
+                  searchTerm: this.searchedActivityTerm,
+                  page: page,
+                  size: size,
+                  scrollPos: window.scrollY,
+                });
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            })
       } else {
         apiActivity.getSearchedActivity(this.searchedActivityTerm, [], method, page - 1, size).then(
             (response) => {
@@ -479,9 +500,9 @@
       initialiser() {
         if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query !== "") {
           this.loadUrlQuery();
-        } else if (this.userSearch.searchTerm !== null) {
+        } else if (this.userSearch !== undefined && this.userSearch.searchTerm !== null) {
           this.loadPreviousSearch();
-        } else if (this.activitySearch.searchTerm !== null) {
+        } else if (this.activitySearch !== undefined && this.activitySearch.searchTerm !== null) {
           this.activitySearchTab = true;
           this.tabs = "mobile-tabs-5-2";
           this.loadPreviousActivitySearch();
@@ -595,7 +616,7 @@
       loadActivitySearchTab() {
         this.activitySearchTab = true;
 
-        if (this.activitySearch.searchTerm !== null) {
+        if (this.activitySearch !== undefined && this.activitySearch.searchTerm !== null) {
           this.loadPreviousActivitySearch();
         }
       },
