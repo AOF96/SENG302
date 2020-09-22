@@ -71,6 +71,10 @@ public class SearchController {
     /**
      * Retrieves activities that match the activity name
      * @param activitySearchTerm The activity name input in the search
+     * @param activitySearchTerms A string containing all the terms that the user wants to search by if
+     *                            searching by multiple
+     * @param method The method of search that the user has chosen. Can be normal search, and search or
+     *               or search. Each of these are handled in their own way.
      * @param page the page number the user wants
      * @param size the amount of activities returned that match the search term
      * @param sessionToken the session of the user

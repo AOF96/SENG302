@@ -79,6 +79,16 @@ public class SearchService {
         return new PageImpl<>(searchActivityDtoList);
     }
 
+    /**
+     * Uses dynamic query builders to get a list of activities with either all of the supplied searchterms
+     * or at least one of the supplied searchterms depending on the value of the method param. After the
+     * list of activities has been retreived it is turned into a Page<SearchActivityDto> and returned.
+     * @param searchTerms A set of terms that the user wants to search for
+     * @param method The method of multiple term search. And or Or, contains all terms or at least one term
+     * @param page The current page to retrieve
+     * @param size The amount of activities to display on this page
+     * @return Returns a page of activities that match the criteria
+     */
     @Transactional
     public Page<SearchActivityDto> findActivityPaginatedByQuery(Set<String> searchTerms, String method, int page, int size) {
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
