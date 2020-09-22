@@ -8,6 +8,12 @@ const state = {
     activityTypesSelected: [],
     filterMethod: null
   },
+  activitySearch: {
+    searchTerm: null,
+    page: null,
+    size: null,
+    scrollPos: 0,
+  },
   pageHistory: {
     previousPages: [],
     nextPages: [],
@@ -17,6 +23,9 @@ const state = {
 const getters = {
   userSearch(state) {
     return state.userSearch;
+  },
+  activitySearch(state) {
+    return state.activitySearch;
   },
   pageHistory(state) {
     return state.pageHistory;
@@ -86,7 +95,25 @@ const mutations = {
   },
   clearNextHistory(state) {
     state.pageHistory.nextPages = [];
-  }
+  },
+  setActivitySearchTerm(state, data) {
+    state.activitySearch.searchTerm = data.searchTerm;
+  },
+  setActivityPage(state, data) {
+    state.activitySearch.page = data.page;
+  },
+  setActivitySize(state, data) {
+    state.activitySearch.size = data.size;
+  },
+  setActivityScrollPos(state, data) {
+    state.activitySearch.scrollPos = data.scrollPos;
+  },
+  clearActivitySearch() {
+    state.activitySearch.searchTerm = null;
+    state.activitySearch.page = null;
+    state.activitySearch.size = null;
+    state.activitySearch.scrollPos = 0;
+  },
 };
 
 const actions = {
@@ -98,6 +125,12 @@ const actions = {
     commit('setScrollPos', data);
     commit('setActivityTypes', data);
     commit('setFilterMethod', data);
+  },
+  setActivitySearch({commit}, data) {
+    commit('setActivitySearchTerm', data);
+    commit('setActivityPage', data);
+    commit('setActivitySize', data);
+    commit('setActivityScrollPos', data);
   },
   setScrollPosition({commit}, data) {
     commit('setScrollPos', data);

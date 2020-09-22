@@ -8,8 +8,8 @@ import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.serialize.UserDeserializer;
-import org.junit.jupiter.api.BeforeAll;
 import com.springvuegradle.hakinakina.util.ParserHelper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class UserDeserializerTest {
+public class UserDeserializerTest {
 
     @InjectMocks
     private UserDeserializer deserializer = new UserDeserializer();
@@ -29,7 +29,7 @@ class UserDeserializerTest {
     private UserRepository userRepository;
 
     @BeforeAll
-    public void setUp() {
+    public void setUp(){
         MockitoAnnotations.initMocks(this);
     }
 
@@ -90,33 +90,34 @@ class UserDeserializerTest {
         assertEquals(testLocation, otherLocation);
     }
 
-    @Test
-    public void updateLocationAlreadyExistTest() throws JsonProcessingException {
-        String json = "{\n" +
-                "  \"location\": {\n" +
-                "    \"street_address\": \"47 Somewhere Road\",\n" +
-                "    \"suburb\": \"Ilam\",\n" +
-                "    \"postcode\": 8000,\n" +
-                "    \"city\": \"Christchurch\",\n" +
-                "    \"state\": \"Canterbury\",\n" +
-                "    \"country\": \"New Zealand\",\n" +
-                "    \"latitude\": 0.0,\n" +
-                "    \"longitude\": 0.0\n" +
-                "  }  \n" +
-                "}";
+//    @Test
+//    public void updateLocationAlreadyExistTest() throws JsonProcessingException {
+//        String json = "{\n" +
+//                "  \"location\": {\n" +
+//                "    \"street_address\": \"47 Somewhere Road\",\n" +
+//                "    \"suburb\": \"Ilam\",\n" +
+//                "    \"postcode\": 8000,\n" +
+//                "    \"city\": \"Christchurch\",\n" +
+//                "    \"state\": \"Canterbury\",\n" +
+//                "    \"country\": \"New Zealand\",\n" +
+//                "    \"latitude\": 0.0,\n" +
+//                "    \"longitude\": 0.0\n" +
+//                "  }  \n" +
+//                "}";
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode jsonNode = objectMapper.readTree(json);
+//
+//        Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
+//                8000, "Canterbury", "New Zealand", 0.0, 0.0);
+//
+//        User testUser = new User();
+//        testUser.setLocation(testLocation);
+//
+//        when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
+//
+//        Location otherLocation = deserializer.createLocation(jsonNode.get("location"));
+//        assertEquals(testLocation.getStreetAddress(), otherLocation.getStreetAddress());
+//    }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(json);
-
-        Location testLocation = new Location("47 Somewhere Road", "Ilam", "Christchurch",
-                8000, "Canterbury", "New Zealand", 0.0, 0.0);
-
-        User testUser = new User();
-        testUser.setLocation(testLocation);
-
-        when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
-
-        Location otherLocation = ParserHelper.createLocation(jsonNode.get("location"));
-        assertEquals(testLocation.getStreetAddress(), otherLocation.getStreetAddress());
-    }
 }

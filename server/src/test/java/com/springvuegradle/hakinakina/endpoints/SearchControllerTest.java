@@ -26,6 +26,7 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -91,6 +92,7 @@ public class SearchControllerTest {
         Set<ActivityType> activityTypes = new HashSet<>();
         activityTypes.add(new ActivityType("Fun"));
         testActivity.setActivityTypes(activityTypes);
+        testActivity.setVisibility(Visibility.PUBLIC);
         return testActivity;
     }
 
@@ -107,6 +109,7 @@ public class SearchControllerTest {
         SearchActivityDto searchActivityDto = new SearchActivityDto();
         searchActivityDto.setId(testActivity.getId());
         searchActivityDto.setName(testActivity.getName());
+        searchActivityDto.setVisibility(testActivity.getVisibility());
         searchActivityDto.setContinuous(testActivity.isContinuous());
         searchActivityDto.setStartTime(testActivity.getStartTime());
         searchActivityDto.setEndTime(testActivity.getEndTime());
@@ -229,12 +232,14 @@ public class SearchControllerTest {
         when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
         when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
-        when(searchService.findActivityPaginated(eq("Chess"), any(int.class), any(int.class)))
+        when(userRepository.findUserBySessions(any(Session.class))).thenReturn(testUser);
+        when(searchService.findActivityPaginated(eq("Chess"), any(int.class), any(int.class), any(User.class)))
                 .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
 
         this.mockMvc.perform(get("/activities?activitySearchTerm=Chess&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
+                .andExpect(content().string(containsString("\"visibility\":\""+ testActivity.getVisibility().toString().toLowerCase() +"\"")))
                 .andExpect(content().string(containsString("\"continuous\":"+ testActivity.isContinuous() +"")))
                 .andExpect(content().string(containsString("\"start_time\":\"1970-01-12T13:46:40.000+0000\"")))
                 .andExpect(content().string(containsString("\"end_time\":\"1970-01-12T13:46:41.000+0000\"")))
@@ -267,13 +272,15 @@ public class SearchControllerTest {
 
         when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
+        when(userRepository.findUserBySessions(any(Session.class))).thenReturn(testUser);
         when(activityRepository.findActivityById((long) 1)).thenReturn(testActivity);
-        when(searchService.findActivityPaginated(eq("'Outdoor Chess Tournament'"), any(int.class), any(int.class)))
+        when(searchService.findActivityPaginated(eq("'Outdoor Chess Tournament'"), any(int.class), any(int.class), eq(testUser)))
                 .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
 
         this.mockMvc.perform(get("/activities?activitySearchTerm='Outdoor Chess Tournament'&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
+                .andExpect(content().string(containsString("\"visibility\":\""+ testActivity.getVisibility().toString().toLowerCase() +"\"")))
                 .andExpect(content().string(containsString("\"continuous\":"+ testActivity.isContinuous() +"")))
                 .andExpect(content().string(containsString("\"start_time\":\"1970-01-12T13:46:40.000+0000\"")))
                 .andExpect(content().string(containsString("\"end_time\":\"1970-01-12T13:46:41.000+0000\"")))
@@ -303,7 +310,7 @@ public class SearchControllerTest {
 
         when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(searchService.findActivityPaginated(eq("'Indoor Chess Tournament'"), any(int.class), any(int.class)))
+        when(searchService.findActivityPaginated(eq("'Indoor Chess Tournament'"), any(int.class), any(int.class), eq(testUser)))
                 .thenReturn(searchActivityDtos);
 
         this.mockMvc.perform(get("/activities?activitySearchTerm='Indoor Chess Tournament'&page=0&size=10").cookie(tokenCookie))
@@ -331,7 +338,7 @@ public class SearchControllerTest {
 
         when(sessionRepository.findUserIdByToken("token")).thenReturn(testSession);
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(testUser));
-        when(searchService.findActivityPaginated(eq("Kayak"), any(int.class), any(int.class)))
+        when(searchService.findActivityPaginated(eq("Kayak"), any(int.class), any(int.class), eq(testUser)))
                 .thenReturn(searchActivityDtos);
 
         this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
