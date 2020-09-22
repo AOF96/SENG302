@@ -22,13 +22,17 @@ public class ParserHelper {
         String country = getValueString(node, "country");
         String latitudeString = getValueString(node, "latitude");
         double latitude = 0;
-        if (!latitudeString.equals("")) {
-            latitude = Double.parseDouble(latitudeString);
+        if (latitudeString != null) {
+            if (!latitudeString.equals("")) {
+                latitude = Double.parseDouble(latitudeString);
+            }
         }
         String longitudeString = getValueString(node, "longitude");
         double longitude = 0;
-        if (!longitudeString.equals("")) {
-            longitude = Double.parseDouble(longitudeString);
+        if (longitudeString != null) {
+            if (!longitudeString.equals("")) {
+                longitude = Double.parseDouble(longitudeString);
+            }
         }
 
         return new Location(streetAddress, suburb, city, postcode, state, country, latitude, longitude);
