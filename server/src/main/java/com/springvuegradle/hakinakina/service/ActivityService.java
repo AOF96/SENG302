@@ -7,6 +7,7 @@ import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.transaction.annotation.Transactional;
 import net.minidev.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -1010,21 +1010,7 @@ public class ActivityService {
                                                         double longitudeBottomLeft, double longitudeTopRight,
                                                         long userId) {
         try {
-            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft,
-                    latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
-            List<ActivityMapDto> activityMapDtos = new ArrayList<ActivityMapDto>();
-            User user = userRepository.getOne(userId);
-            for (Activity activity: activitiesInRange) {
-                if (activity.getVisibility() != Visibility.PUBLIC) {
-                    Set<User> activitySharedUsers = activity.getUsersShared();
-                    if (activitySharedUsers != null && (activitySharedUsers.contains(user)
-                            || activity.getAuthor().getUserId().equals(user.getUserId()))) {
-                        activityMapDtos.add(activityMapResponseMapping(activity));
-                    }
-                } else {
-                    activityMapDtos.add(activityMapResponseMapping(activity));
-                }
-            }
+            List<ActivityMapDto> activityMapDtos = getActivityInRangeDtos(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight, userId);
             return new ResponseEntity(activityMapDtos, HttpStatus.valueOf(200));
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
@@ -1059,5 +1045,35 @@ public class ActivityService {
         }
         filteredActivityJsonList += "]";
         return filteredActivityJsonList;
+    }
+
+    /**
+     * Helper function for getActivitiesWithinGivenRange to increase testability
+     * @param latitudeTopRight the latitude of the top right on the map visible on the screen
+     * @param longitudeTopRight the longitude of the top right of the map visible on the screen
+     * @param latitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @return the list of all the activities within the range of the coordinates
+     * */
+    @Transactional
+    public List<ActivityMapDto> getActivityInRangeDtos(double latitudeBottomLeft, double latitudeTopRight,
+                                                      double longitudeBottomLeft, double longitudeTopRight,
+                                                      long userId) {
+        List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft,
+                latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
+        User user = userRepository.getOne(userId);
+        List<ActivityMapDto> activityMapDtos = new ArrayList<ActivityMapDto>();
+        for (Activity activity : activitiesInRange) {
+            if (activity.getVisibility() != Visibility.PUBLIC) {
+                Set<User> activitySharedUsers = activity.getUsersShared();
+                if (activitySharedUsers != null && (activitySharedUsers.contains(user)
+                        || activity.getAuthor().getUserId().equals(user.getUserId()))) {
+                    activityMapDtos.add(activityMapResponseMapping(activity));
+                }
+            } else {
+                activityMapDtos.add(activityMapResponseMapping(activity));
+            }
+        }
+        return activityMapDtos;
     }
 }
