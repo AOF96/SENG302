@@ -92,18 +92,23 @@
 
               <div v-if="activitySearchTab">
               <v-row class="searchRow">
-                <v-list-item two-line v-for="activity in allActivities" :key="activity.name" link>
+                <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities" :key="activity.id" link>
                   <v-list-item-content>
                     <v-list-item-title>
                       {{ activity.name}}
                     </v-list-item-title>
+                    <div v-if="activity.location !== null">
+                      <v-list-item-subtitle>
+                        {{ activity.location.street_address}},  {{ activity.location.city}}, {{ activity.location.country}}
+                      </v-list-item-subtitle>
+                    </div>
                   </v-list-item-content>
                 </v-list-item>
               </v-row>
               <v-row class="searchRow">
                 <v-spacer />
                 <v-btn
-                    v-on:click="searchUsers(currentActivityPage + 1, currentActivitySize)"
+                    v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize)"
                     :hidden="moreHidden"
                     :loading="loading"
                     :disabled="disabled"
@@ -179,7 +184,7 @@ export default {
       currentPage: 1,
       defaultSize: 10,
       currentSize: 10,
-      defaultActivityPage: 0,
+      defaultActivityPage: 1,
       currentActivityPage: 1,
       defaultActivitySize: 10,
       currentActivitySize: 10,
@@ -242,17 +247,54 @@ export default {
      * @param size Size of results to retrieve
      */
     submitActivityButtonCheck(page, size) {
-      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0) && this.searchedActivityTerm.length === 0) {
+      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
         this.errorMessage = "Search is empty";
         this.snackbar = true;
       } else {
-        apiActivity.getSearchedActivity(this.searchedActivityTerm, page, size).then(
-            (response) => {
-              this.allActivities = response.data.content;
-            })
+        this.searchActivity(page, size);
       }
-    }
-      ,
+    },
+    /**
+     * Checks if more searched activity result exists and if they don't hides the more results button else shows
+     * more results. Also manages the snack bar and error messages.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    searchActivity(page, size){
+      if (page === this.defaultActivityPage) {
+        this.allActivities = [];
+      }
+      /* Adjust search position */
+      this.currentActivitySize = size;
+      this.currentActivityPage = page;
+
+      /* Change button animation */
+      this.moreHidden = false;
+      this.loading = true;
+      this.disabled = true;
+
+      apiActivity.getSearchedActivity(this.searchedActivityTerm, page-1, size).then(
+          (response) => {
+            if (response.data.content.length === 0) {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = "No more results";
+              this.snackbar = true;
+            }
+            else {
+              this.loading = false;
+              this.disabled = false;
+              this.allActivities = this.allActivities.concat(response.data.content);
+            }
+          }).catch(
+          (error) => {
+            this.disabled = true;
+            this.loading = false;
+            this.errorMessage = error.response.data;
+            this.snackbar = true;
+          }
+      )
+    },
     ...mapActions(["setUserSearch", "setScrollPosition"]),
     /**
      * Search for size amount of users on given page and append to list
@@ -329,6 +371,17 @@ export default {
     },
 
     /**
+     * Directs user to the activity that appears on the search activity results
+     *
+     * @param activityId the id of the activity the user wants to look into
+     */
+    goToActivity(activityId) {
+      this.$router.push({
+        path: "/activity/" + activityId
+      })
+    },
+
+    /**
      * Adds activity type to selected options
      */
     selectActivityType() {
@@ -370,7 +423,7 @@ export default {
     // Submit search query on enter pressed.
     submitActivitySearch: function(e) {
       if (e.keyCode === 13) {
-        this.searchUsers(this.defaultActivityPage, this.defaultActivitySize);
+        this.searchActivity(this.defaultActivityPage, this.defaultActivitySize);
       }
     },
 
@@ -415,7 +468,6 @@ export default {
           this.snackbar = true;
         })
     },
-
     /**
      * Load query from url
      */

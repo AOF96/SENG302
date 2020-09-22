@@ -233,6 +233,7 @@ public class User {
 
     public void setLocation(Location location) {
         this.location = location;
+        location.setUser(this);
     }
 
     @JsonIgnore

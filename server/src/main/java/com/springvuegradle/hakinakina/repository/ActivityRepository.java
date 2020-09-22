@@ -2,7 +2,6 @@ package com.springvuegradle.hakinakina.repository;
 
 import com.springvuegradle.hakinakina.dto.UserRolesDto;
 import com.springvuegradle.hakinakina.entity.Activity;
-import com.springvuegradle.hakinakina.entity.Location;
 import com.springvuegradle.hakinakina.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

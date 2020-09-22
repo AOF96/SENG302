@@ -1,6 +1,23 @@
 #map {
     height: 100%;
 }
+
+.mapPageContainer {
+    height: 100%;
+}
+
+.styleSelectorDiv {
+    background-color: white;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 0 20px;
+    border-radius: 15px;
+    display: none;
+}
+
+#map .styleSelectorDiv {
+    display: block;
+}
 #legend {
     font-family: Arial, sans-serif;
     background: #fff;

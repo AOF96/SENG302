@@ -716,8 +716,7 @@ public class UserService {
      */
     @Transactional
     public ResponseEntity subscribeToActivity(Long profileId, Long activityId, String sessionToken) {
-        ResponseEntity result;
-
+        ResponseEntity result = null;
         try {
             Session session = sessionRepository.findUserIdByToken(sessionToken);
             Activity activity = activityRepository.findActivityById(activityId);
@@ -728,13 +727,18 @@ public class UserService {
                 result = responseHandler.formatErrorResponseString(403, "Invalid user");
             } else if (activity == null) {
                 result = responseHandler.formatErrorResponseString(404, "Activity not found");
+            } else if (activity.getVisibility() == Visibility.PRIVATE) {
+                long activityAuthorId = activity.getAuthor().getUserId();
+                if (activityAuthorId != profileId) {
+                    result = responseHandler.formatErrorResponseString(400, "Can't follow private activity");
+                }
             } else {
                 Optional<User> user = userRepository.getUserById(profileId);
                 if (user.isPresent()) {
                     User validUser = user.get();
                     Hibernate.initialize(validUser.getActivities());
-                    Set<Activity> validUserFollowingList = validUser.getActivitiesShared();
-                    if (validUserFollowingList.contains(activity)) {
+                    Optional<UserActivityRole> userActivityRoleCheck = userActivityRoleRepository.getByActivityAndUser(activity, validUser);
+                    if (userActivityRoleCheck.isPresent()) {
                         result = responseHandler.formatErrorResponse(403,
                                 "User already follows this activity");
                     } else {

@@ -314,6 +314,7 @@
       <div id="activityPageRight" class="activityPageColumn">
         <v-card id="profileMapCard" class="activityPageMapCard">
           <div id="profileMap" style="height: 350px"></div>
+          <button class="genericConfirmButton profileMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
         </v-card>
 
         <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
@@ -881,6 +882,13 @@
           }
         });
       },
+
+      /**
+       * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+       */
+      goToFullMap()  {
+        this.$router.push('/map/activity@' + this.location.latitude + ',' + this.location.longitude);
+      }
     }
   }
 </script>
