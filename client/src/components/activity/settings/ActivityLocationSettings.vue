@@ -3,7 +3,7 @@
     <div id="locationSettingsMap"></div>
     <hr/>
     <v-container>
-      <v-row justify="center" align="center"><h4>Select on map or type in the box</h4></v-row>
+      <v-row justify="center" align="center"><h4 class="selectLocationText">Select on map or type in the box</h4></v-row>
     </v-container>
     <div class="locationFieldDiv">
       <v-text-field v-model="address" id="activityLocationAutocomplete" class="locationInput" label="Address" outlined dense></v-text-field>
@@ -203,5 +203,8 @@
 </script>
 
 <style scoped>
-
+.selectLocationText{
+  padding-top:20px;
+  color: var(--v-primaryText);
+}
 </style>
