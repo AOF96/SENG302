@@ -21,13 +21,8 @@
             <hr />
             <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             <hr />
-            <div class="profileRow">City: {{ searchedUser.city }}</div>
-            <hr />
-            <div v-if="searchedUser.state">
-              <div class="profileRow">State: {{ searchedUser.state }}</div>
-              <hr />
-            </div>
-            <div class="profileRow">Country: {{ searchedUser.country }}</div>
+            <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
+            <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
           </div>
         </v-container>
       </v-card>
@@ -121,7 +116,7 @@
         <div id="profileMap"></div>
         <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
       </v-card>
-      <template v-if="searchedUser.passports">
+      <template v-if="this.showPassport">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
       </template>
     </div>
@@ -178,7 +173,8 @@ export default {
       loadingProfileInfo: true,
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
-      mapLoading: true
+      mapLoading: true,
+      showPassport: false
     };
   },
   async mounted() {
@@ -347,6 +343,9 @@ export default {
      */
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
+      if(this.searchedUser.passports.length > 0){
+        this.showPassport = true;
+      }
       this.getDataFromUrl(COUNTRIES_URL)
         .then(response => {
           const countries = [];
