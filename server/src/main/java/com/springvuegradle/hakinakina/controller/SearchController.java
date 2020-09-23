@@ -16,8 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Rest controller class for controlling requests related to searching
@@ -74,6 +73,10 @@ public class SearchController {
     /**
      * Retrieves activities that match the activity name
      * @param activitySearchTerm The activity name input in the search
+     * @param activitySearchTerms A string containing all the terms that the user wants to search by if
+     *                            searching by multiple
+     * @param method The method of search that the user has chosen. Can be normal search, and search or
+     *               or search. Each of these are handled in their own way.
      * @param page the page number the user wants
      * @param size the amount of activities returned that match the search term
      * @param sessionToken the session of the user
@@ -82,6 +85,8 @@ public class SearchController {
     @GetMapping("/activities")
     public ResponseEntity findActivityPaginated(
             @RequestParam(required = false) String activitySearchTerm,
+            @RequestParam(required = false) String activitySearchTerms,
+            @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @CookieValue(value = "s_id") String sessionToken) {
@@ -91,8 +96,19 @@ public class SearchController {
             }
             Session userSession = sessionRepository.findUserIdByToken(sessionToken);
             User searchingUser = userRepository.findUserBySessions(userSession);
-            Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size, searchingUser);
-            return new ResponseEntity(results, HttpStatus.OK);
+            if (method.equals("single")) {
+                Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size, searchingUser);
+                return new ResponseEntity(results, HttpStatus.OK);
+            } else {
+                String[] str = activitySearchTerms.split(" ");
+                List<String> activitySearchTermsList = new ArrayList<String>();
+                activitySearchTermsList = Arrays.asList(str);
+                Set<String> activitySearchTermsSet = new HashSet<String>(activitySearchTermsList);
+
+                Page<SearchActivityDto> results = searchService.findActivityPaginatedByQuery(activitySearchTermsSet,
+                        method, page, size);
+                return new ResponseEntity(results, HttpStatus.OK);
+            }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "could not search for activity");
             return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);

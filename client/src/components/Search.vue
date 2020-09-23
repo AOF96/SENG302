@@ -60,7 +60,7 @@
                                         dense></v-text-field>
                         </v-col>
                         <v-col>
-                          <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize)"
+                          <v-btn v-on:click="submitActivityButtonCheck(defaultActivityPage, defaultActivitySize, multipleActivityFilterMethod)"
                                  color="#1cca92" outlined block rounded large>Submit
                           </v-btn>
                         </v-col>
@@ -163,8 +163,39 @@
                 </template>
               </v-combobox>
               <v-label>Filter method</v-label>
-              <v-radio-group v-model="filterMethod" :mandatory="true"
-                             v-on:change="searchUsers(defaultPage, defaultSize)">
+              <v-tooltip bottom max-width="500px">
+                <template v-slot:activator="{ on }">
+                  <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                </template>
+                <span style="color: white;">You can filter users by the activity types that they have on their profiles, using
+                      these buttons. There are two options results including all and results including one of. Filtering
+              by activity types fun, extreme with the results including all option selected will mean that a search will
+              return only users who have both fun and extreme on their profiles. While filtering by activity types fun,
+              extreme with the results including one of option selected means that all users with either fun or extreme
+              on their profiles will be returned.</span>
+              </v-tooltip>
+              <v-radio-group v-model="filterMethod" :mandatory="true" v-on:change="searchUsers(defaultPage, defaultSize)">
+                <v-radio label="Results including all" value="and"></v-radio>
+                <v-radio label="Results including one of" value="or"></v-radio>
+              </v-radio-group>
+            </v-card>
+            <v-card v-if="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+              <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
+              <v-row class="ml-1">
+                <v-label style="margin-right: 5px">Filter method</v-label>
+                <v-tooltip bottom max-width="500px">
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                  </template>
+                  <span style="color: white;">You can search for multiple activities or just a single activity using
+                      these buttons, when searching for searching multiple activities you have two options. Results
+                    including all which means a search for fun, scary will return all activities that include both fun and scary in
+                    the title. Whereas the other option results including one of meaning a search for fun, scary will
+                    return all activities that include either fun or scary in the title.</span>
+                </v-tooltip>
+              </v-row>
+              <v-radio-group v-model="multipleActivityFilterMethod" :mandatory="true">
+                <v-radio label="Search for single activity" value="single"></v-radio>
                 <v-radio label="Results including all" value="and"></v-radio>
                 <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
@@ -218,9 +249,11 @@
         tabs: null,
         activities_option: [],
         activity_types_selected: [],
+        names_selected: [],
         searchInput: "",
         selected_activity: "Activity Type",
         filterMethod: "and",
+        multipleActivityFilterMethod: "single",
         searchMethods: [
           {display: "Full Name", value: "fullname"},
           {display: "Last Name", value: "lastname"},
@@ -238,65 +271,69 @@
           element.focus()
         });
       }
-    },
-    watch: {
-      "$route.params": {
-        handler() {
-          this.loadUrlQuery();
-        }
+  },
+  watch: {
+    "$route.params": {
+      handler() {
+        this.loadUrlQuery();
+      }
+    }
+  },
+  methods: {
+    ...mapActions(["setUserSearch", "setScrollPosition", "setActivitySearch"]),
+    /**
+     * Checks if the search term when looking for the user is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    submitButtonCheck(page, size) {
+      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        this.searchUsers(page, size);
       }
     },
-    methods: {
-      ...mapActions(["setUserSearch", "setScrollPosition", "setActivitySearch"]),
+    /**
+     * Checks if the search term when looking for an activity is not empty or invalid.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     * @param method determines whether the search is for a single activity or multiple with and or or
+     */
+    submitActivityButtonCheck(page, size, method) {
+      if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0) && this.searchedActivityTerm.length === 0) {
+        this.errorMessage = "Search is empty";
+        this.snackbar = true;
+      } else {
+        this.searchActivity(page, size, method);
+      }
+    },
 
-      /**
-       * Checks if the search term when looking for the user is not empty or invalid.
-       * @param page Current page in results
-       * @param size Size of results to retrieve
-       */
-      submitButtonCheck(page, size) {
-        if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
-          this.errorMessage = "Search is empty";
-          this.snackbar = true;
-        } else {
-          this.searchUsers(page, size);
+    /**
+     * Checks if more searched activity result exists and if they don't hides the more results button else shows
+     * more results. Also manages the snack bar and error messages.
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    searchActivity(page, size, method) {
+      if (page === this.defaultActivityPage) {
+        this.allActivities = [];
+      }
+      /* Adjust search position */
+      this.currentActivitySize = size;
+      this.currentActivityPage = page;
+
+      /* Change button animation */
+      this.moreHidden = false;
+      this.loading = true;
+      this.disabled = true;
+
+      if (method !== "single") {
+        this.names_selected = this.searchedActivityTerm.trim().split(",");
+        for (let i = 0; i < this.names_selected.length; i++) {
+          this.names_selected[i] = this.names_selected[i].trim();
         }
-      },
-
-      /**
-       * Checks if the search term when looking for an activity is not empty or invalid.
-       * @param page Current page in results
-       * @param size Size of results to retrieve
-       */
-      submitActivityButtonCheck(page, size) {
-        if ((this.searchedActivityTerm === null || this.searchedActivityTerm.trim().length === 0)) {
-          this.errorMessage = "Search is empty";
-          this.snackbar = true;
-        } else {
-          this.searchActivity(page, size);
-        }
-      },
-
-      /**
-       * Checks if more searched activity result exists and if they don't hides the more results button else shows
-       * more results. Also manages the snack bar and error messages.
-       * @param page Current page in results
-       * @param size Size of results to retrieve
-       */
-      searchActivity(page, size) {
-        if (page === this.defaultActivityPage) {
-          this.allActivities = [];
-        }
-        /* Adjust search position */
-        this.currentActivitySize = size;
-        this.currentActivityPage = page;
-
-        /* Change button animation */
-        this.moreHidden = false;
-        this.loading = true;
-        this.disabled = true;
-
-        apiActivity.getSearchedActivity(this.searchedActivityTerm, page - 1, size).then(
+        apiActivity.getSearchedActivity(null, this.names_selected, method, page, size).then(
             (response) => {
               if (response.data.content.length === 0) {
                 this.disabled = true;
@@ -320,28 +357,54 @@
               this.loading = false;
               this.errorMessage = error.response.data;
               this.snackbar = true;
-            }
-        )
-      },
+            })
+      } else {
+        apiActivity.getSearchedActivity(this.searchedActivityTerm, [], method, page - 1, size).then(
+            (response) => {
+              if (response.data.content.length === 0) {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = "No more results";
+                this.snackbar = true;
+              } else {
+                this.loading = false;
+                this.disabled = false;
+                this.allActivities = this.allActivities.concat(response.data.content);
+                this.setActivitySearch({
+                  searchTerm: this.searchedActivityTerm,
+                  page: page,
+                  size: size,
+                  scrollPos: window.scrollY,
+                });
+              }
+            }).catch(
+            (error) => {
+              this.disabled = true;
+              this.loading = false;
+              this.errorMessage = error.response.data;
+              this.snackbar = true;
+            })
+      }
+    },
 
-      /**
-       * Search for size amount of users on given page and append to list
-       *
-       * @param page Current page in results
-       * @param size Size of results to retrieve
-       */
-      searchUsers(page, size) {
-        if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
-          this.allUsers = [];
-          this.moreHidden = true;
-          return;
-        }
-        if (page === this.defaultPage) {
-          this.allUsers = [];
-        }
-        /* Adjust search position */
-        this.currentSize = size;
-        this.currentPage = page;
+    /**
+     * Search for size amount of users on given page and append to list
+     *
+     * @param page Current page in results
+     * @param size Size of results to retrieve
+     */
+    searchUsers(page, size) {
+      if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
+        this.allUsers = [];
+        this.moreHidden = true;
+        return;
+      }
+      if (page === this.defaultPage) {
+        this.allUsers = [];
+      }
+      /* Adjust search position */
+      this.currentSize = size;
+      this.currentPage = page;
 
         /* Change button animation */
         this.moreHidden = false;
@@ -437,9 +500,9 @@
       initialiser() {
         if (typeof this.$route.params.query !== 'undefined' && this.$route.params.query !== null && this.$route.params.query !== "") {
           this.loadUrlQuery();
-        } else if (this.userSearch.searchTerm !== null) {
+        } else if (this.userSearch !== undefined && this.userSearch.searchTerm !== null) {
           this.loadPreviousSearch();
-        } else if (this.activitySearch.searchTerm !== null) {
+        } else if (this.activitySearch !== undefined && this.activitySearch.searchTerm !== null) {
           this.activitySearchTab = true;
           this.tabs = "mobile-tabs-5-2";
           this.loadPreviousActivitySearch();
@@ -553,7 +616,7 @@
       loadActivitySearchTab() {
         this.activitySearchTab = true;
 
-        if (this.activitySearch.searchTerm !== null) {
+        if (this.activitySearch !== undefined && this.activitySearch.searchTerm !== null) {
           this.loadPreviousActivitySearch();
         }
       },
