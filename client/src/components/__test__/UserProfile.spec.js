@@ -129,7 +129,7 @@ describe("Check user profile page", () => {
 
     it('should display the Logged in user details in the panel on profile page', () => {
         const wrapper = mount(Profile, { store, localVue, mocks, stubs });
-        expect(wrapper.find(".leftSidebarContainer").text()).toContain("Profile Info")
+        expect(wrapper.find(".leftSidebarContainer").text())
     });
 
     it('should display the Logged in user passport country details in the panel on the right of the page ', async () => {
