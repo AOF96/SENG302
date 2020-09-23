@@ -17,8 +17,11 @@
               <hr/>
               <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             </div>
-            <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
-            <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
+            <div v-if="searchedUser.location.city && searchedUser.location.country">
+              <hr/>
+              <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
+              <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
+            </div>
           </div>
         </v-container>
       </v-card>
