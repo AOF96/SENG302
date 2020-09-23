@@ -5,29 +5,35 @@
       Back to Search
     </button>
   </router-link>
-  <div class="profileBanner"></div>
+  <div id="profileBanner"></div>
   <div class="profileContainer">
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
         <v-container>
-          <h3>Profile Info</h3>
+          <h1>Profile Info</h1>
           <div v-if="!loadingProfileInfo">
-            <hr />
+            <hr/>
             <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
-            <hr />
+            <hr/>
             <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
-            <hr />
+            <hr/>
             <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
-            <hr />
-            <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
-            <hr />
-            <div class="profileRow">City: {{ searchedUser.city }}</div>
-            <hr />
-            <div v-if="searchedUser.state">
-              <div class="profileRow">State: {{ searchedUser.state }}</div>
-              <hr />
+            <div v-if="searchedUser.bio">
+              <hr/>
+              <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             </div>
-            <div class="profileRow">Country: {{ searchedUser.country }}</div>
+            <div v-if="searchedUser.location.city">
+              <hr/>
+              <div class="profileRow">City: {{ searchedUser.location.city }}</div>
+            </div>
+            <div v-if="searchedUser.location.state">
+              <hr/>
+              <div class="profileRow">State: {{ searchedUser.location.state }}</div>
+            </div>
+            <div v-if="searchedUser.location.country">
+              <hr/>
+              <div class="profileRow">Country: {{ searchedUser.location.country }}</div>
+            </div>
           </div>
         </v-container>
       </v-card>
@@ -140,6 +146,7 @@ import {
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
 import {apiUser} from "../../api";
+import mapStyles from "../../util/mapStyles";
 
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
@@ -181,10 +188,12 @@ export default {
       mapLoading: true
     };
   },
+  props: ['darkModeGlobal'],
   async mounted() {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
+      this.setUserBanner();
       this.loadSearchedUser();
     }
   },
@@ -198,9 +207,37 @@ export default {
   methods: {
     ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
 
-    /*
-          Uses user id from url to request user data.
-       */
+    /**
+     * Sets the user banner depending on what theme mode is active
+     */
+    setUserBanner() {
+      if (document.getElementById("profileBanner") !== null) {
+        if (this.darkModeGlobal) {
+          document.getElementById("profileBanner").classList.remove("profileBanner");
+          document.getElementById("profileBanner").classList.add("profileBannerDark");
+        } else {
+          document.getElementById("profileBanner").classList.remove("profileBannerDark");
+          document.getElementById("profileBanner").classList.add("profileBanner");
+        }
+      }
+    },
+
+    /**
+     * Creates an event handler to check if the theme has changed
+     */
+    setThemeCheckEvent(map) {
+      let outer = this;
+      document.addEventListener("click", function(){
+        outer.setUserBanner();
+        map.setOptions({
+          styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+        });
+      });
+    },
+
+    /**
+     * Uses user id from url to request user data.
+     */
     async loadSearchedUser() {
       if (this.user.permission_level === 2 && this.user.profile_id === this.$route.params.profileId) {
         this.$router.push('/settings/admin_dashboard');
@@ -258,6 +295,11 @@ export default {
           disableDefaultUI: true
         });
 
+        map.setOptions({
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"]
+        });
+
+        this.setThemeCheckEvent(map);
         this.positionMap(map, position);
       }
     },

@@ -28,7 +28,7 @@ export default new Vuetify({
                 primary: '#1cca92',
                 secondary: '#424242',
                 background: '#121212',
-                component: '#1d1f1e',
+                component: '#222222',
                 colouredComponent: '#238c6a',
                 primaryText: '#ffffff',
                 secondaryText: '#1cca92',

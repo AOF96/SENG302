@@ -127,17 +127,17 @@ input, select, textarea {
 .genericConfirmButton {
     border-radius: 50px;
     font-size: 15px;
-    color: #1cca92;
+    color: var(--v-primary-base);
     font-weight: 500;
-    background: #ffffff;
-    border: 2px solid #1cca92;
+    background: var(--v-component-base);
+    border: 2px solid var(--v-primary-base);;
     cursor: pointer;
     transition:all 0.2s ease;
     text-decoration: none;
 }
 .genericConfirmButton:hover {
-    background: #1cca92;
-    color: #ffffff;
+    background: var(--v-primary-base);
+    color: var(--v-component-base);
 }
 .genericDeleteButton {
     border-radius: 50px;
