@@ -1,17 +1,8 @@
 <template>
   <div @click="showLocations = false">
-    <v-snackbar
-      v-model="snackbar"
-    >
-      {{ snackbarText }}
-      <v-btn
-        @click="snackbar = false"
-        color="primary"
-        text
-      >
-        Close
-      </v-btn>
-    </v-snackbar>
+    <v-alert type="error" v-model="alertComponent" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
     <v-overlay :value="overlayLoader" style="z-index: 1000">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
@@ -368,7 +359,6 @@
   import {apiActivity, apiUser} from "../../../api";
   import router from "../../../router";
   import ActivityLocationSettings from "./ActivityLocationSettings";
-  //import googleMapsApi from "@/util/googleMapsApi";
 
   export default {
     name: "ActivitySettingsPage",
@@ -417,6 +407,8 @@
         tempResultType: null,
         autocomplete: null,
         location: null,
+        alertComponent: false,
+        errorMessage: null,
       };
     },
 
@@ -718,7 +710,7 @@
             error => {
               this.overlayLoader = true;
               if (error) {
-                this.displayError("An error occurred.");
+                this.displayError(error)
               }
             });
       },
@@ -727,8 +719,8 @@
        * @param error
        */
       displayError(error) {
-        this.snackbar = true;
-        this.snackbarText = error;
+        this.alertComponent = true;
+        this.errorMessage = error;
       },
     },
   };

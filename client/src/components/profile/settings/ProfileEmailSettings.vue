@@ -63,6 +63,20 @@
             </div>
         </transition>
         <div class="floatClear"></div>
+        <v-snackbar
+            v-model="snackbar"
+            :color="snackbarColour"
+            top
+        >
+            {{ snackbarText }}
+            <v-btn
+                @click="snackbar = false"
+                color="white"
+                text
+            >
+                Close
+            </v-btn>
+        </v-snackbar>
     </div>
 </template>
 
@@ -70,6 +84,8 @@
     import {mapState, mapActions, mapGetters} from 'vuex';
     import UserSettingsMenu from './ProfileSettingsMenu';
     const LIMIT_NUM_EMAIL = 4;
+    const SUCCESS = "success";
+    const ERROR = "error";
 
     export default {
         name: "EmailSettings",
@@ -91,6 +107,9 @@
                 errorMsg: "",
                 editErrorMsg: "",
                 loadingEmails: true,
+                snackbar: false,
+                snackbarText: null,
+                snackbarColour: '',
             }
         },
         computed: {
@@ -112,22 +131,23 @@
                 }
                 const emails = await this.getAllEmails();
                 if (textInput === "") {
-                    this.errorMsg = "Please enter an email.";
+                    this.showSnackbar("Please enter an email.", ERROR);
                     return;
                 }
                 if (this.searchedUser.additional_email.includes(textInput) || textInput == this.searchedUser.primary_email || emails.data.includes(textInput)) {
-                    this.errorMsg = "Email already in use.";
+                    this.showSnackbar("Email already in use.", ERROR);
                 } else if (textInput != "" && (/[^\s]+@[^\s]+/.test(textInput))) {
                     try {
                         await this.addEmail({'id': this.searchedUser.profile_id, 'newEmail':[this.textInput]});
                         this.searchedUser.additional_email.push(this.textInput);
                         this.updateUserEmail(this.searchedUser);
                         var tempThis = this;
+                        this.showSnackbar("Email successfully added.", SUCCESS);
                         setTimeout(function() {
                             tempThis.textInput = "";
                         }, 10);
                     } catch (err) {
-                        this.errorMsg = "Email already in use.";
+                        this.showSnackbar("Email already in use.", ERROR);
                         this.textInput = "";
                     }
                 }
@@ -146,6 +166,7 @@
                 this.searchedUser.primary_email = additional_email;
                 this.updateUserEmail(this.searchedUser);
                 this.editEmail({'id': this.searchedUser.profile_id, 'primaryEmail': this.searchedUser.primary_email, 'additionalEmail': this.searchedUser.additional_email});
+                this.showSnackbar("Emails successfully switched.", SUCCESS);
             },
 
             /*
@@ -164,8 +185,7 @@
                 this.editErrorMsg = "";
                 const emails = await this.getAllEmails();
                 if (this.searchedUser.additional_email.includes(this.editEmailInput) || this.editEmailInput == this.searchedUser.primary_email || emails.data.includes(this.editEmailInput)) {
-                    this.editErrorMsg = "Email already in use.";
-                    // alert("Email already in use.");
+                    this.showSnackbar("Email already in use.", ERROR);
                 } else if (/[^\s]+@[^\s]+/.test(this.editEmailInput)) {
                     const index = this.searchedUser.additional_email.indexOf(this.tempOldEmail);
                     this.searchedUser.additional_email[index] = this.editEmailInput;
@@ -173,6 +193,7 @@
                     this.updateUserEmail(this.searchedUser);
                     this.editEmail({'id': this.searchedUser.profile_id, 'primaryEmail': this.searchedUser.primary_email, 'additionalEmail': this.searchedUser.additional_email});
                     this.editErrorMsg = "";
+                    this.showSnackbar("Email successfully edited.", SUCCESS);
                 }
             },
 
@@ -193,6 +214,7 @@
                 }
                 this.updateUserEmail(this.searchedUser);
                 this.editEmail({'id': this.searchedUser.profile_id, 'primaryEmail': this.searchedUser.primary_email, 'additionalEmail': this.searchedUser.additional_email});
+                this.showSnackbar("Email removed.", SUCCESS);
             },
 
             /*
@@ -212,6 +234,17 @@
                     }
                 }
                 this.loadingEmails = false;
+            },
+
+            /**
+             * Shows a pop-up message to the user displaying the result of a function call.
+             * @param text: the text to be displayed to the user.
+             * @param colour: the colour to be displayed with the snackbar.
+             */
+            showSnackbar(text, colour) {
+                this.snackbarText = text;
+                this.snackbarColour = colour;
+                this.snackbar = true;
             }
         },
         mounted() {
