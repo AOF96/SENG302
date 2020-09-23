@@ -4,7 +4,7 @@ const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
 
 var instance = axios.create({
   baseURL: SERVER_URL,
-  timeout: 5000,
+  timeout: 5000000,
   withCredentials: true,
 });
 
@@ -177,12 +177,15 @@ export const apiUser = {
   /**
    * Sends a search request for users
    */
-  searchUsers: (searchTerm, searchType, activityTypes, method, page, size) => instance.get('/profiles/',
+  searchUsers: (searchTerm, searchType, activityTypes, searchTerms, searchTypes, searchTermsMethod, method, page, size) => instance.get('/profiles/',
     {
       params: {
         [searchType]: searchTerm,
         method: method,
         activity: activitiesAddDashes(activityTypes).join(" "),
+          searchTerms: searchTerms.join(" "),
+          searchTypes: searchTypes,
+          searchTermsMethod: searchTermsMethod,
         page: page,
         size: size,
       }
