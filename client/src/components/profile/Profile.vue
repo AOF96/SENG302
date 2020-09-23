@@ -21,13 +21,8 @@
             <hr />
             <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             <hr />
-            <div class="profileRow">City: {{ searchedUser.city }}</div>
-            <hr />
-            <div v-if="searchedUser.state">
-              <div class="profileRow">State: {{ searchedUser.state }}</div>
-              <hr />
-            </div>
-            <div class="profileRow">Country: {{ searchedUser.country }}</div>
+            <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
+            <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
           </div>
         </v-container>
       </v-card>
@@ -121,7 +116,7 @@
         <div id="profileMap"></div>
         <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
       </v-card>
-      <template v-if="searchedUser.passports">
+      <template v-if="this.showPassport">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
       </template>
     </div>
@@ -140,6 +135,7 @@ import {
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
 import {apiUser} from "../../api";
+import mapStyles from "../../util/mapStyles";
 
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
@@ -178,7 +174,9 @@ export default {
       loadingProfileInfo: true,
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
-      mapLoading: true
+      mapLoading: true,
+      mapStyle: "light",
+      showPassport: false
     };
   },
   async mounted() {
@@ -251,6 +249,7 @@ export default {
         let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          styles: mapStyles[this.mapStyle],
           center: position,
           zoom: 8,
           maxZoom: 10,
@@ -347,6 +346,9 @@ export default {
      */
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
+      if(this.searchedUser.passports.length > 0){
+        this.showPassport = true;
+      }
       this.getDataFromUrl(COUNTRIES_URL)
         .then(response => {
           const countries = [];
