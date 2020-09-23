@@ -127,7 +127,6 @@ public class UserDeserializer extends StdDeserializer<User> {
         }
         if (node.get("location") != null) {
             Location location = ParserHelper.createLocation(node.get("location"));
-            locationRepository.save(location);
             user.setLocation(location);
         }
         return user;
