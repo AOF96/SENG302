@@ -352,6 +352,7 @@
   import {apiActivity, apiUser} from "../../api";
   import AchievementsCard from "./modules/AchievementsCard";
   import store from '../../store/index.js';
+  import mapStyles from "../../util/mapStyles";
 
   export default {
     name: "ActivityPageInfo",
@@ -420,7 +421,8 @@
         achievements: [],
         loadingFollowButton: false,
         locationToDisplay: "",
-        mapLoading: true
+        mapLoading: true,
+        mapStyle: "light"
       }
     },
 
@@ -862,6 +864,7 @@
         this.geocoder = new window.google.maps.Geocoder();
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          styles: mapStyles[this.mapStyle],
           zoom: 9,
           disableDefaultUI: true
         });
