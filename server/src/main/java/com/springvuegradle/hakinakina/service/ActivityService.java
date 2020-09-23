@@ -7,6 +7,7 @@ import com.springvuegradle.hakinakina.exception.UserNotFoundException;
 import com.springvuegradle.hakinakina.repository.*;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 import com.springvuegradle.hakinakina.util.ResponseHandler;
+import org.springframework.transaction.annotation.Transactional;
 import net.minidev.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -985,6 +985,7 @@ public class ActivityService {
         activityMapDto.setStartTime(activity.getStartTime());
         activityMapDto.setEndTime(activity.getEndTime());
         activityMapDto.setVisibility(activity.getVisibility());
+        activityMapDto.setAuthorId(activity.getAuthor().getUserId());
         Set<String> activityTypes = new HashSet<String>();
         for (ActivityType activityType: activity.getActivityTypes()) {
             activityTypes.add(activityType.getName());
@@ -998,6 +999,7 @@ public class ActivityService {
     }
 
     /**
+     * Retrieves all the activities that are within the specified range
      *
      * @param latitudeTopRight the latitude of the top right on the map visible on the screen
      * @param longitudeTopRight the longitude of the top right of the map visible on the screen
@@ -1009,21 +1011,7 @@ public class ActivityService {
                                                         double longitudeBottomLeft, double longitudeTopRight,
                                                         long userId) {
         try {
-            List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft,
-                    latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
-            List<ActivityMapDto> activityMapDtos = new ArrayList<ActivityMapDto>();
-            User user = userRepository.getOne(userId);
-            for (Activity activity: activitiesInRange) {
-                if (activity.getVisibility() != Visibility.PUBLIC) {
-                    Set<User> activitySharedUsers = activity.getUsersShared();
-                    if (activitySharedUsers != null && (activitySharedUsers.contains(user)
-                            || activity.getAuthor().getUserId().equals(user.getUserId()))) {
-                        activityMapDtos.add(activityMapResponseMapping(activity));
-                    }
-                } else {
-                    activityMapDtos.add(activityMapResponseMapping(activity));
-                }
-            }
+            List<ActivityMapDto> activityMapDtos = getActivityInRangeDtos(latitudeBottomLeft, latitudeTopRight, longitudeBottomLeft, longitudeTopRight, userId);
             return new ResponseEntity(activityMapDtos, HttpStatus.valueOf(200));
         } catch (Error e) {
             return new ResponseEntity("Error", HttpStatus.valueOf(500));
@@ -1031,32 +1019,32 @@ public class ActivityService {
     }
 
     /**
-     * Takes an activity list and checks if the given user is shared or author if visibility is not public.
-     * i.e. checks if they should be able to see the activity or not and if not removes from list before
-     * returning
-     * @param activities list of activities in the given area found by the getActivitiesWithinGivenRange method
-     * @param userId id of the user that the viewing permission is being checked for
-     * @return returns a new list of activities minus those that the user is not permitted to view
-     */
-    public String filterActivitiesByVisibility(List<Activity> activities, long userId) {
+     * Helper function for getActivitiesWithinGivenRange to increase testability
+     * @param latitudeTopRight the latitude of the top right on the map visible on the screen
+     * @param longitudeTopRight the longitude of the top right of the map visible on the screen
+     * @param latitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @param longitudeBottomLeft the latitude of the bottom left on the map visible on the screen
+     * @return the list of all the activities within the range of the coordinates
+     * */
+    @Transactional
+    public List<ActivityMapDto> getActivityInRangeDtos(double latitudeBottomLeft, double latitudeTopRight,
+                                                      double longitudeBottomLeft, double longitudeTopRight,
+                                                      long userId) {
+        List<Activity> activitiesInRange = activityRepository.getActivitiesInRange(latitudeBottomLeft,
+                latitudeTopRight, longitudeBottomLeft, longitudeTopRight);
         User user = userRepository.getOne(userId);
-        String filteredActivityJsonList = "[";
-
-        for (Activity activity : activities) {
+        List<ActivityMapDto> activityMapDtos = new ArrayList<ActivityMapDto>();
+        for (Activity activity : activitiesInRange) {
             if (activity.getVisibility() != Visibility.PUBLIC) {
                 Set<User> activitySharedUsers = activity.getUsersShared();
                 if (activitySharedUsers != null && (activitySharedUsers.contains(user)
                         || activity.getAuthor().getUserId().equals(user.getUserId()))) {
-                    filteredActivityJsonList += activity.getBasicActivityInfo();
-                    filteredActivityJsonList += ", ";
+                    activityMapDtos.add(activityMapResponseMapping(activity));
                 }
-            }
-            else{
-                filteredActivityJsonList += activity.getBasicActivityInfo();
-                filteredActivityJsonList += ", ";
+            } else {
+                activityMapDtos.add(activityMapResponseMapping(activity));
             }
         }
-        filteredActivityJsonList += "]";
-        return filteredActivityJsonList;
+        return activityMapDtos;
     }
 }

@@ -82,7 +82,7 @@ public class UserDeserializerTest {
         Location testLocation = new Location("48 Somewhere Road", "Ilam", "Christchurch",
                 8000, "Canterbury", "New Zealand", 0.0, 0.0);
         User testUser = new User();
-        testUser.setLocation(new Location());
+        testUser.setLocation(testLocation);
 
         when(userRepository.findUserByEmail("email@email.com")).thenReturn(testUser);
 
