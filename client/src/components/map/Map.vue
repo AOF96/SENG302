@@ -16,6 +16,9 @@
   import {mapGetters, mapState, mapActions} from "vuex";
   import {apiActivity} from "@/api";
   import mapStyles from "../../util/mapStyles"
+  const BASE_URL = process.env.VUE_APP_BASE_URL;
+  const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
+
   export default {
     name: "Map",
     data: function() {
@@ -220,9 +223,8 @@
                     '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
                     '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
                     '<hr class="activityPopupActivityLine">'+
-                    '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
+                    '<a href= "/' + BASE_URL + 'activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
                     '</div>';
-
           } else {
 
             let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time));
@@ -238,8 +240,7 @@
                     '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
                     '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
                     '<hr class="activityPopupActivityLine">'+
-                    '<a href="/activity/'+activity.id+'">' +
-                    '<button class="activityPopupActivityButton">Go to Activity</button></a>'+
+                    '<a href= "/' + BASE_URL + 'activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
                     '</div>';
           }
 
