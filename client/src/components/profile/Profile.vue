@@ -176,6 +176,7 @@ export default {
       loadingContinuousActivities: true,
       mapLoading: true,
       mapStyle: "light",
+      showPassport: false
     };
   },
   async mounted() {
