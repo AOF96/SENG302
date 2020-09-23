@@ -361,7 +361,9 @@ public class UserService {
         if (!messages.isEmpty()) {
             return responseHandler.formatErrorResponse(403, messages);
         } else {
-            locationRepository.save(user.getLocation());
+            if (user.getLocation() != null) {
+                locationRepository.save(user.getLocation());
+            }
             userRepository.save(user);
             return responseHandler.formatSuccessResponse(200, "User updated");
         }
