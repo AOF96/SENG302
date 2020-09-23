@@ -2,6 +2,7 @@
 *{
     margin:0;
     padding:0;
+    transition:background .1s ease, background-color .1s ease;
 }
 body{
     background-color: var(--v-background-base);
@@ -106,7 +107,7 @@ input, select, textarea {
     margin-right: 10px;
 }
 .navBarButton:hover{
-    background: #fff;
+    background: var(--v-component-base);
     color:#1dca92;
 }
 .genericButton {
