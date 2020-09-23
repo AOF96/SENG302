@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -420,5 +421,27 @@ public class UserSearchTest {
         );
         long resultCount = page.getTotalElements();
         assertEquals(0, resultCount);
+    }
+
+    @Test
+    public void testSearchWithKeywordFilter() {
+        Set<String> searchTerms = new HashSet<>();
+        searchTerms.add("Guttman");
+        searchTerms.add("Williams");
+
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "Marina Ski Filipovic",
+                null,
+                null,
+                searchTerms,
+                "lastname",
+                "or",
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(2, resultCount);
     }
 }

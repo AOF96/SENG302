@@ -106,7 +106,7 @@
                   <v-row class="searchRow">
                     <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
                                  :key="activity.id" link>
-                      <v-list-item-content>
+                      <v-liscon-item-content>
                         <v-list-item-title>
                           {{ activity.name}}
                         </v-list-item-title>
@@ -116,13 +116,13 @@
                             activity.location.country}}
                           </v-list-item-subtitle>
                         </div>
-                      </v-list-item-content>
+                      </v-liscon-item-content>
                     </v-list-item>
                   </v-row>
                   <v-row class="searchRow">
                     <v-spacer/>
                     <v-btn
-                        v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize)"
+                        v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize, multipleActivityFilterMethod)"
                         :hidden="moreHidden"
                         :loading="loading"
                         :disabled="disabled"
@@ -170,7 +170,7 @@
               </v-radio-group>
             </v-card>
             <v-card v-if="!activitySearchTab" :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
+              <h1 class="searchHeading" style="margin-bottom:22px;">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label style="margin-right: 5px">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
@@ -186,24 +186,12 @@
               </v-row>
               <v-radio-group v-model="multipleUserSearchTermMethod" :mandatory="true">
                 <v-radio label="Search for single activity" value="single"></v-radio>
-              <v-tooltip bottom max-width="500px">
-                <template v-slot:activator="{ on }">
-                  <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
-                </template>
-                <span style="color: white;">You can filter users by the activity types that they have on their profiles, using
-                      these buttons. There are two options results including all and results including one of. Filtering
-              by activity types fun, extreme with the results including all option selected will mean that a search will
-              return only users who have both fun and extreme on their profiles. While filtering by activity types fun,
-              extreme with the results including one of option selected means that all users with either fun or extreme
-              on their profiles will be returned.</span>
-              </v-tooltip>
-              <v-radio-group v-model="filterMethod" :mandatory="true" v-on:change="searchUsers(defaultPage, defaultSize)">
                 <v-radio label="Results including all" value="and"></v-radio>
                 <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
             </v-card>
             <v-card v-if="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
+              <h1 class="searchHeading" style="margin-bottom:22px;">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label style="margin-right: 5px">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
@@ -417,6 +405,7 @@
      *
      * @param page Current page in results
      * @param size Size of results to retrieve
+     * @param method
      */
     searchUsers(page, size, method) {
       if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
