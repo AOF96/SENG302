@@ -180,12 +180,12 @@
               </v-radio-group>
             </v-card>
             <v-card v-if="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Search for multiple activities</h1>
+              <h1 class="searchHeading" style="margin-bottom:22px;color: var(--v-primaryText-base)">Search for multiple activities</h1>
               <v-row class="ml-1">
-                <v-label style="margin-right: 5px">Filter method</v-label>
+                <v-label style="padding-right: 5px">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                    <v-icon v-on="on" style="margin-left:10px;margin-top:-3px;font-size: 20px;">mdi-help-circle-outline</v-icon>
                   </template>
                   <span style="color: white;">You can search for multiple activities or just a single activity using
                       these buttons, when searching for searching multiple activities you have two options. Results

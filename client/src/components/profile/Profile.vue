@@ -1,10 +1,5 @@
 <template>
 <div>
-  <router-link v-if="userSearch.searchTerm!==null" v-bind:to="'/search'">
-    <button class="genericConfirmButton profileBackToSearchButton">
-      Back to Search
-    </button>
-  </router-link>
   <div id="profileBanner"></div>
   <div class="profileContainer">
     <div class="leftSidebarContainer">

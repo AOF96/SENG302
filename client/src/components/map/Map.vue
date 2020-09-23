@@ -10,7 +10,6 @@
   import {mapGetters, mapState, mapActions} from "vuex";
   import {apiActivity} from "@/api";
   import mapStyles from "../../util/mapStyles"
-
   export default {
     name: "Map",
     data: function() {
@@ -292,25 +291,19 @@
           outputString = "No Location Set"
         } else {
           outputString += streetAddress;
-          if (city !== "") {
-            if (outputString !== "") {
-              outputString += ", "
-            }
+          if(city !== ""){
+            if(outputString !== ""){outputString += ", "}
             outputString += city;
           }
-          if (state !== "") {
-            if (outputString !== "") {
-              outputString += ", "
-            }
+          if(state !== ""){
+            if(outputString !== ""){outputString += ", "}
             outputString += state;
           }
-          if (country !== "") {
-            if (outputString !== "") {
-              outputString += ", "
-            }
+          if(country !== ""){
+            if(outputString !== ""){outputString += ", "}
             outputString += country;
           }
-          if (outputString === "") {
+          if(outputString === ""){
             outputString = "No Location Set"
           }
         }
