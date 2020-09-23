@@ -1,6 +1,7 @@
 package com.springvuegradle.hakinakina.endpoints;
 
 import com.springvuegradle.hakinakina.controller.ActivityController;
+import com.springvuegradle.hakinakina.dto.ActivityMapDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.SearchService;
@@ -153,7 +154,6 @@ public class ActivityControllerTest {
                 new Timestamp(startTime.getTime()), new Timestamp(endTime.getTime()));
 
         testActivity.setId((long) 1);
-        testActivity.setDescription("New activity");
         Set<ActivityType> activityTypes = new HashSet<>();
         activityTypes.add(new ActivityType("Fun"));
         testActivity.setActivityTypes(activityTypes);
@@ -948,7 +948,7 @@ public class ActivityControllerTest {
     @Test
     public void getActivitiesWithinGivenRangeTest() throws Exception{
 
-        List<Activity> activityList = new ArrayList<>();
+        List<ActivityMapDto> activityList = new ArrayList<ActivityMapDto>();
         final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         Session session1 = new Session("t0k3n");
         User user = new User();
@@ -958,21 +958,21 @@ public class ActivityControllerTest {
         when(activityService.getActivitiesWithinGivenRange(-2000.0, 2000.0,
                 -1000.0, 1000.0, 1L)).thenReturn(new ResponseEntity(activityList, HttpStatus.valueOf(200)));
         //when(sessionRepository.findUserIdByToken("t0k3n").getUser().getUserId()).thenReturn(1L);
-        this.mockMvc.perform(get("/activities/within/range/?latitudeTopRight=-2000.0&longitudeTopRight=2000.0&latitudeBottomLeft=-1000.0&longitudeBottomLeft=1000.0").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities/within/range?latitudeTopRight=-2000.0&longitudeTopRight=2000.0&latitudeBottomLeft=-1000.0&longitudeBottomLeft=1000.0").cookie(tokenCookie))
                 .andExpect(status().is(200));
     }
 
     @Test
     public void getActivitiesWithinGivenRangeNullTest() throws Exception{
 
-        List<Activity> activityList = new ArrayList<>();
+        List<ActivityMapDto> activityList = new ArrayList<ActivityMapDto>();
         final Cookie tokenCookie = new Cookie("s_id", "t0k3n");
         Session session1 = new Session("t0k3n");
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
         when(activityService.getActivitiesWithinGivenRange(-2000.0, 2000.0,
                 -1000.0, 1000.0, 1L)).thenReturn(new ResponseEntity(activityList, HttpStatus.valueOf(200)));
 
-        this.mockMvc.perform(get("/activities/within/range/?latitudeTopRight=null.0&longitudeTopRight=2000.0&latitudeBottomLeft=-1000.0&longitudeBottomLeft=1000.0").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities/within/range?latitudeTopRight=null.0&longitudeTopRight=2000.0&latitudeBottomLeft=-1000.0&longitudeBottomLeft=1000.0").cookie(tokenCookie))
             .andExpect(status().is(400));
     }
 
