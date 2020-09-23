@@ -1,18 +1,6 @@
 <template>
   <div @click="showLocations = false">
-<!--    <v-snackbar-->
-<!--      v-model="snackbar"-->
-<!--    >-->
-<!--      {{ snackbarText }}-->
-<!--      <v-btn-->
-<!--        @click="snackbar = false"-->
-<!--        color="primary"-->
-<!--        text-->
-<!--      >-->
-<!--        Close-->
-<!--      </v-btn>-->
-<!--    </v-snackbar>-->
-    <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+    <v-alert type="error" v-model="alertComponent" dismissible prominent>
       {{errorMessage}}
     </v-alert>
     <v-overlay :value="overlayLoader" style="z-index: 1000">
@@ -371,7 +359,6 @@
   import {apiActivity, apiUser} from "../../../api";
   import router from "../../../router";
   import ActivityLocationSettings from "./ActivityLocationSettings";
-  //import googleMapsApi from "@/util/googleMapsApi";
 
   export default {
     name: "ActivitySettingsPage",
@@ -650,7 +637,6 @@
         if (this.name === null || this.name.trim() === "") {
           // Name is empty
           this.displayError("Please select an activity name.");
-
           this.tabs = 0;
           return false;
         } else if (this.activity_types_selected.length < 1) {
