@@ -1,18 +1,23 @@
 package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.SearchService;
+import io.cucumber.java.bs.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +35,9 @@ public class UserSearchTest {
     private ActivityRepository activityRepository;
 
     @Autowired
+    private ActivityTypeRepository activityTypeRepository;
+
+    @Autowired
     private SearchService service;
 
     @BeforeEach
@@ -45,6 +53,8 @@ public class UserSearchTest {
         setupUser(fabian, "Fabian", "Scrum", "Gilson", "fabian@acnh.com", 0);
         User marina = new User(); // Default Admin
         setupUser(marina, "Marina", "Ski", "Filipovic", "marina@acnh.com", 2);
+        User testUser = new User();
+        setupUser(testUser, "dad", "dad", "GuttmanWilliams", "test@test.com", 0);
     }
 
     void setupUser(User user, String fName, String mName, String lName, String email, int pLevel) {
@@ -205,7 +215,7 @@ public class UserSearchTest {
                 "and"
         );
         long resultCount = page.getTotalElements();
-        assertEquals(2, resultCount); // should find mayuko and walter
+        assertEquals(3, resultCount); // should find mayuko and walter
     }
 
 
@@ -338,7 +348,7 @@ public class UserSearchTest {
                 "and"
         );
         long resultCount = page.getTotalElements();
-        assertEquals(2, resultCount); // should find mayuko and walter
+        assertEquals(3, resultCount); // should find mayuko and walter
     }
 
 
@@ -424,7 +434,7 @@ public class UserSearchTest {
     }
 
     @Test
-    public void testSearchWithKeywordFilter() {
+    public void testSearchWithKeywordFilterOr() {
         Set<String> searchTerms = new HashSet<>();
         searchTerms.add("Guttman");
         searchTerms.add("Williams");
@@ -442,6 +452,28 @@ public class UserSearchTest {
                 "and"
         );
         long resultCount = page.getTotalElements();
-        assertEquals(2, resultCount);
+        assertEquals(3, resultCount);
+    }
+
+    @Test
+    public void testSearchWithKeywordFilterAnd() {
+        Set<String> searchTerms = new HashSet<>();
+        searchTerms.add("Guttman");
+        searchTerms.add("Williams");
+
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "Marina Ski Filipovic",
+                null,
+                null,
+                searchTerms,
+                "lastname",
+                "and",
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
     }
 }
