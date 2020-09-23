@@ -276,7 +276,7 @@ public class User {
      */
     public void addActivityTypes(ActivityType acitivityType) {
         activityTypes.add(acitivityType);
-        acitivityType.getUsers().add(this);
+        acitivityType.addUser(this);
     }
 
     public Set<Email> getEmails() {
