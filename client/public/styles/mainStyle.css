@@ -72,11 +72,14 @@ input, select, textarea {
 .floatClear {
     clear:both;
 }
-.darkToggle{
-    border: 1px solid #7f7f7f78;
+.darkToggle {
+    border: 1px solid var(--v-secondary-base);
     border-radius: 100px;
     margin: 4px 8px;
     padding:10px 12px !important;
+}
+.darkToggle:hover {
+    border: 1px solid var(--v-primary-base)
 }
 .darkToggle label{
     text-align: right;
@@ -94,7 +97,7 @@ input, select, textarea {
 /* -- Buttons ---- */
 .navBarButton {
     background-color: #1dca92;
-    color: white;
+    color: var(--v-tertiaryText-base);
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -181,7 +184,7 @@ input, select, textarea {
     cursor:pointer;
 }
 #globalSearchBarContainer{
-    background-color: #79797933;
+    background-color: var(--v-tertiary-base);
     width: 550px;
     border-radius: 30px;
 }
@@ -197,13 +200,26 @@ input, select, textarea {
 #globalSearchBarInput{
     float: right;
     padding: 8px 0;
-    width: calc(100% - 45px);
+    margin-right: 20px;
+    width: calc(100% - 65px);
     font-size: 15px !important;
     color:var(--v-primaryText-base);
 }
 #globalSearchBarInput::placeholder{
     color:var(--v-primaryText-base);
     opacity: 0.6;
+}
+#globalSearchBarInput:-webkit-autofill,
+#globalSearchBarInput:-webkit-autofill:hover,
+#globalSearchBarInput:-webkit-autofill:focus,
+#globalSearchBarInput:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px var(--v-tertiary-base) inset !important;
+    -webkit-text-fill-color: var(--v-primaryText-base) !important;
+    caret-color: var(--v-primaryText-base) !important;
+}
+
+.loginFormContainer input:focus {
+    border: 1px solid var(--v-primary-base) !important;
 }
 #headerNavToggle{
     cursor: pointer;
@@ -213,6 +229,9 @@ input, select, textarea {
 }
 .navBarLeftColIcon {
     margin-left: 20px;
+}
+.logoutButton:hover {
+    color: var(--v-component-base) !important;
 }
 /* Hide, show and rearrange elements for mobile */
 @media only screen and (max-width: 1180px) {

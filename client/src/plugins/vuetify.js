@@ -12,7 +12,8 @@ export default new Vuetify({
         themes: {
             light: {
                 primary: '#1cca92',
-                secondary: '#ffffff',
+                secondary: '#dddddd',
+                tertiary: '#dddddd',
                 background: '#ffffff',
                 component: '#ffffff',
                 colouredComponent: '#3bb18b',
@@ -26,7 +27,8 @@ export default new Vuetify({
             },
             dark: {
                 primary: '#1cca92',
-                secondary: '#424242',
+                secondary: '#4f4f4f',
+                tertiary: '#333333',
                 background: '#121212',
                 component: '#222222',
                 colouredComponent: '#238c6a',
