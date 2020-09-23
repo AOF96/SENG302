@@ -8,7 +8,7 @@
             <v-card class="ma-2" style="border-radius:14px;padding:8px;">
               <form>
                 <h1 style="text-align: center; color: var(--v-primaryText-base)"> Search</h1>
-                <v-toolbar flat height="auto">
+                <v-toolbar flat height="auto" style="background:none;">
                   <template v-slot:extension>
                     <v-tabs
                         v-model="tabs"
