@@ -11,6 +11,10 @@
     background: url(../../images/user_banner_dark.jpg) no-repeat center center;
     background-size: cover;
 }
+.darkModeBanner{
+    background: url(../../images/user_banner_dark.jpg) no-repeat center center;
+    background-size: cover;
+}
 .profileContainer {
   width: calc(100% - 40px);
   max-width: 1230px;

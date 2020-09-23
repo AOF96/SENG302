@@ -124,7 +124,7 @@
               <v-tab-item>
                 <v-card class="py-3" flat>
                   <div>
-                    <ActivityLocationSettings v-on:set-location="setLocationFromComponent"/>
+                    <ActivityLocationSettings v-bind:dark-mode-global="darkModeGlobal" v-on:set-location="setLocationFromComponent"/>
                   </div>
                 </v-card>
               </v-tab-item>
@@ -359,13 +359,13 @@
   import {apiActivity, apiUser} from "../../../api";
   import router from "../../../router";
   import ActivityLocationSettings from "./ActivityLocationSettings";
-  //import googleMapsApi from "@/util/googleMapsApi";
 
   export default {
     name: "ActivitySettingsPage",
     components: {
       ActivityLocationSettings
     },
+    props: ['darkModeGlobal'],
     data() {
       return {
         tabs: null,
@@ -425,6 +425,7 @@
 
     methods: {
       ...mapActions(["createActivity", "updateUserContinuousActivities", "getDataFromUrl", "updateUserDurationActivities", "addActivityAchievement"]),
+
       /** checks login and if not created redirects you to profile page **/
       checkLogin() {
         if (!this.$route || !this.$router) {

@@ -1,9 +1,9 @@
 <template>
   <v-card id="achievementCard" class="activityPageCard" :loading="loading" :disabled="loading">
-    <h2 id="achievementCardTitle" style="padding-bottom:10px;">Achievements</h2>
+    <h2 class="activityCardTitle">Achievements</h2>
     <v-card  class="achievementCard" v-for="achievement in achievements" v-bind:key="achievement.id" outlined >
       <v-row no-gutters style="padding: 10px 15px 9px;">
-        <h3 style="padding-right: 5px;">{{achievement.name}}</h3>
+        <h3 style="padding-right: 5px;color: var(--v-primaryText);">{{achievement.name}}</h3>
         <v-tooltip bottom max-width="500px">
           <template v-slot:activator="{ on }">
             <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
@@ -13,7 +13,7 @@
       </v-row>
       <v-divider></v-divider>
       <v-container style="max-height: 200px;overflow-y: auto;">
-        <h4 style="padding:5px 0;" v-for="(results, index) in results[achievement.id]" v-bind:key="index">{{index+1}}: {{results.value}}</h4>
+        <h4 style="padding:5px 0;color: var(--v-primaryText);" v-for="(results, index) in results[achievement.id]" v-bind:key="index">{{index+1}}: {{results.value}}</h4>
       </v-container>
       <v-divider></v-divider>
       <v-row no-gutters style="padding: 10px 10px 6px;">
