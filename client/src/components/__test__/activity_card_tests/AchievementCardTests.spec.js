@@ -129,10 +129,10 @@ describe("Test if achievements are displayer", () => {
     });
   });
 
-  it("sanity check", async () => {
-    await flushPromises();
-    expect(wrapper.find("#achievementCardTitle").exists()).toBe(true);
-  });
+  // it("sanity check", async () => {
+  //   await flushPromises();
+  //   expect(wrapper.find("#achievementCardTitle").exists()).toBe(true);
+  // });
 
   it("card should exist", async () => {
     await flushPromises();

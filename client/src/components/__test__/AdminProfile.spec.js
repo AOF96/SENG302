@@ -77,9 +77,10 @@ describe("button appears on the bottom left of the profile page if admin", () =>
       nickname: null,
       date_of_birth: "1911-11-11",
       fitness: 1,
-      city: null,
-      state: null,
-      country: null,
+      location : {city: null,
+        state: null,
+        country: null
+      },
       passports: [],
       activities: [],
       primary_email: "mwi67@uclive.ac.nz",
