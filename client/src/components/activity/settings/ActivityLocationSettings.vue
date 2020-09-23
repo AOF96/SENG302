@@ -1,7 +1,6 @@
 <template>
   <div>
     <div id="locationSettingsMap"></div>
-    <hr/>
     <v-container>
       <v-row justify="center" align="center"><h4 class="selectLocationText">Select on map or type in the box</h4></v-row>
     </v-container>
@@ -12,8 +11,11 @@
 </template>
 
 <script>
+  import mapStyles from "../../../util/mapStyles";
+
   export default {
     name: "ActivityLocationSettings",
+    props: ['darkModeGlobal'],
     data() {
       return {
         marker: null,
@@ -37,6 +39,19 @@
 
     methods: {
       /**
+       * Creates an event handler to check if the theme has changed
+       * @param map
+       */
+      setThemeCheckEvent(map) {
+        let outer = this;
+        window.google.maps.event.addDomListener(window, 'click', function() {
+          map.setOptions({
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+          });
+        });
+      },
+
+      /**
        * Loads the map onto the page and centres on the users home city.
        * Adds a marker on the city's centre.
        */
@@ -51,11 +66,11 @@
           streetViewControl: false,
           fullscreenControl: false,
           rotateControl: false,
-          mapTypeControl: false
+          mapTypeControl: false,
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"]
         });
 
         let outer = this;
-
         map.addListener('click', function (e) {
           if (outer.marker != null) {
             outer.marker.setMap(null);
@@ -70,6 +85,7 @@
 
         this.setMapCentre(map);
         this.loadLocationAutocomplete();
+        this.setThemeCheckEvent(map);
       },
 
       /**

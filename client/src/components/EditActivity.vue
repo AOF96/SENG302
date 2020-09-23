@@ -121,7 +121,7 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat class="py-3">
-                  <ActivityLocationSettings v-on:set-location="setLocationFromComponent"/>
+                  <ActivityLocationSettings v-bind:dark-mode-global="darkModeGlobal" v-on:set-location="setLocationFromComponent"/>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -419,6 +419,7 @@
     components: {
       ActivityLocationSettings
     },
+    props: ['darkModeGlobal'],
     data() {
       return {
         tabs: null,

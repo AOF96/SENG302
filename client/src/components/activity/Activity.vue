@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="profileBanner"></div>
+    <div v-bind:class="{'profileBanner': true, 'darkModeBanner': darkModeGlobal}"></div>
     <v-snackbar v-model="snackbar">{{ errorMessage }}<v-btn color="primary" text @click="snackbar = false" >Close</v-btn></v-snackbar>
     <div class="activityWrap">
       <div id="activityPageLeft" class="activityPageColumn">
@@ -18,6 +18,7 @@
           <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
             <span v-for="(a, index) in activity_types" :key="index">
               <v-chip
+                      color="#c1c1c1"
                       class="ma-2"
               >
                 {{a.name}}
@@ -28,19 +29,19 @@
             <v-chip
                     v-bind:to="'/profile/'+authorId"
                     class="ma-2"
-                    color="white"
+                    color="component"
             >
               <v-avatar left>
-                <v-icon>mdi-account-circle</v-icon>
+                <v-icon color="primaryText">mdi-account-circle</v-icon>
               </v-avatar>
-              {{activity_author_firstname + " " + activity_author_lastname }}
+              <span style="color:var(--v-primaryText-base);">{{activity_author_firstname + " " + activity_author_lastname }}</span>>
             </v-chip>
             <v-spacer></v-spacer>
             <v-chip
                     class="ma-2"
-                    color="white"
+                    color="component"
             >
-              {{numFollowers}} Follower<span v-if="numFollowers !== 1">s</span>
+              <span style="color:var(--v-primaryText-base);">{{numFollowers}} Follower<span v-if="numFollowers !== 1">s</span></span>
             </v-chip>
           </v-row>
           <v-divider></v-divider>
@@ -52,12 +53,12 @@
           </v-row>
         </v-card>
         <v-card :disabled="roleChanging" style="padding:20px;border-radius: 15px" class="activityContainer">
-          <h3 style="font-size:13px;" v-if="!roleChanging">Involvement</h3>
+          <h3 style="font-size:13px;color: var(--v-primaryText);" v-if="!roleChanging">Involvement</h3>
           <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleChanging" ref="skeleton" type="text" ></v-skeleton-loader>
           <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading" ></v-skeleton-loader>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="(userRole === 'none' || userRole === 'follower' || userRole === 'creator') && !roleChanging">Not Participating</h3>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole === 'participant' && !roleChanging">You are a Participant</h3>
-          <h3 style="font-size:17px;font-weight: 500;" v-if="userRole === 'organiser' && !roleChanging">You are an Organiser</h3>
+          <h3 style="font-size:17px;font-weight: 500;color: var(--v-primaryText);" v-if="(userRole === 'none' || userRole === 'follower' || userRole === 'creator') && !roleChanging">Not Participating</h3>
+          <h3 style="font-size:17px;font-weight: 500;color: var(--v-primaryText);" v-if="userRole === 'participant' && !roleChanging">You are a Participant</h3>
+          <h3 style="font-size:17px;font-weight: 500;color: var(--v-primaryText);" v-if="userRole === 'organiser' && !roleChanging">You are an Organiser</h3>
           <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
                   style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
           ></v-skeleton-loader>
@@ -91,7 +92,7 @@
       <div id="activityPageCenter" class="activityPageColumn">
         <div>
               <v-card style="border-radius: 15px" class="activityPageCard">
-                <h2>Participants & Organisers</h2>
+                <h2 class="activityCardTitle">Participants & Organisers</h2>
                 <v-tabs
                         v-model="previewTabs"
                         fixed-tabs
@@ -318,7 +319,7 @@
         </v-card>
 
         <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard">
-            <h2 style="padding-bottom:10px;">Latest Changes</h2>
+            <h2 class="activityCardTitle">Latest Changes</h2>
             <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
               <v-timeline-item
                       icon-color="grey lighten-2"
@@ -329,8 +330,8 @@
                     <h2 style="font-size:14px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
                     <ul>
                     <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
-                        style="font-size:15px;color:rgba(0,0,0,0.85);">
-                      <li>{{updateText}}</li>
+                        style="font-size:15px;">
+                      <li style="color:var(--v-primaryText-base);">{{updateText}}</li>
                     </h2>
                     </ul>
                   </v-col>
@@ -352,12 +353,14 @@
   import {apiActivity, apiUser} from "../../api";
   import AchievementsCard from "./modules/AchievementsCard";
   import store from '../../store/index.js';
+  import mapStyles from "../../util/mapStyles";
 
   export default {
     name: "ActivityPageInfo",
     components: {
         AchievementsCard,
     },
+    props: ['darkModeGlobal'],
     data() {
       return {
         activity_name: "",
@@ -448,7 +451,7 @@
     updated() {
       if (!this.user.isLogin) {
         this.$router.push('/login');
-      } else {
+      }else{
         this.loadMap();
       }
     },
@@ -478,6 +481,19 @@
     methods: {
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
         'getParticipants', 'getOrganisers', 'checkUserActivityVisibility', 'getLocationForActivity']),
+
+      /**
+       * Creates an event handler to check if the theme has changed
+       * @param map
+       */
+      setThemeCheckEvent(map) {
+        let outer = this;
+        window.google.maps.event.addDomListener(window, 'click', function() {
+          map.setOptions({
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+          });
+        });
+      },
 
       /**
        * Loads the role of the currently logged in user.
@@ -796,13 +812,14 @@
        * Retrieves the location of the activity
        */
       async getActivityLocation(){
+        let self = this;
         await apiActivity.getLocationForActivity(this.$route.params.activityId)
           .then((response) => {
-            this.location = response.data;
+            self.location = response.data;
         })
           .catch((error) => {
             if (error.response.status === 404) {
-              this.locationToDisplay = "No Location Set"
+              self.locationToDisplay = "No Location Set"
             }
         })
         this.locationFormat();
@@ -863,6 +880,7 @@
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
           zoom: 9,
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           disableDefaultUI: true
         });
 
@@ -885,6 +903,7 @@
             outer.mapLoading = false;
           }
         });
+        this.setThemeCheckEvent(map);
       },
 
       /**
