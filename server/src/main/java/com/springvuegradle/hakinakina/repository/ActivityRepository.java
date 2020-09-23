@@ -15,12 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository for storing activities that the user can perform.
  */
 @RepositoryRestResource
-public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity> {
+public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSpecificationExecutor<Activity>, ActivityRepositoryCustom {
 
     Activity findActivityById(Long id);
 
@@ -78,4 +79,5 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     Optional<Long> getActivityLocationId(Long activityId);
 
     Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
+
 }

@@ -14,12 +14,12 @@ import java.util.Set;
 
 
 public class ActivityMapDto {
-    private ActivityRepository activityRepository;
 
     private Long id;
     private String name;
     private String description;
     private boolean continuous;
+    private Long authorId;
 
     @JsonProperty("start_time")
     private java.sql.Timestamp startTime;
@@ -41,6 +41,14 @@ public class ActivityMapDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 
     public String getName() {

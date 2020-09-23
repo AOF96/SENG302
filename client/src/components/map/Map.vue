@@ -13,9 +13,9 @@
 
   export default {
     name: "Map",
-    data: function () {
+    data: function() {
       return {
-        map: null,
+        gmap: null,
         geocoder: null,
         errorMessage: null,
         snackbar: false,
@@ -23,6 +23,10 @@
         searchLatitude: null,
         searchLongitude: null,
         searchedType: null,
+        mapStyle: "light",
+        mapBounds: null,
+        mapActivities: [],
+        activities: [],
       }
     },
     props: ['darkModeGlobal'],
@@ -32,7 +36,15 @@
     },
     mounted() {
       this.loadMap();
+     },
+
+    watch: {
+      mapBounds: function(){
+        this.mapActivities = [];
+        this.getActivitiesInRange();
+     }
     },
+
     methods: {
       ...mapActions(["getDataFromUrl"]),
 
@@ -42,10 +54,8 @@
        */
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
-
         let userPosition = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
-
-        let map = new window.google.maps.Map(document.getElementById("map"), {
+        this.gmap = new window.google.maps.Map(document.getElementById("map"), {
           center: userPosition,
           zoom: 12,
           styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
@@ -57,7 +67,8 @@
           fullscreenControl: false
         });
 
-        window.google.maps.event.addListener(map, 'idle', function () {
+        let self = this;
+        window.google.maps.event.addListener(this.gmap, 'idle', function(){
           let mapBounds = this.getBounds();
           let NECorner = mapBounds.getNorthEast();
           let SWCorner = mapBounds.getSouthWest();
@@ -68,14 +79,16 @@
             SWLong: SWCorner.lng()
           };
           apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
-              .then(response => {
-                console.log(response.data);
-              })
+            .then(response => {
+              self.activities = response.data;
+              self.createActivityMarkers(self.gmap);
+            })
         });
 
-        this.setThemeCheckEvent(map);
-        this.createHomeMarker(map, userPosition);
-        this.createSearch(map);
+        this.setThemeCheckEvent(this.gmap);
+        this.createControl(this.gmap);
+        this.createHomeMarker(this.gmap, userPosition);
+        this.createSearch(this.gmap);
       },
 
       /**
@@ -108,13 +121,159 @@
           content: contentString
         });
 
-        marker.addListener('click', function () {
+        marker.addListener('click', function() {
           infowindow.open(map, marker);
         });
 
-        window.google.maps.event.addListener(map, "click", function () {
+        window.google.maps.event.addListener(map, "click", function() {
           infowindow.close();
         });
+      },
+
+      /**
+       * Formats Date object to pretty English
+       * @param date
+       */
+      dateFormatterToEnglish: function(date) {
+        const options = {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+          hour12: true,
+          hour: "2-digit",
+          minute: "2-digit"
+        };
+        return date.toLocaleTimeString("en-US", options);
+      },
+
+      /**
+       * Gets activities within the bounds of the map
+       */
+      getActivitiesInRange(){
+        let NECorner = this.mapBounds.getNorthEast();
+        let SWCorner = this.mapBounds.getSouthWest();
+        let coordinates = {
+          NELat: NECorner.lat(),
+          NELong: NECorner.lng(),
+          SWLat: SWCorner.lat(),
+          SWLong: SWCorner.lng()
+        };
+        apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
+            .then(response => {
+              this.activities = response.data;
+              this.createActivityMarkers(this.gmap);
+            })
+      },
+
+      /**
+       * Creates markers for the activities on the map
+       * @param map
+       */
+      createActivityMarkers(map) {
+        let innerThis = this;
+        let activityMarkerIcon = {
+          url: "https://i.imgur.com/MUWKzz9.png",
+          scaledSize: new window.google.maps.Size(30, 30),
+          origin: new window.google.maps.Point(0, 0),
+          anchor: new window.google.maps.Point(15, 30)
+        };
+
+        for (let activity of this.activities) {
+          if (activity.visibility === "public") {
+            if(activity.authorId === this.user.profile_id) {
+              activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
+            } else {
+              activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
+            }
+          } else if (activity.visibility === "restricted") {
+            if(activity.authorId === this.user.profile_id) {
+              activityMarkerIcon.url = "https://i.imgur.com/61rB4dm.png"
+            } else {
+              activityMarkerIcon.url = "https://i.imgur.com/Y0JUUox.png"
+            }
+          } else if (activity.visibility === "private") {
+            if(activity.authorId === this.user.profile_id) {
+              activityMarkerIcon.url = "https://i.imgur.com/jNY9HSw.png"
+            } else {
+              activityMarkerIcon.url = "https://i.imgur.com/lanhJgs.png"
+            }
+          }
+
+          let activityPosition = new window.google.maps.LatLng(activity.location.latitude, activity.location.longitude);
+          let pos = innerThis.mapActivities.length;
+          innerThis.mapActivities.push(new window.google.maps.Marker({
+            map: map,
+            position: activityPosition,
+            icon: activityMarkerIcon,
+          }));
+
+          let contentString
+          if (activity.continuous === true) {
+            contentString = '<div class="content">'+
+                    '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
+                    '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
+                    '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
+                    '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
+                    '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
+                    '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
+                    '<hr class="activityPopupActivityLine">'+
+                    '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
+                    '</div>';
+
+          } else {
+
+            let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time));
+            let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time));
+
+            contentString = '<div class="content">'+
+                    '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
+                    '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
+                    '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
+                    '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
+                    '<h1 class="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</h1>'+
+                    '<h1 class="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</h1>'+
+                    '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
+                    '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
+                    '<hr class="activityPopupActivityLine">'+
+                    '<a href="/activity/'+activity.id+'">' +
+                    '<button class="activityPopupActivityButton">Go to Activity</button></a>'+
+                    '</div>';
+          }
+
+          let infowindow = new window.google.maps.InfoWindow({
+            content: contentString
+          });
+
+          innerThis.mapActivities[pos].addListener('click', function() {
+            infowindow.open(map, innerThis.mapActivities[pos]);
+          });
+
+          window.google.maps.event.addListener(map, "click", function() {
+            infowindow.close();
+          });
+        }
+      },
+
+      /**
+       * Returns the correct colour for a given activity visibility
+       * @param visibility
+       * @returns {string}
+       */
+      getVisibilityColour(visibility) {
+        let colour = "#1dca92";
+        switch(visibility) {
+          case "private":
+            colour = "#ff4f4a";
+            break;
+          case "restricted":
+            colour = "#ff843c";
+            break;
+          case "public":
+            colour = "#1dca92";
+            break;
+        }
+        return colour;
       },
 
       /**
@@ -179,10 +338,30 @@
       },
 
       /**
+       * Creates a control for swapping the map theme
+       * @param map
+       */
+      createControl(map) {
+        const styleControl = document.getElementById("styleSelectorDiv");
+        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
+
+        const styleSelector = document.getElementById("styleSelector");
+        map.setOptions({
+          styles: mapStyles[this.mapStyle]
+        });
+
+        styleSelector.addEventListener("click", () => {
+          map.setOptions({
+            styles: mapStyles[this.mapStyle]
+          });
+        });
+      },
+
+      /**
        * Checks if search exists and creates marker if it does
        */
       createSearch(map) {
-        if (this.$route.params.coordinates !== undefined) {
+        if (this.$route.params.coordinates !== null) {
           this.parseCoordinates();
           this.createSearchMarker(map);
         }

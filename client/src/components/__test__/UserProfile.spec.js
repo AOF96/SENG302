@@ -144,7 +144,8 @@ describe("Check user profile page", () => {
         expect(wrapper.find("#profileFullMapButton").exists()).toBe(true);
     });
 
-    it('should take the user to the full map page with the correct coordinates when the Full Map button is clicked.', async () => {
+    it('should take the user to the full map page with the correct coordinates when the Full Map button is clicked.' +
+        '\n +  Passport country pane is not displayed when user does not have any countries selected.', async () => {
         localVue.use(VueRouter);
         const router = new VueRouter();
 
@@ -188,7 +189,7 @@ describe("Check user profile page", () => {
             fitness: 1,
             profile_id: 2,
             password: "Water123",
-            passports: ["Afghanistan"],
+            passports: [],
             tmp_passports: [],
             permission_level: 1,
             activities: [],
