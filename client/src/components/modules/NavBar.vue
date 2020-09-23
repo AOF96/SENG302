@@ -11,11 +11,6 @@
                  v-bind:src="rootLocation+'favicon.png'">
           </v-row>
         </v-col>
-        <v-col class="hideNavForMobile">
-          <v-row justify="center">
-            <BackButton/>
-          </v-row>
-        </v-col>
         <v-col class="hideForMobile">
           <v-row justify="center" align="center">
             <div id="globalSearchBarContainer" v-if="user.isLogin">
@@ -29,11 +24,6 @@
                      placeholder="Search" autocomplete="false">
               <div class="floatClear"></div>
             </div>
-          </v-row>
-        </v-col>
-        <v-col class="hideNavForMobile">
-          <v-row justify="center">
-            <ForwardButton/>
           </v-row>
         </v-col>
         <v-col cols="auto">
@@ -177,8 +167,6 @@
 <script>
   import {mapGetters, mapActions} from 'vuex';
   import {apiUser} from "../../api";
-  import BackButton from "./BackButton";
-  import ForwardButton from "./ForwardButton";
 
   export default {
     name: "NavBar",
@@ -189,10 +177,6 @@
         rootLocation: process.env.VUE_APP_BASE_URL,
         darkMode: false
       }
-    },
-    components: {
-      ForwardButton,
-      BackButton,
     },
     computed: {
       ...mapGetters(["user", "isAdmin"]),
