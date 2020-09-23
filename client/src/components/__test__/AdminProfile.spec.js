@@ -51,6 +51,16 @@ describe("button appears on the bottom left of the profile page if admin", () =>
           password: "Welcome1",
           permission_level: 1,
           isLogin: true,
+          location: {
+            street_address: "300 Somewhere Road",
+            suburb: "Somewhere",
+            city: "Christchurch",
+            postcode: 8000,
+            state: "Canterbury",
+            country: "New Zealand",
+            latitude: 120.47,
+            longitude: -20.12
+          },
         }),
         isAdmin: () => ({
           isAdmin: true,
@@ -77,15 +87,21 @@ describe("button appears on the bottom left of the profile page if admin", () =>
       nickname: null,
       date_of_birth: "1911-11-11",
       fitness: 1,
-      location : {city: null,
-        state: null,
-        country: null
-      },
       passports: [],
       activities: [],
       primary_email: "mwi67@uclive.ac.nz",
       additional_email: [],
       permission_level: 0,
+      location: {
+        street_address: "300 Somewhere Road",
+        suburb: "Somewhere",
+        city: "Christchurch",
+        postcode: 8000,
+        state: "Canterbury",
+        country: "New Zealand",
+        latitude: 120.47,
+        longitude: -20.12
+      },
     });
 
     actions.getUserContinuousActivities.mockResolvedValue({

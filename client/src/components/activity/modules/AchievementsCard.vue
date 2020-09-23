@@ -51,7 +51,8 @@
                       outlined
                       rounded
                       dense
-                      v-model="inputBind[achievement.id]">
+                      v-model="inputBind[achievement.id]"
+                      id="resultInput">
         </v-text-field>
         <v-btn id="resultSaveButton" color="primary" height="40px" class="achievementSaveButton" @click="saveResult(achievement.id)" outlined rounded>Save</v-btn>
       </v-row>
