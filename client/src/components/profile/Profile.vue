@@ -54,7 +54,7 @@
               <div class="profileMainInfoContainer">
                 <h1>
                   {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
-                  <span id="userNickname" style="color:#7e7e7e;" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
+                  <span id="userNickname" style="color:grey;" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
                 </h1>
                 <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
               </div>
