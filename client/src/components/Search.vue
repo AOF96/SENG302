@@ -7,7 +7,7 @@
           <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
             <v-card class="ma-2" style="border-radius:14px;padding:8px;">
               <form>
-                <h1 style="text-align: center"> Search</h1>
+                <h1 style="text-align: center; color: var(--v-primaryText-base)"> Search</h1>
                 <v-toolbar flat height="auto">
                   <template v-slot:extension>
                     <v-tabs
@@ -17,11 +17,11 @@
                       <v-tabs-slider></v-tabs-slider>
                       <v-tab style="text-transform: none" href="#mobile-tabs-5-1"
                              v-on:click="activitySearchTab = false">
-                        <h1 class="searchHeading">User</h1>
+                        <h1 class="searchHeading" style="color: var(--v-primaryText-base)">User</h1>
                       </v-tab>
 
                       <v-tab style="text-transform: none" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
-                        <h1 class="searchHeading">Activity</h1>
+                        <h1 class="searchHeading" style="color: var(--v-primaryText-base)">Activity</h1>
                       </v-tab>
                     </v-tabs>
                   </template>
@@ -141,7 +141,7 @@
           </v-col>
           <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
             <v-card :disabled="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
+              <h1 class="searchHeading" style="margin-bottom:22px; color: var(--v-primaryText-base)">Filter by activity</h1>
               <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
                           label="Activity Type Select" multiple
                           v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
