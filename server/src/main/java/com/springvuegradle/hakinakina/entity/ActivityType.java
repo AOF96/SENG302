@@ -42,7 +42,10 @@ public class ActivityType {
 
     public void addUser(User user) {
         users.add(user);
-        user.getActivityTypes().add(this);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
     }
 
     @Override
