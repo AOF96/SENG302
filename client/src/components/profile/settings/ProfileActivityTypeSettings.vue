@@ -29,10 +29,20 @@
           <button type="button" class="genericConfirmButton saveButton" v-on:click="saveActivityTypes()">Save All Activity Types</button>
         </form>
       </div>
-      <div class="errorMessageContainer">
-        <h6 class="editSuccessMsg" id="activity_type_success" hidden="false">Saved successfully</h6>
-        <h6 class="editErrorMsg" id="activity_type_error" hidden="false">An error has occurred</h6>
-      </div>
+      <v-snackbar
+          v-model="snackbar"
+          :color="snackbarColour"
+          top
+      >
+        {{ snackbarText }}
+        <v-btn
+            @click="snackbar = false"
+            color="white"
+            text
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
 
     </div>
     <div class="floatClear"></div>
@@ -53,7 +63,10 @@ export default {
       selected_activity: "Activity Type",
       activities_option: [],
       num_of_activities: 1,
-      searchedUser: {}
+      searchedUser: {},
+      snackbar: false,
+      snackbarText: null,
+      snackbarColour: '',
     };
   },
   computed: {
@@ -71,7 +84,6 @@ export default {
       ...mapActions(["updateActivities", "getUserById", "editUserActivityTypes", "getActivityTypes"]),
 
     startUp() {
-      console.log("init");
       this.searchedUser.activities = this.searchedUser.activities.slice();
       this.replaceDashesWithSpaces(this.searchedUser.activities);
       this.setActivityTypeOptions();
@@ -141,16 +153,11 @@ export default {
       this.editUserActivityTypes({'id': this.searchedUser.profile_id, 'activities': this.searchedUser.activities})
         .then(
           response => {
-            document.getElementById("activity_type_success").hidden = false;
-            document.getElementById("activity_type_error").hidden = true;
+            this.showSnackbar("Saved successfully.","success");
             console.log(response);
           },
           error => {
-            document.getElementById("activity_type_error").hidden = false;
-            document.getElementById("activity_type_error").innerText =
-              error.response.data.Errors;
-            document.getElementById("activity_type_success").hidden = true;
-            console.log(error);
+            this.showSnackbar(error.response.data.Errors, "error");
           }
         );
     },
@@ -161,13 +168,13 @@ export default {
     async loadSearchedUser() {
       if (
         this.$route.params.profileId == null ||
-        this.$route.params.profileId == ""
+        this.$route.params.profileId === ""
       ) {
         this.$router.push("/settings/activities/" + this.user.profile_id);
         this.searchedUser = this.user;
       } else {
-        var tempUserData = await this.getUserById(this.$route.params.profileId);
-        if (tempUserData == "Invalid permissions") {
+        let tempUserData = await this.getUserById(this.$route.params.profileId);
+        if (tempUserData === "Invalid permissions") {
           this.$router.push("/settings/activities/" + this.user.profile_id);
           this.searchedUser = this.user;
         } else {
@@ -175,6 +182,17 @@ export default {
         }
       }
       this.startUp();
+    },
+
+    /**
+     * Shows a pop-up message to the user displaying the result of a function call.
+     * @param text: the text to be displayed to the user.
+     * @param colour: the colour to be displayed with the snackbar.
+     */
+    showSnackbar(text, colour) {
+      this.snackbarText = text;
+      this.snackbarColour = colour;
+      this.snackbar = true;
     }
   }
 };

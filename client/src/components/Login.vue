@@ -1,5 +1,8 @@
 <template>
     <div>
+        <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+            {{errorMessage}}
+        </v-alert>
         <div class="loginContainer">
             <div class="loginFormContainer">
                 <h1>Login</h1>
@@ -53,6 +56,10 @@
         passwordErrorMsg: "",
         otherErrorMsg: "",
         loadingLogin: false,
+        timeout: 3000 ,
+        alertComponent: false,
+        errorMessage: null,
+
       }
     },
     computed: {
@@ -74,7 +81,8 @@
         this.loadingLogin = true;
 
         if (!this.user.primary_email || !this.user.password) {
-          this.topErrorMsg = "Please enter email or password";
+          this.errorMessage = "Please enter email or password";
+          this.alertComponent = true;
           this.loadingLogin = false;
           return;
         }
@@ -102,16 +110,20 @@
               this.loadingLogin = false;
 
               if (responseCode === 403 && responseData === "Email does not exist") {
-                this.topErrorMsg = "Account does not exist"
+                this.errorMessage = "Account does not exist";
+                this.alertComponent = true;
 
               } else if (responseCode === 403 && responseData === "Incorrect password") {
-                this.passwordErrorMsg = "Incorrect Password"
+                this.errorMessage = "Incorrect Password";
+                this.alertComponent = true;
 
               } else if (responseCode === 403 && responseData === "Please enter email/password") {
-                this.topErrorMsg = "Please enter email/password"
+                this.errorMessage = "Please enter email/password";
+                this.alertComponent = true;
 
               } else {
-                this.otherErrorMsg = responseData
+                this.errorMessage = "Please enter email/password";
+                this.alertComponent = true;
               }
             })
 

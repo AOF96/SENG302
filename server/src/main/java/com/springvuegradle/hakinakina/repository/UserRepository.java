@@ -22,7 +22,7 @@ import java.util.Set;
  * Repository for storing users
  */
 @RepositoryRestResource
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User>, UserRepositoryCustom {
     @Query(value = "Select * from User u where u.primary_email = ?1", nativeQuery = true)
     User findUserByEmail(String email);
 

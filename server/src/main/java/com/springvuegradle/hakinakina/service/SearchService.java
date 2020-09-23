@@ -160,19 +160,34 @@ public class SearchService {
      * @param method
      * @return Page object with list SearchUserResponse object with user's email, full name, nickname
      */
-    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname, Set<ActivityType> activityTypes, String method) {
-        Page<User> userPage;
-        if (activityTypes != null) {
-            if (method.equals("or")) {
-                userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+    public Page<SearchUserDto> findPaginatedByQuery(int page, int size, String email, String fullname, String lastname,
+                                                    Set<ActivityType> activityTypes, Set<String> searchTerms,
+                                                    String searchTypes, String searchTermsMethod, String method) {
+        if (searchTermsMethod.equals("single")) {
+            Page<User> userPage;
+            if (activityTypes != null) {
+                if (method.equals("or")) {
+                    userPage = userRepository.findAllByActivityTypesOR(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                } else {
+                    userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                }
             } else {
-                userPage = userRepository.getUsersWithActivityTypeAnd(PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+                userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
             }
+            return responseHandler.userPageToSearchResponsePage(userPage);
         } else {
-            userPage = userRepository.findAll(generateSpecification(lastname, fullname, email), PageRequest.of(page, size));
+            Page<User> userPageFinal = null;
+            userPageFinal = getUsersByActivityFilter(page, size, email, fullname, lastname, activityTypes, searchTerms,
+                    searchTypes, searchTermsMethod, method);
+
+            if (userPageFinal == null) {
+                return responseHandler.userPageToSearchResponsePage(new PageImpl<>(new ArrayList<>()));
+            } else {
+                return responseHandler.userPageToSearchResponsePage(userPageFinal);
+            }
         }
-        return responseHandler.userPageToSearchResponsePage(userPage);
     }
+
 
     /**
      * Finds the intersection of a List of Sets of Users. Much of this code was adapted from
@@ -236,4 +251,201 @@ public class SearchService {
 
         return activitySpecification;
     }
+
+    /**
+     * Checks the list of users returned by the keyword filter and the activity type filter and returns users that are
+     * in both
+     * @param start where the list search should start. Will depend on current page
+     * @param list1End the amount of entries to check from the first list
+     * @param list2End the amount of entries to check from the second list
+     * @param userList1 list of users that were found by the activity filter search
+     * @param userList2 list of users that were found by the keyword filter search
+     * @return a list of users that were in both of the lists
+     */
+    private List<User> getCommonItemsBetweenLists(List<User> userList1, List<User> userList2, int start,
+                                                  int list1End, int list2End) {
+        List<User> commonItemsList = new ArrayList<>();
+
+        for (int i = start; i < list1End; i++) {
+            for (int j = start; j < list2End; j++) {
+                if (userList1.get(i).getUserId().equals(userList2.get(j).getUserId())) {
+                    commonItemsList.add(userList1.get(i));
+                    break;
+                }
+            }
+        }
+
+        return commonItemsList;
+    }
+
+    /**
+     * Helper function that calls other helper functions in order to get the final page of users to return.
+     * @param page the current page number
+     * @param size the amount of results to return
+     * @param email email of the current user being searched
+     * @param fullname fullname of the current user being searched
+     * @param lastname lastname of the current user being searched
+     * @param activityTypes activity types that users are being checked whether they have or not
+     * @param searchTerms the keywords that are being searched for
+     * @param searchTypes the type of the user search
+     * @return a page of users that were in both activity and keyword filter searches
+     */
+    private Page<User> getUsersByActivityFilter(int page, int size, String email, String fullname, String lastname,
+                                                Set<ActivityType> activityTypes, Set<String> searchTerms,
+                                                String searchTypes, String searchTermsMethod, String method) {
+
+        List<User> usersFoundByKeywordFilterList = new ArrayList<>();
+        Page<User> usersFoundByActivityFilterPage;
+        List<User> usersFoundByActivityFilterList = new ArrayList<>();
+        Page<User> userPageFinal = null;
+
+
+        if (searchTermsMethod.equals("and")) {
+            usersFoundByKeywordFilterList = userRepository.findUserNamesAnd(searchTerms, searchTypes);
+        } else {
+            usersFoundByKeywordFilterList = userRepository.findUserNamesOr(searchTerms, searchTypes);
+        }
+
+        if (activityTypes != null) {
+            if (method.equals("or")) {
+                usersFoundByActivityFilterPage = filterUsersActivityTypesOr(page, size, email, fullname, lastname,
+                        activityTypes, searchTerms, searchTypes);
+            } else {
+                usersFoundByActivityFilterPage = filterUsersActivityTypesAnd(page, size, email, fullname, lastname,
+                        activityTypes, searchTerms, searchTypes);
+            }
+
+            usersFoundByActivityFilterList = usersFoundByActivityFilterPage.getContent();
+
+            userPageFinal = getCommonItemsBetweenLists(page, size, usersFoundByActivityFilterList,
+                    usersFoundByKeywordFilterList);
+        } else {
+            if (usersFoundByKeywordFilterList.size() > page * 10) {
+                usersFoundByKeywordFilterList = usersFoundByKeywordFilterList.subList(page * 10,
+                        usersFoundByKeywordFilterList.size());
+                userPageFinal = new PageImpl<>(usersFoundByKeywordFilterList);
+            } else {
+                userPageFinal = new PageImpl<>(new ArrayList<>());
+            }
+        }
+        return userPageFinal;
+    }
+
+    /**
+     * Checks to see if users that were returned by the keyword search have at least one of the activity types that are
+     * being filtered by and returns them.
+     * @param page the current page number
+     * @param size the amount of results to return
+     * @param email email of the current user being searched
+     * @param fullname fullname of the current user being searched
+     * @param lastname lastname of the current user being searched
+     * @param activityTypes activity types that users are being checked whether they have or not
+     * @param searchTerms the keywords that are being searched for
+     * @param searchTypes the type of the user search
+     * @return a page of all users with that have at least one of these associated activity types
+     */
+    private Page<User> filterUsersActivityTypesOr(int page, int size, String email, String fullname, String lastname,
+                                                  Set<ActivityType> activityTypes, Set<String> searchTerms,
+                                                  String searchTypes) {
+        Page<User> usersFoundByActivityFilterPage;
+        List<User> usersFoundByActivityFilterList = new ArrayList<>();
+        ArrayList<String> searchTermsList = new ArrayList<>(searchTerms);
+
+        if (searchTypes.equals("email")) {
+            for (int i =0; i<searchTerms.size(); i++) {
+                usersFoundByActivityFilterPage = userRepository.findAllByActivityTypesOR(
+                        PageRequest.of(page, size), searchTermsList.get(i), fullname, lastname, activityTypes);
+                usersFoundByActivityFilterList.addAll(usersFoundByActivityFilterPage.getContent());
+            }
+            usersFoundByActivityFilterPage = new PageImpl<>(usersFoundByActivityFilterList);
+        } else if (searchTypes.equals("lastname")) {
+            for (int i =0; i<searchTerms.size(); i++) {
+                usersFoundByActivityFilterPage = userRepository.findAllByActivityTypesOR(
+                        PageRequest.of(page, size), email, fullname, searchTermsList.get(i), activityTypes);
+                usersFoundByActivityFilterList.addAll(usersFoundByActivityFilterPage.getContent());
+            }
+            usersFoundByActivityFilterPage = new PageImpl<>(usersFoundByActivityFilterList);
+        } else {
+            usersFoundByActivityFilterPage = userRepository.findAllByActivityTypesOR(
+                    PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+        }
+        return usersFoundByActivityFilterPage;
+    }
+
+    /**
+     * Checks to see if users that were returned by the keyword search have all of the activity types that are
+     * being filtered by and returns them.
+     * @param page the current page number
+     * @param size the amount of results to return
+     * @param email email of the current user being searched
+     * @param fullname fullname of the current user being searched
+     * @param lastname lastname of the current user being searched
+     * @param activityTypes activity types that users are being checked whether they have or not
+     * @param searchTerms the keywords that are being searched for
+     * @param searchTypes the type of the user search
+     * @return a page of all users with that have all of these associated activity types
+     */
+    private Page<User> filterUsersActivityTypesAnd(int page, int size, String email, String fullname, String lastname,
+                                                  Set<ActivityType> activityTypes, Set<String> searchTerms,
+                                                  String searchTypes) {
+        Page<User> usersFoundByActivityFilterPage;
+        List<User> usersFoundByActivityFilterList = new ArrayList<>();
+        ArrayList<String> searchTermsList = new ArrayList<>(searchTerms);
+
+        if (searchTypes.equals("email")) {
+            for (int i =0; i<searchTerms.size(); i++) {
+                usersFoundByActivityFilterPage = userRepository.getUsersWithActivityTypeAnd(
+                        PageRequest.of(page, size), searchTermsList.get(i), fullname, lastname, activityTypes);
+                usersFoundByActivityFilterList.addAll(usersFoundByActivityFilterPage.getContent());
+            }
+            usersFoundByActivityFilterPage = new PageImpl<>(usersFoundByActivityFilterList);
+        } else if (searchTypes.equals("lastname")) {
+            for (int i =0; i<searchTerms.size(); i++) {
+                usersFoundByActivityFilterPage = userRepository.getUsersWithActivityTypeAnd(
+                        PageRequest.of(page, size), email, fullname, searchTermsList.get(i), activityTypes);
+                usersFoundByActivityFilterList.addAll(usersFoundByActivityFilterPage.getContent());
+            }
+            usersFoundByActivityFilterPage = new PageImpl<>(usersFoundByActivityFilterList);
+        } else {
+            usersFoundByActivityFilterPage = userRepository.getUsersWithActivityTypeAnd(
+                    PageRequest.of(page, size), email, fullname, lastname, activityTypes);
+        }
+        return usersFoundByActivityFilterPage;
+    }
+
+    /**
+     * Checks the list of users returned by the keyword filter and the activity type filter and returns users that are
+     * in both
+     * @param page current page number
+     * @param size number of results to display on page
+     * @param usersFoundByActivityFilterList list of users that were found by the activity filter search
+     * @param usersFoundByKeywordFilterList list of users that were found by the keyword filter search
+     * @return a list of users that were in both of the lists
+     */
+    private Page<User> getCommonItemsBetweenLists(int page, int size, List<User> usersFoundByActivityFilterList, List<User> usersFoundByKeywordFilterList) {
+        int start = page * 10;
+        int end = page + size;
+        int keywordFilterListEnd = 0;
+        int list2End = 0;
+        List<User> userListFinal = new ArrayList<>();
+        Page<User> userPageFinal = null;
+
+        if (usersFoundByActivityFilterList.size() != 0 && usersFoundByKeywordFilterList.size() != 0) {
+            keywordFilterListEnd = Math.min(usersFoundByActivityFilterList.size(), end);
+            list2End = Math.min(usersFoundByKeywordFilterList.size(), end);
+            if (usersFoundByActivityFilterList.size() > start && usersFoundByKeywordFilterList.size() > start) {
+                userListFinal = getCommonItemsBetweenLists(usersFoundByActivityFilterList,
+                        usersFoundByActivityFilterList, start, keywordFilterListEnd, list2End);
+            }
+            userPageFinal = new PageImpl<>(userListFinal);
+        } else if (usersFoundByActivityFilterList.size() != 0 && usersFoundByActivityFilterList.size() >
+                start && usersFoundByKeywordFilterList.size() == 0) {
+            userPageFinal = new PageImpl<>(usersFoundByKeywordFilterList);
+        } else if (usersFoundByActivityFilterList.size() == 0 && usersFoundByKeywordFilterList.size() !=
+                0 && usersFoundByKeywordFilterList.size() > start) {
+            userPageFinal = new PageImpl<>(usersFoundByActivityFilterList);
+        }
+        return userPageFinal;
+    }
+
 }

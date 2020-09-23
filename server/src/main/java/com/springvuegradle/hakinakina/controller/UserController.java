@@ -144,6 +144,10 @@ public class UserController {
             user.setUserId(profileId);
             user.setEncryptedPassword(oldUser.getPassword());
             user.setSalt(oldUser.getSalt());
+            for (ActivityType activityType : oldUser.getActivityTypes()) {
+                activityType.removeUser(oldUser);
+                user.addActivityTypes(activityType);
+            }
             return userService.validateEditUser(user);
         } else {
             return responseHandler.formatErrorResponse(400, "Session mismatch");
