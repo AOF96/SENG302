@@ -140,6 +140,7 @@ import {
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
 import {apiUser} from "../../api";
+import mapStyles from "../../util/mapStyles";
 
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
 
@@ -178,7 +179,9 @@ export default {
       loadingProfileInfo: true,
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
-      mapLoading: true
+      mapLoading: true,
+      mapStyle: "light"
+
     };
   },
   async mounted() {
@@ -251,6 +254,7 @@ export default {
         let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          styles: mapStyles[this.mapStyle],
           center: position,
           zoom: 8,
           maxZoom: 10,
