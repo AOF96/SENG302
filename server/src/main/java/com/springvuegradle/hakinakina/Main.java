@@ -64,7 +64,7 @@ public class Main {
 				countryRepository.save(new PassportCountry(code, name));
 			}
 
-			BufferedReader bufReader = new BufferedReader(new FileReader("./src/main/resources/activityTypes.txt"));
+			BufferedReader bufReader = new BufferedReader(new FileReader("src/main/resources/activityTypes.txt"));
 			ArrayList<String> listOfActivityTypes = new ArrayList<>();
 			String activity = bufReader.readLine();
 			while (activity != null) {
