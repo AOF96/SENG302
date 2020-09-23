@@ -13,6 +13,7 @@
                             v-if="loadingEmails"
                             indeterminate
                             rounded
+                            class="my-2"
                             color="white"
                         />
                     </v-col>

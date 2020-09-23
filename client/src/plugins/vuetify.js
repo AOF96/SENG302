@@ -30,7 +30,7 @@ export default new Vuetify({
                 secondary: '#4f4f4f',
                 tertiary: '#333333',
                 background: '#121212',
-                component: '#222222',
+                component: '#1e1e1e',
                 colouredComponent: '#238c6a',
                 primaryText: '#ffffff',
                 secondaryText: '#1cca92',
