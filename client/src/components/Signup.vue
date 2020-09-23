@@ -9,7 +9,7 @@
         <h2>Create an account</h2>
 
         <form @submit.prevent>
-          <h6 v-if="submissionError">{{ submissionError }}</h6>
+          <h6 v-if="submissionError" id="submissionErrorText">{{ submissionError }}</h6>
           <div class="signUpRow">
             <input id="signup-firstname" class="signUpHalfWidthInput" v-model="user.firstname" name="fname" type="text" placeholder="First Name*" required/>
             <input id="signup-middlename" class="signUpHalfWidthInput" v-model="user.middlename" name="middlename" type="text" placeholder="Middle Name"/>
@@ -247,7 +247,7 @@ export default {
             this.$router.push('profile?u='+response.data[0].profile_id);
         },
         error => {
-          this.submissionError = error.response.data.Errors;
+          this.submissionError = error.response.data.Errors[0];
           console.log(error);
         }
       );

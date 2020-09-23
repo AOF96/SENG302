@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -56,16 +53,17 @@ public class SearchService {
      * @param activitySearchTerm the search term of the activity that the user is trying to find
      * @param page the page number the user wants to be at
      * @param size the number of activities that are returned per page
-     * @return Page object with a list of SearchActivityDtos that will display generic information about the activity
+     * @return Page object with a list of SearchActivity Dtos that will display generic information about the activity
      */
     @Transactional
-    public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size) {
-        Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm), PageRequest.of(page, size));
+    public Page<SearchActivityDto> findActivityPaginated(String activitySearchTerm, int page, int size, User searchingUser) {
+        Page<Activity> activityPage = activityRepository.findAll(generateActivitySpecification(activitySearchTerm, searchingUser), PageRequest.of(page, size));
         List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
         for (Activity activity: activityPage) {
             SearchActivityDto searchActivityDto = new SearchActivityDto();
             searchActivityDto.setId(activity.getId());
             searchActivityDto.setName(activity.getName());
+            searchActivityDto.setVisibility(activity.getVisibility());
             searchActivityDto.setContinuous(activity.isContinuous());
             searchActivityDto.setStartTime(activity.getStartTime());
             searchActivityDto.setEndTime(activity.getEndTime());
@@ -79,6 +77,48 @@ public class SearchService {
 
             searchActivityDtoList.add(searchActivityDto);
         }
+        return new PageImpl<>(searchActivityDtoList);
+    }
+
+    /**
+     * Uses dynamic query builders to get a list of activities with either all of the supplied searchterms
+     * or at least one of the supplied searchterms depending on the value of the method param. After the
+     * list of activities has been retreived it is turned into a Page<SearchActivityDto> and returned.
+     * @param searchTerms A set of terms that the user wants to search for
+     * @param method The method of multiple term search. And or Or, contains all terms or at least one term
+     * @param page The current page to retrieve
+     * @param size The amount of activities to display on this page
+     * @return Returns a page of activities that match the criteria
+     */
+    @Transactional
+    public Page<SearchActivityDto> findActivityPaginatedByQuery(Set<String> searchTerms, String method, int page, int size) {
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        List<Activity> activityList = new ArrayList<>();
+        if (method.equals("or")) {
+            activityList = activityRepository.findActivityNamesOr(searchTerms);
+        } else if (method.equals("and")){
+            activityList = activityRepository.findActivityNamesAnd(searchTerms);
+        }
+            int start = (page - 1) * 10;
+            int end = start + size;
+            if (activityList.size() < end) {
+                end = activityList.size();
+            }
+            for (int i = start; i<end; i++) {
+                SearchActivityDto searchActivityDto = new SearchActivityDto();
+                searchActivityDto.setId(activityList.get(i).getId());
+                searchActivityDto.setName(activityList.get(i).getName());
+                searchActivityDto.setContinuous(activityList.get(i).isContinuous());
+                searchActivityDto.setStartTime(activityList.get(i).getStartTime());
+                searchActivityDto.setEndTime(activityList.get(i).getEndTime());
+                if (activityList.get(i).getLocation() != null) {
+                    if (locationRepository.findById(activityList.get(i).getLocation().getId()).isPresent()) {
+                        Location activityLocation = locationRepository.getOne(activityList.get(i).getLocation().getId());
+                        searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
+                    }
+                }
+                searchActivityDtoList.add(searchActivityDto);
+            }
         return new PageImpl<>(searchActivityDtoList);
     }
 
@@ -173,11 +213,27 @@ public class SearchService {
     }
 
     /**
-     * Specification for searching an activity by name
+     * Specification for searching an activity by name which are either public, shared or user is the creator of the activity
      * @param activityName search term of an activity name
+     * @param searchingUser user object of the user who is doing the search
      * @return Specification object with Activity search request (WHERE part of the query)
      */
-    private Specification<Activity> generateActivitySpecification(String activityName) {
-        return Specification.where(ActivitySpecification.searchByActivityName(activityName));
+    private Specification<Activity> generateActivitySpecification(String activityName, User searchingUser) {
+        Specification<Activity> activitySpecification;
+        activitySpecification = Specification.where(ActivitySpecification.searchByActivityName(activityName));
+
+        // if you are not admin, your search is limited
+        if (searchingUser.getPermissionLevel() == 0) {
+            Specification<Activity> additionalSpecification = Specification.where(
+                    ActivitySpecification.searchPublicActivity()
+            ).or(
+                    ActivitySpecification.searchIsActivityAuthor(searchingUser)
+            ).or(
+                    ActivitySpecification.searchIsActivityShared(searchingUser)
+            );
+            activitySpecification = activitySpecification.and(additionalSpecification);
+        }
+
+        return activitySpecification;
     }
 }

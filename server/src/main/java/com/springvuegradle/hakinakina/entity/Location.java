@@ -152,14 +152,27 @@ public class Location {
         return this.activity;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
 
-    public User getUser() {
-        return this.user;
+    @Override
+    public String toString() {
+        return "Location{" +
+                "streetAddress='" + streetAddress + '\'' +
+                ", suburb='" + suburb + '\'' +
+                ", city='" + city + '\'' +
+                ", postcode=" + postcode +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
-
 
     @Override
     public boolean equals(Object o) {

@@ -47,10 +47,6 @@
         this.geocoder = new window.google.maps.Geocoder();
 
         let map = new window.google.maps.Map(document.getElementById("locationSettingsMap"), {
-          center: {
-            lat: -34.397,
-            lng: 150.644
-          },
           zoom: 9,
           streetViewControl: false,
           fullscreenControl: false,
@@ -81,12 +77,14 @@
        */
       setMapCentre(map) {
         let outer = this;
-        this.geocoder.geocode({'address': "Christchurch"}, function (results, status) {
+        let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
+        let latLng = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
+        this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
-            map.setCenter(results[0].geometry.location);
+            map.setCenter(latLng);
             outer.marker = new window.google.maps.Marker({
               map: map,
-              position: results[0].geometry.location
+              position: latLng
             });
           } else {
             this.snackbarText = status;

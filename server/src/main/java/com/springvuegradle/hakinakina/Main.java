@@ -15,9 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
@@ -66,8 +64,15 @@ public class Main {
 				countryRepository.save(new PassportCountry(code, name));
 			}
 
-			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team-Sport");
-			for (String activityType : activityTypes) {
+			BufferedReader bufReader = new BufferedReader(new FileReader("./src/main/resources/activityTypes.txt"));
+			ArrayList<String> listOfActivityTypes = new ArrayList<>();
+			String activity = bufReader.readLine();
+			while (activity != null) {
+				activity = activity.substring(1,activity.length()-1);
+				listOfActivityTypes.add(activity);
+				activity = bufReader.readLine();
+			}
+			for (String activityType : listOfActivityTypes) {
 				activityTypeRepository.save(new ActivityType(activityType));
 			}
 		};
