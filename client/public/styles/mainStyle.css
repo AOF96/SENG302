@@ -2,7 +2,7 @@
 *{
     margin:0;
     padding:0;
-    transition:background .1s ease, background-color .1s ease;
+    transition:background .1s ease, background-color .1s ease, color .1s ease;
 }
 body{
     background-color: var(--v-background-base);
