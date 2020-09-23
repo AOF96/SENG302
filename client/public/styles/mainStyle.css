@@ -77,6 +77,7 @@ input, select, textarea {
     border-radius: 100px;
     margin: 4px 8px;
     padding:10px 12px !important;
+    transition: all .25s ease;
 }
 .darkToggle:hover {
     border: 1px solid var(--v-primary-base)
@@ -148,7 +149,7 @@ input, select, textarea {
     font-size: 15px;
     color: #ee5e5e;
     font-weight: 500;
-    background: #ffffff;
+    background: var(--v-component-base);
     border: 2px solid #ee5e5e;
     cursor: pointer;
     transition:all 0.2s ease;
@@ -156,7 +157,7 @@ input, select, textarea {
 }
 .genericDeleteButton:hover {
     background: #ee5e5e;
-    color: #ffffff;
+    color: var(--v-component-base);
 }
 .loginButton {
     border-radius: 0;

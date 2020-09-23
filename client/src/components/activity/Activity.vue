@@ -41,7 +41,7 @@
                     class="ma-2"
                     color="component"
             >
-              <span style="color:var(--v-primaryText-base);">{{numFollowers}} Follower<span v-if="numFollowers !== 1">s</span></span>
+              <span style="color:var(--v-primaryText-base);">{{numFollowers}} Follower<span style="color:var(--v-primaryText-base);" v-if="numFollowers !== 1">s</span></span>
             </v-chip>
           </v-row>
           <v-divider></v-divider>

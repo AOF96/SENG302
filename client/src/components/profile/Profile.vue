@@ -10,7 +10,7 @@
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
         <v-container>
-          <h1>Profile Info</h1>
+          <h1>About {{ searchedUser.firstname }}</h1>
           <div v-if="!loadingProfileInfo">
             <hr/>
             <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
