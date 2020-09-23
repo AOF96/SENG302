@@ -64,9 +64,7 @@ public class Main {
 				countryRepository.save(new PassportCountry(code, name));
 			}
 
-//			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team-Sport");
-			BufferedReader bufReader = new BufferedReader(new FileReader("./src/main/java/com/springvuegradle/hakinakina/" +
-					"util/activityTypes.txt"));
+			BufferedReader bufReader = new BufferedReader(new FileReader("./src/main/resources/activityTypes.txt"));
 			ArrayList<String> listOfActivityTypes = new ArrayList<>();
 			String activity = bufReader.readLine();
 			while (activity != null) {

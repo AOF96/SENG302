@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -80,6 +77,48 @@ public class SearchService {
 
             searchActivityDtoList.add(searchActivityDto);
         }
+        return new PageImpl<>(searchActivityDtoList);
+    }
+
+    /**
+     * Uses dynamic query builders to get a list of activities with either all of the supplied searchterms
+     * or at least one of the supplied searchterms depending on the value of the method param. After the
+     * list of activities has been retreived it is turned into a Page<SearchActivityDto> and returned.
+     * @param searchTerms A set of terms that the user wants to search for
+     * @param method The method of multiple term search. And or Or, contains all terms or at least one term
+     * @param page The current page to retrieve
+     * @param size The amount of activities to display on this page
+     * @return Returns a page of activities that match the criteria
+     */
+    @Transactional
+    public Page<SearchActivityDto> findActivityPaginatedByQuery(Set<String> searchTerms, String method, int page, int size) {
+        List<SearchActivityDto> searchActivityDtoList = new ArrayList<SearchActivityDto>();
+        List<Activity> activityList = new ArrayList<>();
+        if (method.equals("or")) {
+            activityList = activityRepository.findActivityNamesOr(searchTerms);
+        } else if (method.equals("and")){
+            activityList = activityRepository.findActivityNamesAnd(searchTerms);
+        }
+            int start = (page - 1) * 10;
+            int end = start + size;
+            if (activityList.size() < end) {
+                end = activityList.size();
+            }
+            for (int i = start; i<end; i++) {
+                SearchActivityDto searchActivityDto = new SearchActivityDto();
+                searchActivityDto.setId(activityList.get(i).getId());
+                searchActivityDto.setName(activityList.get(i).getName());
+                searchActivityDto.setContinuous(activityList.get(i).isContinuous());
+                searchActivityDto.setStartTime(activityList.get(i).getStartTime());
+                searchActivityDto.setEndTime(activityList.get(i).getEndTime());
+                if (activityList.get(i).getLocation() != null) {
+                    if (locationRepository.findById(activityList.get(i).getLocation().getId()).isPresent()) {
+                        Location activityLocation = locationRepository.getOne(activityList.get(i).getLocation().getId());
+                        searchActivityDto.setSearchActivityLocationDto(setLocationForSearchActivityDto(activityLocation));
+                    }
+                }
+                searchActivityDtoList.add(searchActivityDto);
+            }
         return new PageImpl<>(searchActivityDtoList);
     }
 

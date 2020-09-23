@@ -236,7 +236,7 @@ public class SearchControllerTest {
         when(searchService.findActivityPaginated(eq("Chess"), any(int.class), any(int.class), any(User.class)))
                 .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
 
-        this.mockMvc.perform(get("/activities?activitySearchTerm=Chess&page=0&size=10").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities?activitySearchTerm=Chess&activitySearchTerms=null&method=single&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
                 .andExpect(content().string(containsString("\"visibility\":\""+ testActivity.getVisibility().toString().toLowerCase() +"\"")))
@@ -277,7 +277,7 @@ public class SearchControllerTest {
         when(searchService.findActivityPaginated(eq("'Outdoor Chess Tournament'"), any(int.class), any(int.class), eq(testUser)))
                 .thenReturn(createExpectedActivitySearchPage(testActivity, testLocation));
 
-        this.mockMvc.perform(get("/activities?activitySearchTerm='Outdoor Chess Tournament'&page=0&size=10").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities?activitySearchTerm='Outdoor Chess Tournament'&activitySearchTerms=null&method=single&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("\"name\":\""+ testActivity.getName() +"\"")))
                 .andExpect(content().string(containsString("\"visibility\":\""+ testActivity.getVisibility().toString().toLowerCase() +"\"")))
@@ -313,7 +313,7 @@ public class SearchControllerTest {
         when(searchService.findActivityPaginated(eq("'Indoor Chess Tournament'"), any(int.class), any(int.class), eq(testUser)))
                 .thenReturn(searchActivityDtos);
 
-        this.mockMvc.perform(get("/activities?activitySearchTerm='Indoor Chess Tournament'&page=0&size=10").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities?activitySearchTerm=Chess&activitySearchTerms=null&method=single&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("")));
 
@@ -341,7 +341,7 @@ public class SearchControllerTest {
         when(searchService.findActivityPaginated(eq("Kayak"), any(int.class), any(int.class), eq(testUser)))
                 .thenReturn(searchActivityDtos);
 
-        this.mockMvc.perform(get("/activities?activitySearchTerm=name&page=0&size=10").cookie(tokenCookie))
+        this.mockMvc.perform(get("/activities?activitySearchTerm=Chess&activitySearchTerms=null&method=single&page=0&size=10").cookie(tokenCookie))
                 .andExpect(status().is(200))
                 .andExpect(content().string(containsString("")));
 
