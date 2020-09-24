@@ -911,18 +911,11 @@ public class ActivityControllerTest {
         Session session1 = new Session("t0k3n");
         session1.setUser(testUser);
 
-       /* Activity activity = activityRepository.getOne(activityId);
-        User userAuthoringChange = userWithSession.getUser();
-        boolean isActivityAuthor = activity.getAuthor().getUserId().equals(userAuthoringChange.getUserId());
-        boolean isAdmin = userAuthoringChange.getPermissionLevel() == 1;
-        boolean isDefaultAdmin = userAuthoringChange.getPermissionLevel() == 2;
-        boolean isOrganiser = activityRepository.getUsersRoleForActivity(activityId, userAuthoringChange.getUserId()).equals("ORGANISER");*/
-
         activityRepository.save(dummyActivity);
 
         when(sessionRepository.findUserIdByToken("t0k3n")).thenReturn(session1);
         when(activityRepository.getOne((long) 1)).thenReturn(dummyActivity);
-        when(activityRepository.getUsersRoleForActivity(1L, 1L)).thenReturn("ORGANISER");
+        when(activityRepository.getUsersRoleForActivity(1L, 1L)).thenReturn(ActivityRole.ORGANISER);
         when(service.addLocationToActivity(any(Long.class), any(Location.class))).thenReturn(new ResponseEntity("Success", HttpStatus.valueOf(201)));
 
         this.mockMvc.perform(post("/activities/1/location").cookie(tokenCookie)
