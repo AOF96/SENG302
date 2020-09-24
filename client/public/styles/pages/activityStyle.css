@@ -18,9 +18,19 @@
     top: -56px;
 }
 
-.activityContainer{
-    border-radius: 14px;
-    width: 450px;
+.activityContainer {
+    border-radius: 15px !important;
+    width: calc(100% - 20px);
+    margin:20px 10px;
+}
+
+.resultsDiv {
+    padding: 20px;
+}
+
+.loadingInfoHeader {
+    font-weight: bold;
+    padding-top: 30px;
 }
 
 .activityInfoContainer {
@@ -362,16 +372,16 @@
     margin-left: 20px;
 }
 
-.activityPageCard{
-    min-height: 350px;
+.activityPageCard {
+    min-height: 220px;
     height: fit-content;
     width: calc(100% - 20px);
-    padding: 15px;
     margin:20px 10px;
     border-radius: 15px !important;
 }
 
-.activityContainer{
+.activityPageAchievementCard {
+    height: fit-content;
     width: calc(100% - 20px);
     margin:20px 10px;
     border-radius: 15px !important;
