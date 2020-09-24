@@ -24,13 +24,18 @@ setup:
     paths:
       - client/node_modules/
 
-sonarqube-check:
+sonarqube-server:
   stage: test
   script: 
     - cd server
     - ./gradlew sonarqube
-    - cd ../client
-    - sonar-scanner
+  allow_failure: true
+
+sonarqube-client:
+  stage: test
+  script: 
+    - cd client
+    - npm run sonarqube
   allow_failure: true
 
 junit:
