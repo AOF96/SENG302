@@ -14,8 +14,8 @@
             <span style="color: white;">{{achievement.description}}</span>
           </v-tooltip>
         </v-row>
-        <v-divider v-if="results[achievement.id].length > 0"></v-divider>
-        <v-container v-if="results[achievement.id].length > 0" style="max-height: 200px;overflow-y: auto;">
+        <v-divider v-if="results[achievement.id] !== undefined"></v-divider>
+        <v-container v-if="results[achievement.id] !== 0" style="max-height: 200px;overflow-y: auto;">
           <h4 style="padding:5px 0;color: var(--v-primaryText-base);" v-for="(results, index) in results[achievement.id]" v-bind:key="index">Result {{index+1}}: {{results.value}}</h4>
         </v-container>
         <v-divider></v-divider>
@@ -53,7 +53,7 @@
                         label="New Result"
                         outlined
                         rounded
-                        dense
+                        id="resultInput"
                         v-model="inputBind[achievement.id]">
           </v-text-field>
           <v-btn id="resultSaveButton" color="primary" height="40px" class="achievementSaveButton" @click="saveResult(achievement.id)" outlined rounded>Save</v-btn>
