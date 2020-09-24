@@ -29,6 +29,8 @@ sonarqube-check:
   script: 
     - cd server
     - ./gradlew sonarqube
+    - cd ../client
+    - sonar-scanner
   allow_failure: true
 
 junit:
