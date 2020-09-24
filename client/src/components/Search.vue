@@ -55,7 +55,8 @@
                     <v-card flat>
                       <div v-if="index === 2">
                         <v-col>
-                          <v-text-field id="searchActivityQueryInput" class="queryInput" label="Search Activity"
+                          <v-text-field id="searchActivityQueryInput" class="queryInput" v-on:keyup="submitActivitySearch"
+                                        label="Search Activity"
                                         v-model="searchedActivityTerm" outlined rounded clearable hide-details
                                         dense></v-text-field>
                         </v-col>
@@ -575,7 +576,7 @@
        */
       submitActivitySearch: function (e) {
         if (e.keyCode === 13) {
-          this.searchActivity(this.defaultActivityPage, this.defaultActivitySize);
+          this.searchActivity(this.defaultActivityPage, this.defaultActivitySize, this.multipleActivityFilterMethod);
         }
       },
 
