@@ -13,7 +13,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource
 public interface HomeFeedRepository extends JpaRepository<HomeFeedEntry, Long> {
-    @Query(value = "SELECT h FROM HomeFeedEntry h INNER JOIN UserActivityRole u ON u.user.userId = :profileId " +
+    @Query(value = "SELECT DISTINCT h FROM HomeFeedEntry h INNER JOIN UserActivityRole u ON u.user.userId = :profileId " +
             "WHERE (h.scope = 'PRIVATE' AND h.user.userId = :profileId) OR  (h.scope = 'ACTIVITY' AND h.activity = u.activity)" +
             "ORDER BY h.datetime DESC")
     Page<HomeFeedEntry> getUserHomeFeedById(Pageable pageable, Long profileId);

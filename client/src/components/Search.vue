@@ -3,9 +3,9 @@
     <div class="searchUserWrapper">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
       <v-container lighten-5>
-        <v-row no-gutters style="flex-wrap: nowrap;">
-          <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-            <v-card class="ma-2" style="border-radius:14px;padding:8px;">
+        <v-row no-gutters class="mainRow">
+          <v-col cols="5" class="flex-grow-1 flex-shrink-0 columnContainer">
+            <v-card class="ma-2 searchActivityCard">
               <form>
                 <h1 style="text-align: center; color: var(--v-primaryText-base)"> Search</h1>
                 <v-toolbar flat height="auto" style="background:none;">
@@ -15,12 +15,12 @@
                         fixed-tabs
                     >
                       <v-tabs-slider></v-tabs-slider>
-                      <v-tab style="text-transform: none" href="#mobile-tabs-5-1"
+                      <v-tab class="searchTab" href="#mobile-tabs-5-1"
                              v-on:click="activitySearchTab = false">
                         <h1 class="searchHeading" style="color: var(--v-primaryText-base)">User</h1>
                       </v-tab>
 
-                      <v-tab style="text-transform: none" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
+                      <v-tab class="searchTab" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
                         <h1 class="searchHeading" style="color: var(--v-primaryText-base)">Activity</h1>
                       </v-tab>
                     </v-tabs>
@@ -36,7 +36,7 @@
                     <v-card flat>
                       <div v-if="index === 1">
                         <v-col>
-                          <v-text-field id="searchQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch"
+                          <v-text-field id="searchQueryInput" class="queryInput" v-on:keyup="submitSearch"
                                         label="Search User" v-model="searchedTerm" outlined rounded clearable
                                         hide-details dense></v-text-field>
                         </v-col>
@@ -55,7 +55,7 @@
                     <v-card flat>
                       <div v-if="index === 2">
                         <v-col>
-                          <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" label="Search Activity"
+                          <v-text-field id="searchActivityQueryInput" class="queryInput" label="Search Activity"
                                         v-model="searchedActivityTerm" outlined rounded clearable hide-details
                                         dense></v-text-field>
                         </v-col>
@@ -87,7 +87,7 @@
                   <v-row class="searchRow">
                     <v-spacer/>
                     <v-btn
-                        v-on:click="searchUsers(currentPage + 1, currentSize)"
+                        v-on:click="searchUsers(currentPage + 1, currentSize, multipleUserSearchTermMethod)"
                         :hidden="moreHidden"
                         :loading="loading"
                         :disabled="disabled"
@@ -106,7 +106,7 @@
                   <v-row class="searchRow">
                     <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
                                  :key="activity.id" link>
-                      <v-list-item-content>
+                      <v-liscon-item-content>
                         <v-list-item-title>
                           {{ activity.name}}
                         </v-list-item-title>
@@ -116,13 +116,13 @@
                             activity.location.country}}
                           </v-list-item-subtitle>
                         </div>
-                      </v-list-item-content>
+                      </v-liscon-item-content>
                     </v-list-item>
                   </v-row>
                   <v-row class="searchRow">
                     <v-spacer/>
                     <v-btn
-                        v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize)"
+                        v-on:click="searchActivity(currentActivityPage + 1, currentActivitySize, multipleActivityFilterMethod)"
                         :hidden="moreHidden"
                         :loading="loading"
                         :disabled="disabled"
@@ -139,12 +139,12 @@
               </form>
             </v-card>
           </v-col>
-          <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-            <v-card v-if="!activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;color: var(--v-primaryText-base)">Filter by activity</h1>
+          <v-col cols="1" class="flex-grow-1 flex-shrink-0 searchFilterContainer">
+            <v-card v-if="!activitySearchTab" class="ma-2 activityFilterCard">
+              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Filter by activity</h1>
               <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
                           label="Activity Type Select" multiple
-                          v-on:change="searchUsers(defaultActivityPage, defaultActivityPage)">
+                          v-on:change="searchUsers(defaultActivityPage, defaultActivityPage, multipleUserSearchTermMethod)">
                 <template v-slot:selection="data">
                   <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select"
                           @click:close="remove(data.item)">
@@ -163,31 +163,42 @@
                 </template>
               </v-combobox>
               <v-label>Filter method</v-label>
-              <v-tooltip bottom max-width="500px">
-                <template v-slot:activator="{ on }">
-                  <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
-                </template>
-                <span style="color: white;">You can filter users by the activity types that they have on their profiles, using
-                      these buttons. There are two options results including all and results including one of. Filtering
-              by activity types fun, extreme with the results including all option selected will mean that a search will
-              return only users who have both fun and extreme on their profiles. While filtering by activity types fun,
-              extreme with the results including one of option selected means that all users with either fun or extreme
-              on their profiles will be returned.</span>
-              </v-tooltip>
-              <v-radio-group v-model="filterMethod" :mandatory="true" v-on:change="searchUsers(defaultPage, defaultSize)">
+              <v-radio-group v-model="filterMethod" :mandatory="true"
+                             v-on:change="searchUsers(defaultPage, defaultSize, multipleUserSearchTermMethod)">
                 <v-radio label="Results including all" value="and"></v-radio>
                 <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
             </v-card>
-            <v-card v-if="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;color: var(--v-primaryText-base)">Search for multiple activities</h1>
+            <v-card v-if="!activitySearchTab" :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
+              <h1 class="searchHeading" style="margin-bottom:22px;">Search using keywords</h1>
+              <v-row class="ml-1">
+                <v-label class="activityFilterMethodLabel">Filter method</v-label>
+                <v-tooltip bottom max-width="500px">
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on" class="filterIcon">mdi-help-circle-outline</v-icon>
+                  </template>
+                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
+                      these buttons, when searching for searching multiple activities you have two options. Results
+                    including all which means a search for fun, scary will return all activities that include both fun and scary in
+                    the title. Whereas the other option results including one of meaning a search for fun, scary will
+                    return all activities that include either fun or scary in the title.</span>
+                </v-tooltip>
+              </v-row>
+              <v-radio-group v-model="multipleUserSearchTermMethod" :mandatory="true">
+                <v-radio label="Search for single activity" value="single"></v-radio>
+                <v-radio label="Results including all" value="and"></v-radio>
+                <v-radio label="Results including one of" value="or"></v-radio>
+              </v-radio-group>
+            </v-card>
+            <v-card v-if="activitySearchTab" class="ma-2 activityFilterCard">
+              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Search for multiple activities</h1>
               <v-row class="ml-1">
                 <v-label style="padding-right: 5px">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" style="margin-left:10px;margin-top:-3px;font-size: 20px;">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span style="color: white;">You can search for multiple activities or just a single activity using
+                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
                       these buttons, when searching for searching multiple activities you have two options. Results
                     including all which means a search for fun, scary will return all activities that include both fun and scary in
                     the title. Whereas the other option results including one of meaning a search for fun, scary will
@@ -254,6 +265,8 @@
         selected_activity: "Activity Type",
         filterMethod: "and",
         multipleActivityFilterMethod: "single",
+        multipleUserSearchTermMethod: "single",
+        userSearchTerms: [],
         searchMethods: [
           {display: "Full Name", value: "fullname"},
           {display: "Last Name", value: "lastname"},
@@ -291,7 +304,7 @@
         this.errorMessage = "Search is empty";
         this.snackbar = true;
       } else {
-        this.searchUsers(page, size);
+          this.searchUsers(page, size, this.multipleUserSearchTermMethod);
       }
     },
     /**
@@ -392,8 +405,9 @@
      *
      * @param page Current page in results
      * @param size Size of results to retrieve
+     * @param method
      */
-    searchUsers(page, size) {
+    searchUsers(page, size, method) {
       if ((this.searchedTerm === null || this.searchedTerm.trim().length === 0) && this.activity_types_selected.length === 0) {
         this.allUsers = [];
         this.moreHidden = true;
@@ -411,37 +425,75 @@
         this.loading = true;
         this.disabled = true;
 
-        /* Search for users */
-        apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.filterMethod, page - 1, size).then(
-            (response) => {
-              if (response.data.content.length === 0) {
+        if (method === "single") {
+          /* Search for users */
+          apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, [], this.searchBy, this.multipleUserSearchTermMethod, this.filterMethod, page - 1, size).then(
+              (response) => {
+                if (response.data.content.length === 0) {
+                  this.disabled = true;
+                  this.loading = false;
+                  this.errorMessage = "No more results";
+                  this.snackbar = true;
+                } else {
+                  this.allUsers = this.allUsers.concat(response.data.content);
+                  this.loading = false;
+                  this.disabled = false;
+                  /* Update search history */
+                  this.setUserSearch({
+                    searchTerm: this.searchedTerm,
+                    searchType: this.searchBy,
+                    page: page,
+                    size: size,
+                    scrollPos: window.scrollY,
+                    activityTypesSelected: this.activity_types_selected,
+                    filterMethod: this.filterMethod
+                  });
+                }
+              }).catch(
+              (error) => {
                 this.disabled = true;
                 this.loading = false;
-                this.errorMessage = "No more results";
+                this.errorMessage = error.response.data;
                 this.snackbar = true;
-              } else {
-                this.allUsers = this.allUsers.concat(response.data.content);
-                this.loading = false;
-                this.disabled = false;
-                /* Update search history */
-                this.setUserSearch({
-                  searchTerm: this.searchedTerm,
-                  searchType: this.searchBy,
-                  page: page,
-                  size: size,
-                  scrollPos: window.scrollY,
-                  activityTypesSelected: this.activity_types_selected,
-                  filterMethod: this.filterMethod
-                });
               }
-            }).catch(
-            (error) => {
-              this.disabled = true;
-              this.loading = false;
-              this.errorMessage = error.response.data;
-              this.snackbar = true;
-            }
-        )
+          )
+        } else {
+          this.userSearchTerms = this.searchedTerm.trim().split(",");
+          for (let i = 0; i < this.userSearchTerms.length; i++) {
+            this.userSearchTerms[i] = this.userSearchTerms[i].trim();
+          }
+
+          apiUser.searchUsers(this.searchedTerm, this.searchBy, this.activity_types_selected, this.userSearchTerms, this.searchBy, this.multipleUserSearchTermMethod, this.filterMethod, page - 1, size).then(
+              (response) => {
+                if (response.data.content.length === 0) {
+                  this.disabled = true;
+                  this.loading = false;
+                  this.errorMessage = "No more results";
+                  this.snackbar = true;
+                } else {
+                  this.allUsers = this.allUsers.concat(response.data.content);
+                  this.loading = false;
+                  this.disabled = false;
+                  /* Update search history */
+                  this.setUserSearch({
+                    searchTerm: this.searchedTerm,
+                    searchType: this.searchBy,
+                    page: page,
+                    size: size,
+                    scrollPos: window.scrollY,
+                    activityTypesSelected: this.activity_types_selected,
+                    filterMethod: this.filterMethod
+                  });
+                }
+              }).catch(
+              (error) => {
+                this.disabled = true;
+                this.loading = false;
+                this.errorMessage = error.response.data;
+                this.snackbar = true;
+              }
+          )
+        }
 
       },
       /**
@@ -491,7 +543,7 @@
       remove(item) {
         const index = this.activity_types_selected.indexOf(item);
         if (index >= 0) this.activity_types_selected.splice(index, 1);
-        this.searchUsers(this.defaultPage, this.defaultSize);
+        this.searchUsers(this.defaultPage, this.defaultSize, this.multipleUserSearchTermMethod);
       },
 
       /**
@@ -514,7 +566,7 @@
        */
       submitSearch: function (e) {
         if (e.keyCode === 13) {
-          this.searchUsers(this.defaultPage, this.defaultSize);
+          this.searchUsers(this.defaultPage, this.defaultSize, this.multipleUserSearchTermMethod);
         }
       },
 
@@ -547,7 +599,7 @@
         if (this.searchedTerm.trim().length === 0) {
           searchTermInt = null
         }
-        apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
+            apiUser.searchUsers(searchTermInt, this.searchBy, this.activity_types_selected, [], this.searchBy, this.multipleUserSearchTermMethod,  this.filterMethod, 0, this.userSearch.size * this.userSearch.page).then(
             (response) => {
               if (response.data.content.size === 0) {
                 this.disabled = true;
@@ -629,7 +681,7 @@
           this.searchedTerm = this.$route.params.query;
           this.$router.replace('/search');
           this.activity_types_selected = [];
-          this.searchUsers(1, this.currentSize);
+          this.searchUsers(1, this.currentSize, this.multipleUserSearchTermMethod);
           const element = this.$el.querySelector('#searchQueryInput')
           if (element) this.$nextTick(() => {
             element.focus()

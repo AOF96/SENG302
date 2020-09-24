@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
     <div class="signUpContainer">
       <div class="signUpFormContainer">
         <h1>Sign Up</h1>
@@ -105,33 +108,35 @@
   const ERR_MSG_FITNESS = "Please select your Fitness level";
   const WARNING_MSG_BIO = "You have reached the maximum amount of characters";
 
-  export default {
-    name: "Signup",
-    data() {
-      return {
-        firstOccurrence: true,
-        errorMessages: [],
-        submissionError: "",
-        password1: "",
-        password2: "",
-        bio_warning_msg: WARNING_MSG_BIO,
-        err_msg: {
-          firstname: ERR_MSG_FNAME,
-          lastname: ERR_MSG_LNAME,
-          gender: ERR_MSG_GENDER,
-          email: ERR_MSG_EMAIL,
-          birthday: ERR_MSG_BIRTHDAY,
-          fitnesslevel: ERR_MSG_FITNESS,
-          password: {
-            match: ERR_MSG_PASS_MATCH,
-            number: ERR_MSG_PASS_NUMBER,
-            length: ERR_MSG_PASS_LENGTH,
-            lowercase: ERR_MSG_PASS_LOWERCASE,
-            uppercase: ERR_MSG_PASS_UPPERCASE
-          }
+export default {
+  name: "Signup",
+  data() {
+    return {
+      alertComponent: false,
+      errorMessage: null,
+      firstOccurrence: true,
+      errorMessages: [],
+      submissionError: "",
+      password1: "",
+      password2: "",
+      bio_warning_msg: WARNING_MSG_BIO,
+      err_msg: {
+        firstname: ERR_MSG_FNAME,
+        lastname: ERR_MSG_LNAME,
+        gender: ERR_MSG_GENDER,
+        email: ERR_MSG_EMAIL,
+        birthday: ERR_MSG_BIRTHDAY,
+        fitnesslevel: ERR_MSG_FITNESS,
+        password: {
+          match: ERR_MSG_PASS_MATCH,
+          number: ERR_MSG_PASS_NUMBER,
+          length: ERR_MSG_PASS_LENGTH,
+          lowercase: ERR_MSG_PASS_LOWERCASE,
+          uppercase: ERR_MSG_PASS_UPPERCASE
         },
-      };
-    },
+      },
+    };
+  },
 
     computed: {
       ...mapGetters(["user"]),

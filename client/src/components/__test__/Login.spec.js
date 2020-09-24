@@ -169,7 +169,7 @@ describe('Login account error, password error and email/password input error', (
     await wrapper.vm.$nextTick()
     // checks if the login method is called once
     expect(apiUser.login).toHaveBeenCalledTimes(1)
-    expect(wrapper.vm.topErrorMsg).toBe("Account does not exist")
+    expect(wrapper.vm.errorMessage).toBe("Account does not exist")
   })
 
   it('fails because of wrong password', async () => {
@@ -187,7 +187,7 @@ describe('Login account error, password error and email/password input error', (
     await wrapper.find('.loginButton').trigger('click')
     await wrapper.vm.$nextTick()
     expect(apiUser.login).toHaveBeenCalledTimes(1)
-    expect(wrapper.vm.passwordErrorMsg).toBe("Incorrect Password")
+    expect(wrapper.vm.errorMessage).toBe("Incorrect Password")
   })
 
   it('fails because email, password or both are not provided', async () => {
@@ -205,7 +205,7 @@ describe('Login account error, password error and email/password input error', (
     await wrapper.find('.loginButton').trigger('click')
     await wrapper.vm.$nextTick()
     expect(apiUser.login).toHaveBeenCalledTimes(1)
-    expect(wrapper.vm.topErrorMsg).toBe("Please enter email/password")
+    expect(wrapper.vm.errorMessage).toBe("Please enter email/password")
   })
 })
 

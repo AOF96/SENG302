@@ -1,42 +1,47 @@
 <template>
-  <div>
-    <div class="loginContainer">
-      <div class="loginFormContainer">
-        <h1>Login</h1>
-        <h2>Sign in to your account</h2>
-        <form @submit.prevent>
-          <div class="loginRow">
-            <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
-          </div>
-          <div class="loginRow">
-            <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
-                   required id="loginEmailForm">
-          </div>
-          <div class="loginRow">
-            <h6 class="loginErrorMessages" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg }}</h6>
-          </div>
-          <div class="loginRow">
-            <input type="password" v-model="user.password" name="password"
-                   placeholder="Password" required id="loginPasswordForm">
-          </div>
-          <div class="loginRow">
-            <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
-          </div>
-          <div class="loginRow">
-            <button v-on:click="submitLogin()"
-                    class="loginButton"
-                    id="loginButton"
-            >
-              Login
-            </button>
-          </div>
-        </form>
-      </div>
-      <h4>Don't have an account?
-        <router-link to="/signup">Sign Up</router-link>
-      </h4>
+    <div>
+        <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+            {{errorMessage}}
+        </v-alert>
+        <div class="loginContainer">
+            <div class="loginFormContainer">
+                <h1>Login</h1>
+                <h2>Sign in to your account</h2>
+                <form @submit.prevent>
+                    <div class="loginRow">
+                        <h6 class="loginErrorMessages" id="login-top-err-msg" v-if="topErrorMsg">{{ topErrorMsg }}</h6>
+                    </div>
+                    <div class="loginRow">
+                        <input type="email" v-model="user.primary_email" name="email" placeholder="Email"
+                               required id="loginEmailForm">
+                    </div>
+                    <div class="loginRow">
+                        <h6 class="loginErrorMessages" id="incorrect_password" v-if="passwordErrorMsg">{{ passwordErrorMsg
+                            }}</h6>
+                    </div>
+                    <div class="loginRow">
+                        <input type="password" v-model="user.password" name="password"
+                               placeholder="Password" required id="loginPasswordForm">
+                    </div>
+                    <div class="loginRow">
+                        <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
+                    </div>
+                    <hr>
+                    <div class="loginRow">
+                        <button v-on:click="submitLogin()"
+                                class="loginButton"
+                               id="loginButton"
+                        >
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <h4>Don't have an account?
+                <router-link to="/signup">Sign Up</router-link>
+            </h4>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -51,6 +56,10 @@
         passwordErrorMsg: "",
         otherErrorMsg: "",
         loadingLogin: false,
+        timeout: 3000 ,
+        alertComponent: false,
+        errorMessage: null,
+
       }
     },
     computed: {
@@ -72,7 +81,8 @@
         this.loadingLogin = true;
 
         if (!this.user.primary_email || !this.user.password) {
-          this.topErrorMsg = "Please enter email or password";
+          this.errorMessage = "Please enter email or password";
+          this.alertComponent = true;
           this.loadingLogin = false;
           return;
         }
@@ -99,19 +109,23 @@
                 const responseCode = error.response.status;
                 this.loadingLogin = false;
 
-                if (responseCode === 403 && responseData === "Email does not exist") {
-                  this.topErrorMsg = "Account does not exist"
+              if (responseCode === 403 && responseData === "Email does not exist") {
+                this.errorMessage = "Account does not exist";
+                this.alertComponent = true;
 
-                } else if (responseCode === 403 && responseData === "Incorrect password") {
-                  this.passwordErrorMsg = "Incorrect Password"
+              } else if (responseCode === 403 && responseData === "Incorrect password") {
+                this.errorMessage = "Incorrect Password";
+                this.alertComponent = true;
 
-                } else if (responseCode === 403 && responseData === "Please enter email/password") {
-                  this.topErrorMsg = "Please enter email/password"
+              } else if (responseCode === 403 && responseData === "Please enter email/password") {
+                this.errorMessage = "Please enter email/password";
+                this.alertComponent = true;
 
-                } else {
-                  this.otherErrorMsg = responseData
-                }
-              })
+              } else {
+                this.errorMessage = "Please enter email/password";
+                this.alertComponent = true;
+              }
+            })
 
           ;
         }

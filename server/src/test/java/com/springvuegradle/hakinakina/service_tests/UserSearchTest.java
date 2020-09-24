@@ -1,19 +1,26 @@
 package com.springvuegradle.hakinakina.service_tests;
 
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
+import com.springvuegradle.hakinakina.entity.ActivityType;
 import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.SearchService;
+import io.cucumber.java.bs.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -26,6 +33,9 @@ public class UserSearchTest {
 
     @Autowired
     private ActivityRepository activityRepository;
+
+    @Autowired
+    private ActivityTypeRepository activityTypeRepository;
 
     @Autowired
     private SearchService service;
@@ -43,6 +53,8 @@ public class UserSearchTest {
         setupUser(fabian, "Fabian", "Scrum", "Gilson", "fabian@acnh.com", 0);
         User marina = new User(); // Default Admin
         setupUser(marina, "Marina", "Ski", "Filipovic", "marina@acnh.com", 2);
+        User testUser = new User();
+        setupUser(testUser, "dad", "dad", "GuttmanWilliams", "test@test.com", 0);
     }
 
     void setupUser(User user, String fName, String mName, String lName, String email, int pLevel) {
@@ -64,6 +76,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         List<SearchUserDto> content = page.getContent();
@@ -80,6 +95,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         List<SearchUserDto> content = page.getContent();
@@ -96,6 +114,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -112,6 +133,9 @@ public class UserSearchTest {
                 null,
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -128,6 +152,9 @@ public class UserSearchTest {
                 null,
                 "Gilson",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         List<SearchUserDto> content = page.getContent();
@@ -144,6 +171,9 @@ public class UserSearchTest {
                 null,
                 "\"Gilson\"",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -160,6 +190,9 @@ public class UserSearchTest {
                 null,
                 "\'Gilson\'",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -176,10 +209,13 @@ public class UserSearchTest {
                 null,
                 "a",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
-        assertEquals(2, resultCount); // should find mayuko and walter
+        assertEquals(3, resultCount); // should find mayuko and walter
     }
 
 
@@ -192,6 +228,9 @@ public class UserSearchTest {
                 null,
                 "\"a\"",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -208,6 +247,9 @@ public class UserSearchTest {
                 null,
                 "Golson",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -224,6 +266,9 @@ public class UserSearchTest {
                 "Mayuko Williams",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -240,6 +285,9 @@ public class UserSearchTest {
                 "\"Mayuko Williams\"",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -256,6 +304,9 @@ public class UserSearchTest {
                 "Fabian Scrum Gilson",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -272,6 +323,9 @@ public class UserSearchTest {
                 "\"Fabian Scrum Gilson\"",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -288,10 +342,13 @@ public class UserSearchTest {
                 null,
                 "a",
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
-        assertEquals(2, resultCount); // should find mayuko and walter
+        assertEquals(3, resultCount); // should find mayuko and walter
     }
 
 
@@ -304,6 +361,9 @@ public class UserSearchTest {
                 "\"a\"",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
@@ -321,7 +381,11 @@ public class UserSearchTest {
                     null,
                     "Williams",
                     null,
+                    new HashSet<>(),
+                    null,
+                    "single",
                     null
+
             );
             fail("Should not reach this, exception should be thrown");
         } catch (IllegalArgumentException e) {
@@ -333,12 +397,16 @@ public class UserSearchTest {
     public void testSearchUserWithInvalidSizeShouldReturnNoUser() {
         try {
             service.findPaginatedByQuery(
+
                     1,
                     -5,
                     null,
                     null,
                     "Williams",
                     null,
+                    new HashSet<>(),
+                    null,
+                    "single",
                     null
             );
             fail("Should not reach this, exception should be thrown");
@@ -356,9 +424,56 @@ public class UserSearchTest {
                 "Marina Ski Filipovic",
                 null,
                 null,
+                new HashSet<>(),
+                null,
+                "single",
                 "and"
         );
         long resultCount = page.getTotalElements();
         assertEquals(0, resultCount);
+    }
+
+    @Test
+    public void testSearchWithKeywordFilterOr() {
+        Set<String> searchTerms = new HashSet<>();
+        searchTerms.add("Guttman");
+        searchTerms.add("Williams");
+
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "Marina Ski Filipovic",
+                null,
+                null,
+                searchTerms,
+                "lastname",
+                "or",
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(3, resultCount);
+    }
+
+    @Test
+    public void testSearchWithKeywordFilterAnd() {
+        Set<String> searchTerms = new HashSet<>();
+        searchTerms.add("Guttman");
+        searchTerms.add("Williams");
+
+        Page<SearchUserDto> page = service.findPaginatedByQuery(
+                0,
+                10,
+                null,
+                "Marina Ski Filipovic",
+                null,
+                null,
+                searchTerms,
+                "lastname",
+                "and",
+                "and"
+        );
+        long resultCount = page.getTotalElements();
+        assertEquals(1, resultCount);
     }
 }
