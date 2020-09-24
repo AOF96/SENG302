@@ -18,9 +18,24 @@
     top: -56px;
 }
 
-.activityContainer{
-    border-radius: 14px;
-    width: 450px;
+.activityContainer {
+    border-radius: 15px !important;
+    width: calc(100% - 20px);
+    margin:20px 10px;
+}
+
+.resultsDiv {
+    padding: 20px;
+}
+
+.loadingActivityInfoHeader {
+    font-weight: bold;
+    padding-top: 30px;
+    color: var(--v-primaryText-base);
+}
+.loadingInfoHeader {
+    font-weight: bold;
+    color: var(--v-primaryText-base);
 }
 
 .activityInfoContainer {
@@ -156,7 +171,8 @@
 .activityLocationLabel {
     font-size: 15px;
     font-weight: 500;
-    color: grey;
+    color: var(--v-primaryText);
+    opacity: 0.8;
     padding: 15px 20px 0px;
 }
 
@@ -229,6 +245,13 @@
     font-size: 21px;
     font-weight: 500;
     padding: 0 20px 8px;
+    color: var(--v-primaryText);
+}
+
+.activityCardTitle{
+    color: var(--v-primaryText);
+    font-size: 19px;
+    padding-bottom:10px;
 }
 
 .activityDescription {
@@ -362,16 +385,16 @@
     margin-left: 20px;
 }
 
-.activityPageCard{
+.activityPageCard {
     min-height: 350px;
     height: fit-content;
     width: calc(100% - 20px);
-    padding: 15px;
     margin:20px 10px;
     border-radius: 15px !important;
 }
 
-.activityContainer{
+.activityPageAchievementCard {
+    height: fit-content;
     width: calc(100% - 20px);
     margin:20px 10px;
     border-radius: 15px !important;
@@ -464,4 +487,11 @@
     .activityWrap{
         width:100%;
     }
+}
+
+.activityPageMapCard{
+    height: fit-content;
+    width: calc(100% - 20px);
+    margin:20px 10px;
+    border-radius: 15px !important;
 }

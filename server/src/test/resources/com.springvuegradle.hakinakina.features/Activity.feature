@@ -90,7 +90,7 @@ Feature: Activity
     Given I create an account with name "Greg", email "greg@doe.com" and ID 3
     And I have the authorization token "L0v3 T0k3ns"
     When I create the following activity: 'Camping at Castle Hill' 'Pass the night at Narnia' 'Adventurous' 'false' '2020-12-10T19:00:00' '2020-12-11T12:00:00' 'Christchurch, NZ' 3
-    And I edit my activity with token "L0v3 T0k3ns" and new values: 'Camping at Castle Hill', 'Pass the night at Narnia', 'Magical', 'true', '2020-12-10T19:00:00', '2020-12-11T12:00:00', 'Christchurch, NZ'
+    And I edit my activity with token "L0v3 T0k3ns" and new values: 'Camping at Castle Hill', 'Pass the night at Narnia', 'Magical', 'true', '2020-12-10T19:00:00', '2020-12-11T12:00:00'
     Then the response status is 400
 
   @U8-activity

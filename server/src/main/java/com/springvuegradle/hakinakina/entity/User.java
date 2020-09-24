@@ -49,6 +49,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @OneToOne
+    private Location location;
+
     @JsonIgnore
     @JsonDeserialize(using=PasswordDeserializer.class)
     private String password;
@@ -123,8 +126,8 @@ public class User {
     private Set<Activity> authoredActivities = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
-    private Set<ActivityChange> authoredActivityChanges = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 
     @JsonIgnore
     private String salt;
@@ -224,6 +227,15 @@ public class User {
         activitiesShared.add(activity);
     }
 
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+        location.setUser(this);
+    }
+
     @JsonIgnore
     public Set<Activity> getActivities() {
         return activities;
@@ -264,7 +276,7 @@ public class User {
      */
     public void addActivityTypes(ActivityType acitivityType) {
         activityTypes.add(acitivityType);
-        acitivityType.getUsers().add(this);
+        acitivityType.addUser(this);
     }
 
     public Set<Email> getEmails() {
@@ -455,6 +467,9 @@ public class User {
     public boolean equals(Object other){
         if(other instanceof User){
             User otherUser = (User) other;
+            if (otherUser.userId == null || this.userId == null) {
+                return false;
+            }
             return this.userId.equals(otherUser.userId);
         }
         return false;

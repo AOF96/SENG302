@@ -1,9 +1,12 @@
 package com.springvuegradle.hakinakina.acceptance_tests.steps;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.springvuegradle.hakinakina.controller.ActivityController;
 import com.springvuegradle.hakinakina.repository.ActivityRepository;
+import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
+import com.springvuegradle.hakinakina.serialize.ActivityDeserializer;
 import com.springvuegradle.hakinakina.service.ActivityService;
 import com.springvuegradle.hakinakina.service.UserService;
 import com.springvuegradle.hakinakina.entity.*;
@@ -37,6 +40,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -58,9 +62,14 @@ public class ActivityTestSteps {
     @Mock
     private ActivityService activityService;
     @Mock
+    private ActivityDeserializer deserializer;
+    @Mock
     private UserService userService;
     @Mock
     private SessionRepository sessionRepository;
+    @Mock
+    private ActivityTypeRepository activityTypeRepository;
+
     @InjectMocks
     private ActivityController activityController;
 
@@ -89,7 +98,7 @@ public class ActivityTestSteps {
                                  String start_time, String end_time, String location, int ID) throws Exception {
         boolean isContinuous = Boolean.parseBoolean(continuous);
         if (isContinuous) {
-            activity = new Activity(activity_name, description, true, null, null,  location);
+            activity = new Activity(activity_name, description, true, null, null);
         } else {
 
             DateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -100,7 +109,7 @@ public class ActivityTestSteps {
             Date parsedEndTime = endDateFormat.parse(end_time);
             Timestamp endTimestamp = new java.sql.Timestamp(parsedEndTime.getTime());
 
-            activity = new Activity(activity_name, description, false, startTimestamp, endTimestamp,  location);
+            activity = new Activity(activity_name, description, false, startTimestamp, endTimestamp);
         }
 
         activity.setId((long)ID);
@@ -109,17 +118,17 @@ public class ActivityTestSteps {
         activity.setActivityTypes(activityTypes);
         activityRepository.save(activity);
         activityRepository.insertActivityForUser(user.getUserId(), activity.getId());
-
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
                 "  \"activity_type\":[ \n" +
                 "    \"" + activity_types + "\" \n" +
                 "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
+                "  \"continuous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + start_time + "\", \n" +
-                "  \"end_time\": \"" + end_time + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + end_time + "\", \n" +
+                "  \"visibility\": \"private\"" +
                 "}";
         return request;
     }
@@ -149,7 +158,7 @@ public class ActivityTestSteps {
         String request = activityBuilder(activity_name, description, activity_types, continuous, start_time, end_time, location, ID);
 
         System.out.println(request);
-        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity(activity.getId(), HttpStatus.CREATED));;
+        when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity(activity.getId(), HttpStatus.CREATED));
         result = mockMvc.perform(post("/profiles/" + user.getUserId() + "/activities")
                 .cookie(tokenCookie)
                 .content(request).contentType(MediaType.APPLICATION_JSON))
@@ -230,16 +239,17 @@ public class ActivityTestSteps {
             String end_time, String location, String token) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + activity_name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
                 "  \"activity_type\":[ \n" +
                 "    \"" + activity_types + "\" \n" +
                 "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
+                "  \"continuous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + start_time + "\", \n" +
-                "  \"end_time\": \"" + end_time + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + end_time + "\", \n" +
+                "  \"visibility\": \"private\"" +
                 "}";
 
         when(activityService.addActivity(any(Activity.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid Session", HttpStatus.FORBIDDEN));
@@ -257,16 +267,17 @@ public class ActivityTestSteps {
                                               String location) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
                 "  \"activity_type\":[ \n" +
                 "    \"" + activityTypes + "\" \n" +
                 "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
+                "  \"continuous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + startTime + "\", \n" +
-                "  \"end_time\": \"" + endTime + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + endTime + "\", \n" +
+                "  \"visibility\": \"private\"" +
                 "}";
         System.out.println(request);
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Activity has been updated", HttpStatus.OK));
@@ -306,17 +317,17 @@ public class ActivityTestSteps {
                                                              String location) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
-
+        //TODO: Re-add the location field
         String request = "{\n" +
                 "  \"activity_name\": \"" + name + "\",\n" +
                 "  \"description\": \"" + description + "\",\n" +
                 "  \"activity_type\":[ \n" +
                 "    \"" + activityTypes + "\" \n" +
                 "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
+                "  \"continuous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + startTime + "\", \n" +
-                "  \"end_time\": \"" + endTime + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"end_time\": \"" + endTime + "\", \n" +
+                "  \"visibility\": \"private\"" +
                 "}";
 
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Invalid User", HttpStatus.FORBIDDEN));
@@ -328,10 +339,9 @@ public class ActivityTestSteps {
         System.out.println(result.getResponse().getContentAsString());
     }
 
-    @And("I edit my activity with token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}, {string}")
+    @And("I edit my activity with token {string} and new values: {string}, {string}, {string}, {string}, {string}, {string}")
     public void iEditMyActivityWithTokenAndNewValues(String token,  String name, String description, String activityTypes,
-                                                     String continuous,  String startTime, String endTime,
-                                                     String location) throws Exception {
+                                                     String continuous,  String startTime, String endTime) throws Exception {
 
         final Cookie tokenCookie = new Cookie("s_id", token);
         String request = "{\n" +
@@ -340,10 +350,10 @@ public class ActivityTestSteps {
                 "  \"activity_type\":[ \n" +
                 "    \"" + activityTypes + "\" \n" +
                 "  ],\n" +
-                "  \"continous\": " + continuous + ",\n" +
+                "  \"continuous\": " + continuous + ",\n" +
                 "  \"start_time\": \"" + startTime + "\", \n" +
                 "  \"end_time\": \"" + endTime + "\",\n" +
-                "  \"location\": \"" + location + "\"\n" +
+                "  \"visibility\": \"private\"" +
                 "}";
 
         when(activityService.editActivity(any(Activity.class), any(Long.class), any(Long.class), any(String.class))).thenReturn(new ResponseEntity("Selected activity type \" + activityType.getName() + \" does not exist", HttpStatus.BAD_REQUEST));

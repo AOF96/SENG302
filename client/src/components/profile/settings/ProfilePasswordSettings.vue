@@ -2,9 +2,6 @@
     <div class="settingsContainer">
         <UserSettingsMenu/>
         <div class="settingsContentContainer">
-            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-                <button class="genericConfirmButton backButton">Back to Profile</button>
-            </router-link>
             <h1>Change Password</h1>
             <hr>
             <div>
@@ -17,9 +14,7 @@
                             placeholder="Current Password"
                             v-model="oldPassword"
                     />
-                    <div class="errorMessageContainer">
-                        <h6 class="updatePasswordErrorMessage" id="password_incorrect" hidden="true">Incorrect password</h6>
-                    </div>
+
                     <input
                             class="changePasswordInput"
                             type="password"
@@ -27,9 +22,7 @@
                             placeholder="New Password"
                             v-model="newPassword"
                     />
-                    <div class="errorMessageContainer">
-                        <h6 class="updatePasswordErrorMessage" id="passwords_dont_match" hidden="true">Passwords must be matching</h6>
-                    </div>
+
                     <input
                             class="changePasswordInput"
                             type="password"
@@ -37,21 +30,34 @@
                             placeholder="Re-enter Password"
                             v-model="confirmPassword"
                     />
-                    <div class="errorMessageContainer">
-                        <h6 class="updatePasswordErrorMessage" id="other_error" hidden="true"/>
-                        <h6 class="updatePasswordSuccessMessage" id="success" hidden="true">Password successfully updated</h6>
-                    </div>
+
                     <button class="genericConfirmButton updatePasswordButton" v-on:click="submitPasswordChange()" type="submit">Save New Password</button>
                 </form>
             </div>
         </div>
         <div class="floatClear"></div>
+        <v-snackbar
+            v-model="snackbar"
+            :color="snackbarColour"
+            top
+        >
+            {{ snackbarText }}
+            <v-btn
+                @click="snackbar = false"
+                color="white"
+                text
+            >
+                Close
+            </v-btn>
+        </v-snackbar>
     </div>
 </template>
 
 <script>
 import UserSettingsMenu from "./ProfileSettingsMenu";
 import { mapGetters, mapActions } from "vuex";
+const SUCCESS = "success";
+const ERROR = "error";
 
 export default {
   components: {
@@ -62,7 +68,10 @@ export default {
       oldPassword: "",
       newPassword: "",
       confirmPassword: "",
-      searchedUser: {}
+      searchedUser: {},
+      snackbar: false,
+      snackbarText: null,
+      snackbarColour: '',
     };
   },
   computed: {
@@ -76,7 +85,8 @@ export default {
         match: this.newPassword === this.confirmPassword,
         length: /.{8,}/.test(this.newPassword),
         number: /\d/.test(this.newPassword),
-        uppercase: /[A-Z]/.test(this.newPassword)
+        uppercase: /[A-Z]/.test(this.newPassword),
+        lowercase: /[a-z]/.test(this.newPassword)
       };
     }
   },
@@ -106,21 +116,11 @@ export default {
     },
 
     /*
-      Hides error messages once valid data is provided.
-    */
-    hideErrorMessages() {
-      document.getElementById("password_incorrect").hidden = true;
-      document.getElementById("passwords_dont_match").hidden = true;
-      document.getElementById("other_error").hidden = true;
-    },
-
-    /*
       Uses the validation function to check that the provided data is valid. If everything is valid, sends a
       request to the server side to update the password. Provides the user with appropriate error messages if
       the password change was unsuccessful.
     */
     submitPasswordChange() {
-        document.getElementById("success").hidden = true;
       if (!this.isValid()) return;
       this.changePassword( {
           'id': this.searchedUser.profile_id,
@@ -130,33 +130,25 @@ export default {
         )
         .then(
           response => {
-            this.hideErrorMessages();
-            document.getElementById("success").hidden = false;
+            this.showSnackbar("Password updated.", SUCCESS);
             console.log(response);
           },
           error => {
             const responseData = error.response.data;
             const responseCode = error.response.status;
             console.log(responseCode + ": " + responseData);
-
-            if (
+              if (
               responseCode === 400 &&
               responseData === "oldPassword is incorrect"
             ) {
-              document.getElementById("password_incorrect").hidden = false;
-              document.getElementById("passwords_dont_match").hidden = true;
+              this.showSnackbar("Incorrect password", ERROR);
             } else if (
-              responseCode === 400 &&
-              responseData === "newPassword and repeatPassword do no match"
+                responseCode === 400 &&
+                responseData === "newPassword and repeatPassword do no match"
             ) {
-              document.getElementById("password_incorrect").hidden = true;
-              document.getElementById("passwords_dont_match").hidden = false;
+                this.showSnackbar("Passwords must be matching", ERROR);
             } else {
-              document.getElementById("password_incorrect").hidden = true;
-              document.getElementById("passwords_dont_match").hidden = true;
-              document.getElementById("other_error").hidden = false;
-              document.getElementById("other_error").innerText =
-                responseData.Errors;
+                this.showSnackbar(responseData.Errors[0], ERROR);
             }
           }
         );
@@ -182,13 +174,27 @@ export default {
         this.setError("Must contain at least one uppercase character");
         return false;
       }
+        if (!this.validation.lowercase) {
+            this.setError("Must contain at least one lowercase character");
+            return false;
+        }
       return true;
     },
     setError(errorMessage) {
-      this.hideErrorMessages();
-      document.getElementById("other_error").hidden = false;
-      document.getElementById("other_error").innerText = errorMessage;
-    }
+        this.showSnackbar(errorMessage, ERROR);
+    },
+
+  /**
+   * Shows a pop-up message to the user displaying the result of a function call.
+   * @param text: the text to be displayed to the user.
+   * @param colour: the colour to be displayed with the snackbar.
+   */
+  showSnackbar(text, colour) {
+      this.snackbarText = text;
+      this.snackbarColour = colour;
+      this.snackbar = true;
+  }
+
   },
   mounted() {
       if (!this.user.isLogin) {

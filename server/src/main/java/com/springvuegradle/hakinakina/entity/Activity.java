@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.springvuegradle.hakinakina.serialize.ActivityDeserializer;
+import com.springvuegradle.hakinakina.serialize.UserDeserializer;
 import com.springvuegradle.hakinakina.util.ErrorHandler;
 
 import javax.persistence.*;
@@ -16,6 +19,7 @@ import java.util.*;
  * Activities entity class.
  */
 @Entity
+@JsonDeserialize(using= ActivityDeserializer.class)
 public class Activity {
     @Id
     @GeneratedValue
@@ -57,13 +61,6 @@ public class Activity {
     @Column(name = "end_time")
     private java.sql.Timestamp endTime;
 
-    @JsonProperty("location")
-    @Column(name = "location")
-    private String location;
-
-//    @ManyToMany(mappedBy = "activity", cascade= CascadeType.MERGE, fetch=FetchType.LAZY)
-//    private Set<User> users = new HashSet<>();
-
     @JsonIgnore
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
@@ -86,21 +83,24 @@ public class Activity {
     private Set<User> usersShared = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "activity")
-    private Set<ActivityChange> changes = new HashSet<>();
+    @OneToMany(mappedBy = "activity", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE, orphanRemoval = true)
+    private Set<HomeFeedEntry> involvedEntries = new HashSet<>();
 
     @Column(name = "visibility")
     private Visibility visibility;
 
+    @OneToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "location_id")
+    private Location location;
+
     public Activity() {}
 
-    public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime, String location) {
+    public Activity(String name, String description, boolean continuous, java.sql.Timestamp startTime, java.sql.Timestamp endTime) {
         this.name = name;
         this.description = description;
         this.continuous = continuous;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.location = location;
     }
 
     public void addAchievement(Achievement achievement) {
@@ -203,11 +203,11 @@ public class Activity {
         this.endTime = endTime;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -327,7 +327,7 @@ public class Activity {
             differences.add(ActivityAttribute.VISIBILITY);
         }
         boolean sameUsers = true;
-        if (!(this.getUsers().size() == other.getUsers().size())) {
+        if (this.getUsers().size() != other.getUsers().size()) {
             sameUsers = false;
         } else {
             ArrayList<User> otherUsers = new ArrayList<>(other.getUsers());
@@ -345,5 +345,35 @@ public class Activity {
         }
 
         return differences;
+    }
+//    Returns a json string of the activity including the basic info needed for map pins
+    public String getBasicActivityInfo(){
+        String response = "" +
+                "id: " + id +
+                ", authorId: " + author.getUserId() +
+                ", name: '" + name + '\'' +
+                ", description: '" + description + '\'' +
+                ", continuous: " + continuous +
+                ", startTime: " + startTime +
+                ", endTime: " + endTime +
+                ", latitude: '" + location.getLatitude() + '\'' +
+                ", longitude: '" + location.getLongitude() + '\'' +
+                '}';
+        return response;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Activity activity = (Activity) o;
+        return continuous == activity.continuous &&
+                Objects.equals(name, activity.name) &&
+                Objects.equals(description, activity.description) &&
+                Objects.equals(startTime, activity.startTime) &&
+                Objects.equals(endTime, activity.endTime) &&
+                Objects.equals(author, activity.author) &&
+                visibility == activity.visibility &&
+                Objects.equals(location, activity.location);
     }
 }

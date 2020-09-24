@@ -1,5 +1,8 @@
 <template>
     <div>
+        <v-alert type="error" v-model="alertComponent" :timeout="timeout" dismissible prominent>
+            {{errorMessage}}
+        </v-alert>
         <div class="loginContainer">
             <div class="loginFormContainer">
                 <h1>Login</h1>
@@ -53,6 +56,10 @@
         passwordErrorMsg: "",
         otherErrorMsg: "",
         loadingLogin: false,
+        timeout: 3000 ,
+        alertComponent: false,
+        errorMessage: null,
+
       }
     },
     computed: {
@@ -74,44 +81,49 @@
         this.loadingLogin = true;
 
         if (!this.user.primary_email || !this.user.password) {
-          this.topErrorMsg = "Please enter email or password";
+          this.errorMessage = "Please enter email or password";
+          this.alertComponent = true;
           this.loadingLogin = false;
           return;
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password)
-            .then((response) => {
-              const responseData = response.data;
-              this.updateUserProfile(responseData);
-              this.$router.push('Profile');
-              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
-                this.updateUserContinuousActivities(response.data);
-              }).catch(err => console.log(err));
-              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
-                this.updateUserDurationActivities(response.data);
-              }).catch(err => console.log(err));
-              if (responseData.permission_level === 2) {
-                this.$router.push("/settings/admin_dashboard");
-              } else {
-                this.$router.push("profile?u=" + responseData.profile_id);
-              }
-            })
-            .catch(error => {
-              const responseData = error.response.data;
-              const responseCode = error.response.status;
-              this.loadingLogin = false;
+              .then((response) => {
+                const responseData = response.data;
+                this.updateUserProfile(responseData);
+                this.$router.push('Profile');
+                apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
+                  this.updateUserContinuousActivities(response.data);
+                }).catch(err => console.log(err));
+                apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
+                  this.updateUserDurationActivities(response.data);
+                }).catch(err => console.log(err));
+                if (responseData.permission_level === 2) {
+                  this.$router.push("/settings/admin_dashboard");
+                } else {
+                  this.$router.push("profile?u=" + responseData.profile_id);
+                }
+              })
+              .catch(error => {
+                const responseData = error.response.data;
+                const responseCode = error.response.status;
+                this.loadingLogin = false;
 
               if (responseCode === 403 && responseData === "Email does not exist") {
-                this.topErrorMsg = "Account does not exist"
+                this.errorMessage = "Account does not exist";
+                this.alertComponent = true;
 
               } else if (responseCode === 403 && responseData === "Incorrect password") {
-                this.passwordErrorMsg = "Incorrect Password"
+                this.errorMessage = "Incorrect Password";
+                this.alertComponent = true;
 
               } else if (responseCode === 403 && responseData === "Please enter email/password") {
-                this.topErrorMsg = "Please enter email/password"
+                this.errorMessage = "Please enter email/password";
+                this.alertComponent = true;
 
               } else {
-                this.otherErrorMsg = responseData
+                this.errorMessage = "Please enter email/password";
+                this.alertComponent = true;
               }
             })
 
@@ -123,5 +135,5 @@
 </script>
 
 <style scoped>
-    @import '../../public/styles/pages/loginStyle.css';
+  @import '../../public/styles/pages/loginStyle.css';
 </style>

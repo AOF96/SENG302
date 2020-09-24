@@ -5,6 +5,16 @@
     background: url(../../images/user_banner.jpg) no-repeat center center;
     background-size: cover;
 }
+.profileBannerDark {
+    width: 100%;
+    height: 300px;
+    background: url(../../images/user_banner_dark.jpg) no-repeat center center;
+    background-size: cover;
+}
+.darkModeBanner{
+    background: url(../../images/user_banner_dark.jpg) no-repeat center center;
+    background-size: cover;
+}
 .profileContainer {
   width: calc(100% - 40px);
   max-width: 1230px;
@@ -35,9 +45,10 @@
     overflow: hidden;
 }
 .profileModule h1 {
+    font-weight: 500;
     font-size: 17px;
-    padding: 20px;
-    color: rgba(0,0,0,0.85);
+    padding: 20px 20px 10px 20px;
+    color: var(--v-primaryText);
 }
 .profileBackToSearchButton {
     position: absolute;
@@ -53,21 +64,24 @@
 /* Left Sidebar */
 .profileInfoContainer {
     margin: auto;
-    background: white;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
     border-radius: 14px;
     font-family: Roboto, sans-serif;
     font-size: 14px;
+    padding: 10px;
 }
 .profileInfoContainer hr {
     border: 0;
     height: 0;
-    border-top: 1px solid #dedede;
-    border-bottom: none;
-    margin: 5px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
-.profileInfoContainer h3 {
+.profileInfoContainer h1 {
+    font-size: 17px;
     font-weight: 500;
+    color: var(--v-primaryText);
 }
 
 .adminRightsButton {
@@ -119,6 +133,7 @@
     box-sizing: content-box;
 }
 .profileMainInfoContainer h1 {
+    color: var(--v-primaryText-base);
     font-size: 18px;
     font-weight: 500;
 }
@@ -133,7 +148,7 @@
     top: 50%;
 }
 .profileActivitiesContainer {
-    background: white;
+    background: var(--v-component-base);
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
     border-radius: 14px;
     position: relative;
@@ -146,9 +161,14 @@
     font-size: 20px;
     font-weight: 500;
     padding-bottom: 12px;
+    color: var(--v-primaryText-base);
 }
 .profileActivitiesContainer h3 {
     font-size: 17px;
+    color: var(--v-primaryText-base);
+}
+.profileActivitiesContainer li {
+    color: var(--v-primaryText-base);
 }
 .profileActivitiesContainer .genericConfirmButton {
     padding: 4px 14px;
@@ -195,6 +215,15 @@
     font-size: 13px;
     padding: 5px 12px;
 }
+.profileMapButton {
+    position: absolute;
+    right: 2%;
+    top: 8%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 20px !important;
+}
 .profileActivityDescription {
     color: #7f7f7f;
     font-size: 12px;
@@ -213,13 +242,15 @@
     overflow: hidden;
 }
 .passportCountryContainer {
-    padding: 10px 20px;
-    border-top: 1px solid #f3f3f3;
-    transition:all .2s ease;
+    padding: 0 20px 10px 20px;
     cursor:pointer;
 }
-.passportCountryContainer:hover {
-    background: #f8f8f8;
+.passportCountryContainer hr {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
 }
 .passportCountryContainer img {
     height: 30px;
@@ -231,9 +262,18 @@
     font-size: 16px;
     padding-top: 3px;
     padding-bottom: 3px;
-    font-weight: 500;
-    color: rgba(0,0,0,0.85);
+    font-weight: 400;
+    color: var(--v-primaryText-base);
     float: left;
+}
+#profileMapCard{
+    border-radius: 15px;
+    margin-bottom: 10px;
+    overflow:hidden;
+}
+#profileMap{
+    width: 100%;
+    height:300px;
 }
 /* Hide, show and rearrange elements for mobile */
 @media only screen and (max-width: 1160px) {

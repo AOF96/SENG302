@@ -2,9 +2,6 @@
     <div class="settingsContainer">
         <UserSettingsMenu />
         <div class="settingsContentContainer">
-            <router-link v-bind:to="'/profile/'+this.$route.params.profileId">
-                <button class="genericConfirmButton backButton">Back to Profile</button>
-            </router-link>
             <h1>Edit Passport Countries</h1>
             <hr>
             <div class="itemContainer" v-for="country in searchedUser.passports" v-bind:key="country">
@@ -30,13 +27,22 @@
                     <div class="floatClear"></div>
                 </form>
             </div>
-            <div class="errorMessageContainer">
-                <h6 class="editSuccessMsg" id="passport_success" hidden="false">Passport saved successfully</h6>
-                <h6 class="editErrorMsg" id="passport_error" hidden="false">An error has occurred</h6>
-            </div>
-
         </div>
         <div class="floatClear"></div>
+        <v-snackbar
+            v-model="snackbar"
+            :color="snackbarColour"
+            top
+        >
+            {{ snackbarText }}
+            <v-btn
+                @click="snackbar = false"
+                color="white"
+                text
+            >
+                Close
+            </v-btn>
+        </v-snackbar>
     </div>
 </template>
 
@@ -54,7 +60,10 @@
                 countries_option: [],
                 adding_country: "Passport Countries",
                 num_of_countries: 1,
-                searchedUser: {}
+                searchedUser: {},
+                snackbar: false,
+                snackbarText: null,
+                snackbarColour: '',
             }
         },
         computed: {
@@ -98,12 +107,12 @@
                 Uses user id from url to request user data.
              */
             async loadSearchedUser() {
-                if(this.$route.params.profileId == null || this.$route.params.profileId == ""){
+                if(this.$route.params.profileId == null || this.$route.params.profileId === ""){
                     this.$router.push('/settings/passport_countries/'+this.user.profile_id);
                     this.searchedUser = this.user;
                 }else{
-                    var tempUserData = await this.getUserById(this.$route.params.profileId);
-                    if(tempUserData == "Invalid permissions"){
+                    let tempUserData = await this.getUserById(this.$route.params.profileId);
+                    if(tempUserData === "Invalid permissions"){
                         this.$router.push('/settings/passport_countries/'+this.user.profile_id);
                         this.searchedUser = this.user;
                     }else{
@@ -129,10 +138,10 @@
                 Adds a new passport country to an user account.
              */
             addPassportCountries() {
-                if(!this.adding_country || this.adding_country == "Passport Countries") return
+                if(!this.adding_country || this.adding_country === "Passport Countries") return
                 this.searchedUser.passports.push(this.adding_country)
                 const index = this.countries_option.indexOf(this.adding_country)
-                if (index == -1) return
+                if (index === -1) return
                 this.countries_option.splice(index, 1)
                 this.adding_country = "Passport Countries"
                 this.updatePassports(this.searchedUser)
@@ -144,17 +153,23 @@
              */
             savePassportCountries() {
                 this.updatePassports(this.searchedUser);
-                console.log(this.countries_code_name_option);
                 this.editProfile(this.searchedUser).then((response) => {
-                    document.getElementById("passport_success").hidden = false;
-                    document.getElementById("passport_error").hidden = true;
+                    this.showSnackbar("Passport saved successfully.", "success");
                     console.log(response);
                 }, (error) => {
-                    document.getElementById("passport_error").hidden = false;
-                    document.getElementById("passport_error").innerText = error.response.data.Errors;
-                    document.getElementById("passport_success").hidden = true;
-                    console.log(error);
+                    this.showSnackbar(error.response.data.Errors, "error");
                 });
+            },
+
+            /**
+             * Shows a pop-up message to the user displaying the result of a function call.
+             * @param text: the text to be displayed to the user.
+             * @param colour: the colour to be displayed with the snackbar.
+             */
+            showSnackbar(text, colour) {
+                this.snackbarText = text;
+                this.snackbarColour = colour;
+                this.snackbar = true;
             }
         }
     }

@@ -1,19 +1,22 @@
 package com.springvuegradle.hakinakina.controller;
 
+import com.springvuegradle.hakinakina.dto.SearchActivityDto;
 import com.springvuegradle.hakinakina.dto.SearchUserDto;
 import com.springvuegradle.hakinakina.entity.ActivityType;
+import com.springvuegradle.hakinakina.entity.Session;
+import com.springvuegradle.hakinakina.entity.User;
 import com.springvuegradle.hakinakina.repository.ActivityTypeRepository;
 import com.springvuegradle.hakinakina.repository.EmailRepository;
 import com.springvuegradle.hakinakina.repository.SessionRepository;
 import com.springvuegradle.hakinakina.repository.UserRepository;
 import com.springvuegradle.hakinakina.service.SearchService;
+import com.springvuegradle.hakinakina.util.ErrorHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Rest controller class for controlling requests related to searching
@@ -68,6 +71,51 @@ public class SearchController {
     }
 
     /**
+     * Retrieves activities that match the activity name
+     * @param activitySearchTerm The activity name input in the search
+     * @param activitySearchTerms A string containing all the terms that the user wants to search by if
+     *                            searching by multiple
+     * @param method The method of search that the user has chosen. Can be normal search, and search or
+     *               or search. Each of these are handled in their own way.
+     * @param page the page number the user wants
+     * @param size the amount of activities returned that match the search term
+     * @param sessionToken the session of the user
+     * @return Response entity that returns the activities that match the search term if there are any
+     */
+    @GetMapping("/activities")
+    public ResponseEntity findActivityPaginated(
+            @RequestParam(required = false) String activitySearchTerm,
+            @RequestParam(required = false) String activitySearchTerms,
+            @RequestParam("method") String method,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @CookieValue(value = "s_id") String sessionToken) {
+        try {
+            if (sessionRepository.findUserIdByToken(sessionToken) == null) {
+                return new ResponseEntity("Session invalid", HttpStatus.UNAUTHORIZED);
+            }
+            Session userSession = sessionRepository.findUserIdByToken(sessionToken);
+            User searchingUser = userRepository.findUserBySessions(userSession);
+            if (method.equals("single")) {
+                Page<SearchActivityDto> results = searchService.findActivityPaginated(activitySearchTerm, page, size, searchingUser);
+                return new ResponseEntity(results, HttpStatus.OK);
+            } else {
+                String[] str = activitySearchTerms.split(" ");
+                List<String> activitySearchTermsList = new ArrayList<String>();
+                activitySearchTermsList = Arrays.asList(str);
+                Set<String> activitySearchTermsSet = new HashSet<String>(activitySearchTermsList);
+
+                Page<SearchActivityDto> results = searchService.findActivityPaginatedByQuery(activitySearchTermsSet,
+                        method, page, size);
+                return new ResponseEntity(results, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            ErrorHandler.printProgramException(e, "could not search for activity");
+            return new ResponseEntity("An error occurred", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
      * Handle request for retrieving users with email or full name or surname
      *
      * @param email    searching for a user with the given email
@@ -84,6 +132,9 @@ public class SearchController {
             @RequestParam(required = false) String fullname,
             @RequestParam(required = false) String lastname,
             @RequestParam(required = false) String activity,
+            @RequestParam(required = false) String searchTerms,
+            @RequestParam("searchTypes") String searchTypes,
+            @RequestParam("searchTermsMethod") String searchTermsMethod,
             @RequestParam("method") String method,
             @RequestParam("page") int page,
             @RequestParam("size") int size) {
@@ -99,8 +150,16 @@ public class SearchController {
         if(activityTypes.size() == 0){
             activityTypes = null;
         }
+
+        String[] str = searchTerms.split(" ");
+        List<String> activitySearchTermsList = new ArrayList<String>();
+        activitySearchTermsList = Arrays.asList(str);
+        Set<String> activitySearchTermsSet = new HashSet<String>(activitySearchTermsList);
+
+
         if (email != null || fullname != null || lastname != null || activityTypes != null) {
-            resultPage = searchService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes, method);
+            resultPage = searchService.findPaginatedByQuery(page, size, email, fullname, lastname, activityTypes,
+                    activitySearchTermsSet, searchTypes, searchTermsMethod, method);
         } else {
             resultPage = searchService.findPaginated(page, size);
         }

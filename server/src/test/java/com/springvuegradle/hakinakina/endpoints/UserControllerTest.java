@@ -48,7 +48,7 @@ public class UserControllerTest {
     private PassportCountryRepository countryRepository;
 
     @MockBean
-    private ActivityChangeRepository activityChangeRepository;
+    private HomeFeedRepository homeFeedRepository;
 
     @MockBean
     private EmailRepository emailRepository;
@@ -73,6 +73,9 @@ public class UserControllerTest {
 
     @MockBean
     private ResultRepository resultRepository;
+
+    @MockBean
+    private LocationRepository locationRepository;
 
     private ResponseHandler responseHandler = new ResponseHandler();
 
@@ -651,7 +654,7 @@ public class UserControllerTest {
         testSession.setUser(testUser);
 
         Activity testActivity = new Activity("testActivity", "Used for testing", true,
-                null, null, null);
+                null, null);
         testActivity.setId((long) 1);
 
         when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))
@@ -675,7 +678,7 @@ public class UserControllerTest {
         testSession.setUser(testUser);
 
         Activity testActivity = new Activity("testActivity", "Used for testing", true,
-                null, null, null);
+                null, null);
         testActivity.setId((long) 1);
 
         when(service.subscribeToActivity(eq(1L), eq(1L), eq("t0k3n")))

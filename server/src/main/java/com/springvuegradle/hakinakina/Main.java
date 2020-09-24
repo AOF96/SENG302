@@ -15,9 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
@@ -44,10 +42,10 @@ public class Main {
 						   ActivityTypeRepository activityTypeRepository,
 						   ActivityRepository activityRepository,
 						   SearchRepository searchRepository,
-						   ActivityChangeRepository activityChangeRepository,
 						   UserActivityRoleRepository userActivityRoleRepository,
-						   AchievementRepository achievementRepository
-//						   ResultRepository resultRepository
+						   AchievementRepository achievementRepository,
+						   LocationRepository locationRepository,
+						   HomeFeedRepository homeFeedRepository
 	) {
 		return args -> {
 			URL url = new URL("https://restcountries.eu/rest/v2/all");
@@ -66,8 +64,16 @@ public class Main {
 				countryRepository.save(new PassportCountry(code, name));
 			}
 
-			List<String> activityTypes = Arrays.asList("Relaxing", "Fun", "Adventurous", "Extreme", "Team-Sport");
-			for (String activityType : activityTypes) {
+			InputStream input = getClass().getResourceAsStream("/activityTypes.txt");
+			BufferedReader bufReader = new BufferedReader(new InputStreamReader(input));
+			ArrayList<String> listOfActivityTypes = new ArrayList<>();
+			String activity = bufReader.readLine();
+			while (activity != null) {
+				activity = activity.substring(1,activity.length()-1);
+				listOfActivityTypes.add(activity);
+				activity = bufReader.readLine();
+			}
+			for (String activityType : listOfActivityTypes) {
 				activityTypeRepository.save(new ActivityType(activityType));
 			}
 		};

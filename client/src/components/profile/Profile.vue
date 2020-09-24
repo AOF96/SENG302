@@ -1,33 +1,27 @@
 <template>
 <div>
-  <router-link v-if="userSearch.searchTerm!==null" v-bind:to="'/search'">
-    <button class="genericConfirmButton profileBackToSearchButton">
-      Back to Search
-    </button>
-  </router-link>
-  <div class="profileBanner"></div>
+  <div id="profileBanner"></div>
   <div class="profileContainer">
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
         <v-container>
-          <h3>Profile Info</h3>
+          <h1>About {{ searchedUser.firstname }}</h1>
           <div v-if="!loadingProfileInfo">
-            <hr />
+            <hr/>
             <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
-            <hr />
+            <hr/>
             <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
-            <hr />
+            <hr/>
             <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
-            <hr />
-            <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
-            <hr />
-            <div class="profileRow">City: {{ searchedUser.city }}</div>
-            <hr />
-            <div v-if="searchedUser.state">
-              <div class="profileRow">State: {{ searchedUser.state }}</div>
-              <hr />
+            <div v-if="searchedUser.bio">
+              <hr/>
+              <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             </div>
-            <div class="profileRow">Country: {{ searchedUser.country }}</div>
+            <div v-if="searchedUser.location.city && searchedUser.location.country">
+              <hr/>
+              <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
+              <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
+            </div>
           </div>
         </v-container>
       </v-card>
@@ -48,7 +42,7 @@
               <div class="profileMainInfoContainer">
                 <h1>
                   {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
-                  <span id="userNickname" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
+                  <span id="userNickname" style="color:grey;" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
                 </h1>
                 <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
               </div>
@@ -117,7 +111,11 @@
       </div>
     </div>
     <div class="rightSidebarContainer">
-      <template v-if="searchedUser.passports">
+      <v-card :loading="mapLoading" v-if="this.searchedUser.location != null" id="profileMapCard">
+        <div id="profileMap"></div>
+        <button class="genericConfirmButton profileMapButton" id="profileFullMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
+      </v-card>
+      <template v-if="this.showPassport">
         <PassportCountries :passports="searchedUser.passports" :key="componentKey" />
       </template>
     </div>
@@ -135,10 +133,10 @@ import {
 
 import PassportCountries from "../modules/PassportCountries";
 import json from "../../../public/json/data.json";
+import {apiUser} from "../../api";
+import mapStyles from "../../util/mapStyles";
+
 const COUNTRIES_URL = "https://restcountries.eu/rest/v2/all";
-import {
-  apiUser
-} from "../../api";
 
 export default {
   name: "Profile",
@@ -175,12 +173,16 @@ export default {
       loadingProfileInfo: true,
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
+      mapLoading: true,
+      showPassport: false
     };
   },
-  mounted() {
+  props: ['darkModeGlobal'],
+  async mounted() {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
+      this.setUserBanner();
       this.loadSearchedUser();
     }
   },
@@ -194,11 +196,39 @@ export default {
   methods: {
     ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
 
-    /*
-          Uses user id from url to request user data.
-       */
+    /**
+     * Sets the user banner depending on what theme mode is active
+     */
+    setUserBanner() {
+      if (document.getElementById("profileBanner") !== null) {
+        if (this.darkModeGlobal) {
+          document.getElementById("profileBanner").classList.remove("profileBanner");
+          document.getElementById("profileBanner").classList.add("profileBannerDark");
+        } else {
+          document.getElementById("profileBanner").classList.remove("profileBannerDark");
+          document.getElementById("profileBanner").classList.add("profileBanner");
+        }
+      }
+    },
+
+    /**
+     * Creates an event handler to check if the theme has changed
+     */
+    setThemeCheckEvent(map) {
+      let outer = this;
+      document.addEventListener("click", function(){
+        outer.setUserBanner();
+        map.setOptions({
+          styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+        });
+      });
+    },
+
+    /**
+     * Uses user id from url to request user data.
+     */
     async loadSearchedUser() {
-      if (this.user.permission_level == 2 && this.user.profile_id == this.$route.params.profileId) {
+      if (this.user.permission_level === 2 && this.user.profile_id === this.$route.params.profileId) {
         this.$router.push('/settings/admin_dashboard');
       } else if (
         this.$route.params.profileId === null ||
@@ -234,6 +264,107 @@ export default {
     },
 
     /**
+     * Loads the map onto the page and centres on the users home city.
+     * Adds a marker on the city's centre.
+     */
+    loadMap() {
+      if(this.searchedUser.location != null && this.searchedUser.location.latitude !== ""){
+        if (!window.google) {
+          return;
+        }
+        this.geocoder = new window.google.maps.Geocoder();
+
+        let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
+
+        let map = new window.google.maps.Map(document.getElementById("profileMap"), {
+          center: position,
+          zoom: 8,
+          maxZoom: 10,
+          minZoom: 3,
+          disableDefaultUI: true
+        });
+
+        map.setOptions({
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"]
+        });
+
+        this.setThemeCheckEvent(map);
+        this.positionMap(map, position);
+      }
+    },
+
+    /**
+     * Positions map from location depending on if logged in user or searching
+     */
+    positionMap(map, position) {
+      let outer = this;
+      if (this.user.profile_id !== this.searchedUser.profile_id) {
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.setLocationMarker(map, results[0].geometry.location);
+            map.setCenter(results[0].geometry.location);
+          }
+        });
+      } else {
+        this.setLocationMarker(map, position);
+      }
+    },
+
+    /**
+     * Sets location marker at position given
+     */
+    setLocationMarker(map, position) {
+      let homeIcon = {
+        url: "https://i.imgur.com/mNfVgmC.png",
+        scaledSize: new window.google.maps.Size(20, 20),
+        origin: new window.google.maps.Point(0, 0),
+        anchor: new window.google.maps.Point(10, 10)
+      };
+
+      new window.google.maps.Marker({
+        map: map,
+        position: position,
+        icon: homeIcon
+      });
+      this.mapLoading = false;
+    },
+
+    /**
+     * Returns a formatted address string from the location object
+     */
+    getAddressString(locationObj) {
+      let address = "";
+      if (locationObj.street_address !== "") {
+        address += locationObj.street_address
+      }
+      if (locationObj.suburb !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.suburb;
+      }
+      if (locationObj.city !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.city;
+      }
+      if (locationObj.state !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.state;
+      }
+      if (locationObj.country !== "") {
+        if (address !== "") {
+          address += ", "
+        }
+        address += locationObj.country;
+      }
+      return address;
+    },
+
+    /**
      * Takes a list of strings and replaces all dashes with spaces
      */
     replaceDashesWithSpaces(list) {
@@ -242,8 +373,14 @@ export default {
       }
     },
 
+    /**
+     * Loads country information and map
+     */
     startUp() {
       this.searchedUser.passports = this.searchedUser.passports.slice();
+      if(this.searchedUser.passports.length > 0){
+        this.showPassport = true;
+      }
       this.getDataFromUrl(COUNTRIES_URL)
         .then(response => {
           const countries = [];
@@ -259,9 +396,11 @@ export default {
             countries.splice(index, 1);
           }
           this.countries_option = countries;
+          this.loadMap();
         })
         .catch(error => console.log(error));
     },
+
     /***
      * Makes a request to the server to give the searched user admin rights given the user is not already an admin and
      * the requesting user is already an admin.
@@ -281,6 +420,22 @@ export default {
       }
       this.showResult = true;
       setTimeout(() => this.showResult = false, 5000)
+    },
+
+    /**
+     * Routes the user the Map page, adding the coordinates to the URL if the user is not the searchedUser.
+     */
+    goToFullMap()  {
+      if (this.user.profile_id === this.searchedUser.profile_id) {
+        this.$router.push('/map/');
+      } else {
+        let outer = this;
+        this.geocoder.geocode({'address': this.searchedUser.location.city + ' ' + this.searchedUser.location.country}, function(results, status) {
+          if (status === 'OK') {
+            outer.$router.push('/map/user@' + results[0].geometry.location.lat() + ',' + results[0].geometry.location.lng());
+          }
+        });
+      }
     }
   }
 };

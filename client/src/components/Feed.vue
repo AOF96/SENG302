@@ -1,13 +1,13 @@
 <template>
 <div>
-  <v-container class="my-5" style="max-width:800px;">
+  <v-container class="my-5"  style="max-width:800px;" >
     <v-col>
-      <v-list>
+      <v-list style="background:none !important">
         <v-list-item
           v-for="(post, index) in activityPosts"
           :key="index"
         >
-          <v-card class="mx-auto" rounded style="width:100%;max-width: 700px;margin-bottom:20px;border-radius: 15px;">
+          <v-card v-if="post.postType == 'ActivityUpdate'" class="mx-auto" rounded style="width:100%;max-width: 700px;margin-bottom:20px;border-radius: 15px;">
             <v-card-text>
               <v-row no-gutters>
                 <div>Activity Updated</div>
@@ -16,7 +16,7 @@
               </v-row>
               <h2 class="text--primary py-2" style="font-weight:500;font-size: 18px">Activity '{{ post.activityName }}' was edited.</h2>
               <ul>
-                <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i">{{update.trim()}}</li>
+                <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i" style="color: var(--v-primaryText-base)">{{update.trim()}}</li>
               </ul>
             </v-card-text>
             <v-card-actions>
@@ -32,6 +32,23 @@
                   justify="end"
                 >
                   <v-btn class="px-3" :to="'/activity/'+post.activityId" text color="#00C853">View Activity</v-btn>
+                </v-row>
+              </v-list-item>
+            </v-card-actions>
+          </v-card>
+          <v-card v-if="post.postType == 'FollowActivity'" class="mx-auto" v-bind:class="{ 'mx-auto': true, 'followBackground': post.textContext == 'FOLLOW', 'unfollowBackground': post.textContext == 'UNFOLLOW' }" rounded style="width:100%;max-width: 700px;margin-bottom:20px;border-radius: 15px;">
+            <v-card-text>
+              <div style="color: white;text-align: center;padding-top:5px;">{{ formatDate(post.dateTime) }}</div>
+              <h2 v-if="post.textContext == 'FOLLOW'" style="font-weight:500;font-size: 20px;color:white !important;text-align: center !important;padding-top: 10px;">You started following the activity '{{ post.activityName }}'.</h2>
+              <h2 v-if="post.textContext == 'UNFOLLOW'" style="font-weight:500;font-size: 20px;color:white !important;text-align: center !important;padding-top: 10px;">You unfollowed the activity '{{ post.activityName }}'.</h2>
+            </v-card-text>
+            <v-card-actions>
+              <v-list-item class="grow">
+                <v-row
+                        align="center"
+                        justify="center"
+                >
+                  <v-btn class="px-3" :to="'/activity/'+post.activityId" text color="#fff">View Activity</v-btn>
                 </v-row>
               </v-list-item>
             </v-card-actions>
@@ -132,7 +149,6 @@ export default {
         this.isLoading = true;
         this.getUserFeed({'id': this.user.profile_id, 'page': this.currentPage, 'size': this.currentSize})
                 .then((response) => {
-                  console.log(response.data);
                   this.activityPosts = this.activityPosts.concat(response.data);
                   this.isLoading = false;
                   this.currentPage++;

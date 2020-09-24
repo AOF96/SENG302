@@ -11,6 +11,7 @@ import com.springvuegradle.hakinakina.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.JsonPath;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +26,9 @@ import java.util.*;
 @RestController
 public class ActivityController {
 
-    public UserRepository userRepository;
-    public PassportCountryRepository countryRepository;
-    public SessionRepository sessionRepository;
-    public ActivityRepository activityRepository;
+    private UserRepository userRepository;
+    private SessionRepository sessionRepository;
+    private ActivityRepository activityRepository;
     private ActivityService activityService;
     private AchievementRepository achievementRepository;
 
@@ -38,16 +38,14 @@ public class ActivityController {
      * Contructs an Activity Controller, passing in the repositories and service so that they can be accessed.
      *
      * @param userRepository     The repository containing Users
-     * @param countryRepository  The repository containing PassportCountries
      * @param sessionRepository  The repository containing Sessions
      * @param activityRepository The repository containing Activities
      * @param activityService    The service for Activities
      */
-    public ActivityController(UserRepository userRepository, PassportCountryRepository countryRepository,
+    public ActivityController(UserRepository userRepository,
                               SessionRepository sessionRepository, ActivityService activityService,
                               ActivityRepository activityRepository, AchievementRepository achievementRepository) {
         this.userRepository = userRepository;
-        this.countryRepository = countryRepository;
         this.sessionRepository = sessionRepository;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
@@ -549,5 +547,76 @@ public class ActivityController {
     @GetMapping("/activities/achievements/{achievementId}/results")
     public ResponseEntity getSAllResult(@PathVariable Long achievementId) {
         return activityService.retrieveAllResult(achievementId);
+    }
+
+    /***
+     * Handles the request to add a location to an activity and performs session and permission checks.
+     * @param location the location to be added to the activity.
+     * @param activityId the id of the activity that the location will be added too.
+     * @param sessionToken sessionToken of the user that has made the request.
+     * @return a response code with a value depending on the operations result, 401 for invalid session,
+     * 403 for forbidden user, 200 for success or 500 for internal server error.
+     */
+    @PostMapping("/activities/{activityId}/location")
+    public ResponseEntity addLocationToActivity(@RequestBody @Valid Location location,
+                                                @PathVariable Long activityId,
+                                                @CookieValue(value = "s_id") String sessionToken) {
+        Session session = sessionRepository.findUserIdByToken(sessionToken);
+        if (session == null || !session.getUser().getUserId().equals(activityRepository.getOne(activityId).getAuthor().getUserId()) && session.getUser().getPermissionLevel() < 1) {
+            return responseHandler.formatErrorResponse(401, "Invalid Session");
+        }
+
+        return activityService.addLocationToActivity(activityId, location);
+    }
+
+    /***
+     * Handles the request to get all the activities that are located within the given bounds.
+     * @param latitudeTopRight the given latitude.
+     * @param longitudeTopRight the given longitude.
+     * @param latitudeBottomLeft the given longitude.
+     * @param longitudeBottomLeft the given longitude.
+     * @return a 200 response with the list of all the activities if any exist in the given bound, 400 for invalid user input, 401 for invalid session,
+     * or 500 for internal server error.
+     */
+    @GetMapping("/activities/within/range")
+    public ResponseEntity<Activity> getActivitiesWithinGivenRange(@RequestParam("latitudeTopRight") Double latitudeTopRight,
+                                                        @RequestParam("longitudeTopRight") Double longitudeTopRight,
+                                                        @RequestParam("latitudeBottomLeft") Double latitudeBottomLeft,
+                                                        @RequestParam("longitudeBottomLeft") Double longitudeBottomLeft,
+                                                        @CookieValue(value = "s_id") String sessionToken) {
+        ResponseEntity result;
+        if (sessionToken == null || sessionRepository.findUserIdByToken(sessionToken) == null) {
+            result = responseHandler.formatErrorResponse(401, "Invalid Session");
+        } else if (latitudeTopRight == null || longitudeTopRight == null || latitudeBottomLeft == null || longitudeBottomLeft == null) {
+            result =  responseHandler.formatErrorResponse(400, "Invalid latitude or longitude values.");
+        } else {
+            result = activityService.getActivitiesWithinGivenRange(latitudeBottomLeft, latitudeTopRight,
+                    longitudeBottomLeft, longitudeTopRight,
+                    sessionRepository.findUserIdByToken(sessionToken).getUser().getUserId());
+        }
+        return result;
+    }
+
+    /**
+     * Endpoint for retrieving an activities location. Performs session checks as well as 404 checks.
+     * @param activityId Location of the activity with this id will be retrieved.
+     * @param sessionToken Session token of the user making the request.
+     * @return Response entity with code value depending on the outcome of the operation, 401 invalid session,
+     * 404 activity not found.
+     */
+    @GetMapping("/activities/{activityId}/location")
+    public ResponseEntity getActivityLocation(@PathVariable Long activityId,
+                                              @CookieValue(value = "s_id") String sessionToken) {
+        Session userWithSession = sessionRepository.findUserIdByToken(sessionToken);
+        if (userWithSession == null) {
+            return responseHandler.formatErrorResponse(401, "Invalid Session");
+        }
+
+        Optional<Activity> optionalActivity = activityRepository.findById(activityId);
+        if (optionalActivity.isEmpty()) {
+            return  responseHandler.formatErrorResponse(404, "Activity not found");
+        } else {
+            return activityService.getActivityLocation(activityId);
+        }
     }
 }

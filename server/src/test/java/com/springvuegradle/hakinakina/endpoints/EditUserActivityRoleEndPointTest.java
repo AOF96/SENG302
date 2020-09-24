@@ -105,7 +105,6 @@ public class EditUserActivityRoleEndPointTest {
         activity.setContinuous(true);
         activity.setStartTime(new Timestamp(startDate1.getTime()));
         activity.setEndTime(new Timestamp(endDate1.getTime()));
-        activity.setLocation("Mount Everest");
         Set<ActivityType> activityTypes = Set.of(new ActivityType("Extreme"));
         activity.setActivityTypes(activityTypes);
 

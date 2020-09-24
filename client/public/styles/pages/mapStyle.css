@@ -1,0 +1,117 @@
+#map {
+    height: 100%;
+}
+
+.mapPageContainer {
+    height: 100%;
+}
+
+.styleSelectorDiv {
+    background-color: white;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 0 20px;
+    border-radius: 15px;
+    display: none;
+}
+
+#map .styleSelectorDiv {
+    display: block;
+}
+
+.content{
+    width: 400px;
+}
+.activityPopupActivityVisibility{
+    width: 100%;
+    border-radius: 50px;
+    color: white;
+    font-size: 15px;
+    background: #1cca92;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 500;
+    padding: 5px 0;
+}
+.activityPopupLocation{
+     font-size: 15px;
+     font-weight: 500;
+     color: grey;
+     padding: 15px 0 0px;
+}
+.activityPopupTitle{
+    font-size: 21px;
+    font-weight: 500;
+    padding: 0px 0 8px;
+}
+.activityPopupDescription{
+    font-size: 16px;
+    font-weight: 400;
+    padding: 0 0px 8px;
+}
+.activityPopupStartTime {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 0px 8px;
+    color: #379142;
+}
+.activityPopupEndTime {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 0px 8px;
+    color: #d34343;
+}
+.activityPopupActivityTypes{
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0 0px 8px;
+    color: #7abbdc;
+}
+.activityPopupActivityFollowers{
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0 0px 8px;
+    color: #505053;
+}
+.activityPopupActivityButton{
+    width:100%;
+    background:white;
+    border:2px solid #1cca92;
+    padding:7px 0;
+    margin-top:10px;
+    border-radius: 50px;
+    color:#1cca92;
+    font-weight: 500;
+    font-size:16px;
+    transition: all 0.25s ease;
+}
+.activityPopupActivityButton:hover{
+    color:#fff;
+    background:#1cca92;
+}
+.activityPopupActivityLine{
+    border:1px solid #dfdfdf;
+    margin: 15px 0 10px;
+}
+#legend {
+    background-color: var(--v-component-base);
+    font-family: Roboto, sans-serif !important;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 10px;
+}
+#legend h2 {
+    margin-bottom: 10px;
+    font-size: 16px !important;
+    color: var(--v-primaryText-base);
+}
+#legend img {
+    vertical-align: middle;
+    height: 40px;
+    margin: 0 5px 5px 0;
+}
+#legend h3 {
+    margin-top: 13px;
+    float: right;
+    color: var(--v-primaryText-base);
+}
