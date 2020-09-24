@@ -53,6 +53,7 @@
                         label="New Result"
                         outlined
                         rounded
+                        dense
                         id="resultInput"
                         v-model="inputBind[achievement.id]">
           </v-text-field>

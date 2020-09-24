@@ -301,20 +301,22 @@
               </v-row>
             </v-card>
           </v-dialog>
-          <v-card style="border-radius: 15px" v-if="visibility === 'restricted'" class="activityPageCard">
-            <h2  style="color: var(--v-primaryText-base);">Shared Users</h2>
+          <v-card style="border-radius: 15px" v-if="visibility === 'restricted'" class="activityPageCard pa-5">
+            <h2 class="activityCardTitle">Shared Users</h2>
             <form class="activityPageCardForm">
               <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
                             outlined rounded clearable hide-details dense></v-text-field>
-              <v-select class="activityPageCardSelect mr-10" v-model="newRole"
-                        :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
-                        rounded></v-select>
-              <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
-                     outlined rounded>Add
-              </v-btn>
-              <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage
-                }}
-              </h6>
+              <v-row style="flex-wrap: nowrap;" no-gutters>
+                <v-col cols="12" class="flex-grow-0 flex-shrink-1">
+                  <v-select class="activityPageCardSelect mr-4" v-model="newRole"
+                            :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
+                            rounded></v-select>
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn v-on:click="parseEmails()"  height="40px" color="#1cca92" outlined rounded>Add</v-btn>
+                </v-col>
+              </v-row>
+              <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage}}</h6>
               <h6 class="editSuccessMessage" v-if="displaySharedUsersSuccessMsg">{{ sharedUsersStatusMsg }}
               </h6>
               <div id="usersCard" class="activityPageCardDiv">
@@ -327,7 +329,7 @@
                       <v-list-item-title v-else>
                         {{ user.firstname + " " + user.lastname}}
                       </v-list-item-title>
-                      <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-card>
@@ -337,7 +339,7 @@
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
-        <v-card id="profileMapCard" :loading="mapLoading" class="activityPageMapCard">
+        <v-card :loading="mapLoading" class="activityPageMapCard">
           <div id="profileMap" style="height: 350px"></div>
           <button v-if="!mapLoading" class="genericConfirmButton profileMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
         </v-card>

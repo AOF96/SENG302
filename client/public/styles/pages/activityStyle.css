@@ -405,12 +405,6 @@
     position: relative;
 }
 
-.activityPageCardButton {
-    right: -43px;
-    width: 40%;
-    color: #1cca92;
-}
-
 #activityPageShowMoreButton{
     color: #1cca92;
     position: absolute !important;
@@ -431,8 +425,7 @@
 }
 
 .activityPageCardSelect {
-    float: left;
-    width: 40%;
+
 }
 
 .activityPageErrorMessage {
@@ -477,6 +470,14 @@
     height: 300px;
 }
 
+.activityPageMapCard{
+    height: fit-content;
+    width: calc(100% - 20px);
+    margin:20px 10px;
+    border-radius: 15px !important;
+    overflow: hidden;
+}
+
 @media only screen and (max-width: 1100px) {
     .activityPageColumn {
         width: 100%;
@@ -487,11 +488,7 @@
     .activityWrap{
         width:100%;
     }
-}
-
-.activityPageMapCard{
-    height: fit-content;
-    width: calc(100% - 20px);
-    margin:20px 10px;
-    border-radius: 15px !important;
+    .activityPageMapCard{
+        margin-top:0;
+    }
 }
