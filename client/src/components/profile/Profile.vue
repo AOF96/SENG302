@@ -1,29 +1,26 @@
 <template>
 <div>
-  <router-link v-if="userSearch.searchTerm!==null" v-bind:to="'/search'">
-    <button class="genericConfirmButton profileBackToSearchButton">
-      Back to Search
-    </button>
-  </router-link>
-  <div class="profileBanner"></div>
+  <div id="profileBanner"></div>
   <div class="profileContainer">
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
         <v-container>
-          <h3>Profile Info</h3>
+          <h1>About {{ searchedUser.firstname }}</h1>
           <div v-if="!loadingProfileInfo">
-            <hr />
+            <hr/>
             <div class="profileRow">Gender: {{ searchedUser.gender }}</div>
-            <hr />
+            <hr/>
             <div class="profileRow">Date of Birth: {{ searchedUser.date_of_birth }}</div>
-            <hr />
+            <hr/>
             <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
-            <hr />
-            <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
-            <hr />
-            <div v-if="userSearch.location">
-            <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
-            <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
+            <div v-if="searchedUser.bio">
+              <hr/>
+              <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
+            </div>
+            <div v-if="searchedUser.location.city && searchedUser.location.country">
+              <hr/>
+              <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
+              <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
             </div>
           </div>
         </v-container>
@@ -45,7 +42,7 @@
               <div class="profileMainInfoContainer">
                 <h1>
                   {{ searchedUser.firstname }} {{searchedUser.middlename}} {{ searchedUser.lastname }}
-                  <span id="userNickname" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
+                  <span id="userNickname" style="color:grey;" v-if="searchedUser.nickname != null">({{ searchedUser.nickname }})</span>
                 </h1>
                 <h2>Fitness Level: {{ fitnessDict[searchedUser.fitness] }}</h2>
               </div>
@@ -177,14 +174,15 @@ export default {
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
       mapLoading: true,
-      mapStyle: "light",
       showPassport: false
     };
   },
+  props: ['darkModeGlobal'],
   async mounted() {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
+      this.setUserBanner();
       this.loadSearchedUser();
     }
   },
@@ -198,9 +196,37 @@ export default {
   methods: {
     ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
 
-    /*
-          Uses user id from url to request user data.
-       */
+    /**
+     * Sets the user banner depending on what theme mode is active
+     */
+    setUserBanner() {
+      if (document.getElementById("profileBanner") !== null) {
+        if (this.darkModeGlobal) {
+          document.getElementById("profileBanner").classList.remove("profileBanner");
+          document.getElementById("profileBanner").classList.add("profileBannerDark");
+        } else {
+          document.getElementById("profileBanner").classList.remove("profileBannerDark");
+          document.getElementById("profileBanner").classList.add("profileBanner");
+        }
+      }
+    },
+
+    /**
+     * Creates an event handler to check if the theme has changed
+     */
+    setThemeCheckEvent(map) {
+      let outer = this;
+      document.addEventListener("click", function(){
+        outer.setUserBanner();
+        map.setOptions({
+          styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+        });
+      });
+    },
+
+    /**
+     * Uses user id from url to request user data.
+     */
     async loadSearchedUser() {
       if (this.user.permission_level === 2 && this.user.profile_id === this.$route.params.profileId) {
         this.$router.push('/settings/admin_dashboard');
@@ -251,7 +277,6 @@ export default {
         let position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
-          styles: mapStyles[this.mapStyle],
           center: position,
           zoom: 8,
           maxZoom: 10,
@@ -259,6 +284,11 @@ export default {
           disableDefaultUI: true
         });
 
+        map.setOptions({
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"]
+        });
+
+        this.setThemeCheckEvent(map);
         this.positionMap(map, position);
       }
     },

@@ -1,9 +1,9 @@
 <template>
   <div class="settingsNavContainer">
-    <v-btn id="backToProfileArrow" v-bind:to="'/profile/'+this.$route.params.profileId" class="backToProfile" icon color="#333">
+    <v-btn id="backToProfileArrow" v-bind:to="'/profile/'+this.$route.params.profileId" class="backToProfile" icon color="primaryText">
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
-    <h1>Settings</h1>
+    <h1 style="color:var(--v-primaryText-base);">Settings</h1>
     <div class="navButtonContainer" id="settingContainer">
       <router-link v-bind:to="'/settings/profile/' + this.$route.params.profileId">
         <div class="settingsNavButton">Profile</div>

@@ -1,9 +1,7 @@
 <template>
   <div>
-    <div class="profileBanner"></div>
-    <v-snackbar v-model="snackbar">{{ errorMessage }}
-      <v-btn color="primary" text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
+    <div v-bind:class="{'profileBanner': true, 'darkModeBanner': darkModeGlobal}"></div>
+    <v-snackbar v-model="snackbar">{{ errorMessage }}<v-btn color="primary" text @click="snackbar = false" >Close</v-btn></v-snackbar>
     <div class="activityWrap">
       <div id="activityPageLeft" class="activityPageColumn">
         <v-card class="activityContainer" :loading="loadingActivity">
@@ -26,7 +24,8 @@
           <div class="activityPageTypeList" id="activityPageTypeListing" v-if="loaded === true">
             <span v-for="(a, index) in activity_types" :key="index">
               <v-chip
-                  class="ma-2"
+                      color="#c1c1c1"
+                      class="ma-2"
               >
                 {{a.name}}
               </v-chip>
@@ -34,21 +33,21 @@
           </div>
           <v-row no-gutters id="activityAuthor" class="activityAuthorLabel" v-if="loaded === true">
             <v-chip
-                v-bind:to="'/profile/'+authorId"
-                class="ma-2"
-                color="white"
+                    v-bind:to="'/profile/'+authorId"
+                    class="ma-2"
+                    color="component"
             >
               <v-avatar left>
-                <v-icon>mdi-account-circle</v-icon>
+                <v-icon color="primaryText">mdi-account-circle</v-icon>
               </v-avatar>
-              {{activity_author_firstname + " " + activity_author_lastname }}
+              <span style="color:var(--v-primaryText-base);">{{activity_author_firstname + " " + activity_author_lastname }}</span>>
             </v-chip>
             <v-spacer></v-spacer>
             <v-chip
-                class="ma-2"
-                color="white"
+                    class="ma-2"
+                    color="component"
             >
-              {{numFollowers}} Follower<span v-if="numFollowers !== 1">s</span>
+              <span style="color:var(--v-primaryText-base);">{{numFollowers}} Follower<span style="color:var(--v-primaryText-base);" v-if="numFollowers !== 1">s</span></span>
             </v-chip>
           </v-row>
           <v-divider></v-divider>
@@ -388,6 +387,7 @@
     components: {
       AchievementsCard,
     },
+    props: ['darkModeGlobal'],
     data() {
       return {
         activity_name: "",
@@ -493,6 +493,19 @@
     methods: {
       ...mapActions(['updateUserDurationActivities', 'updateUserContinuousActivities', 'getActivityUpdates',
         'getParticipants', 'getOrganisers', 'checkUserActivityVisibility', 'getLocationForActivity']),
+
+      /**
+       * Creates an event handler to check if the theme has changed
+       * @param map
+       */
+      setThemeCheckEvent(map) {
+        let outer = this;
+        window.google.maps.event.addDomListener(window, 'click', function() {
+          map.setOptions({
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+          });
+        });
+      },
 
       /**
        * Loads the role of the currently logged in user.
@@ -877,8 +890,8 @@
         this.geocoder = new window.google.maps.Geocoder();
 
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
-          styles: mapStyles[this.mapStyle],
           zoom: 9,
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           disableDefaultUI: true
         });
 
@@ -901,6 +914,7 @@
             outer.mapLoading = false;
           }
         });
+        this.setThemeCheckEvent(map);
       },
 
       /**

@@ -12,7 +12,7 @@
 }
 .navButtonContainer {
     width: 100%;
-    background: white;
+    background: var(--v-component-base);
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
     border-radius: 14px;
     overflow:hidden;
@@ -20,8 +20,9 @@
 .settingsNavButton {
     padding: 12px 20px;
     font-size: 14px;
-    font-weight:500;
-    color:rgba(0,0,0,0.65);
+    font-weight: 500;
+    color: var(--v-primaryText-base);
+    opacity: 0.85;
     transition:all .2s ease;
 }
 .settingsNavButton:hover {
@@ -29,7 +30,7 @@
 }
 .settingsNavContainer hr {
     border:none;
-    border-top:1px solid #d8d8d8;
+    border-top:1px solid #88888829;
     margin: 0;
 }
 
@@ -43,33 +44,34 @@
 .settingsContentContainer {
     float: right;
     width: calc(100% - 270px);
-    background:white;
+    background:var(--v-component-base);
     border-radius: 14px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
 }
 .settingsContentContainer h1 {
     padding:15px 20px;
     font-size:19px;
+    color:var(--v-primaryText-base);
 }
 .settingsContentContainer h2 {
   padding: 0px 20px 0 7px;
   margin-top: 17px;
   margin-bottom: 7px;
   font-size: 15px;
-  color: #5c5c5c;
+  color: #888888;
   font-weight: 400;
 }
 .settingsContentContainer h3 {
   margin: 0 5px;
   font-size: 15px;
-  color: rgba(0, 0, 0, 0.75);
+  color: var(--v-primaryText-base);
   font-weight: 500;
   padding-top: 20px;
   padding-bottom: 10px;
 }
 .settingsContentContainer hr {
     border:none;
-    border-top:1px solid #d8d8d8;
+    border-top:1px solid #88888829;
 }
 
 /* -- Main settings -- */
@@ -138,7 +140,7 @@
 /* Email settings */
 .primaryEmailContainer {
     border-radius: 35px;
-    background: #1cca92;
+    background: var(--v-colouredComponent-base);
     min-height: 40px;
 }
 .primaryEmailContainer h4 {
@@ -148,8 +150,8 @@
     text-align: center;
 }
 .secondaryEmailContainer {
-    border: 1px solid #d2d2d2;
-    background: white;
+    border: 1px solid #7979794d;
+    background: var(--v-component-base);
     border-radius: 35px;
     overflow: hidden;
     position: relative;
@@ -159,17 +161,17 @@
 .secondaryEmailContainer h4 {
     font-weight: 500;
     font-size: 15px;
-    color:rgba(0,0,0,0.75);
+    color:var(--v-primaryText-base);
     cursor:pointer;
     margin-left: 20px;
     display: inline-block;
     padding: 11px 0;
 }
 .secondaryEmailContainer:hover .editIcon, .secondaryEmailContainer:hover .genericButton {
-    opacity: 1;
+    opacity: 0.8;
 }
 .editIcon {
-    fill: #717171;
+    fill: var(--v-primaryText-base);
     cursor: pointer;
     opacity: 0;
     transition: all .15s ease;
@@ -196,18 +198,20 @@
     right: 55px;
     transform: translateY(-50%);
     padding: 2px 10px;
-    border: 2px solid #7a7a7a;
-    color: #575757;
+    border: 2px solid var(--v-primaryText-base);
+    color: var(--v-primaryText-base);
     background: none;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
     transition:all .2s ease;
     cursor:pointer;
+    opacity: 0.8;
 }
 .secondaryEmailContainer .genericButton:hover {
-    color: white;
-    background-color: #7a7a7a;
+    color: var(--v-background-base);
+    background-color: var(--v-primaryText-base);
+    opacity: 0.8;
 }
 .addEmailInput {
     width: calc(100% - 79px) !important;
@@ -246,7 +250,7 @@
     left:50%;
     top:50%;
     transform:translate(-50%, -50%);
-    background:white;
+    background:var(--v-component-base);
     border-radius:14px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
     z-index: 102;
@@ -258,7 +262,7 @@
     font-size: 19px;
     font-weight: 400;
     margin-left: 5px;
-    color: rgba(0,0,0,0.85);
+    color: var(--v-primaryText-base);
 }
 .fade-enter-active, .fade-leave-active{
     transition:all .25s ease;
@@ -341,7 +345,8 @@
   margin-top: 6px;
   font-size: 15px;
   font-weight: 500;
-  color: #3d3d3d;
+  color: var(--v-primaryText-base);
+  opacity: 0.85;
   float: left;
 }
 .itemContainer .genericDeleteButton {
@@ -353,11 +358,13 @@
     margin: 0 0 20px 20px;
     padding: 8px 20px;
     border-radius: 30px !important;
-    background: white;
     border: 2px solid #a8a8a8 !important;
     font-size: 14px;
     width: calc(100% - 120px);
     display: inline;
+}
+.itemSelect option{
+    color:rgba(0,0,0,0.85);
 }
 .addItemButton {
     padding: 6px 16px;
@@ -562,6 +569,6 @@
         margin: 0 10px 10px 0;
     }
     .editIcon{
-        opacity: 1;
+        opacity: 0.8;
     }
 }

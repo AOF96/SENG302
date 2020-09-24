@@ -166,7 +166,8 @@
 .activityLocationLabel {
     font-size: 15px;
     font-weight: 500;
-    color: grey;
+    color: var(--v-primaryText);
+    opacity: 0.8;
     padding: 15px 20px 0px;
 }
 
@@ -239,6 +240,13 @@
     font-size: 21px;
     font-weight: 500;
     padding: 0 20px 8px;
+    color: var(--v-primaryText);
+}
+
+.activityCardTitle{
+    color: var(--v-primaryText);
+    font-size: 19px;
+    padding-bottom:10px;
 }
 
 .activityDescription {
