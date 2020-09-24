@@ -94,7 +94,7 @@
     margin: 15px 0 10px;
 }
 #legend {
-    background-color: white;
+    background-color: var(--v-component-base);
     font-family: Roboto, sans-serif !important;
     border-radius: 15px;
     padding: 10px;
@@ -103,6 +103,7 @@
 #legend h2 {
     margin-bottom: 10px;
     font-size: 16px !important;
+    color: var(--v-primaryText-base);
 }
 #legend img {
     vertical-align: middle;
@@ -112,4 +113,5 @@
 #legend h3 {
     margin-top: 13px;
     float: right;
+    color: var(--v-primaryText-base);
 }

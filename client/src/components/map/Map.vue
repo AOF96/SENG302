@@ -4,7 +4,6 @@
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
     </div>
     <div id="legend">
-      <h2>Legend</h2>
     </div>
   </div>
 </template>
@@ -91,7 +90,6 @@
         });
 
         this.setThemeCheckEvent(this.gmap);
-        this.createControl(this.gmap);
         this.createLegend(this.gmap);
         this.createHomeMarker(this.gmap, userPosition);
         this.createSearch(this.gmap);
@@ -343,26 +341,6 @@
       },
 
       /**
-       * Creates a control for swapping the map theme
-       * @param map
-       */
-      createControl(map) {
-        const styleControl = document.getElementById("styleSelectorDiv");
-        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
-
-        const styleSelector = document.getElementById("styleSelector");
-        map.setOptions({
-          styles: mapStyles[this.mapStyle]
-        });
-
-        styleSelector.addEventListener("click", () => {
-          map.setOptions({
-            styles: mapStyles[this.mapStyle]
-          });
-        });
-      },
-
-      /**
        * Create a legend for the map to display what the different pins mean
        * @param map
        */
@@ -410,7 +388,7 @@
        * Checks if search exists and creates marker if it does
        */
       createSearch(map) {
-        if (this.$route.params.coordinates !== null) {
+        if (this.$route.params.coordinates !== undefined) {
           this.parseCoordinates();
           this.createSearchMarker(map);
         }
