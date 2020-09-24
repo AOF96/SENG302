@@ -875,6 +875,9 @@
             this.userFollowing = false;
             this.getStats();
             this.loadingFollowButton = false;
+            this.userRole = "none";
+            this.getParticipants();
+            this.getOrganisers();
           }
         });
       },
