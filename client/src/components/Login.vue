@@ -26,7 +26,6 @@
                     <div class="loginRow">
                         <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
                     </div>
-                    <hr>
                     <div class="loginRow">
                         <button v-on:click="submitLogin()"
                                 class="loginButton"
