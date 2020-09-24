@@ -2,6 +2,10 @@
 *{
     margin:0;
     padding:0;
+    transition:background .1s ease, background-color .1s ease, color .1s ease;
+}
+body{
+    background-color: var(--v-background-base);
 }
 p, h1, h2, h3, h4, h5, h6, span, a, li, button, textarea, input, label{
     font-family: Roboto, sans-serif !important;
@@ -68,11 +72,33 @@ input, select, textarea {
 .floatClear {
     clear:both;
 }
+.darkToggle {
+    border: 1px solid var(--v-secondary-base);
+    border-radius: 100px;
+    margin: 4px 8px;
+    padding:10px 12px !important;
+    transition: all .25s ease;
+}
+.darkToggle:hover {
+    border: 1px solid var(--v-primary-base)
+}
+.darkToggle label{
+    text-align: right;
+    display: initial !important;
+    padding-right:6px;
+}
+.darkToggle .v-input__slot{
+    padding:0 !important;
+    margin:0 !important;
+}
+.darkToggle .v-messages{
+    display:none;
+}
 
 /* -- Buttons ---- */
 .navBarButton {
     background-color: #1dca92;
-    color: white;
+    color: var(--v-tertiaryText-base);
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -85,7 +111,7 @@ input, select, textarea {
     margin-right: 10px;
 }
 .navBarButton:hover{
-    background: #fff;
+    background: var(--v-component-base);
     color:#1dca92;
 }
 .genericButton {
@@ -106,24 +132,24 @@ input, select, textarea {
 .genericConfirmButton {
     border-radius: 50px;
     font-size: 15px;
-    color: #1cca92;
+    color: var(--v-primary-base);
     font-weight: 500;
-    background: #ffffff;
-    border: 2px solid #1cca92;
+    background: var(--v-component-base);
+    border: 2px solid var(--v-primary-base);;
     cursor: pointer;
     transition:all 0.2s ease;
     text-decoration: none;
 }
 .genericConfirmButton:hover {
-    background: #1cca92;
-    color: #ffffff;
+    background: var(--v-primary-base);
+    color: var(--v-component-base);
 }
 .genericDeleteButton {
     border-radius: 50px;
     font-size: 15px;
     color: #ee5e5e;
     font-weight: 500;
-    background: #ffffff;
+    background: var(--v-component-base);
     border: 2px solid #ee5e5e;
     cursor: pointer;
     transition:all 0.2s ease;
@@ -131,7 +157,7 @@ input, select, textarea {
 }
 .genericDeleteButton:hover {
     background: #ee5e5e;
-    color: #ffffff;
+    color: var(--v-component-base);
 }
 .loginButton {
     border-radius: 0;
@@ -150,8 +176,7 @@ input, select, textarea {
     top:0;
     width: 100%;
     position: fixed;
-    background: #ffffff;
-    color: #fff;
+    background-color: var(--v-component-base);
     z-index: 100;
     box-shadow: 0 3px 4px 0 rgba(0,0,0,0.14), 0 3px 3px -2px rgba(0,0,0,0.12), 0 1px 8px 0 rgba(0,0,0,0.20);
 }
@@ -160,24 +185,42 @@ input, select, textarea {
     cursor:pointer;
 }
 #globalSearchBarContainer{
-    background-color: #eaeaea;
+    background-color: var(--v-tertiary-base);
     width: 550px;
     border-radius: 30px;
 }
 #globalSearchBarIcon{
     float: left;
-    fill: rgba(0, 0, 0, 0.4);
+    fill: var(--v-primaryText-base);
     width: 22px;
     height: 22px;
     padding: 8px 8px 8px 14px;
     box-sizing: content-box;
+    opacity: 0.6;
 }
 #globalSearchBarInput{
     float: right;
     padding: 8px 0;
-    width: calc(100% - 45px);
+    margin-right: 20px;
+    width: calc(100% - 65px);
     font-size: 15px !important;
-    color:rgba(0,0,0,0.8);
+    color:var(--v-primaryText-base);
+}
+#globalSearchBarInput::placeholder{
+    color:var(--v-primaryText-base);
+    opacity: 0.6;
+}
+#globalSearchBarInput:-webkit-autofill,
+#globalSearchBarInput:-webkit-autofill:hover,
+#globalSearchBarInput:-webkit-autofill:focus,
+#globalSearchBarInput:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px var(--v-tertiary-base) inset !important;
+    -webkit-text-fill-color: var(--v-primaryText-base) !important;
+    caret-color: var(--v-primaryText-base) !important;
+}
+
+.loginFormContainer input:focus {
+    border: 1px solid var(--v-primary-base) !important;
 }
 #headerNavToggle{
     cursor: pointer;
@@ -187,6 +230,9 @@ input, select, textarea {
 }
 .navBarLeftColIcon {
     margin-left: 20px;
+}
+.logoutButton:hover {
+    color: var(--v-component-base) !important;
 }
 /* Hide, show and rearrange elements for mobile */
 @media only screen and (max-width: 1180px) {

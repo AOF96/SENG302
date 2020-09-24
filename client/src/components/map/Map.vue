@@ -1,13 +1,9 @@
 <template>
   <div class="mapPageContainer">
-    <div id="styleSelectorDiv" class="styleSelectorDiv">
-      <v-radio-group id="styleSelector" v-model="mapStyle">
-        <v-radio value="light" label="Light"></v-radio>
-        <v-radio value="dark" label="Dark"></v-radio>
-      </v-radio-group>
-    </div>
     <div id="map">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
+    </div>
+    <div id="legend">
     </div>
   </div>
 </template>
@@ -37,9 +33,10 @@
         activities: [],
       }
     },
+    props: ['darkModeGlobal'],
     computed: {
       ...mapState(["user"]),
-      ...mapGetters(["user"])
+      ...mapGetters(["user"]),
     },
     mounted() {
       this.loadMap();
@@ -54,6 +51,7 @@
 
     methods: {
       ...mapActions(["getDataFromUrl"]),
+
       /**
        * Loads the map onto the page and centres on the users home city.
        * Adds a marker on the city's centre. Uses bounds of the viewport to retrieve activities in that range.
@@ -64,7 +62,7 @@
         this.gmap = new window.google.maps.Map(document.getElementById("map"), {
           center: userPosition,
           zoom: 12,
-          styles: mapStyles[this.mapStyle],
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           zoomControl: false,
           mapTypeControl: true,
           scaleControl: false,
@@ -91,7 +89,8 @@
               })
         });
 
-        this.createControl(this.gmap);
+        this.setThemeCheckEvent(this.gmap);
+        this.createLegend(this.gmap);
         this.createHomeMarker(this.gmap, userPosition);
         this.createSearch(this.gmap);
       },
@@ -329,30 +328,67 @@
       },
 
       /**
-       * Creates a control for swapping the map theme
+       * Creates an event handler to check if the theme has changed
        * @param map
        */
-      createControl(map) {
-        const styleControl = document.getElementById("styleSelectorDiv");
-        map.controls[window.google.maps.ControlPosition.TOP_RIGHT].push(styleControl);
-
-        const styleSelector = document.getElementById("styleSelector");
-        map.setOptions({
-          styles: mapStyles[this.mapStyle]
-        });
-
-        styleSelector.addEventListener("click", () => {
+      setThemeCheckEvent(map) {
+        let outer = this;
+        window.google.maps.event.addDomListener(window, 'click', function() {
           map.setOptions({
-            styles: mapStyles[this.mapStyle]
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
           });
         });
+      },
+
+      /**
+       * Create a legend for the map to display what the different pins mean
+       * @param map
+       */
+      createLegend(map) {
+        let iconBase = 'https://i.imgur.com/';
+        let icons = {
+          publicActivity: {
+            name: 'Public',
+            icon: iconBase + 'MUWKzz9.png'
+          },
+          restrictedActivity: {
+            name: 'Restricted',
+            icon: iconBase + 'Y0JUUox.png'
+          },
+          privateActivity: {
+            name: 'Private',
+            icon: iconBase + 'lanhJgs.png'
+          },
+          publicActivityOwned: {
+            name: 'Public - Created',
+            icon: iconBase + 'Hz5QgGa.png'
+          },
+          restrictedActivityOwned: {
+            name: 'Restricted - Created',
+            icon: iconBase + '61rB4dm.png'
+          },
+          privateActivityOwned: {
+            name: 'Private - Created',
+            icon: iconBase + 'jNY9HSw.png'
+          }
+        };
+        let legend = document.getElementById('legend');
+        for (let key in icons) {
+          let type = icons[key];
+          let name = type.name;
+          let icon = type.icon;
+          let div = document.createElement('div');
+          div.innerHTML = '<img src="' + icon + '"> ' + '<h3>' + name + '</h3>';
+          legend.appendChild(div);
+        }
+        map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById('legend'));
       },
 
       /**
        * Checks if search exists and creates marker if it does
        */
       createSearch(map) {
-        if (this.$route.params.coordinates !== null) {
+        if (this.$route.params.coordinates !== undefined) {
           this.parseCoordinates();
           this.createSearchMarker(map);
         }

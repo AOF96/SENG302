@@ -1,19 +1,21 @@
 /* -- Outer container ---- */
 .loginContainer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  width: calc(100% - 30px);
-  max-width: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: calc(100% - 30px);
+    max-width: 350px;
 }
+
 .loginContainer h4 {
     text-align: center;
     color: #9eabbb;
     font-size: 14px;
     padding-top: 18px;
 }
+
 .loginContainer h4 a {
     color: #1dca92;
     font-weight: 500;
@@ -24,36 +26,59 @@
 .loginFormContainer {
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.20);
+    background-color: var(--v-component-base);
 }
+
 .loginFormContainer h1 {
-  font-size: 20px;
-  color: #2d2d2d;
-  text-align: center;
-  margin-bottom: 7px;
+    font-size: 20px;
+    color: var(--v-textPrimary-base);
+    text-align: center;
+    margin-bottom: 7px;
 }
+
 .loginFormContainer h2 {
-  font-size: 13px;
-  color: #808080;
-  padding-bottom: 20px;
-  text-align: center;
+    font-size: 13px;
+    color: #808080;
+    padding-bottom: 20px;
+    text-align: center;
 }
+
 .loginFormContainer input, .loginFormContainer select {
     margin-bottom: 15px;
     width: 100%;
-    border: 1px solid #d8d8d8 !important;
+    border: 1px solid var(--v-secondary-base) !important;
     border-radius: 21px !important;
+    background-color: var(--v-component-base);
 }
+
+.loginFormContainer input:-webkit-autofill,
+.loginFormContainer input:-webkit-autofill:hover,
+.loginFormContainer input:-webkit-autofill:focus,
+.loginFormContainer input:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px var(--v-component-base) inset !important;
+    -webkit-text-fill-color: var(--v-primaryText-base) !important;
+    caret-color: var(--v-primaryText-base) !important;
+}
+
+.loginFormContainer input:focus {
+    border: 1px solid var(--v-primary-base) !important;
+}
+
 .loginFormContainer hr {
-    border: 0;
-    height: 0;
-    border-top: 1px solid #dedede;
-    border-bottom: none;
+    border: 1px solid var(--v-secondary-base);
 }
+
 .loginButton {
-  padding: 5px;
-  margin: 15px auto 0;
+    margin: 5px auto 0;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+.loginButton:hover {
+    background-color: var(--v-primary-base);
+    color: var(--v-tertiaryText-base);
 }
 
 /* -- Login form container elements ---- */
@@ -64,11 +89,11 @@
 }
 
 @media only screen and (max-height: 415px) {
-  .loginContainer {
-    position: relative;
-    margin:30px auto;
-    left:0;
-    top:0;
-    transform: none;
-  }
+    .loginContainer {
+        position: relative;
+        margin: 30px auto;
+        left: 0;
+        top: 0;
+        transform: none;
+    }
 }

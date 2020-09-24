@@ -20,7 +20,7 @@
                 Time/Date*
               </v-tab>
               <v-tab id="LocationTab">
-                Location
+                Location*
               </v-tab>
               <v-tab id="AchievementTab">
                 Achievements
@@ -115,18 +115,18 @@
               <v-tab-item>
                 <v-card class="py-3" flat>
                   <div>
-                    <ActivityLocationSettings v-on:set-location="setLocationFromComponent"/>
+                    <ActivityLocationSettings v-bind:dark-mode-global="darkModeGlobal" v-on:set-location="setLocationFromComponent"/>
                   </div>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
                 <v-card flat>
-                  <v-card-text style="text-align: center;color:grey;" v-if="achievements.length == 0">No Achievements
+                  <v-card-text style="text-align: center;color:grey;" v-if="achievements.length === 0">No Achievements
                     Yet
                   </v-card-text>
                   <v-row align="center" justify="center" no-gutters v-bind:key="index"
                          v-for="(achievement, index) in achievements">
-                    <v-card style="width:100%;padding:20px;margin:15px;border-radius: 15px;">
+                    <v-card color="component lighten-1" style="width:100%;padding:20px;margin:15px;border-radius: 15px;">
                       <v-card-text style="padding: 0;word-break: break-word;">{{achievement.resultType}}</v-card-text>
                       <v-card-title style="padding: 0;word-break: break-word;">{{achievement.name}}</v-card-title>
                       <v-card-text style="padding: 0;word-break: break-word;">{{achievement.description}}</v-card-text>
@@ -156,80 +156,71 @@
                     </v-card>
                   </v-row>
 
-                  <v-dialog v-model="editDialog" width="33%">
-                    <v-card>
-                      <v-card-title class="headline">Edit Achievement</v-card-title>
-
-                      <v-row justify="center" no-gutters>
-                        <v-card color="#3bb18b" style="padding:10px;border-radius:15px;width:100%;margin: 15px;">
-                          <v-row no-gutters style="margin-top: 10px;">
-                            <v-col>
-                              <v-text-field
-                                color="white" dark
-                                dense id="achievementTitle" label="Achievement Title" outlined
-                                placeholder="Achievement title" required rounded
-                                style="margin-right: 5px"
-                                v-model="tempTitle"/>
-                            </v-col>
-                            <v-col cols="5.5">
-                              <v-select
-                                :items="options"
-                                color="white"
-                                dark
-                                dense
-                                id="achieveType"
-                                label="Select achievement type"
-                                outlined
-                                rounded
-                                style="margin-left: 5px;"
-                                v-model="tempResultType"
-                              />
-                            </v-col>
-                          </v-row>
-                          <v-row no-gutters>
-                            <v-col>
-                              <v-textarea
-                                dark
-                                densecolor="white"
-                                id="achievementDescription"
-                                label="Achievement Description"
-                                maxlength="255"
-                                outlined
-                                placeholder="Achievement Description"
-                                row-height="30"
-                                rows="2"
-                                type="text"
-                                v-model="tempDescription">
-                              </v-textarea>
-                            </v-col>
-                          </v-row>
-                          <v-row no-gutters>
-                            <v-spacer></v-spacer>
-                            <v-btn :disabled="overlayLoader"
-                                   @click="editDialog = false"
-                                   color="#f06a6a"
-                                   dark
-                                   right
-                                   rounded
-                                   style="background-color:white;margin-left: 10px" text>Cancel
-                            </v-btn>
-                            <v-btn :disabled="overlayLoader"
-                                   @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)"
-                                   color="#3bb18b"
-                                   dark
-                                   right
-                                   rounded
-                                   style="background-color:white;margin-left: 10px"
-                                   text>Save
-                            </v-btn>
-                          </v-row>
-                        </v-card>
+                  <v-dialog v-model="editDialog" width="400px">
+                    <v-card class="pa-4" style="border-radius: 15px;">
+                      <v-card-title style="font-size: 18px !important;padding: 0 0 10px;">Edit Achievement</v-card-title>
+                        <v-row no-gutters style="margin-top: 10px;">
+                          <v-col>
+                            <v-text-field
+                              color="primaryText"
+                              dense id="achievementTitle" label="Achievement Title" outlined
+                              placeholder="Achievement title" required rounded
+                              style="margin-right: 5px"
+                              v-model="tempTitle"/>
+                          </v-col>
+                          <v-col cols="5.5">
+                            <v-select
+                              :items="options"
+                              color="primaryText"
+                              dense
+                              id="achieveType"
+                              label="Select achievement type"
+                              outlined
+                              rounded
+                              style="margin-left: 5px;"
+                              v-model="tempResultType"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters>
+                          <v-col style="margin-top: 10px;">
+                            <v-textarea
+                              densecolor="primaryText"
+                              id="achievementDescription"
+                              label="Achievement Description"
+                              maxlength="255"
+                              outlined
+                              placeholder="Achievement Description"
+                              row-height="30"
+                              rows="2"
+                              type="text"
+                              v-model="tempDescription">
+                            </v-textarea>
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters style="margin-top: 15px">
+                          <v-spacer></v-spacer>
+                          <v-btn :disabled="overlayLoader"
+                                 @click="editDialog = false"
+                                 color="#f06a6a"
+                                 right
+                                 rounded
+                                 style="margin-left: 10px" text>Cancel
+                          </v-btn>
+                          <v-btn :disabled="overlayLoader"
+                                 @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)"
+                                 color="#3bb18b"
+                                 right
+                                 rounded
+                                 style="margin-left: 10px"
+                                 text>Save
+                          </v-btn>
                       </v-row>
                     </v-card>
                   </v-dialog>
                   <v-divider></v-divider>
                   <v-row id="addAchievementBox" justify="center" no-gutters v-if="addAchievement">
-                    <v-card color="#3bb18b"
+                    <v-card color="colouredComponent"
                             style="padding:10px;padding-top:15px;border-radius:15px;width:100%;margin: 15px;">
                       <form>
                         <v-row no-gutters style="margin-bottom:10px;">
@@ -322,13 +313,13 @@
             </v-tabs-items>
             <v-divider></v-divider>
             <v-row no-gutters>
-              <v-btn :disabled="tabs <= 0" color="black" id="BackArrow" rounded style="margin: 15px;padding:0 10px;" text
+              <v-btn :disabled="tabs <= 0" color="primaryText" id="BackArrow" rounded style="margin: 15px;padding:0 10px;" text
                      v-on:click="tabs -= 1">
                 <v-icon style="padding-right:5px;">mdi-arrow-left</v-icon>
                 Back
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn color="black" id="NextArrow" rounded style="margin: 15px;padding:0 10px;" text v-if="tabs < 3"
+              <v-btn color="primaryText" id="NextArrow" rounded style="margin: 15px;padding:0 10px;" text v-if="tabs < 3"
                      v-on:click="tabs += 1">
                 Next
                 <v-icon style="padding-left:5px;">mdi-arrow-right</v-icon>
@@ -365,6 +356,7 @@
     components: {
       ActivityLocationSettings
     },
+    props: ['darkModeGlobal'],
     data() {
       return {
         tabs: null,
@@ -426,6 +418,7 @@
 
     methods: {
       ...mapActions(["createActivity", "updateUserContinuousActivities", "getDataFromUrl", "updateUserDurationActivities", "addActivityAchievement"]),
+
       /** checks login and if not created redirects you to profile page **/
       checkLogin() {
         if (!this.$route || !this.$router) {
@@ -659,6 +652,10 @@
           // Time check failed
           this.tabs = 1;
           return false;
+        } else if (!this.location) {
+          this.displayError("Please select location.");
+          this.tabs = 2;
+          return false;
         } else {
           // All passed
           return true;
@@ -728,5 +725,8 @@
 
 <style scoped>
   @import "../../../../public/styles/pages/activitySettingsStyle.css";
-
+  #editAchievementDialog{
+    width:calc(100% - 30px);
+    max-width: 400px !important;
+  }
 </style>

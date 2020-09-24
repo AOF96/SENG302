@@ -1,8 +1,8 @@
 <template>
 <div>
-  <v-container class="my-5" style="max-width:800px;">
+  <v-container class="my-5"  style="max-width:800px;" >
     <v-col>
-      <v-list>
+      <v-list style="background:none !important">
         <v-list-item
           v-for="(post, index) in activityPosts"
           :key="index"
@@ -16,7 +16,7 @@
               </v-row>
               <h2 class="text--primary py-2" style="font-weight:500;font-size: 18px">Activity '{{ post.activityName }}' was edited.</h2>
               <ul v-if="post.textContext.includes('*')">
-                <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i">{{update.trim()}}</li>
+                <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i" style="color: var(--v-primaryText-base)">{{update.trim()}}</li>
               </ul>
               <ul v-else>
                 <li>

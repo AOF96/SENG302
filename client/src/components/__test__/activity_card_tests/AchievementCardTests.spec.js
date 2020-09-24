@@ -129,13 +129,18 @@ describe("Test if achievements are displayer", () => {
     });
   });
 
-  it("sanity check", async () => {
-    await flushPromises();
-    expect(wrapper.find("#achievementCardTitle").exists()).toBe(true);
-  });
-
   it("card should exist", async () => {
     await flushPromises();
     expect(wrapper.find("#achievementCard").exists()).toBe(true);
+  });
+
+  it("There should be a button to save results", async  () => {
+    await flushPromises();
+    expect(wrapper.find("#resultSaveButton").exists()).toBe(true);
+  });
+
+  it("There should be an input for results", async  () => {
+    await flushPromises();
+    expect(wrapper.find("#resultInput").exists()).toBe(true);
   });
 });
