@@ -28,9 +28,14 @@
     padding: 20px;
 }
 
-.loadingInfoHeader {
+.loadingActivityInfoHeader {
     font-weight: bold;
     padding-top: 30px;
+    color: var(--v-primaryText-base);
+}
+.loadingInfoHeader {
+    font-weight: bold;
+    color: var(--v-primaryText-base);
 }
 
 .activityInfoContainer {
@@ -381,7 +386,7 @@
 }
 
 .activityPageCard {
-    min-height: 220px;
+    min-height: 350px;
     height: fit-content;
     width: calc(100% - 20px);
     margin:20px 10px;

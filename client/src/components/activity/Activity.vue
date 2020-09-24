@@ -6,7 +6,7 @@
       <div id="activityPageLeft" class="activityPageColumn">
         <v-card class="activityContainer" :loading="loadingActivity">
           <v-row v-if="loadingActivity" justify="center">
-            <h3 class="loadingInfoHeader">Loading Info...</h3>
+            <h3 class="loadingActivityInfoHeader">Loading Info...</h3>
           </v-row>
           <div id="activityPageVisibility" class="activityVisibilityLabel"
                v-bind:class="{activityVisibilityLabel:true,
@@ -40,7 +40,7 @@
               <v-avatar left>
                 <v-icon color="primaryText">mdi-account-circle</v-icon>
               </v-avatar>
-              <span style="color:var(--v-primaryText-base);">{{activity_author_firstname + " " + activity_author_lastname }}</span>>
+              <span style="color:var(--v-primaryText-base);">{{activity_author_firstname + " " + activity_author_lastname }}</span>
             </v-chip>
             <v-spacer></v-spacer>
             <v-chip
@@ -67,16 +67,16 @@
         </v-card>
         <v-card :loading="loadingRole" :disabled="roleChanging" class="activityContainer">
           <div class="resultsDiv">
-            <h3 style="font-size:13px;" v-if="!roleChanging">Involvement</h3>
+            <h3 style="font-size:13px; color: var(--v-primaryText-base);" v-if="!roleChanging">Involvement</h3>
             <v-skeleton-loader style="margin-bottom:2px;width: 100px;" v-if="roleChanging" ref="skeleton"
                                type="text"></v-skeleton-loader>
             <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading"></v-skeleton-loader>
-            <h3 style="font-size:17px;font-weight: 500;"
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
                 v-if="(userRole === 'none' || userRole === 'follower' || userRole === 'creator') && !roleChanging && !loadingRole">Not
               Participating</h3>
-            <h3 style="font-size:17px;font-weight: 500;" v-if="userRole === 'participant' && !roleChanging">You are a
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);" v-if="userRole === 'participant' && !roleChanging">You are a
               Participant</h3>
-            <h3 style="font-size:17px;font-weight: 500;" v-if="userRole === 'organiser' && !roleChanging">You are an
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);" v-if="userRole === 'organiser' && !roleChanging">You are an
               Organiser</h3>
             <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
                                style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
@@ -115,7 +115,7 @@
         <div>
           <v-card :loading="loadingParticipants" style="border-radius: 15px" class="activityPageCard">
             <div class="resultsDiv">
-              <h2>Participants & Organisers</h2>
+              <h2 class="activityCardTitle">Participants & Organisers</h2>
               <v-tabs
                   v-model="previewTabs"
                   fixed-tabs
@@ -344,7 +344,7 @@
 
         <v-card style="border-radius: 15px;min-height:0;" class="activityPageCard" :loading="loadingChanges">
           <div class="resultsDiv">
-            <h2 style="padding-bottom:10px;">Latest Changes</h2>
+            <h2 class="activityCardTitle">Latest Changes</h2>
             <v-timeline dense clipped v-for="(update, i) in activityChanges.data" :key="i">
               <v-timeline-item
                   icon-color="grey lighten-2"
@@ -355,8 +355,8 @@
                     <h2 style="font-size:14px;color:grey;font-weight:500;">{{formatDate(update.dateTime)}}</h2>
                     <ul>
                       <h2 v-for="(updateText, j) in update.textContext.split('*').slice(1)" :key="j"
-                          style="font-size:15px;color:rgba(0,0,0,0.85);">
-                        <li>{{updateText}}</li>
+                          style="font-size:15px;color: var(--v-primaryText-base);">
+                        <li style="color: var(--v-primaryText-base);">{{updateText}}</li>
                       </h2>
                     </ul>
                   </v-col>
