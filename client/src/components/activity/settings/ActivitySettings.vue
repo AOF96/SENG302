@@ -20,7 +20,7 @@
                 Time/Date*
               </v-tab>
               <v-tab id="LocationTab">
-                Location
+                Location*
               </v-tab>
               <v-tab id="AchievementTab">
                 Achievements
@@ -651,6 +651,10 @@
         } else if (this.duration === "duration" && !this.checkTimeContinuity()) {
           // Time check failed
           this.tabs = 1;
+          return false;
+        } else if (!this.location) {
+          this.displayError("Please select location.");
+          this.tabs = 2;
           return false;
         } else {
           // All passed
