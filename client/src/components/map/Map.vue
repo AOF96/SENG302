@@ -356,6 +356,14 @@
       createLegend(map) {
         let iconBase = 'https://i.imgur.com/';
         let icons = {
+          yourLocation: {
+            name: 'Your Location',
+            icon: iconBase + 'mNfVgmC.png'
+          },
+          otherLocation: {
+            name: "Other's Location",
+            icon: iconBase + 'Sq7ZPA2.png'
+          },
           publicActivity: {
             name: 'Public',
             icon: iconBase + 'MUWKzz9.png'
@@ -424,8 +432,8 @@
 
         if (this.searchedType === "user") {
           icon = {
-            url: "https://i.imgur.com/jNY9HSw.png", // Change this icon
-            scaledSize: new window.google.maps.Size(26, 26),
+            url: "https://i.imgur.com/Sq7ZPA2.png", // Change this icon
+            scaledSize: new window.google.maps.Size(20, 20),
             origin: new window.google.maps.Point(0, 0),
             anchor: new window.google.maps.Point(13, 26)
           };

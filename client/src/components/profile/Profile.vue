@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div id="profileBanner"></div>
+  <div v-bind:class="{'profileBanner': true, 'darkModeBanner': darkModeGlobal}"></div>
   <div class="profileContainer">
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
@@ -184,7 +184,6 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.setUserBanner();
       this.loadSearchedUser();
     }
   },
@@ -199,27 +198,11 @@ export default {
     ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
 
     /**
-     * Sets the user banner depending on what theme mode is active
-     */
-    setUserBanner() {
-      if (document.getElementById("profileBanner") !== null) {
-        if (this.darkModeGlobal) {
-          document.getElementById("profileBanner").classList.remove("profileBanner");
-          document.getElementById("profileBanner").classList.add("profileBannerDark");
-        } else {
-          document.getElementById("profileBanner").classList.remove("profileBannerDark");
-          document.getElementById("profileBanner").classList.add("profileBanner");
-        }
-      }
-    },
-
-    /**
      * Creates an event handler to check if the theme has changed
      */
     setThemeCheckEvent(map) {
       let outer = this;
       document.addEventListener("click", function(){
-        outer.setUserBanner();
         map.setOptions({
           styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
         });
