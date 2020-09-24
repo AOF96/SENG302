@@ -16,9 +16,7 @@
 <script>
 
     import {apiUser} from "../api";
-    // import json from "../../../public/json/data.json";
-    // import axios from 'axios'
-    // import router from "../router";
+
     export default {
         name: "AdminDashboard",
         data: function() {
@@ -40,14 +38,12 @@
             },
             async goToSearchedUser() {
                 var tempSearchedUser = await apiUser.getUserById(this.searchedUser.profile_id)
-                console.log(tempSearchedUser)
                 if(tempSearchedUser ==  "Invalid permissions" || tempSearchedUser.permission_level == 2){
                     alert("User does not exist");
                 }
                 else{
                     this.$router.push('/profile/'+this.searchedUser.profile_id);
                 }
-                //console.log("User does not exist");
             }
         }
     }

@@ -83,6 +83,9 @@ export default {
   methods: {
       ...mapActions(["updateActivities", "getUserById", "editUserActivityTypes", "getActivityTypes"]),
 
+    /**
+     * Sets up the user information and activity types
+     */
     startUp() {
       this.searchedUser.activities = this.searchedUser.activities.slice();
       this.replaceDashesWithSpaces(this.searchedUser.activities);
@@ -106,11 +109,14 @@ export default {
                 }
                 this.activities_option = activityTypes;
               })
-              .catch(error => console.log(error));
+              .catch(error => {
+                this.showSnackbar(error.response.data.Errors, "error");
+              });
     },
 
     /**
      * Takes a list of strings and replaces all dashes with spaces
+     * @param list of activity types
      */
     replaceDashesWithSpaces(list) {
       for (let i = 0; i < list.length; i++) {
@@ -151,10 +157,8 @@ export default {
     saveActivityTypes() {
       this.updateActivities(this.searchedUser);
       this.editUserActivityTypes({'id': this.searchedUser.profile_id, 'activities': this.searchedUser.activities})
-        .then(
-          response => {
+        .then(() => {
             this.showSnackbar("Saved successfully.","success");
-            console.log(response);
           },
           error => {
             this.showSnackbar(error.response.data.Errors, "error");
@@ -162,8 +166,8 @@ export default {
         );
     },
 
-    /*
-        Uses user id from url to request user data.
+    /**
+     * Uses the user id from url to request user data.
      */
     async loadSearchedUser() {
       if (
