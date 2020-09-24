@@ -180,16 +180,17 @@ export default {
        was unsuccessful.
        */
       updateProfile() {
-        this.editProfile(
-                this.searchedUser
-        )
+        this.editProfile(this.searchedUser)
                 .then(
                         response => {
-                          this.updateUserProfile(this.searchedUser);
-                          this.snackbarText = "Updated Successfully";
-                          this.snackbarColour = "success";
-                          this.snackbar = true;
-                          console.log(response.data);
+                            // check if you are a normal user updating profile, then show the change on frontend
+                            if (this.user.profile_id === this.$route.params.profileId) {
+                              this.updateUserProfile(this.searchedUser);
+                            }
+                            this.snackbarText = "Updated Successfully";
+                            this.snackbarColour = "success";
+                            this.snackbar = true;
+                            console.log(response.data);
                         },
                         error => {
                           this.snackbarText = error.response.data.Errors;
