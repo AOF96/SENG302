@@ -5,12 +5,6 @@
     background: url(../../images/user_banner.jpg) no-repeat center center;
     background-size: cover;
 }
-.profileBannerDark {
-    width: 100%;
-    height: 300px;
-    background: url(../../images/user_banner_dark.jpg) no-repeat center center;
-    background-size: cover;
-}
 .darkModeBanner{
     background: url(../../images/user_banner_dark.jpg) no-repeat center center;
     background-size: cover;
