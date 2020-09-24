@@ -3,11 +3,11 @@
     <div class="searchUserWrapper">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
       <v-container lighten-5>
-        <v-row no-gutters style="flex-wrap: nowrap;">
-          <v-col cols="5" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-            <v-card class="ma-2" style="border-radius:14px;padding:8px;">
+        <v-row no-gutters class="mainRow">
+          <v-col cols="5" class="flex-grow-1 flex-shrink-0 columnContainer">
+            <v-card class="ma-2 searchActivityCard">
               <form>
-                <h1 style="text-align: center"> Search</h1>
+                <h1 class="searchHeader"> Search</h1>
                 <v-toolbar flat height="auto">
                   <template v-slot:extension>
                     <v-tabs
@@ -15,12 +15,12 @@
                         fixed-tabs
                     >
                       <v-tabs-slider></v-tabs-slider>
-                      <v-tab style="text-transform: none" href="#mobile-tabs-5-1"
+                      <v-tab class="searchTab" href="#mobile-tabs-5-1"
                              v-on:click="activitySearchTab = false">
                         <h1 class="searchHeading">User</h1>
                       </v-tab>
 
-                      <v-tab style="text-transform: none" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
+                      <v-tab class="searchTab" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
                         <h1 class="searchHeading">Activity</h1>
                       </v-tab>
                     </v-tabs>
@@ -36,7 +36,7 @@
                     <v-card flat>
                       <div v-if="index === 1">
                         <v-col>
-                          <v-text-field id="searchQueryInput" style="margin-top: 20px" v-on:keyup="submitSearch"
+                          <v-text-field id="searchQueryInput" class="queryInput" v-on:keyup="submitSearch"
                                         label="Search User" v-model="searchedTerm" outlined rounded clearable
                                         hide-details dense></v-text-field>
                         </v-col>
@@ -55,7 +55,7 @@
                     <v-card flat>
                       <div v-if="index === 2">
                         <v-col>
-                          <v-text-field id="searchActivityQueryInput" style="margin-top: 20px" label="Search Activity"
+                          <v-text-field id="searchActivityQueryInput" class="queryInput" label="Search Activity"
                                         v-model="searchedActivityTerm" outlined rounded clearable hide-details
                                         dense></v-text-field>
                         </v-col>
@@ -139,9 +139,9 @@
               </form>
             </v-card>
           </v-col>
-          <v-col cols="1" style="min-width: 300px; max-width: 100%;" class="flex-grow-1 flex-shrink-0">
-            <v-card v-if="!activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Filter by activity</h1>
+          <v-col cols="1" class="flex-grow-1 flex-shrink-0 searchFilterContainer">
+            <v-card v-if="!activitySearchTab" class="ma-2 activityFilterCard">
+              <h1 class="searchHeading activityFilterHeading">Filter by activity</h1>
               <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
                           label="Activity Type Select" multiple
                           v-on:change="searchUsers(defaultActivityPage, defaultActivityPage, multipleUserSearchTermMethod)">
@@ -172,12 +172,12 @@
             <v-card v-if="!activitySearchTab" :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
               <h1 class="searchHeading" style="margin-bottom:22px;">Search using keywords</h1>
               <v-row class="ml-1">
-                <v-label style="margin-right: 5px">Filter method</v-label>
+                <v-label class="activityFilterMethodLabel">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                    <v-icon v-on="on" class="filterIcon">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span style="color: white;">You can search for multiple activities or just a single activity using
+                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
                       these buttons, when searching for searching multiple activities you have two options. Results
                     including all which means a search for fun, scary will return all activities that include both fun and scary in
                     the title. Whereas the other option results including one of meaning a search for fun, scary will
@@ -190,15 +190,15 @@
                 <v-radio label="Results including one of" value="or"></v-radio>
               </v-radio-group>
             </v-card>
-            <v-card v-if="activitySearchTab" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Search using keywords</h1>
+            <v-card v-if="activitySearchTab" class="ma-2 activityFilterCard">
+              <h1 class="searchHeading activityFilterHeading">Search using keywords</h1>
               <v-row class="ml-1">
-                <v-label style="margin-right: 5px">Filter method</v-label>
+                <v-label class="activityFilterMethodLabel">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span style="color: white;">You can search for multiple activities or just a single activity using
+                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
                       these buttons, when searching for searching multiple activities you have two options. Results
                     including all which means a search for fun, scary will return all activities that include both fun and scary in
                     the title. Whereas the other option results including one of meaning a search for fun, scary will
