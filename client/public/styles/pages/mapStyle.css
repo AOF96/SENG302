@@ -101,20 +101,15 @@
     margin: 10px;
 }
 #legend h2 {
-    margin-top: 0;
+    margin-bottom: 10px;
     font-size: 16px !important;
 }
 #legend img {
     vertical-align: middle;
     height: 40px;
-    margin: 2px 0;
+    margin: 0 5px 5px 0;
 }
 #legend h3 {
+    margin-top: 13px;
     float: right;
-    text-align: left;
-}
-#legendButton {
-    visibility: hidden;
-    margin-bottom: -335px;
-    margin-right: 10px;
 }
