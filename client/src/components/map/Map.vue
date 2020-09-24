@@ -96,7 +96,6 @@
 
         this.createControl(this.gmap);
         this.createLegend(this.gmap);
-        this.createLegendButton(this.gmap);
         this.createHomeMarker(this.gmap, userPosition);
         this.createSearch(this.gmap);
       },
