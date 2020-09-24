@@ -3,6 +3,9 @@
     <div id="map">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
     </div>
+    <div id="legend">
+      <h2>Legend</h2>
+    </div>
   </div>
 </template>
 
@@ -89,6 +92,7 @@
 
         this.setThemeCheckEvent(this.gmap);
         this.createControl(this.gmap);
+        this.createLegend(this.gmap);
         this.createHomeMarker(this.gmap, userPosition);
         this.createSearch(this.gmap);
       },
@@ -356,6 +360,50 @@
             styles: mapStyles[this.mapStyle]
           });
         });
+      },
+
+      /**
+       * Create a legend for the map to display what the different pins mean
+       * @param map
+       */
+      createLegend(map) {
+        let iconBase = 'https://i.imgur.com/';
+        let icons = {
+          publicActivity: {
+            name: 'Public',
+            icon: iconBase + 'MUWKzz9.png'
+          },
+          restrictedActivity: {
+            name: 'Restricted',
+            icon: iconBase + 'Y0JUUox.png'
+          },
+          privateActivity: {
+            name: 'Private',
+            icon: iconBase + 'lanhJgs.png'
+          },
+          publicActivityOwned: {
+            name: 'Public - Created',
+            icon: iconBase + 'Hz5QgGa.png'
+          },
+          restrictedActivityOwned: {
+            name: 'Restricted - Created',
+            icon: iconBase + '61rB4dm.png'
+          },
+          privateActivityOwned: {
+            name: 'Private - Created',
+            icon: iconBase + 'jNY9HSw.png'
+          }
+        };
+        let legend = document.getElementById('legend');
+        for (let key in icons) {
+          let type = icons[key];
+          let name = type.name;
+          let icon = type.icon;
+          let div = document.createElement('div');
+          div.innerHTML = '<img src="' + icon + '"> ' + '<h3>' + name + '</h3>';
+          legend.appendChild(div);
+        }
+        map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById('legend'));
       },
 
       /**
