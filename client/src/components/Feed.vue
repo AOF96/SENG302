@@ -15,8 +15,13 @@
                 <div>{{ formatDate(post.dateTime) }}</div>
               </v-row>
               <h2 class="text--primary py-2" style="font-weight:500;font-size: 18px">Activity '{{ post.activityName }}' was edited.</h2>
-              <ul>
+              <ul v-if="post.textContext.includes('*')">
                 <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i">{{update.trim()}}</li>
+              </ul>
+              <ul v-else>
+                <li>
+                  {{post.textContext}}
+                </li>
               </ul>
             </v-card-text>
             <v-card-actions>
