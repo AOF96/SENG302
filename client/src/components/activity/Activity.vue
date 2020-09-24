@@ -302,7 +302,7 @@
             </v-card>
           </v-dialog>
           <v-card style="border-radius: 15px" v-if="visibility === 'restricted'" class="activityPageCard">
-            <h2>Shared Users</h2>
+            <h2  style="color: var(--v-primaryText-base);">Shared Users</h2>
             <form class="activityPageCardForm">
               <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
                             outlined rounded clearable hide-details dense></v-text-field>
