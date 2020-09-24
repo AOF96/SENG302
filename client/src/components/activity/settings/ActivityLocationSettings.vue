@@ -15,21 +15,28 @@
 
   export default {
     name: "ActivityLocationSettings",
-    props: ['darkModeGlobal'],
+    props: ['darkModeGlobal', 'location'],
     data() {
       return {
+        map: null,
         marker: null,
-        location: {
-          street_address: null,
-          suburb: null,
-          postcode: null,
-          city: null,
-          state: null,
-          country: null,
-          latitude: null,
-          longitude: null,
+        address: "",
+        localLocation: null
+      }
+    },
+
+    computed: {
+      locationCopy: {
+        get: function() {
+          if(this.localLocation === null){
+            return this.location;
+          }else{
+            return this.localLocation;
+          }
         },
-        address: ""
+        set: function(newValue) {
+          this.localLocation = newValue;
+        }
       }
     },
 
@@ -59,10 +66,24 @@
         if (!window.google) {
           return;
         }
+
+        let self = this;
+
         this.geocoder = new window.google.maps.Geocoder();
 
-        let map = new window.google.maps.Map(document.getElementById("locationSettingsMap"), {
-          zoom: 9,
+        let position = null;
+        let zoomLevel = 2;
+
+        if (this.locationCopy) {
+          zoomLevel = 10;
+          position = new window.google.maps.LatLng(this.locationCopy.latitude, this.locationCopy.longitude);
+        } else {
+          position = new window.google.maps.LatLng(0, 0);
+        }
+
+        self.map = new window.google.maps.Map(document.getElementById("locationSettingsMap"), {
+          center: position,
+          zoom: zoomLevel,
           streetViewControl: false,
           fullscreenControl: false,
           rotateControl: false,
@@ -70,44 +91,36 @@
           styles: mapStyles[this.darkModeGlobal ? "dark" : "light"]
         });
 
-        let outer = this;
-        map.addListener('click', function (e) {
-          if (outer.marker != null) {
-            outer.marker.setMap(null);
+        self.map.addListener('click', function (e) {
+          if (self.marker != null) {
+            self.marker.setMap(null);
           }
-          outer.marker = new window.google.maps.Marker({
+          self.marker = new window.google.maps.Marker({
             position: e.latLng,
-            map: map
+            map: self.map
           });
-          map.panTo(e.latLng);
-          outer.getLocationFromLatLng(e.latLng);
+          self.map.panTo(e.latLng);
+          self.getLocationFromLatLng(e.latLng);
         });
 
-        this.setMapCentre(map);
+        this.setMapCentre();
         this.loadLocationAutocomplete();
-        this.setThemeCheckEvent(map);
+        this.setThemeCheckEvent(self.map);
+        this.updateAddressString(this.locationCopy);
       },
 
       /**
        * Centres the map on the users current location
        */
-      setMapCentre(map) {
-        let outer = this;
-        let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
-        let latLng = new window.google.maps.LatLng(this.location.latitude, this.location.longitude);
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(latLng);
-            outer.marker = new window.google.maps.Marker({
-              map: map,
-              position: latLng
-            });
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
-        });
+      setMapCentre() {
+        let self = this;
+        if (this.locationCopy) {
+          const latLng = new window.google.maps.LatLng(this.locationCopy.latitude, this.locationCopy.longitude);
+          self.marker = new window.google.maps.Marker({
+            position: latLng,
+            map: self.map
+          });
+        }
       },
 
       /** load google autocomplete on create activity page **/
@@ -128,34 +141,44 @@
       /**
        * Fills in address field and location object from address autocomplete
        */
-      fillInAddress() {
-        this.location = this.extractLocationData(this.autocomplete.getPlace());
-        this.updateAddressString();
+      async fillInAddress() {
+        let self = this;
+        const place = this.autocomplete.getPlace();
+        this.locationCopy = await this.extractLocationData(place);
+        this.updateAddressString(this.locationCopy);
         this.sendLocationToParent();
+        if (this.marker != null) {
+          this.marker.setMap(null);
+        }
+        this.marker = new window.google.maps.Marker({
+          position: place["geometry"]["location"],
+          map: self.map
+        });
+        self.map.panTo(place["geometry"]["location"]);
+        self.sendLocationToParent();
       },
 
       /**
        * Extractor function that parses the google maps response and returns a location object.
        */
-      extractLocationData(place) {
+      async extractLocationData(place) {
         let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
         let addressComponents = place["address_components"];
         newLocation["latitude"] = place["geometry"]["location"].lat();
         newLocation["longitude"] = place["geometry"]["location"].lng();
-        let findingRoute = false;
 
-        for(let i = 0; i < addressComponents.length; i++){
+        for (let i = 0; i < addressComponents.length; i++) {
           let content = addressComponents[i]["long_name"];
-          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
-          if(addressComponents[i]["types"].includes("route")){
-            if(findingRoute){newLocation.street_address += content}else{newLocation.street_address = content}
-          }
+          if(addressComponents[i]["types"].includes("subpremise")){newLocation.street_address += content+"/";}
+          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address += content;}
+          if(addressComponents[i]["types"].includes("route")){newLocation.street_address += " "+content}
           if(addressComponents[i]["types"].includes("sublocality")){newLocation.suburb = content}
           if(addressComponents[i]["types"].includes("locality")){newLocation.city = content}
           if(addressComponents[i]["types"].includes("administrative_area_level_1")){newLocation.state = content}
           if(addressComponents[i]["types"].includes("country")){newLocation.country = content}
           if(addressComponents[i]["types"].includes("postal_code")){newLocation.postcode = content}
         }
+        newLocation.street_address = newLocation.street_address.trim();
 
         return newLocation;
       },
@@ -165,15 +188,15 @@
        */
       getLocationFromLatLng(latlng) {
         let thisInner = this;
-        this.geocoder.geocode({'location': latlng}, function (results, status) {
+        this.geocoder.geocode({'location': latlng}, async function (results, status) {
           if (status === 'OK') {
             if(results.length === 0){
               this.snackbarText = "Invalid Location";
               this.snackbarColour = "error";
               this.snackbar = true;
             }else{
-              thisInner.location = thisInner.extractLocationData(results[0]);
-              thisInner.updateAddressString();
+              thisInner.locationCopy = await thisInner.extractLocationData(results[0]);
+              thisInner.updateAddressString(thisInner.locationCopy);
               thisInner.sendLocationToParent();
             }
           } else {
@@ -185,26 +208,39 @@
       },
 
       /**
-       * Updates the address string from the location object
+       * Updates the address string from the locationObject parameter. Used when the location is changed by clicking
+       * on the map, and when the map is first loaded with the initial location.
        */
-      updateAddressString() {
-        this.address = "";
-        if(this.location.street_address !== ""){this.address += this.location.street_address}
-        if(this.location.suburb !== ""){
-          if(this.address !== ""){this.address += ", "}
-          this.address += this.location.suburb;
-        }
-        if(this.location.city !== ""){
-          if(this.address !== ""){this.address += ", "}
-          this.address += this.location.city;
-        }
-        if(this.location.state !== ""){
-          if(this.address !== ""){this.address += ", "}
-          this.address += this.location.state;
-        }
-        if(this.location.country !== ""){
-          if(this.address !== ""){this.address += ", "}
-          this.address += this.location.country;
+      updateAddressString(locationObject) {
+        if (locationObject) {
+          this.address = "";
+          if (locationObject.street_address !== "") {
+            this.address += locationObject.street_address
+          }
+          if (locationObject.suburb !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += locationObject.suburb;
+          }
+          if (locationObject.city !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += locationObject.city;
+          }
+          if (locationObject.state !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += locationObject.state;
+          }
+          if (locationObject.country !== "") {
+            if (this.address !== "") {
+              this.address += ", "
+            }
+            this.address += locationObject.country;
+          }
         }
       },
 
@@ -212,7 +248,7 @@
        * Sends the location to the parent component
        */
       sendLocationToParent() {
-        this.$emit('set-location', this.location);
+        this.$emit('set-location', this.localLocation);
       }
     }
   }

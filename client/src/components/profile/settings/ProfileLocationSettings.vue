@@ -177,7 +177,7 @@
       async fillInAddress() {
         let thisInner = this;
         const place = this.autocomplete.getPlace();
-        this.location = await this.extractLocationData(this.autocomplete.getPlace());
+        this.location = await this.extractLocationData(place);
         this.updateAddressString(this.location);
         if (this.mapMarker != null) {
           this.mapMarker.setMap(null);
@@ -221,13 +221,14 @@
         let thisInner = this;
         this.geocoder.geocode({'location': latlng}, async function (results, status) {
           if (status === 'OK') {
-            if (results.length === 0) {
+            if(results.length === 0){
               this.snackbarText = "Invalid Location";
               this.snackbarColour = "error";
               this.snackbar = true;
-            } else {
+            }else{
               thisInner.location = await thisInner.extractLocationData(results[0]);
               thisInner.updateAddressString(thisInner.location);
+              thisInner.sendLocationToParent();
             }
           } else {
             this.snackbarText = status;
