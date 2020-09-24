@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div id="profileBanner"></div>
+  <div v-bind:class="{'profileBanner': true, 'darkModeBanner': darkModeGlobal}"></div>
   <div class="profileContainer">
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
@@ -197,21 +197,6 @@ export default {
   },
   methods: {
     ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
-
-    /**
-     * Sets the user banner depending on what theme mode is active
-     */
-    setUserBanner() {
-      if (document.getElementById("profileBanner") !== null) {
-        if (this.darkModeGlobal) {
-          document.getElementById("profileBanner").classList.remove("profileBanner");
-          document.getElementById("profileBanner").classList.add("profileBannerDark");
-        } else {
-          document.getElementById("profileBanner").classList.remove("profileBannerDark");
-          document.getElementById("profileBanner").classList.add("profileBanner");
-        }
-      }
-    },
 
     /**
      * Creates an event handler to check if the theme has changed
