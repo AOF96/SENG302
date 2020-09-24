@@ -150,8 +150,7 @@
             class="darkToggle"
             v-model="darkMode"
             label="Dark Mode"
-            v-on:click="updateDarkModeLocalVar"
-        ></v-switch>
+        />
         <router-link to="/logout" v-if="user.isLogin">
           <div class="pa-2">
             <v-btn v-on:click="logoutUser" rounded class="logoutButton" id="hamburgerLogout" block color="primary">
@@ -176,6 +175,14 @@
         searchQuery: "",
         rootLocation: process.env.VUE_APP_BASE_URL,
         darkMode: false
+      }
+    },
+    watch: {
+      /**
+       * A watcher that watches the dark mode toggle.
+       */
+      darkMode() {
+        this.updateDarkModeLocalVar();
       }
     },
     computed: {
