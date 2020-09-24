@@ -31,12 +31,19 @@ junit:
     - gradle sonarqube
     - ./gradlew test
 
+sonarqube-check:
+  stage: test
+  script: 
+    - gradle sonarqube -Dsonar.qualitygate.wait=true
+  allow_failure: true
+
 jest:
   stage: test
   script:
     - cd client
     - npm install
     - npm run test
+
 
 deploy-test-server:
   stage: deploy
