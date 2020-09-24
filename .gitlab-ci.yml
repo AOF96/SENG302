@@ -28,6 +28,7 @@ junit:
   stage: test
   script:
     - cd server
+    - gradle sonarqube
     - ./gradlew test
 
 jest:
