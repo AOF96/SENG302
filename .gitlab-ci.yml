@@ -30,12 +30,20 @@ junit:
     - cd server
     - ./gradlew test
 
+sonarqube-check:
+  stage: test
+  script: 
+    - cd server
+    - gradle sonarqube
+  allow_failure: true
+
 jest:
   stage: test
   script:
     - cd client
     - npm install
     - npm run test
+
 
 deploy-test-server:
   stage: deploy

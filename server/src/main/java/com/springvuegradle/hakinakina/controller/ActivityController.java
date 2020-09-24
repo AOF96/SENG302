@@ -468,7 +468,8 @@ public class ActivityController {
     public ResponseEntity optOutOfActivity(@PathVariable("activityId") long activityId, @PathVariable("userEmail") String email,
                                            @CookieValue(value = "s_id") String sessionToken) {
         Session session = sessionRepository.findUserIdByToken(sessionToken);
-        if (session == null || !session.getUser().getUserId().equals(activityRepository.getOne(activityId).getAuthor().getUserId()) && session.getUser().getPermissionLevel() < 1) {
+        ActivityRole role = activityRepository.getUsersRoleForActivity(activityId, session.getUser().getUserId());
+        if (session == null || !session.getUser().getUserId().equals(activityRepository.getOne(activityId).getAuthor().getUserId()) && session.getUser().getPermissionLevel() < 1 && role == null) {
             return responseHandler.formatErrorResponseString(401, "Invalid session");
         } else {
             long userId = userRepository.getIdByAnyEmail(email);
