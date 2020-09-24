@@ -120,16 +120,18 @@
         });
 
         let position = null;
+        let zoomLevel = 2;
 
         if (this.searchedUser.location) {
+          zoomLevel = 10;
           position = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
         } else {
           position = new window.google.maps.LatLng(0, 0);
         }
 
-        let map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
+        thisInner.map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
           center: position,
-          zoom: 9,
+          zoom: zoomLevel,
           streetViewControl: false,
           styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           fullscreenControl: false,
@@ -137,38 +139,24 @@
           mapTypeControl: false
         });
 
-        let address = this.address;
-        let marker = null;
-
         if (this.searchedUser.location) {
           const latLng = new window.google.maps.LatLng(this.searchedUser.location.latitude, this.searchedUser.location.longitude);
-          marker = new window.google.maps.Marker({
+          thisInner.mapMarker = new window.google.maps.Marker({
             position: latLng,
-            map: map
+            map: thisInner.map
           });
         }
 
-        map.addListener('click', function (e) {
-          if (marker != null) {
-            marker.setMap(null);
+        thisInner.map.addListener('click', function (e) {
+          if (thisInner.mapMarker != null) {
+            thisInner.mapMarker.setMap(null);
           }
-          marker = new window.google.maps.Marker({
+          thisInner.mapMarker = new window.google.maps.Marker({
             position: e.latLng,
-            map: map
+            map: thisInner.map
           });
-          map.panTo(e.latLng);
+          thisInner.map.panTo(e.latLng);
           thisInner.getLocationFromLatLng(e.latLng);
-        });
-
-
-        this.geocoder.geocode({'address': address}, function (results, status) {
-          if (status === 'OK') {
-            map.setCenter(position);
-          } else {
-            this.snackbarText = status;
-            this.snackbarColour = "error";
-            this.snackbar = true;
-          }
         });
 
         this.autocomplete = new window.google.maps.places.Autocomplete(
@@ -179,7 +167,7 @@
         );
 
         this.autocomplete.addListener("place_changed", this.fillInAddress);
-        this.setThemeCheckEvent(map);
+        this.setThemeCheckEvent(thisInner.map);
       },
 
 
@@ -205,24 +193,24 @@
        * Extractor function that parses the google maps response and returns a location object.
        */
       async extractLocationData(place) {
+        console.log(place);
         let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
         let addressComponents = place["address_components"];
         newLocation["latitude"] = place["geometry"]["location"].lat();
         newLocation["longitude"] = place["geometry"]["location"].lng();
-        let findingRoute = false;
 
         for (let i = 0; i < addressComponents.length; i++) {
           let content = addressComponents[i]["long_name"];
-          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address = content+" ";findingRoute = true;}
-          if(addressComponents[i]["types"].includes("route")){
-            if(findingRoute){newLocation.street_address += content}else{newLocation.street_address = content}
-          }
+          if(addressComponents[i]["types"].includes("subpremise")){newLocation.street_address += content+"/";}
+          if(addressComponents[i]["types"].includes("street_number")){newLocation.street_address += content;}
+          if(addressComponents[i]["types"].includes("route")){newLocation.street_address += " "+content}
           if(addressComponents[i]["types"].includes("sublocality")){newLocation.suburb = content}
           if(addressComponents[i]["types"].includes("locality")){newLocation.city = content}
           if(addressComponents[i]["types"].includes("administrative_area_level_1")){newLocation.state = content}
           if(addressComponents[i]["types"].includes("country")){newLocation.country = content}
           if(addressComponents[i]["types"].includes("postal_code")){newLocation.postcode = content}
         }
+        newLocation.street_address = newLocation.street_address.trim();
 
         return newLocation;
       },

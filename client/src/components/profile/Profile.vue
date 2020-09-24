@@ -23,7 +23,6 @@
               State: {{searchedUser.location.state}} <hr/> </div>
             <div v-if="searchedUser.location.country" class="profileRow">
               Country: {{searchedUser.location.country}} <hr/> </div>
-
           </div>
         </v-container>
       </v-card>
