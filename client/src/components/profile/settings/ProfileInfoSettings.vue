@@ -95,7 +95,7 @@
           v-model="dialog"
           max-width="290"
         >
-          <v-card>
+          <v-card style="border-radius:15px;">
             <v-card-title class="headline">Delete Account</v-card-title>
             <v-card-text>
               Are you sure you want to delete this account?
@@ -103,19 +103,20 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <button
-                @click="dialog = false"
-                v-on:click="deleteAccount()"
-                class="genericConfirmButton updateProfileButton"
-              >
-                Yes
-              </button>
-
-              <button
+                style="margin-bottom:15px;margin-top:0px;"
                 class="genericDeleteButton deleteProfileButton"
                 @click="dialog = false"
               >
                 No
               </button>
+              <button
+                  @click="dialog = false"
+                  v-on:click="deleteAccount()"
+                  style="margin-right:15px;margin-left:10px;margin-bottom:15px;margin-top:0px;"
+                  class="genericConfirmButton updateProfileButton"
+                >
+                  Yes
+                </button>
             </v-card-actions>
           </v-card>
         </v-dialog>

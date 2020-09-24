@@ -184,25 +184,7 @@
         };
 
         for (let activity of this.activities) {
-          if (activity.visibility === "public") {
-            if (activity.authorId === this.user.profile_id) {
-              activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
-            } else {
-              activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
-            }
-          } else if (activity.visibility === "restricted") {
-            if (activity.authorId === this.user.profile_id) {
-              activityMarkerIcon.url = "https://i.imgur.com/61rB4dm.png"
-            } else {
-              activityMarkerIcon.url = "https://i.imgur.com/Y0JUUox.png"
-            }
-          } else if (activity.visibility === "private") {
-            if (activity.authorId === this.user.profile_id) {
-              activityMarkerIcon.url = "https://i.imgur.com/jNY9HSw.png"
-            } else {
-              activityMarkerIcon.url = "https://i.imgur.com/lanhJgs.png"
-            }
-          }
+          activityMarkerIcon.url = this.pickMarkerImage(activity);
 
           let activityPosition = new window.google.maps.LatLng(activity.location.latitude, activity.location.longitude);
           let pos = innerThis.mapActivities.length;
@@ -256,6 +238,33 @@
             infowindow.close();
           });
         }
+      },
+
+      /**
+       * Decides on which marker image to use for an activity
+       */
+      pickMarkerImage(activity) {
+        let url;
+        if (activity.visibility === "public") {
+          if (activity.authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/Hz5QgGa.png"
+          } else {
+            url = "https://i.imgur.com/MUWKzz9.png"
+          }
+        } else if (activity.visibility === "restricted") {
+          if (activity.authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/61rB4dm.png"
+          } else {
+            url = "https://i.imgur.com/Y0JUUox.png"
+          }
+        } else if (activity.visibility === "private") {
+          if (activity.authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/jNY9HSw.png"
+          } else {
+            url = "https://i.imgur.com/lanhJgs.png"
+          }
+        }
+        return url;
       },
 
       /**
@@ -347,6 +356,14 @@
       createLegend(map) {
         let iconBase = 'https://i.imgur.com/';
         let icons = {
+          yourLocation: {
+            name: 'Your Location',
+            icon: iconBase + 'mNfVgmC.png'
+          },
+          otherLocation: {
+            name: "Other's Location",
+            icon: iconBase + 'Sq7ZPA2.png'
+          },
           publicActivity: {
             name: 'Public',
             icon: iconBase + 'MUWKzz9.png'
@@ -411,29 +428,21 @@
        */
       createSearchMarker(map) {
         let icon;
-        if (this.searchedType === "user") {
-          icon = {
-            url: "https://i.imgur.com/jNY9HSw.png", // Change this icon
-            scaledSize: new window.google.maps.Size(26, 26),
-            origin: new window.google.maps.Point(0, 0),
-            anchor: new window.google.maps.Point(13, 26)
-          };
-        } else {
-          icon = {
-            url: "https://i.imgur.com/MUWKzz9.png", // Change this icon
-            scaledSize: new window.google.maps.Size(26, 26),
-            origin: new window.google.maps.Point(0, 0),
-            anchor: new window.google.maps.Point(13, 26)
-          };
-        }
-
         let searchPosition = new window.google.maps.LatLng(this.searchLatitude, this.searchLongitude);
 
-        new window.google.maps.Marker({
-          map: map,
-          position: searchPosition,
-          icon: icon
-        });
+        if (this.searchedType === "user") {
+          icon = {
+            url: "https://i.imgur.com/Sq7ZPA2.png", // Change this icon
+            scaledSize: new window.google.maps.Size(20, 20),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(13, 26)
+          };
+          new window.google.maps.Marker({
+            map: map,
+            position: searchPosition,
+            icon: icon
+          });
+        }
 
         map.setCenter(searchPosition);
       }

@@ -407,7 +407,7 @@ public class UserService {
     /**
      * Checks whether a login attempt was successful. First checks if there exists a user with that primary email.
      * Then checks that the password is correct. If it is, a token is created for that user and is stored for future
-     * actions.
+     * actions. Displays same message for wrong email/password for security.
      *
      * @param email   A string of what could be an existing email
      * @param attempt The password attempt
@@ -417,7 +417,7 @@ public class UserService {
         User user = userRepository.findUserByEmail(email);
 
         if (user == null) {
-            return new ResponseEntity("Email does not exist", HttpStatus.FORBIDDEN);
+            return new ResponseEntity("Wrong username or password", HttpStatus.FORBIDDEN);
         }
 
         try {
@@ -439,7 +439,7 @@ public class UserService {
                 response.addCookie(cookie);
                 return new ResponseEntity(user.toJson(), HttpStatus.OK);
             } else {
-                return new ResponseEntity("Incorrect password", HttpStatus.FORBIDDEN);
+                return new ResponseEntity("Wrong username or password", HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "can't check password");

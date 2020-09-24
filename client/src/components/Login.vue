@@ -108,12 +108,8 @@
                 const responseCode = error.response.status;
                 this.loadingLogin = false;
 
-              if (responseCode === 403 && responseData === "Email does not exist") {
-                this.errorMessage = "Account does not exist";
-                this.alertComponent = true;
-
-              } else if (responseCode === 403 && responseData === "Incorrect password") {
-                this.errorMessage = "Incorrect Password";
+              if (responseCode === 403 && responseData === "Wrong username or password") {
+                this.errorMessage = "Wrong username or password";
                 this.alertComponent = true;
 
               } else if (responseCode === 403 && responseData === "Please enter email/password") {
