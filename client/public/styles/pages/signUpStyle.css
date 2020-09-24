@@ -24,7 +24,7 @@
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
-    background: white;
+    background-color: var(--v-component-base);
 }
 /* Rows */
 .signUpRow {
@@ -44,7 +44,7 @@
 }
 .signUpFormContainer h1 {
   font-size: 20px;
-  color: #2d2d2d;
+  color: var(--v-textPrimary-base);
   text-align: center;
   margin-bottom: 7px;
 }
@@ -57,9 +57,25 @@
 .signUpFormContainer input, .signUpFormContainer select, .signUpFormContainer textarea {
     margin-bottom: 15px;
     width: 100%;
-    border: 1px solid #d8d8d8 !important;
+    border: 1px solid var(--v-secondary-base) !important;
     border-radius: 21px !important;
+    background-color: var(--v-component-base);
 }
+.signUpFormContainer input:-webkit-autofill,
+.signUpFormContainer input:-webkit-autofill:hover,
+.signUpFormContainer input:-webkit-autofill:focus,
+.signUpFormContainer input:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px var(--v-component-base) inset !important;
+    -webkit-text-fill-color: var(--v-primaryText-base) !important;
+    caret-color: var(--v-primaryText-base) !important;
+}
+
+.signUpFormContainer input:focus,
+.signUpFormContainer select:focus,
+.signUpFormContainer textarea:focus {
+    border: 1px solid var(--v-primary-base) !important;
+}
+
 .signUpInputBirthday {
     padding: 8px 12px;
 }

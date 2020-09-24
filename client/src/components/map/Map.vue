@@ -1,11 +1,5 @@
 <template>
   <div class="mapPageContainer">
-    <div id="styleSelectorDiv" class="styleSelectorDiv">
-      <v-radio-group id="styleSelector" v-model="mapStyle">
-        <v-radio value="light" label="Light"></v-radio>
-        <v-radio value="dark" label="Dark"></v-radio>
-      </v-radio-group>
-    </div>
     <div id="map">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" bottom>{{errorMessage}}</v-snackbar>
     </div>
@@ -37,9 +31,10 @@
         activities: [],
       }
     },
+    props: ['darkModeGlobal'],
     computed: {
       ...mapState(["user"]),
-      ...mapGetters(["user"])
+      ...mapGetters(["user"]),
     },
     mounted() {
       this.loadMap();
@@ -54,6 +49,7 @@
 
     methods: {
       ...mapActions(["getDataFromUrl"]),
+
       /**
        * Loads the map onto the page and centres on the users home city.
        * Adds a marker on the city's centre. Uses bounds of the viewport to retrieve activities in that range.
@@ -64,7 +60,7 @@
         this.gmap = new window.google.maps.Map(document.getElementById("map"), {
           center: userPosition,
           zoom: 12,
-          styles: mapStyles[this.mapStyle],
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           zoomControl: false,
           mapTypeControl: true,
           scaleControl: false,
@@ -91,6 +87,7 @@
               })
         });
 
+        this.setThemeCheckEvent(this.gmap);
         this.createControl(this.gmap);
         this.createHomeMarker(this.gmap, userPosition);
         this.createSearch(this.gmap);
@@ -326,6 +323,19 @@
        */
       goToProfile() {
         this.$router.push('/profile/' + this.user.profile_id)
+      },
+
+      /**
+       * Creates an event handler to check if the theme has changed
+       * @param map
+       */
+      setThemeCheckEvent(map) {
+        let outer = this;
+        window.google.maps.event.addDomListener(window, 'click', function() {
+          map.setOptions({
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+          });
+        });
       },
 
       /**

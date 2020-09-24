@@ -112,7 +112,7 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card flat class="py-3">
-                  <ActivityLocationSettings v-on:set-location="setLocationFromComponent"/>
+                  <ActivityLocationSettings v-bind:dark-mode-global="darkModeGlobal" v-on:set-location="setLocationFromComponent"/>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
@@ -122,7 +122,7 @@
                   </v-card-text>
                   <v-row justify="center" align="center" no-gutters v-for="(achievement, index) in achievements"
                          v-bind:key="index">
-                    <v-card style="width:100%;padding:20px;margin:15px;border-radius: 15px;">
+                    <v-card color="component lighten-1" style="width:100%;padding:20px;margin:15px;border-radius: 15px;">
                       <v-card-text style="padding: 0;word-break: break-word;">{{achievement.resultType}}</v-card-text>
                       <v-card-title style="padding: 0;word-break: break-word;">{{achievement.name}}</v-card-title>
                       <v-card-text style="padding: 0;word-break: break-word;">{{achievement.description}}</v-card-text>
@@ -153,81 +153,71 @@
                       </v-menu>
                     </v-card>
                   </v-row>
-                  <v-dialog width="33%" v-model="editDialog">
-                    <v-card>
-                      <v-card-title class="headline">Edit Achievement</v-card-title>
-
-                      <v-row justify="center" no-gutters>
-                        <v-card style="padding:10px;border-radius:15px;width:100%;margin: 15px;" color="#3bb18b">
-                          <v-row no-gutters style="margin-top: 10px;">
-                            <v-col>
-                              <v-text-field
-                                  v-model="tempTitle" label="Achievement Title"
-                                  placeholder="Achievement title" rounded outlined dense
-                                  required style="margin-right: 5px" color="white"
-                                  id="achievementTitle"
-                                  dark/>
-                            </v-col>
-                            <v-col cols="5.5">
-                              <v-select
-                                  id="achieveType"
-                                  style="margin-left: 5px;"
-                                  v-model="tempResultType"
-                                  :items="options"
-                                  label="Select achievement type"
-                                  rounded
-                                  outlined
-                                  dense
-                                  color="white"
-                                  dark
-                              />
-                            </v-col>
-                          </v-row>
-                          <v-row no-gutters>
-                            <v-col>
-                              <v-textarea
-                                  label="Achievement Description"
-                                  maxlength="255"
-                                  type="text"
-                                  v-model="tempDescription"
-                                  rows="2"
-                                  row-height="30"
-                                  outlined
-                                  id="achievementDescription"
-                                  densecolor="white"
-                                  dark
-                                  placeholder="Achievement Description">
-                              </v-textarea>
-                            </v-col>
-                          </v-row>
-                          <v-row no-gutters>
-                            <v-spacer></v-spacer>
-                            <v-btn color="#f06a6a"
-                                   style="background-color:white;margin-left: 10px"
-                                   rounded
-                                   text
-                                   right
-                                   dark
-                                   :disabled="overlayLoader" @click="editDialog = false">Cancel
-                            </v-btn>
-                            <v-btn color="#3bb18b"
-                                   style="background-color:white;margin-left: 10px"
-                                   rounded
-                                   text
-                                   right
-                                   dark
-                                   :disabled="overlayLoader"
-                                   @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save
-                            </v-btn>
-                          </v-row>
-                        </v-card>
-                      </v-row>
+                  <v-dialog v-model="editDialog" width="400px">
+                    <v-card class="pa-4" style="border-radius: 15px;">
+                      <v-card-title style="font-size: 18px !important;padding: 0 0 10px;">Edit Achievement</v-card-title>
+                        <v-row no-gutters style="margin-top: 10px;">
+                          <v-col>
+                            <v-text-field
+                                v-model="tempTitle" label="Achievement Title"
+                                placeholder="Achievement title" rounded outlined dense
+                                required style="margin-right: 5px" color="white"
+                                id="achievementTitle"/>
+                          </v-col>
+                          <v-col cols="5.5">
+                            <v-select
+                                id="achieveType"
+                                style="margin-left: 5px;"
+                                v-model="tempResultType"
+                                :items="options"
+                                label="Select achievement type"
+                                rounded
+                                outlined
+                                dense
+                                color="white"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters>
+                          <v-col style="margin-top: 10px;">
+                            <v-textarea
+                                label="Achievement Description"
+                                maxlength="255"
+                                type="text"
+                                v-model="tempDescription"
+                                rows="2"
+                                row-height="30"
+                                outlined
+                                id="achievementDescription"
+                                densecolor="white"
+                                placeholder="Achievement Description">
+                            </v-textarea>
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters style="margin-top: 15px">
+                          <v-spacer></v-spacer>
+                          <v-btn color="#f06a6a"
+                                 style="margin-left: 10px"
+                                 rounded
+                                 text
+                                 right
+                                 :disabled="overlayLoader" @click="editDialog = false">Cancel
+                          </v-btn>
+                          <v-btn color="#3bb18b"
+                                 style="margin-left: 10px"
+                                 rounded
+                                 text
+                                 right
+                                 :disabled="overlayLoader"
+                                 @click="saveEditedAchievement(tempTitle, tempDescription, tempResultType)">Save
+                          </v-btn>
+                        </v-row>
                     </v-card>
                   </v-dialog>
                   <v-divider></v-divider>
                   <v-row justify="center" no-gutters v-if="addAchievement" id="addAchievementBox">
                     <v-card style="padding:10px;padding-top:15px;border-radius:15px;width:100%;margin: 15px;"
-                            color="#3bb18b">
+                            color="colouredComponent">
                       <form>
                         <v-row no-gutters style="margin-bottom:10px;">
                           <v-col>
@@ -420,6 +410,7 @@
     components: {
       ActivityLocationSettings
     },
+    props: ['darkModeGlobal'],
     data() {
       return {
         tabs: null,

@@ -7,8 +7,8 @@
           <v-col cols="5" class="flex-grow-1 flex-shrink-0 columnContainer">
             <v-card class="ma-2 searchActivityCard">
               <form>
-                <h1 class="searchHeader"> Search</h1>
-                <v-toolbar flat height="auto">
+                <h1 style="text-align: center; color: var(--v-primaryText-base)"> Search</h1>
+                <v-toolbar flat height="auto" style="background:none;">
                   <template v-slot:extension>
                     <v-tabs
                         v-model="tabs"
@@ -17,11 +17,11 @@
                       <v-tabs-slider></v-tabs-slider>
                       <v-tab class="searchTab" href="#mobile-tabs-5-1"
                              v-on:click="activitySearchTab = false">
-                        <h1 class="searchHeading">User</h1>
+                        <h1 class="searchHeading" style="color: var(--v-primaryText-base)">User</h1>
                       </v-tab>
 
                       <v-tab class="searchTab" href="#mobile-tabs-5-2" v-on:click="loadActivitySearchTab">
-                        <h1 class="searchHeading">Activity</h1>
+                        <h1 class="searchHeading" style="color: var(--v-primaryText-base)">Activity</h1>
                       </v-tab>
                     </v-tabs>
                   </template>
@@ -141,7 +141,7 @@
           </v-col>
           <v-col cols="1" class="flex-grow-1 flex-shrink-0 searchFilterContainer">
             <v-card v-if="!activitySearchTab" class="ma-2 activityFilterCard">
-              <h1 class="searchHeading activityFilterHeading">Filter by activity</h1>
+              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Filter by activity</h1>
               <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
                           label="Activity Type Select" multiple
                           v-on:change="searchUsers(defaultActivityPage, defaultActivityPage, multipleUserSearchTermMethod)">
@@ -191,12 +191,12 @@
               </v-radio-group>
             </v-card>
             <v-card v-if="activitySearchTab" class="ma-2 activityFilterCard">
-              <h1 class="searchHeading activityFilterHeading">Search using keywords</h1>
+              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Search for multiple activities</h1>
               <v-row class="ml-1">
-                <v-label class="activityFilterMethodLabel">Filter method</v-label>
+                <v-label style="padding-right: 5px">Filter method</v-label>
                 <v-tooltip bottom max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" style="font-size: 20px;">mdi-help-circle-outline</v-icon>
+                    <v-icon v-on="on" style="margin-left:10px;margin-top:-3px;font-size: 20px;">mdi-help-circle-outline</v-icon>
                   </template>
                   <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
                       these buttons, when searching for searching multiple activities you have two options. Results

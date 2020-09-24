@@ -88,26 +88,26 @@
         }
         if (this.user.primary_email.trim(), this.user.password.trim()) {
           apiUser.login(this.user.primary_email, this.user.password)
-            .then((response) => {
-              const responseData = response.data;
-              this.updateUserProfile(responseData);
-              this.$router.push('Profile');
-              apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
-                this.updateUserContinuousActivities(response.data);
-              }).catch(err => console.log(err));
-              apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
-                this.updateUserDurationActivities(response.data);
-              }).catch(err => console.log(err));
-              if (responseData.permission_level === 2) {
-                this.$router.push("/settings/admin_dashboard");
-              } else {
-                this.$router.push("profile?u=" + responseData.profile_id);
-              }
-            })
-            .catch(error => {
-              const responseData = error.response.data;
-              const responseCode = error.response.status;
-              this.loadingLogin = false;
+              .then((response) => {
+                const responseData = response.data;
+                this.updateUserProfile(responseData);
+                this.$router.push('Profile');
+                apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
+                  this.updateUserContinuousActivities(response.data);
+                }).catch(err => console.log(err));
+                apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
+                  this.updateUserDurationActivities(response.data);
+                }).catch(err => console.log(err));
+                if (responseData.permission_level === 2) {
+                  this.$router.push("/settings/admin_dashboard");
+                } else {
+                  this.$router.push("profile?u=" + responseData.profile_id);
+                }
+              })
+              .catch(error => {
+                const responseData = error.response.data;
+                const responseCode = error.response.status;
+                this.loadingLogin = false;
 
               if (responseCode === 403 && responseData === "Email does not exist") {
                 this.errorMessage = "Account does not exist";
@@ -135,5 +135,5 @@
 </script>
 
 <style scoped>
-    @import '../../public/styles/pages/loginStyle.css';
+  @import '../../public/styles/pages/loginStyle.css';
 </style>
