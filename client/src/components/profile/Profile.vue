@@ -15,14 +15,15 @@
             <div class="profileRow">Email: {{ searchedUser.primary_email }}</div>
             <div v-if="searchedUser.bio">
               <hr/>
-              <div class="profileRow">Bio: {{ searchedUser.bio }} <hr/> </div>
+              <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             </div>
             <div v-if="searchedUser.location != null &&  searchedUser.location.city" class="profileRow">
-              City: {{searchedUser.location.city }}  <hr/> </div>
+              <hr/> City: {{searchedUser.location.city }}</div>
             <div v-if="searchedUser.location != null && searchedUser.location.state" class="profileRow">
-              State: {{searchedUser.location.state}} <hr/> </div>
+              <hr/> State: {{searchedUser.location.state}}</div>
             <div v-if="searchedUser.location != null && searchedUser.location.country" class="profileRow">
-              Country: {{searchedUser.location.country}} <hr/> </div>
+              <hr/> Country: {{searchedUser.location.country}}</div>
+            <hr/>
           </div>
         </v-container>
       </v-card>

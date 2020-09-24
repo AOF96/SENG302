@@ -193,7 +193,6 @@
        * Extractor function that parses the google maps response and returns a location object.
        */
       async extractLocationData(place) {
-        console.log(place);
         let newLocation = {street_address:"",suburb:"",postcode:"",city:"",state:"",country:"",latitude:"",longitude:""};
         let addressComponents = place["address_components"];
         newLocation["latitude"] = place["geometry"]["location"].lat();
