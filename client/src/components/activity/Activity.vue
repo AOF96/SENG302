@@ -907,9 +907,16 @@
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
             map.setCenter(latLng);
+            let activityMarkerIcon = {
+              url: outer.pickMarkerImage(outer.visibility, outer.authorId),
+              scaledSize: new window.google.maps.Size(30, 30),
+              origin: new window.google.maps.Point(0, 0),
+              anchor: new window.google.maps.Point(15, 30)
+            };
             new window.google.maps.Marker({
               map: map,
-              position: latLng
+              position: latLng,
+              icon: activityMarkerIcon
             });
             outer.mapLoading = false;
           } else {
@@ -927,7 +934,34 @@
        */
       goToFullMap() {
         this.$router.push('/map/activity@' + this.location.latitude + ',' + this.location.longitude);
-      }
+      },
+
+      /**
+       * Decides on which marker image to use for an activity
+       */
+      pickMarkerImage(visibility, authorId) {
+        let url;
+        if (visibility === "public") {
+          if (authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/Hz5QgGa.png"
+          } else {
+            url = "https://i.imgur.com/MUWKzz9.png"
+          }
+        } else if (visibility === "restricted") {
+          if (authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/61rB4dm.png"
+          } else {
+            url = "https://i.imgur.com/Y0JUUox.png"
+          }
+        } else if (visibility === "private") {
+          if (authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/jNY9HSw.png"
+          } else {
+            url = "https://i.imgur.com/lanhJgs.png"
+          }
+        }
+        return url;
+      },
     }
   }
 </script>
