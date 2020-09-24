@@ -40,4 +40,12 @@ public class EditSubscriberRoleDto {
     public void setRole(ActivityRole role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"email\": \"" + email + '\"' +
+                ", \"activityRole\": \"" + role + '\"' +
+                '}';
+    }
 }
