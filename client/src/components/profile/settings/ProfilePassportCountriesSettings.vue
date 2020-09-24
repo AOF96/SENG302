@@ -160,7 +160,7 @@ export default {
      */
     savePassportCountries() {
       this.updatePassports(this.searchedUser);
-      this.editProfile(this.searchedUser).then((response) => {
+      this.editProfile(this.searchedUser).then(() => {
         this.showSnackbar("Passport saved successfully.", "success");
       }, (error) => {
         this.showSnackbar(error.response.data.Errors, "error");
