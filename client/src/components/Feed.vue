@@ -19,7 +19,7 @@
                 <li v-for="(update, i) in post.textContext.split('*').slice(1)" :key="i" style="color: var(--v-primaryText-base)">{{update.trim()}}</li>
               </ul>
               <ul v-else>
-                <li>
+                <li style="color: var(--v-primaryText-base)">
                   {{post.textContext}}
                 </li>
               </ul>
