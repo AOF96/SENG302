@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -753,6 +754,12 @@ public class UserService {
                         userActivityRoleRepository.save(userActivityRole);
                         result = responseHandler.formatSuccessResponse(201, "User " + profileId
                                 + " now follows activity " + activityId);
+                        Date date = new Date();
+                        Timestamp timestamp = new Timestamp(date.getTime());
+                        HomeFeedEntry userChangeToAdd = new HomeFeedEntry("FOLLOW", timestamp,
+                                userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                                FeedEntryType.FOLLOWACTIVITY, FeedEntryScope.PRIVATE);
+                        homeFeedRepository.save(userChangeToAdd);
                     }
                 } else {
                     result = responseHandler.formatErrorResponse(404, "No user with id "

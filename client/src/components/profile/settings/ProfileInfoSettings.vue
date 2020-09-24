@@ -128,7 +128,21 @@
       </form>
     </div>
     <div class="floatClear"></div>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColour"
+    >
+      {{ snackbarText }}
+      <v-btn
+        @click="snackbar = false"
+        color="white"
+        text
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </div>
+
 </template>
 
 <script>
@@ -152,6 +166,10 @@ export default {
         dialog: false,
         isLoading: false,
         descriptionLimit: 60,
+        snackbar: false,
+        snackbarText: null,
+        snackbarColour: '',
+
       };
     },
     methods: {
@@ -168,18 +186,15 @@ export default {
                 .then(
                         response => {
                           this.updateUserProfile(this.searchedUser);
-                          document.getElementById("success").hidden = false;
-                          document.getElementById("success").innerText =
-                                  "Updated Successfully";
-                          document.getElementById("error").hidden = true;
-                          console.log(response.data)
+                          this.snackbarText = "Updated Successfully";
+                          this.snackbarColour = "success";
+                          this.snackbar = true;
+                          console.log(response.data);
                         },
                         error => {
-                          document.getElementById("error").hidden = false;
-                          document.getElementById("error").innerText =
-                                  error.response.data.Errors;
-                          document.getElementById("success").hidden = true;
-                          console.log(error);
+                          this.snackbarText = error.response.data.Errors;
+                          this.snackbarColour = "error";
+                          this.snackbar = true;
                         }
                 );
       },
