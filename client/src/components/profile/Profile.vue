@@ -184,7 +184,6 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.setUserBanner();
       this.loadSearchedUser();
     }
   },
@@ -204,7 +203,6 @@ export default {
     setThemeCheckEvent(map) {
       let outer = this;
       document.addEventListener("click", function(){
-        outer.setUserBanner();
         map.setOptions({
           styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
         });

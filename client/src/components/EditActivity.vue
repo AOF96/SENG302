@@ -20,7 +20,7 @@
                 Time/Date*
               </v-tab>
               <v-tab>
-                Location
+                Location*
               </v-tab>
               <v-tab>
                 Achievements
