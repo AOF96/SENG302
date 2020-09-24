@@ -16,9 +16,12 @@
   import {mapGetters, mapState, mapActions} from "vuex";
   import {apiActivity} from "@/api";
   import mapStyles from "../../util/mapStyles"
+
+  const BASE_URL = process.env.VUE_APP_BASE_URL;
+
   export default {
     name: "Map",
-    data: function() {
+    data: function () {
       return {
         gmap: null,
         geocoder: null,
@@ -40,13 +43,13 @@
     },
     mounted() {
       this.loadMap();
-     },
+    },
 
     watch: {
-      mapBounds: function(){
+      mapBounds: function () {
         this.mapActivities = [];
         this.getActivitiesInRange();
-     }
+      }
     },
 
     methods: {
@@ -71,7 +74,7 @@
         });
 
         let self = this;
-        window.google.maps.event.addListener(this.gmap, 'idle', function(){
+        window.google.maps.event.addListener(this.gmap, 'idle', function () {
           let mapBounds = this.getBounds();
           let NECorner = mapBounds.getNorthEast();
           let SWCorner = mapBounds.getSouthWest();
@@ -82,10 +85,10 @@
             SWLong: SWCorner.lng()
           };
           apiActivity.getActivityInRange(coordinates.SWLat, coordinates.NELat, coordinates.SWLong, coordinates.NELong)
-            .then(response => {
-              self.activities = response.data;
-              self.createActivityMarkers(self.gmap);
-            })
+              .then(response => {
+                self.activities = response.data;
+                self.createActivityMarkers(self.gmap);
+              })
         });
 
         this.createControl(this.gmap);
@@ -112,22 +115,22 @@
           icon: homeIcon
         });
 
-        let contentString = '<div id="content">'+
-            '<h2>Your Location</h2>'+
-            '<div id="bodyContent">'+
+        let contentString = '<div id="content">' +
+            '<h2>Your Location</h2>' +
+            '<div id="bodyContent">' +
             this.locationToString(this.user.location) +
-            '</div>'+
+            '</div>' +
             '</div>';
 
         let infowindow = new window.google.maps.InfoWindow({
           content: contentString
         });
 
-        marker.addListener('click', function() {
+        marker.addListener('click', function () {
           infowindow.open(map, marker);
         });
 
-        window.google.maps.event.addListener(map, "click", function() {
+        window.google.maps.event.addListener(map, "click", function () {
           infowindow.close();
         });
       },
@@ -136,7 +139,7 @@
        * Formats Date object to pretty English
        * @param date
        */
-      dateFormatterToEnglish: function(date) {
+      dateFormatterToEnglish: function (date) {
         const options = {
           weekday: "long",
           day: "2-digit",
@@ -152,7 +155,7 @@
       /**
        * Gets activities within the bounds of the map
        */
-      getActivitiesInRange(){
+      getActivitiesInRange() {
         let NECorner = this.mapBounds.getNorthEast();
         let SWCorner = this.mapBounds.getSouthWest();
         let coordinates = {
@@ -183,19 +186,19 @@
 
         for (let activity of this.activities) {
           if (activity.visibility === "public") {
-            if(activity.authorId === this.user.profile_id) {
+            if (activity.authorId === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/Hz5QgGa.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/MUWKzz9.png"
             }
           } else if (activity.visibility === "restricted") {
-            if(activity.authorId === this.user.profile_id) {
+            if (activity.authorId === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/61rB4dm.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/Y0JUUox.png"
             }
           } else if (activity.visibility === "private") {
-            if(activity.authorId === this.user.profile_id) {
+            if (activity.authorId === this.user.profile_id) {
               activityMarkerIcon.url = "https://i.imgur.com/jNY9HSw.png"
             } else {
               activityMarkerIcon.url = "https://i.imgur.com/lanhJgs.png"
@@ -210,48 +213,47 @@
             icon: activityMarkerIcon,
           }));
 
-          let contentString
-          if (activity.continuous === true) {
-            contentString = '<div class="content">'+
-                    '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
-                    '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
-                    '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
-                    '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
-                    '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
-                    '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
-                    '<hr class="activityPopupActivityLine">'+
-                    '<a href="/activity/'+activity.id+'"><button class="activityPopupActivityButton">Go to Activity</button></a>'+
-                    '</div>';
+          let contentString;
 
+          if (activity.continuous === true) {
+            contentString = '<div class="content">' +
+                '<h1 class="activityPopupActivityVisibility" style="background:' + this.getVisibilityColour(activity.visibility) + ';">' + activity.visibility + '</h1>' +
+                '<h1 class="activityPopupLocation">' + this.locationToString(activity.location) + '</h1>' +
+                '<h1 class="activityPopupTitle">' + activity.name + '</h1>' +
+                '<h1 class="activityPopupDescription">' + activity.description + '</h1>' +
+                '<h1 class="activityPopupActivityTypes">' + activity.activity_types + '</h1>' +
+                '<h1 class="activityPopupActivityFollowers">' + activity.numFollowers + ' followers</h1>' +
+                '<hr class="activityPopupActivityLine">' +
+                '<a href= "' + BASE_URL + 'activity/' + activity.id + '"><button class="activityPopupActivityButton">Go to Activity</button></a>' +
+                '</div>';
           } else {
 
             let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time));
             let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time));
 
-            contentString = '<div class="content">'+
-                    '<h1 class="activityPopupActivityVisibility" style="background:'+this.getVisibilityColour(activity.visibility)+';">'+ activity.visibility+ '</h1>'+
-                    '<h1 class="activityPopupLocation">'+ this.locationToString(activity.location) + '</h1>'+
-                    '<h1 class="activityPopupTitle">'+ activity.name +'</h1>'+
-                    '<h1 class="activityPopupDescription">'+ activity.description + '</h1>'+
-                    '<h1 class="activityPopupStartTime">'+ "Starts: " + activityStartDate + '</h1>'+
-                    '<h1 class="activityPopupEndTime">'+ "Ends: " + activityEndDate + '</h1>'+
-                    '<h1 class="activityPopupActivityTypes">'+ activity.activity_types + '</h1>'+
-                    '<h1 class="activityPopupActivityFollowers">'+ activity.numFollowers + ' followers</h1>'+
-                    '<hr class="activityPopupActivityLine">'+
-                    '<a href="/activity/'+activity.id+'">' +
-                    '<button class="activityPopupActivityButton">Go to Activity</button></a>'+
-                    '</div>';
+            contentString = '<div class="content">' +
+                '<h1 class="activityPopupActivityVisibility" style="background:' + this.getVisibilityColour(activity.visibility) + ';">' + activity.visibility + '</h1>' +
+                '<h1 class="activityPopupLocation">' + this.locationToString(activity.location) + '</h1>' +
+                '<h1 class="activityPopupTitle">' + activity.name + '</h1>' +
+                '<h1 class="activityPopupDescription">' + activity.description + '</h1>' +
+                '<h1 class="activityPopupStartTime">' + "Starts: " + activityStartDate + '</h1>' +
+                '<h1 class="activityPopupEndTime">' + "Ends: " + activityEndDate + '</h1>' +
+                '<h1 class="activityPopupActivityTypes">' + activity.activity_types + '</h1>' +
+                '<h1 class="activityPopupActivityFollowers">' + activity.numFollowers + ' followers</h1>' +
+                '<hr class="activityPopupActivityLine">' +
+                '<a href= "' + BASE_URL + 'activity/' + activity.id + '"><button class="activityPopupActivityButton">Go to Activity</button></a>' +
+                '</div>';
           }
 
           let infowindow = new window.google.maps.InfoWindow({
             content: contentString
           });
 
-          innerThis.mapActivities[pos].addListener('click', function() {
+          innerThis.mapActivities[pos].addListener('click', function () {
             infowindow.open(map, innerThis.mapActivities[pos]);
           });
 
-          window.google.maps.event.addListener(map, "click", function() {
+          window.google.maps.event.addListener(map, "click", function () {
             infowindow.close();
           });
         }
@@ -264,7 +266,7 @@
        */
       getVisibilityColour(visibility) {
         let colour = "#1dca92";
-        switch(visibility) {
+        switch (visibility) {
           case "private":
             colour = "#ff4f4a";
             break;
@@ -294,19 +296,25 @@
           outputString = "No Location Set"
         } else {
           outputString += streetAddress;
-          if(city !== ""){
-            if(outputString !== ""){outputString += ", "}
+          if (city !== "") {
+            if (outputString !== "") {
+              outputString += ", "
+            }
             outputString += city;
           }
-          if(state !== ""){
-            if(outputString !== ""){outputString += ", "}
+          if (state !== "") {
+            if (outputString !== "") {
+              outputString += ", "
+            }
             outputString += state;
           }
-          if(country !== ""){
-            if(outputString !== ""){outputString += ", "}
+          if (country !== "") {
+            if (outputString !== "") {
+              outputString += ", "
+            }
             outputString += country;
           }
-          if(outputString === ""){
+          if (outputString === "") {
             outputString = "No Location Set"
           }
         }
