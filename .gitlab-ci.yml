@@ -28,13 +28,13 @@ junit:
   stage: test
   script:
     - cd server
-    - gradle sonarqube
     - ./gradlew test
 
 sonarqube-check:
   stage: test
   script: 
-    - gradle sonarqube -Dsonar.qualitygate.wait=true
+    - cd server
+    - gradle sonarqube
   allow_failure: true
 
 jest:
