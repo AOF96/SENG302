@@ -24,6 +24,20 @@ setup:
     paths:
       - client/node_modules/
 
+sonarqube-server:
+  stage: test
+  script: 
+    - cd server
+    - ./gradlew sonarqube
+  allow_failure: true
+
+sonarqube-client:
+  stage: test
+  script: 
+    - cd client
+    - npm run sonarqube
+  allow_failure: true
+
 junit:
   stage: test
   script:
@@ -36,6 +50,7 @@ jest:
     - cd client
     - npm install
     - npm run test
+
 
 deploy-test-server:
   stage: deploy

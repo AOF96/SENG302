@@ -57,10 +57,10 @@
                    v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary"
+            <v-btn v-if="!userFollowing" :disabled="this.user.profile_id === this.authorId || userOrganiser || userParticipant" style="margin: 5px"  v-on:click="followCurrentActivity()" color="primary"
                    outlined rounded :loading="loadingFollowButton">Follow
             </v-btn>
-            <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0"
+            <v-btn v-if="userFollowing" :disabled="this.user.profile_id === this.authorId || userOrganiser || userParticipant" style="margin: 5px"  v-on:click="unFollowCurrentActivity()" elevation="0"
                    color="primary" flat rounded filled :loading="loadingFollowButton">Unfollow
             </v-btn>
           </v-row>
@@ -458,6 +458,8 @@
         loadingRole: true,
         loadingChanges: true,
         loadingParticipants: true,
+        userParticipant: null,
+        userOrganiser: null,
       }
     },
 
@@ -541,6 +543,8 @@
                 this.showMoreDialog = false;
                 this.getOrganisers();
                 this.getParticipants();
+                this.getStats();
+                this.checkFollowing();
                 this.roleChanging = false;
                 this.userRole = role;
               }).catch((err) => {
@@ -554,6 +558,8 @@
                 this.showMoreDialog = false;
                 this.getOrganisers();
                 this.getParticipants();
+                this.getStats();
+                this.checkFollowing();
                 this.roleChanging = false;
                 this.userRole = role;
               }).catch((err) => {
@@ -685,6 +691,14 @@
       async getParticipants() {
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
+          for (let i = 0; i < response.data.content.length; i++) {
+            if (this.user.primary_email === response.data.content[i].email) {
+              this.userParticipant = true;
+            }
+          }
+          if (!this.userParticipant) {
+            this.userParticipant = false;
+          }
           this.userTabs[0].content = response.data.content;
           this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
           this.loadingParticipants = false;
@@ -712,6 +726,14 @@
       async getOrganisers() {
         try {
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
+          for (let i = 0; i < response.data.content.length; i++) {
+            if (this.user.primary_email === response.data.content[i].email) {
+              this.userOrganiser = true;
+            }
+          }
+          if (this.userOrganiser == null) {
+            this.userOrganiser = false;
+          }
           this.userTabs[1].content = response.data.content;
           this.userTabs[1].preview = this.userTabs[1].content.slice(0, 3);
         } catch (err) {

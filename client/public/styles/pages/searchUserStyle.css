@@ -127,3 +127,9 @@ input, select, textarea {
 .filterIcon {
     font-size: 20px;
 }
+
+@media only screen and (max-height: 680px) {
+    .searchUserWrapper .columnContainer{
+        width:100% !important;
+    }
+}
