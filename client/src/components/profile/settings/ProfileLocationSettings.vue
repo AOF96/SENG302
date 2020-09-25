@@ -97,7 +97,8 @@
         let outer = this;
         window.google.maps.event.addDomListener(window, 'click', function() {
           map.setOptions({
-            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"],
+            backgroundColor: '#696969'
           });
         });
       },
@@ -117,6 +118,7 @@
         this.map = new window.google.maps.Map(document.getElementById("userSettingsMap"), {
           center: position,
           zoom: 10,
+          backgroundColor: '#696969'
         });
 
         let position = null;
@@ -136,7 +138,8 @@
           styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           fullscreenControl: false,
           rotateControl: false,
-          mapTypeControl: false
+          mapTypeControl: false,
+          backgroundColor: '#696969'
         });
 
         if (this.searchedUser.location) {
@@ -153,7 +156,8 @@
           }
           thisInner.mapMarker = new window.google.maps.Marker({
             position: e.latLng,
-            map: thisInner.map
+            map: thisInner.map,
+            backgroundColor: '#696969'
           });
           thisInner.map.panTo(e.latLng);
           thisInner.getLocationFromLatLng(e.latLng);
@@ -184,7 +188,8 @@
         }
         this.mapMarker = new window.google.maps.Marker({
           position: place["geometry"]["location"],
-          map: thisInner.map
+          map: thisInner.map,
+          backgroundColor: '#696969'
         });
         thisInner.map.panTo(place["geometry"]["location"]);
       },
@@ -228,7 +233,6 @@
             }else{
               thisInner.location = await thisInner.extractLocationData(results[0]);
               thisInner.updateAddressString(thisInner.location);
-              thisInner.sendLocationToParent();
             }
           } else {
             this.snackbarText = status;
@@ -286,7 +290,7 @@
             .then(
                 response => {
                   // check if you are a normal user updating profile, then show the change on frontend
-                  if (this.user.profile_id === this.$route.params.profileId){
+                  if (this.user.profile_id === parseInt(this.$route.params.profileId)){
                     this.updateUserProfile(this.searchedUser);
                   }
                   this.snackbarText = response.data;

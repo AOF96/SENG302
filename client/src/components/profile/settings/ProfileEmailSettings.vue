@@ -4,7 +4,7 @@
         <div class="settingsContentContainer">
             <h1 id="editEmailPage">Edit Email Settings</h1>
             <hr>
-            <form @submit.prevent class="editForm">
+            <div class="editForm">
                 <h3>Primary email</h3>
                 <div class="primaryEmailContainer" justify="center" align="center">
                     <v-col cols="6">
@@ -48,7 +48,7 @@
                     <input class="addEmailInput" v-if="showButton" v-model="textInput" type="email" placeholder="Enter new email (Up to 4)" required>
                     <button class="genericConfirmButton addEmailButton" v-if="showButton" v-on:click="addNewEmail(textInput)">Add</button>
                 </form>
-            </form>
+            </div>
         </div>
         <transition name="fade">
             <div class="transparentCover" v-if="showEditBox" @click="showEditBox = false"></div>
