@@ -79,6 +79,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, JpaSp
     @Query(value = "SELECT location_id FROM Activity WHERE activity_id = ?", nativeQuery = true)
     Optional<Long> getActivityLocationId(Long activityId);
 
-    Page<Activity> getActivitiesByNameContaining(String activitySearchTerm, Pageable pageable);
-
+    @Query(value = "DELETE FROM User_Activities_Shared WHERE activity_id = :activityId", nativeQuery = true)
+    void removeSharedUsersFromActivity(Long activityId);
 }

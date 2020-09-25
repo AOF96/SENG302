@@ -481,9 +481,7 @@
             }
             this.activityTypesLoading = false;
           })
-          .catch(error => {
-            this.displayError(error);
-          });
+          .catch(error => console.log(error));
     },
     methods: {
       ...mapActions(["createActivity", "updateUserContinuousActivities", "updateUserDurationActivities",
@@ -670,9 +668,6 @@
         return [year, month, day].join("-");
       },
 
-      /**
-       * Formats the time for the date of the activity
-       */
       formatTime(date) {
         let d = new Date(date);
         let hour = "" + d.getHours();
@@ -694,7 +689,6 @@
           }
         }
       },
-
       /**
        * Removes activity type from selection
        */
@@ -938,21 +932,15 @@
             );
       },
 
-      /**
-       * Deletes an activity
-       */
       deleteActivity() {
         this.overlayLoader = true;
         apiActivity
             .deleteActivity(this.user.profile_id, this.$route.params.activityId)
-            .then(() => {
+            .then(response => {
+              console.log(response);
               router.push("/profile/" + this.author_id);
-            })
-            .catch(error => {
-              this.displayError(error);
-        });
+            });
       },
-
       /**
        * Shows error text for given error string
        * @param error
