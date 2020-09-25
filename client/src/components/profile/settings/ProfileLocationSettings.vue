@@ -228,7 +228,6 @@
             }else{
               thisInner.location = await thisInner.extractLocationData(results[0]);
               thisInner.updateAddressString(thisInner.location);
-              thisInner.sendLocationToParent();
             }
           } else {
             this.snackbarText = status;
@@ -286,7 +285,7 @@
             .then(
                 response => {
                   // check if you are a normal user updating profile, then show the change on frontend
-                  if (this.user.profile_id === this.$route.params.profileId){
+                  if (this.user.profile_id === parseInt(this.$route.params.profileId)){
                     this.updateUserProfile(this.searchedUser);
                   }
                   this.snackbarText = response.data;

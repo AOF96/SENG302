@@ -18,12 +18,17 @@ import AdminDashboard from "./components/AdminDashboard";
 import Search from "./components/Search";
 import Map from "./components/map/Map";
 import ProfileLocationSettings from "./components/profile/settings/ProfileLocationSettings";
+import Landing from "./components/Landing";
 
 Vue.use(VueRouter);
 
 const baseUrl = process.env.BASE_URL;
 
 const routes = [
+  {
+    path: '/',
+    component: Landing
+  },
   {
     name: "profilePage",
     path: '/profile/:profileId',
@@ -140,15 +145,15 @@ router.beforeEach((to, from, next) => {
           next();
         });
   } else {
-    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level === 2 && isLoggedIn) {
+    if (to.path === "/settings/admin_dashboard" && isAdmin && store.getters.user.permission_level > 0 && isLoggedIn) { // Only if admin
       updatePageHistory(to, from);
       next();
-    } else if (isAuthPath) {
+    } else if (isAuthPath) { // Going to login or signup or landing
       store._actions.resetPageHistory[0]();
-      if (store.getters.user.permission_level === 2) {
-        isLoggedIn ? next("/settings/admin_dashboard") : next();
-      } else {
-        isLoggedIn ? next("/profile") : next();
+      if (store.getters.user.permission_level > 0) { // If admin
+        isLoggedIn ? next("/settings/admin_dashboard") : next(); // Redirect to admin dashboard if logged in
+      } else { // If not admin
+        isLoggedIn ? next("/profile") : next(); // Redirect to profile if logged in
       }
     } else if (to.path !== "/logout" && isLoggedIn) {
       updatePageHistory(to, from);
@@ -157,6 +162,8 @@ router.beforeEach((to, from, next) => {
       } else {
         next();
       }
+    } else if (to.path === "/") {
+      next();
     } else {
       store._actions.resetPageHistory[0]();
       next("/login");

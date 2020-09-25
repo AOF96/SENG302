@@ -181,6 +181,7 @@ export default {
       mapLoading: true,
       showPassport: false,
       alertComponent: false,
+      errorMessage: null,
     };
   },
   props: ['darkModeGlobal'],
