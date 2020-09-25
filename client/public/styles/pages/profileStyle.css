@@ -260,7 +260,7 @@
     color: var(--v-primaryText-base);
     float: left;
 }
-#profileMapCard{
+#profileMapCard, #profileMapInfoCard{
     border-radius: 15px;
     margin-bottom: 10px;
     overflow:hidden;
