@@ -4,23 +4,20 @@
       <div class="landingContainer">
         <img id="landingIcon" src="../../public/images/landingIcon.png"/>
         <div id="landingLeft">
-          <h1>Passage</h1>
-          <h2>The number one companion for any traveller. Create, manage, and explore activities near you. Start your journey today.</h2>
+          <h1 id="landingMainHeading">Passage</h1>
+          <h2 id="landingSubHeading">The number one companion for any traveller. Create, manage, and explore activities near you. Start your journey today.</h2>
           <div id="landingButtonWrap">
-            <router-link to="/login">
-              <button style="margin-left: 0;" class="landingButton loginHover" value="Login In">Login</button>
-            </router-link>
-            <router-link to="/signup">
-              <button style="background: none;color:white;" class="landingButton signUpHover" name="Sign Up">Sign Up</button>
-            </router-link>
+            <button style="margin-left: 0;" class="landingButton loginHover" id="landingLoginButton" value="Login In" v-on:click="$router.push('/login')">Login</button>
+            <button style="background: none;color:white;" class="landingButton signUpHover" id="landingSignUpButton" name="Sign Up" v-on:click="$router.push('/signup')">Sign Up</button>
           </div>
         </div>
         <div class="floatClear"></div>
       </div>
     </div>
     <div id="landingCenterWrap">
-      <h1>About Passage</h1>
-      <h2>Passage is the number one companion for any traveller. Regardless of your age or fitness level, Passage
+      <h1 id="landingAboutHeading">About Passage</h1>
+      <h2 id="landingAboutDescription">
+        Passage is the number one companion for any traveller. Regardless of your age or fitness level, Passage
         makes it easy to organise activities and share your interests with others. Passage allows you to create and
         manage your profile. You can specify what types of activities you like, your fitness level, and what
         countries you hold a passport in. You can also create activities that are either continuous or a set
@@ -33,10 +30,11 @@
         Admins can perform just about any action on any user or activity to make managing Passage simple. Passage
         distinguishes itself from the competition through its focus on User Experience and mobile-friendliness.
         Passage's beautiful and intuitive design makes it easy to use on a desktop or mobile phone. With Passage,
-        you are in control of your journey.</h2>
+        you are in control of your journey.
+      </h2>
     </div>
     <div id="landingFooter">
-      <h1>Copyright © Passage Dev. 2020</h1>
+      <h1 id="landingCopyRight">Copyright © Passage Dev. 2020</h1>
     </div>
   </div>
 </template>
