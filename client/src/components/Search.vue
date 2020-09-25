@@ -105,16 +105,15 @@
 
                 <div v-if="activitySearchTab">
                   <v-row class="searchRow">
-                    <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
+                    <v-list-item style="width: 100% !important; overflow: hidden; text-overflow:ellipsis" v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
                                  :key="activity.id" link>
-                      <v-liscon-item-content>
+                      <v-liscon-item-content style="width:100%;">
                         <v-list-item-title>
                           {{ activity.name}}
                         </v-list-item-title>
                         <div v-if="activity.location !== null">
-                          <v-list-item-subtitle>
-                            {{ activity.location.street_address}}, {{ activity.location.city}}, {{
-                            activity.location.country}}
+                          <v-list-item-subtitle style="text-overflow:ellipsis;width:100%;">
+                           {{getAddressString(activity.location)}}
                           </v-list-item-subtitle>
                         </div>
                       </v-liscon-item-content>
@@ -663,7 +662,38 @@
         )
       },
 
-      /**
+    /**
+     * Updates the address string from the locationObject parameter. Used when the location is changed by clicking
+     * on the map, and when the map is first loaded with the initial location.
+     */
+    getAddressString(locationObject) {
+      if (locationObject) {
+        let address = "";
+        if (locationObject.street_address !== "" && locationObject.street_address != null &&
+            typeof(locationObject.street_address) !== undefined) {
+          address += locationObject.street_address
+        }
+        if (locationObject.city !== "" && locationObject.city !== null && typeof(locationObject.city) !== undefined) {
+          if (address !== "") {
+            address += ", "
+          }
+          address += locationObject.city;
+        }
+        if (locationObject.country !== "" && locationObject.country !== null && typeof(locationObject.country) !== undefined) {
+          if (address !== "") {
+            address += ", "
+          }
+          address += locationObject.country;
+        }
+        if(address.length === 0){
+          address += "No Location";
+        }
+        return address;
+      }
+    },
+
+
+    /**
        * Tries to load previous search after switching to activity search tab
        */
       loadActivitySearchTab() {
