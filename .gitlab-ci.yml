@@ -35,6 +35,7 @@ sonarqube-client:
   stage: test
   script: 
     - cd client
+    - npm install jest-sonar-reporter
     - npm run sonarqube
   allow_failure: true
 

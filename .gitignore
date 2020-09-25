@@ -1,3 +1,4 @@
+client/coverage
 server/HELP.md
 .gradle
 build/
@@ -17,6 +18,7 @@ bin/
 .settings
 .springBeans
 .sts4-cache
+.scannerwork
 
 ### IntelliJ IDEA ###
 .idea
@@ -34,12 +36,6 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### Sonarqube ###
-client/coverage/lcov-report
-client/coverage/clover.xml
-client/coverage/coverage-final.json
-client/coverage/lcov.info
 
 client/npm-debug.log
 
