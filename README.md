@@ -50,7 +50,7 @@ Password: `Ww123456`
 
 #####Default Admin:
 Email: `passageAdmin@gmail.com`
-Password: `949LtDmcndy59fw`
+Password: `iD0nDppp62I4gkp`
 
 ##Licensing/Credits
 
