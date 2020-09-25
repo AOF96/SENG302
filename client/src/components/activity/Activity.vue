@@ -72,40 +72,46 @@
                                type="text"></v-skeleton-loader>
             <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading"></v-skeleton-loader>
             <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
-                v-if="(userRole === 'none' || userRole === 'follower' || userRole === 'creator') && !roleChanging && !loadingRole">Not
+                v-if="userRole === 'creator' && !roleChanging">You are the creator</h3>
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
+                v-if="(userRole === 'none' || userRole === 'follower') && !roleChanging && !loadingRole">Not
               Participating</h3>
-            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);" v-if="userRole === 'participant' && !roleChanging">You are a
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
+                v-if="userRole === 'participant' && !roleChanging">You are a
               Participant</h3>
-            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);" v-if="userRole === 'organiser' && !roleChanging">You are an
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
+                v-if="userRole === 'organiser' && !roleChanging">You are an
               Organiser</h3>
             <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
                                style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
             ></v-skeleton-loader>
-            <v-menu bottom left v-if="!roleChanging">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                    style="position: absolute;right:20px;top:50%;transform:translateY(-50%);"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                >
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item @click="roleSet('participant')"
-                             v-if="userRole === 'none' || userRole === 'organiser' || userRole === 'follower' || userRole === 'creator'">
-                  <v-list-item-title>Become a Participant</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="roleSet('organiser')"
-                             v-if="(userRole === 'none' || userRole === 'participant' || userRole === 'follower' || userRole === 'creator') && authorId === user.profile_id">
-                  <v-list-item-title>Become an Organiser</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="roleSet('none')" v-if="userRole === 'participant' || userRole === 'organiser'">
-                  <v-list-item-title>Clear Involvement</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <div v-if="userRole !== 'creator'">
+              <v-menu bottom left v-if="!roleChanging">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                      style="position: absolute;right:20px;top:50%;transform:translateY(-50%);"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                  >
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="roleSet('participant')"
+                               v-if="userRole === 'none' || userRole === 'organiser' || userRole === 'follower' || userRole === 'creator'">
+                    <v-list-item-title>Become a Participant</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="roleSet('organiser')"
+                               v-if="(userRole === 'none' || userRole === 'participant' || userRole === 'follower' || userRole === 'creator') && authorId === user.profile_id">
+                    <v-list-item-title>Become an Organiser</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="roleSet('none')" v-if="userRole === 'participant' || userRole === 'organiser'">
+                    <v-list-item-title>Clear Involvement</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
           </div>
         </v-card>
         <AchievementsCard v-bind:achievements="achievements" v-bind:loading-results="loadingResults" :snackbar.sync="snackbar"

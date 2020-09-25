@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\NavBarAdminLogin.spec.js">
+        <testCase name="NavBar after the login is successful NavBar should have search, home, admin dashboard, profile and a settings button in the hamburger menu button" duration="164"/>
+        <testCase name="NavBar after global admin login is successful NavBar should not have any profile button for global admin" duration="48"/>
+        <testCase name="NavBar after global admin login is successful NavBar should not have any home button for global admin as that re-directs to the profile page for now" duration="38"/>
+        <testCase name="NavBar after global admin login is successful The hamburger menu has a Admin Dashboard button and clicking it takes the user to the Dashboard page." duration="56"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\NavBarLogin.spec.js">
+        <testCase name="NavBar after the login is successful NavBar should not have login button anymore and have website logo button instead" duration="136"/>
+        <testCase name="NavBar after the login is successful Website&apos;s logo button that is on the NavBar on the click should redirects the user to the logged in user&apos;s news feed" duration="66"/>
+        <testCase name="NavBar after the login is successful Global search bar exists on the top of the NavBar" duration="54"/>
+        <testCase name="NavBar after the login is successful A hamburger menu option exists for quick navigation around website in the of the NavBar" duration="60"/>
+        <testCase name="NavBar after the login is successful The hamburger menu has a Home button and clicking it takes the user to the Home Feed." duration="101"/>
+        <testCase name="NavBar after the login is successful The hamburger menu has a Map button and clicking it takes the user to the Map page." duration="91"/>
+        <testCase name="NavBar after the login is successful The hamburger menu has a Profile button and clicking it takes the user to the Profile page." duration="79"/>
+        <testCase name="NavBar after the login is successful The hamburger menu has a Search button and clicking it takes the user to the Search page." duration="87"/>
+        <testCase name="NavBar after the login is successful The hamburger menu has a Settings button and clicking it takes the user to the Settings page." duration="61"/>
+        <testCase name="NavBar after the login is successful The hamburger menu displays the user&apos;s name John Smith." duration="47"/>
+        <testCase name="NavBar after the login is successful The hamburger menu states that the user is Signed In." duration="60"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\UserProfile.spec.js">
+        <testCase name="Check user profile page There should be an edit profile button on the profile page" duration="110"/>
+        <testCase name="Check user profile page There Should be an Add activity button to the Add activity page" duration="111"/>
+        <testCase name="Check user profile page should display the Logged in user details in the panel on profile page" duration="72"/>
+        <testCase name="Check user profile page should display the Logged in user passport country details in the panel on the right of the page " duration="97"/>
+        <testCase name="Check user profile page should display a Full Map button." duration="151"/>
+        <testCase name="Check user profile page should take the user to the full map page with the correct coordinates when the Full Map button is clicked.
+ +  Passport country pane is not displayed when user does not have any countries selected." duration="151"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\AdminProfile.spec.js">
+        <testCase name="button appears on the bottom left of the profile page if admin should have admin promotion  button" duration="93"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\Signup.spec.js">
+        <testCase name="Signup page display should display the Sign up title" duration="120"/>
+        <testCase name="Signup page display should display sign up button" duration="81"/>
+        <testCase name="Signup page display should have first name input box" duration="62"/>
+        <testCase name="Signup page display should have middle name input box" duration="40"/>
+        <testCase name="Signup page display should have last name input box" duration="79"/>
+        <testCase name="Signup page display should have nickname input box" duration="46"/>
+        <testCase name="Signup page display should have gender input box" duration="53"/>
+        <testCase name="Signup page display should have bio input box" duration="36"/>
+        <testCase name="Signup page display should have primary email input box" duration="28"/>
+        <testCase name="Signup page display should have dob input box" duration="49"/>
+        <testCase name="Signup page display should have password1 input box" duration="31"/>
+        <testCase name="Signup page display should have password2 input box" duration="32"/>
+        <testCase name="Signup page display should show an error if first name is empty" duration="29"/>
+        <testCase name="Signup page display should show an error if last name is empty" duration="59"/>
+        <testCase name="Signup page display should show an error if email is empty" duration="29"/>
+        <testCase name="Signup page display should show an error if bio is too long" duration="24"/>
+        <testCase name="Signup page display should show an error if dob is not within #common-sense" duration="40"/>
+        <testCase name="profile created should call createUserProfile and router push to move to profile page" duration="68"/>
+        <testCase name="password error handling should show an error if password is shorter than 8 characters" duration="36"/>
+        <testCase name="password error handling should show an error if password1 and password2 do not match" duration="29"/>
+        <testCase name="password error handling should show an error if number is not included in the password" duration="36"/>
+        <testCase name="password error handling should show an error if there is no lowercase letters in the password" duration="62"/>
+        <testCase name="password error handling should show an error if there is no uppercase letters in the password" duration="45"/>
+        <testCase name="submission error should appear when appropriate should show submission error when the user names contains numbers" duration="54"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\NavBar.spec.js">
+        <testCase name="NavBar before login or sign up NavBar should have before login button and sign up" duration="780"/>
+        <testCase name="NavBar before login or sign up The hamburger menu has a Login button and clicking it takes the user to the Login page." duration="379"/>
+        <testCase name="NavBar before login or sign up The hamburger menu has a dark mode toggle switch." duration="235"/>
+        <testCase name="NavBar before login or sign up The hamburger menu has a Sign Up button and clicking it takes the user to the Sign Up page." duration="200"/>
+        <testCase name="NavBar before login or sign up The hamburger menu states that the user is Signed Out." duration="181"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\EditProfile.spec.js">
+        <testCase name="Check user&apos;s edit profile page There should be an update profile button on the edit profile page" duration="286"/>
+        <testCase name="Check user&apos;s edit profile page should have an input field with the user&apos;s first name " duration="154"/>
+        <testCase name="Check user&apos;s edit profile page should have an input field with the user&apos;s middle name " duration="134"/>
+        <testCase name="Check user&apos;s edit profile page should have an input field with the user&apos;s last name " duration="105"/>
+        <testCase name="Check user&apos;s edit profile page should have an input field with the user&apos;s nick name " duration="64"/>
+        <testCase name="Check user&apos;s edit profile page should have a drop down field for user to set their gender" duration="53"/>
+        <testCase name="Check user&apos;s edit profile page should have a drop down field for user to set fitness level" duration="60"/>
+        <testCase name="Check user&apos;s edit profile page should have a calender drop down field for user to set their date of birthday" duration="66"/>
+        <testCase name="Check user&apos;s edit profile page should have a input text field for user to set a bio for their profile" duration="54"/>
+        <testCase name="Check user&apos;s edit profile page should have a input text field for user to set a bio for their profile" duration="65"/>
+        <testCase name="Check user&apos;s edit profile page should have a quick navigation Settings info panel to navigate to different setting pages " duration="72"/>
+        <testCase name="Check user&apos;s edit profile page A link to the Email settings page exists in the navigation panel " duration="81"/>
+        <testCase name="Check user&apos;s edit profile page A link to the Activity settings page exists in the navigation panel " duration="83"/>
+        <testCase name="Check user&apos;s edit profile page A link to the Passport settings page exists in the navigation panel " duration="67"/>
+        <testCase name="Check user&apos;s edit profile page A link to the Password settings page exists in the navigation panel " duration="65"/>
+        <testCase name="Check user&apos;s edit profile page should have an input field for user to set their location" duration="80"/>
+        <testCase name="Check user&apos;s edit profile page should have a map for the user to set their location" duration="84"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\Login.spec.js">
+        <testCase name="All the titles and subtitles are shown on the page should have correct elements on the page" duration="22"/>
+        <testCase name="Successful login should successfully login" duration="15"/>
+        <testCase name="Login account error, password error and email/password input error fails because of wrong email" duration="16"/>
+        <testCase name="Login account error, password error and email/password input error fails because of wrong password" duration="14"/>
+        <testCase name="Login account error, password error and email/password input error fails because email, password or both are not provided" duration="12"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\activity_card_tests\AchievementCardTests.spec.js">
+        <testCase name="Test if achievements are displayer card should exist" duration="233"/>
+        <testCase name="Test if achievements are displayer There should be a button to save results" duration="105"/>
+        <testCase name="Test if achievements are displayer There should be an input for results" duration="115"/>
+    </file>
+    <file path="C:\Users\fopre\Desktop\University Files 2020\SENG302\team-300\client\src\components\__test__\AddActivity.spec.js">
+        <testCase name="Check user&apos;s edit profile page There should be an activity name label on the add activity page" duration="112"/>
+        <testCase name="Check user&apos;s edit profile page There should be an activity input box to enter activity&apos;s name" duration="47"/>
+        <testCase name="Check user&apos;s edit profile page There should be a visibility label on the activity page" duration="52"/>
+        <testCase name="Check user&apos;s edit profile page There should be a public visibility radio button on the activity page" duration="46"/>
+        <testCase name="Check user&apos;s edit profile page There should be a restricted visibility radio button on the activity page" duration="54"/>
+        <testCase name="Check user&apos;s edit profile page There should be a private visibility radio button on the activity page" duration="42"/>
+        <testCase name="Check user&apos;s edit profile page There should be a description label on add Activity page" duration="49"/>
+        <testCase name="Check user&apos;s edit profile page There should be a text box to write description for an activity" duration="43"/>
+        <testCase name="Check user&apos;s edit profile page There should be an activity type label on the add activity page" duration="49"/>
+        <testCase name="Check user&apos;s edit profile page There should be a back arrow button to go back to the previous part of the form on activity page" duration="36"/>
+        <testCase name="Check user&apos;s edit profile page There should be a next arrow button to go to the next part of the form on activity page" duration="38"/>
+        <testCase name="Check user&apos;s edit profile page There should be a Basic Info tab for the activity on the activity page" duration="34"/>
+        <testCase name="Check user&apos;s edit profile page There should be a TIme and date tab to set time for continuous or duration activity" duration="58"/>
+        <testCase name="Check user&apos;s edit profile page There should be a location tab to select the location for your activity" duration="56"/>
+        <testCase name="Check user&apos;s edit profile page There should be an achievement tab to create achievement for the activity " duration="74"/>
+        <testCase name="Check user&apos;s edit profile page There should be a start date label on the activity page " duration="44"/>
+        <testCase name="Check user&apos;s edit profile page There should be a end date label on the activity page " duration="41"/>
+        <testCase name="Check user&apos;s edit profile page There should be a end date label on the activity page " duration="43"/>
+        <testCase name="Check user&apos;s edit profile page There should be a end date label on the activity page " duration="54"/>
+        <testCase name="Check user&apos;s edit profile page There should be an input field to set the location for the activity" duration="50"/>
+        <testCase name="Check user&apos;s edit profile page There should be an add achievement button on the achievement tab" duration="39"/>
+        <testCase name="Check user&apos;s edit profile page There should be an input field to enter achievement title" duration="33"/>
+        <testCase name="Check user&apos;s edit profile page There should be an text box add enter achievement&apos;s description" duration="45"/>
+        <testCase name="Check user&apos;s edit profile page There should be a drop down menu to select the type of achievement " duration="51"/>
+        <testCase name="Check user&apos;s edit profile page should have a map for the user to set the activity&apos;s location" duration="45"/>
+        <testCase name="Check user&apos;s edit profile page should have an input for the user to set the activity&apos;s location" duration="60"/>
+    </file>
+</testExecutions>

@@ -233,9 +233,9 @@ export default {
         this.firstOccurrence = false;
       },
 
-      /*
-        Submits a request to register a new user. Checks if there are missing fields when signing up.
-      */
+      /**
+       * Submits a request to register a new user. Checks if there are missing fields when signing up.
+       */
       submitSignUp() {
         this.firstOccurrence = false;
         this.submissionError = "";
@@ -262,7 +262,6 @@ export default {
             },
             error => {
               this.submissionError = error.response.data.Errors[0];
-              console.log(error);
             }
         );
       }

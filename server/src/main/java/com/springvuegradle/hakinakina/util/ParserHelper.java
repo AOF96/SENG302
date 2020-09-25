@@ -94,7 +94,7 @@ public class ParserHelper {
      * @return A TimeStamp object.
      */
     public static Timestamp parseDateTime(String datetime) {
-        LocalDateTime temp = LocalDateTime.parse(datetime).plusHours(12L);
+        LocalDateTime temp = LocalDateTime.parse(datetime);
         return Timestamp.valueOf(temp);
     }
 }
