@@ -2,6 +2,9 @@
 <div>
   <div v-bind:class="{'profileBanner': true, 'darkModeBanner': darkModeGlobal}"></div>
   <div class="profileContainer">
+    <v-alert type="error" v-model="alertComponent" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
         <v-container>
@@ -176,7 +179,8 @@ export default {
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
       mapLoading: true,
-      showPassport: false
+      showPassport: false,
+      alertComponent: false,
     };
   },
   props: ['darkModeGlobal'],
@@ -237,12 +241,16 @@ export default {
           .then(response => {
             this.cont_activities = response.data;
             this.loadingContinuousActivities = false;
-          });
+          }).catch(() => {
+              this.displayError("Could not retrieve continuous activities");
+            });
         await this.getUserDurationActivities(this.$route.params.profileId)
           .then(response => {
             this.dur_activities = response.data;
             this.loadingDurationActivities = false;
-          });
+          }).catch(() => {
+              this.displayError("Could not retrieve duration activities");
+            });
       }
       this.startUp();
       this.componentKey++;
@@ -383,7 +391,9 @@ export default {
           this.countries_option = countries;
           this.loadMap();
         })
-        .catch(error => console.log(error));
+        .catch(() => {
+          this.displayError("Could not load countries");
+        });
     },
 
     /***
@@ -405,6 +415,15 @@ export default {
       }
       this.showResult = true;
       setTimeout(() => this.showResult = false, 5000)
+    },
+
+    /**
+     * Shows error text for given error string
+     * @param error
+     */
+    displayError(error) {
+      this.alertComponent = true;
+      this.errorMessage = error;
     },
 
     /**
