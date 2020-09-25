@@ -93,10 +93,18 @@
                 this.$router.push('Profile');
                 apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
                   this.updateUserContinuousActivities(response.data);
-                }).catch(err => console.log(err));
+                }).catch(err => {
+                      this.errorMessage = err;
+                      this.alertComponent = true;
+                    }
+                );
                 apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
                   this.updateUserDurationActivities(response.data);
-                }).catch(err => console.log(err));
+                }).catch(err => {
+                      this.errorMessage = err;
+                      this.alertComponent = true;
+                    }
+                );
                 if (responseData.permission_level === 2) {
                   this.$router.push("/settings/admin_dashboard");
                 } else {

@@ -2,10 +2,10 @@
   <div>
     <div class="searchUserWrapper">
       <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
-      <v-container lighten-5>
-        <v-row no-gutters class="mainRow">
-          <v-col cols="5" class="flex-grow-1 flex-shrink-0 columnContainer">
-            <v-card class="ma-2 searchActivityCard">
+      <v-container class="pa-0">
+        <v-row style="flex-wrap: wrap-reverse;" no-gutters class="mainRow">
+          <v-col xs="12" sm="6" class="flex-grow-1 flex-shrink-0 columnContainer">
+            <v-card style="border-radius:15px;" class="ma-2 searchActivityCard">
               <form>
                 <h1 style="text-align: center; color: var(--v-primaryText-base)"> Search</h1>
                 <v-toolbar flat height="auto" style="background:none;">
@@ -105,16 +105,15 @@
 
                 <div v-if="activitySearchTab">
                   <v-row class="searchRow">
-                    <v-list-item v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
+                    <v-list-item style="width: 100% !important; overflow: hidden; text-overflow:ellipsis" v-on:click="goToActivity(activity.id)" two-line v-for="activity in allActivities"
                                  :key="activity.id" link>
-                      <v-liscon-item-content>
+                      <v-liscon-item-content style="width:100%;">
                         <v-list-item-title>
                           {{ activity.name}}
                         </v-list-item-title>
                         <div v-if="activity.location !== null">
-                          <v-list-item-subtitle>
-                            {{ activity.location.street_address}}, {{ activity.location.city}}, {{
-                            activity.location.country}}
+                          <v-list-item-subtitle style="text-overflow:ellipsis;width:100%;">
+                           {{getAddressString(activity.location)}}
                           </v-list-item-subtitle>
                         </div>
                       </v-liscon-item-content>
@@ -141,7 +140,7 @@
             </v-card>
           </v-col>
           <v-col cols="1" class="flex-grow-1 flex-shrink-0 searchFilterContainer">
-            <v-card v-if="!activitySearchTab" class="ma-2 activityFilterCard">
+            <v-card style="border-radius:15px;" v-if="!activitySearchTab" class="ma-2 activityFilterCard">
               <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Filter by activity</h1>
               <v-combobox v-model="activity_types_selected" :items="activities_option" chips outlined rounded
                           label="Activity Type Select" multiple
@@ -171,45 +170,39 @@
               </v-radio-group>
             </v-card>
             <v-card v-if="!activitySearchTab" :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading" style="margin-bottom:22px;">Search using keywords</h1>
+              <h1 class="searchHeading" style="color: var(--v-primaryText-base)">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label class="activityFilterMethodLabel">Filter method</v-label>
-                <v-tooltip bottom max-width="500px">
+                <v-tooltip top max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" class="filterIcon">mdi-help-circle-outline</v-icon>
+                    <v-icon v-on="on" style="margin-left: 10px;margin-top: -3px;font-size: 20px;" class="filterIcon">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
-                      these buttons, when searching for searching multiple activities you have two options. Results
-                    including all which means a search for fun, scary will return all activities that include both fun and scary in
-                    the title. Whereas the other option results including one of meaning a search for fun, scary will
-                    return all activities that include either fun or scary in the title.</span>
+                  <span class="filterMethodInfo">You can search for users using multiple keywords by selecting your
+                    preferred method below and typing the keywordsF you want to search for separated by commas!</span>
                 </v-tooltip>
               </v-row>
               <v-radio-group v-model="multipleUserSearchTermMethod" :mandatory="true">
-                <v-radio label="Search for single activity" value="single"></v-radio>
-                <v-radio label="Results including all" value="and"></v-radio>
-                <v-radio label="Results including one of" value="or"></v-radio>
+                <v-radio label="Regular search" value="single"></v-radio>
+                <v-radio label="Results including all terms" value="and"></v-radio>
+                <v-radio label="Results including at least one term" value="or"></v-radio>
               </v-radio-group>
             </v-card>
-            <v-card v-if="activitySearchTab" class="ma-2 activityFilterCard">
-              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Search for multiple activities</h1>
+            <v-card style="border-radius:15px;" v-if="activitySearchTab" class="ma-2 activityFilterCard">
+              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label style="padding-right: 5px">Filter method</v-label>
-                <v-tooltip bottom max-width="500px">
+                <v-tooltip top max-width="500px">
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" style="margin-left:10px;margin-top:-3px;font-size: 20px;">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
-                      these buttons, when searching for searching multiple activities you have two options. Results
-                    including all which means a search for fun, scary will return all activities that include both fun and scary in
-                    the title. Whereas the other option results including one of meaning a search for fun, scary will
-                    return all activities that include either fun or scary in the title.</span>
+                  <span class="filterMethodInfo">You can search for users using multiple keywords by selecting your
+                    preferred method below and typing the keywords you want to search for separated by commas!</span>
                 </v-tooltip>
               </v-row>
               <v-radio-group v-model="multipleActivityFilterMethod" :mandatory="true">
-                <v-radio label="Search for single activity" value="single"></v-radio>
-                <v-radio label="Results including all" value="and"></v-radio>
-                <v-radio label="Results including one of" value="or"></v-radio>
+                <v-radio label="Regular search" value="single"></v-radio>
+                <v-radio label="Results including all terms" value="and"></v-radio>
+                <v-radio label="Results including at least one term" value="or"></v-radio>
               </v-radio-group>
             </v-card>
           </v-col>
@@ -663,7 +656,38 @@
         )
       },
 
-      /**
+    /**
+     * Updates the address string from the locationObject parameter. Used when the location is changed by clicking
+     * on the map, and when the map is first loaded with the initial location.
+     */
+    getAddressString(locationObject) {
+      if (locationObject) {
+        let address = "";
+        if (locationObject.street_address !== "" && locationObject.street_address != null &&
+            typeof(locationObject.street_address) !== undefined) {
+          address += locationObject.street_address
+        }
+        if (locationObject.city !== "" && locationObject.city !== null && typeof(locationObject.city) !== undefined) {
+          if (address !== "") {
+            address += ", "
+          }
+          address += locationObject.city;
+        }
+        if (locationObject.country !== "" && locationObject.country !== null && typeof(locationObject.country) !== undefined) {
+          if (address !== "") {
+            address += ", "
+          }
+          address += locationObject.country;
+        }
+        if(address.length === 0){
+          address += "No Location";
+        }
+        return address;
+      }
+    },
+
+
+    /**
        * Tries to load previous search after switching to activity search tab
        */
       loadActivitySearchTab() {
@@ -709,7 +733,10 @@
               this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
             }
           })
-          .catch(error => console.log(error));
+          .catch(error => {
+            this.errorMessage = error.response.data;
+            this.snackbar = true;
+          });
     },
   }
 </script>
