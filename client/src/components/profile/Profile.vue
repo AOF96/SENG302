@@ -209,7 +209,8 @@ export default {
       let outer = this;
       document.addEventListener("click", function(){
         map.setOptions({
-          styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+          styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"],
+          backgroundColor: '#696969'
         });
       });
     },
@@ -275,11 +276,13 @@ export default {
           zoom: 8,
           maxZoom: 10,
           minZoom: 3,
-          disableDefaultUI: true
+          disableDefaultUI: true,
+          backgroundColor: '#696969'
         });
 
         map.setOptions({
-          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"]
+          styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
+          backgroundColor: '#696969'
         });
 
         this.setThemeCheckEvent(map);
