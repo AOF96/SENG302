@@ -171,7 +171,7 @@
               </v-radio-group>
             </v-card>
             <v-card v-if="!activitySearchTab" :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading">Search using keywords</h1>
+              <h1 class="searchHeading" style="color: var(--v-primaryText-base)">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label class="activityFilterMethodLabel">Filter method</v-label>
                 <v-tooltip top max-width="500px">
@@ -179,7 +179,7 @@
                     <v-icon v-on="on" style="margin-left: 10px;margin-top: -3px;font-size: 20px;" class="filterIcon">mdi-help-circle-outline</v-icon>
                   </template>
                   <span class="filterMethodInfo">You can search for users using multiple keywords by selecting your
-                    preferred method below and typing the keywords you want to search for separated by commas!</span>
+                    preferred method below and typing the keywordsF you want to search for separated by commas!</span>
                 </v-tooltip>
               </v-row>
               <v-radio-group v-model="multipleUserSearchTermMethod" :mandatory="true">
