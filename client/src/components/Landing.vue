@@ -1,7 +1,8 @@
 <template>
   <div style="width: 100%;height: 100%;">
-    <div class="landingMainDiv">
+    <div v-bind:class="{'landingMainDiv': true, 'darkModeBanner': darkModeGlobal}">
       <div class="landingContainer">
+        <img id="landingIcon" src="../../public/images/landingIcon.png"/>
         <div id="landingLeft">
           <h1>Passage</h1>
           <h2>The number one companion for any traveller. Create, manage, and explore activities near you. Start your journey today.</h2>
@@ -14,7 +15,6 @@
             </router-link>
           </div>
         </div>
-        <img id="landingIcon" src="../../public/images/landingIcon.png"/>
         <div class="floatClear"></div>
       </div>
     </div>
@@ -43,6 +43,7 @@
 
 <script>
   export default {
+    props: ['darkModeGlobal'],
     name: "Landing"
   }
 </script>
