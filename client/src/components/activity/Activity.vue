@@ -506,7 +506,8 @@
         let outer = this;
         window.google.maps.event.addDomListener(window, 'click', function() {
           map.setOptions({
-            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"],
+            backgroundColor: '#696969'
           });
         });
       },
@@ -919,7 +920,8 @@
         let map = new window.google.maps.Map(document.getElementById("profileMap"), {
           zoom: 9,
           styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
-          disableDefaultUI: true
+          disableDefaultUI: true,
+          backgroundColor: '#696969'
         });
 
         let address = this.location.street_address + ' ' + this.location.city + ' ' + this.location.country;
@@ -933,12 +935,12 @@
               url: outer.pickMarkerImage(outer.visibility, outer.authorId),
               scaledSize: new window.google.maps.Size(30, 30),
               origin: new window.google.maps.Point(0, 0),
-              anchor: new window.google.maps.Point(15, 30)
+              anchor: new window.google.maps.Point(15, 30),
             };
             new window.google.maps.Marker({
               map: map,
               position: latLng,
-              icon: activityMarkerIcon
+              icon: activityMarkerIcon,
             });
             outer.mapLoading = false;
           } else {

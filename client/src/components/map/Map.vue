@@ -68,7 +68,8 @@
           scaleControl: false,
           streetViewControl: false,
           rotateControl: false,
-          fullscreenControl: false
+          fullscreenControl: false,
+          backgroundColor: '#696969'
         });
 
         let self = this;
@@ -344,7 +345,7 @@
         let outer = this;
         window.google.maps.event.addDomListener(window, 'click', function() {
           map.setOptions({
-            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
+            styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"],
           });
         });
       },
