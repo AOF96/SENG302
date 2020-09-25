@@ -58,10 +58,18 @@
        */
       loadMap() {
         this.geocoder = new window.google.maps.Geocoder();
-        let userPosition = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
+        let userPosition;
+        let zoomLevel;
+        if (this.user.location.country !== null) {
+          userPosition = new window.google.maps.LatLng(this.user.location.latitude, this.user.location.longitude);
+          zoomLevel = 12;
+        } else {
+          userPosition = new window.google.maps.LatLng(0, 0);
+          zoomLevel = 2;
+        }
         this.gmap = new window.google.maps.Map(document.getElementById("map"), {
           center: userPosition,
-          zoom: 12,
+          zoom: zoomLevel,
           styles: mapStyles[this.darkModeGlobal ? "dark" : "light"],
           zoomControl: false,
           mapTypeControl: true,
@@ -91,7 +99,9 @@
 
         this.setThemeCheckEvent(this.gmap);
         this.createLegend(this.gmap);
-        this.createHomeMarker(this.gmap, userPosition);
+        if (this.user.location.country !== null) {
+          this.createHomeMarker(this.gmap, userPosition);
+        }
         this.createSearch(this.gmap);
       },
 
