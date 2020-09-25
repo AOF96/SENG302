@@ -128,15 +128,12 @@ export default {
           'newPassword': this.newPassword,
           'confirmPassword': this.confirmPassword }
         )
-        .then(
-          response => {
+        .then(() => {
             this.showSnackbar("Password updated.", SUCCESS);
-            console.log(response);
           },
           error => {
             const responseData = error.response.data;
             const responseCode = error.response.status;
-            console.log(responseCode + ": " + responseData);
               if (
               responseCode === 400 &&
               responseData === "oldPassword is incorrect"
