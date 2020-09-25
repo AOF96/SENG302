@@ -709,7 +709,10 @@
               this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
             }
           })
-          .catch(error => console.log(error));
+          .catch(error => {
+            this.errorMessage = error.response.data;
+            this.snackbar = true;
+          });
     },
   }
 </script>
