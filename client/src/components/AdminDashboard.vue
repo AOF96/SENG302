@@ -3,12 +3,13 @@
     <div class="searchUserWrapper">
       <div>
           <v-snackbar outlined color="error" :timeout="timeout" v-model="snackbar" top>{{errorMessage}}</v-snackbar>
-          <v-card class="ma-2 searchActivityCard" style="border-radius:15px;">
+          <v-card style="border-radius:15px; width: 100%; display: block; margin: 0 auto; max-width: 600px; padding: 5px 20px 20px 20px">
             <h1 style="text-align: center; color: var(--v-primaryText-base)">Admin Dashboard</h1>
             <v-text-field id="defaultAdminSearchInput"
                           label="Search User By ID" v-model="searchedUser.profile_id" outlined rounded clearable
                           hide-details dense></v-text-field>
-            <v-btn class="genericConfirmButton" v-on:click="goToSearchedUser()">Search User</v-btn>
+            <v-btn v-on:click="goToSearchedUser()"
+                   color="#1cca92" outlined block rounded large style="margin-top: 12px">Search User</v-btn>
         </v-card>
       </div>
     </div>
@@ -35,7 +36,7 @@
     },
     methods: {
       async goToSearchedUser() {
-        var tempSearchedUser = await apiUser.getUserById(this.searchedUser.profile_id)
+        let tempSearchedUser = await apiUser.getUserById(this.searchedUser.profile_id)
         if (tempSearchedUser == "Invalid permissions" || tempSearchedUser.permission_level == 2) {
           this.errorMessage = "User does not exist";
           this.snackbar = true;
