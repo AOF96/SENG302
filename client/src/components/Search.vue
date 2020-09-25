@@ -171,45 +171,39 @@
               </v-radio-group>
             </v-card>
             <v-card v-if="!activitySearchTab" :disabled="searchBy === 'fullname'" class="ma-2" style="border-radius:14px;padding:8px 15px;">
-              <h1 class="searchHeading">Search using keywords</h1>
+              <h1 class="searchHeading" style="color: var(--v-primaryText-base)">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label class="activityFilterMethodLabel">Filter method</v-label>
-                <v-tooltip bottom max-width="500px">
+                <v-tooltip top max-width="500px">
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" style="margin-left: 10px;margin-top: -3px;font-size: 20px;" class="filterIcon">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
-                      these buttons, when searching for searching multiple activities you have two options. Results
-                    including all which means a search for fun, scary will return all activities that include both fun and scary in
-                    the title. Whereas the other option results including one of meaning a search for fun, scary will
-                    return all activities that include either fun or scary in the title.</span>
+                  <span class="filterMethodInfo">You can search for users using multiple keywords by selecting your
+                    preferred method below and typing the keywordsF you want to search for separated by commas!</span>
                 </v-tooltip>
               </v-row>
               <v-radio-group v-model="multipleUserSearchTermMethod" :mandatory="true">
-                <v-radio label="Search for single activity" value="single"></v-radio>
-                <v-radio label="Results including all" value="and"></v-radio>
-                <v-radio label="Results including one of" value="or"></v-radio>
+                <v-radio label="Regular search" value="single"></v-radio>
+                <v-radio label="Results including all terms" value="and"></v-radio>
+                <v-radio label="Results including at least one term" value="or"></v-radio>
               </v-radio-group>
             </v-card>
             <v-card style="border-radius:15px;" v-if="activitySearchTab" class="ma-2 activityFilterCard">
-              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Search for multiple activities</h1>
+              <h1 class="searchHeading activityFilterHeading" style="color: var(--v-primaryText-base)">Search using keywords</h1>
               <v-row class="ml-1">
                 <v-label style="padding-right: 5px">Filter method</v-label>
-                <v-tooltip bottom max-width="500px">
+                <v-tooltip top max-width="500px">
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on" style="margin-left:10px;margin-top:-3px;font-size: 20px;">mdi-help-circle-outline</v-icon>
                   </template>
-                  <span class="filterMethodInfo">You can search for multiple activities or just a single activity using
-                      these buttons, when searching for searching multiple activities you have two options. Results
-                    including all which means a search for fun, scary will return all activities that include both fun and scary in
-                    the title. Whereas the other option results including one of meaning a search for fun, scary will
-                    return all activities that include either fun or scary in the title.</span>
+                  <span class="filterMethodInfo">You can search for users using multiple keywords by selecting your
+                    preferred method below and typing the keywords you want to search for separated by commas!</span>
                 </v-tooltip>
               </v-row>
               <v-radio-group v-model="multipleActivityFilterMethod" :mandatory="true">
-                <v-radio label="Search for single activity" value="single"></v-radio>
-                <v-radio label="Results including all" value="and"></v-radio>
-                <v-radio label="Results including one of" value="or"></v-radio>
+                <v-radio label="Regular search" value="single"></v-radio>
+                <v-radio label="Results including all terms" value="and"></v-radio>
+                <v-radio label="Results including at least one term" value="or"></v-radio>
               </v-radio-group>
             </v-card>
           </v-col>
@@ -709,7 +703,10 @@
               this.activities_option[i] = this.activities_option[i].replace(/-/g, " ")
             }
           })
-          .catch(error => console.log(error));
+          .catch(error => {
+            this.errorMessage = error.response.data;
+            this.snackbar = true;
+          });
     },
   }
 </script>
