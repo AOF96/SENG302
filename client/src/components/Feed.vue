@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-container class="my-5" style="max-width:800px;">
-      <v-col>
+    <v-container class="my-5" style="max-width:800px;padding:0;">
+      <v-col style="padding:0;">
         <v-list style="background:none !important">
           <v-list-item
               v-for="(post, index) in activityPosts"
