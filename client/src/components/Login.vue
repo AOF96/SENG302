@@ -26,7 +26,6 @@
                     <div class="loginRow">
                         <h6 class="loginErrorMessages" id="other_error" v-if="otherErrorMsg">{{ otherErrorMsg }}></h6>
                     </div>
-                    <hr>
                     <div class="loginRow">
                         <button v-on:click="submitLogin()"
                                 class="loginButton"
@@ -94,10 +93,18 @@
                 this.$router.push('Profile');
                 apiUser.getUserContinuousActivities(responseData.profile_id).then((response) => {
                   this.updateUserContinuousActivities(response.data);
-                }).catch(err => console.log(err));
+                }).catch(err => {
+                      this.errorMessage = err;
+                      this.alertComponent = true;
+                    }
+                );
                 apiUser.getUserDurationActivities(responseData.profile_id).then((response) => {
                   this.updateUserDurationActivities(response.data);
-                }).catch(err => console.log(err));
+                }).catch(err => {
+                      this.errorMessage = err;
+                      this.alertComponent = true;
+                    }
+                );
                 if (responseData.permission_level === 2) {
                   this.$router.push("/settings/admin_dashboard");
                 } else {
@@ -109,12 +116,8 @@
                 const responseCode = error.response.status;
                 this.loadingLogin = false;
 
-              if (responseCode === 403 && responseData === "Email does not exist") {
-                this.errorMessage = "Account does not exist";
-                this.alertComponent = true;
-
-              } else if (responseCode === 403 && responseData === "Incorrect password") {
-                this.errorMessage = "Incorrect Password";
+              if (responseCode === 403 && responseData === "Wrong username or password") {
+                this.errorMessage = "Wrong username or password";
                 this.alertComponent = true;
 
               } else if (responseCode === 403 && responseData === "Please enter email/password") {

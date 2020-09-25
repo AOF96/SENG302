@@ -26,4 +26,11 @@ public class EditActivityRoleDto {
     public void setSubscriber(EditSubscriberRoleDto subscriber) {
         this.subscriber = subscriber;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"subscriber\": " + subscriber +
+                '}';
+    }
 }

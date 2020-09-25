@@ -1,7 +1,10 @@
 <template>
 <div>
-  <div id="profileBanner"></div>
+  <div v-bind:class="{'profileBanner': true, 'darkModeBanner': darkModeGlobal}"></div>
   <div class="profileContainer">
+    <v-alert type="error" v-model="alertComponent" dismissible prominent>
+      {{errorMessage}}
+    </v-alert>
     <div class="leftSidebarContainer">
       <v-card class="profileInfoContainer" style="border-radius: 14px;" :loading="loadingProfileInfo">
         <v-container>
@@ -17,11 +20,13 @@
               <hr/>
               <div class="profileRow">Bio: {{ searchedUser.bio }}</div>
             </div>
-            <div v-if="searchedUser.location.city && searchedUser.location.country">
-              <hr/>
-              <div v-if="searchedUser.location.state" class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.state }}, {{ searchedUser.location.country }}</div>
-              <div v-else class="profileRow">Location: {{ searchedUser.location.city }}, {{ searchedUser.location.country }}</div>
-            </div>
+            <div v-if="searchedUser.location != null &&  searchedUser.location.city" class="profileRow">
+              <hr/> City: {{searchedUser.location.city }}</div>
+            <div v-if="searchedUser.location != null && searchedUser.location.state" class="profileRow">
+              <hr/> State: {{searchedUser.location.state}}</div>
+            <div v-if="searchedUser.location != null && searchedUser.location.country" class="profileRow">
+              <hr/> Country: {{searchedUser.location.country}}</div>
+            <hr/>
           </div>
         </v-container>
       </v-card>
@@ -174,7 +179,9 @@ export default {
       loadingDurationActivities: true,
       loadingContinuousActivities: true,
       mapLoading: true,
-      showPassport: false
+      showPassport: false,
+      alertComponent: false,
+      errorMessage: null,
     };
   },
   props: ['darkModeGlobal'],
@@ -182,7 +189,6 @@ export default {
     if (!this.user.isLogin) {
       this.$router.push('/login');
     } else {
-      this.setUserBanner();
       this.loadSearchedUser();
     }
   },
@@ -197,27 +203,11 @@ export default {
     ...mapActions(["updatePassports", "createActivity", "updateUserDurationActivities", "updateUserContinuousActivities", "getUserById", "getUserContinuousActivities", "getUserDurationActivities", "getDataFromUrl"]),
 
     /**
-     * Sets the user banner depending on what theme mode is active
-     */
-    setUserBanner() {
-      if (document.getElementById("profileBanner") !== null) {
-        if (this.darkModeGlobal) {
-          document.getElementById("profileBanner").classList.remove("profileBanner");
-          document.getElementById("profileBanner").classList.add("profileBannerDark");
-        } else {
-          document.getElementById("profileBanner").classList.remove("profileBannerDark");
-          document.getElementById("profileBanner").classList.add("profileBanner");
-        }
-      }
-    },
-
-    /**
      * Creates an event handler to check if the theme has changed
      */
     setThemeCheckEvent(map) {
       let outer = this;
       document.addEventListener("click", function(){
-        outer.setUserBanner();
         map.setOptions({
           styles: mapStyles[outer.darkModeGlobal ? "dark" : "light"]
         });
@@ -252,12 +242,16 @@ export default {
           .then(response => {
             this.cont_activities = response.data;
             this.loadingContinuousActivities = false;
-          });
+          }).catch(() => {
+              this.displayError("Could not retrieve continuous activities");
+            });
         await this.getUserDurationActivities(this.$route.params.profileId)
           .then(response => {
             this.dur_activities = response.data;
             this.loadingDurationActivities = false;
-          });
+          }).catch(() => {
+              this.displayError("Could not retrieve duration activities");
+            });
       }
       this.startUp();
       this.componentKey++;
@@ -398,7 +392,9 @@ export default {
           this.countries_option = countries;
           this.loadMap();
         })
-        .catch(error => console.log(error));
+        .catch(() => {
+          this.displayError("Could not load countries");
+        });
     },
 
     /***
@@ -420,6 +416,15 @@ export default {
       }
       this.showResult = true;
       setTimeout(() => this.showResult = false, 5000)
+    },
+
+    /**
+     * Shows error text for given error string
+     * @param error
+     */
+    displayError(error) {
+      this.alertComponent = true;
+      this.errorMessage = error;
     },
 
     /**

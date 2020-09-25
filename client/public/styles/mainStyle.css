@@ -253,7 +253,7 @@ input, select, textarea {
     flex: 1 0 auto  !important;
   }
 }
-@media only screen and (max-width: 350px) {
+@media only screen and (max-width: 400px) {
   header .navBarButton{
     display:none !important;
   }

@@ -57,10 +57,10 @@
                    v-bind:to="'/activity_editing/' + activityId" color="blue" outlined rounded>Edit
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn style="margin: 5px" v-if="!userFollowing" v-on:click="followCurrentActivity()" color="primary"
+            <v-btn v-if="!userFollowing" :disabled="this.user.profile_id === this.authorId || userOrganiser || userParticipant" style="margin: 5px"  v-on:click="followCurrentActivity()" color="primary"
                    outlined rounded :loading="loadingFollowButton">Follow
             </v-btn>
-            <v-btn style="margin: 5px" v-if="userFollowing" v-on:click="unFollowCurrentActivity()" elevation="0"
+            <v-btn v-if="userFollowing" :disabled="this.user.profile_id === this.authorId || userOrganiser || userParticipant" style="margin: 5px"  v-on:click="unFollowCurrentActivity()" elevation="0"
                    color="primary" flat rounded filled :loading="loadingFollowButton">Unfollow
             </v-btn>
           </v-row>
@@ -72,40 +72,46 @@
                                type="text"></v-skeleton-loader>
             <v-skeleton-loader v-if="roleChanging" ref="skeleton" type="heading"></v-skeleton-loader>
             <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
-                v-if="(userRole === 'none' || userRole === 'follower' || userRole === 'creator') && !roleChanging && !loadingRole">Not
+                v-if="userRole === 'creator' && !roleChanging">You are the creator</h3>
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
+                v-if="(userRole === 'none' || userRole === 'follower') && !roleChanging && !loadingRole">Not
               Participating</h3>
-            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);" v-if="userRole === 'participant' && !roleChanging">You are a
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
+                v-if="userRole === 'participant' && !roleChanging">You are a
               Participant</h3>
-            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);" v-if="userRole === 'organiser' && !roleChanging">You are an
+            <h3 style="font-size:17px; font-weight: 500; color: var(--v-primaryText-base);"
+                v-if="userRole === 'organiser' && !roleChanging">You are an
               Organiser</h3>
             <v-skeleton-loader v-if="roleChanging" ref="skeleton" boilerplate="false" type="button"
                                style="position: absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius: 100px"
             ></v-skeleton-loader>
-            <v-menu bottom left v-if="!roleChanging">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                    style="position: absolute;right:20px;top:50%;transform:translateY(-50%);"
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                >
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item @click="roleSet('participant')"
-                             v-if="userRole === 'none' || userRole === 'organiser' || userRole === 'follower' || userRole === 'creator'">
-                  <v-list-item-title>Become a Participant</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="roleSet('organiser')"
-                             v-if="(userRole === 'none' || userRole === 'participant' || userRole === 'follower' || userRole === 'creator') && authorId === user.profile_id">
-                  <v-list-item-title>Become an Organiser</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="roleSet('none')" v-if="userRole === 'participant' || userRole === 'organiser'">
-                  <v-list-item-title>Clear Involvement</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <div v-if="userRole !== 'creator'">
+              <v-menu bottom left v-if="!roleChanging">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                      style="position: absolute;right:20px;top:50%;transform:translateY(-50%);"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                  >
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="roleSet('participant')"
+                               v-if="userRole === 'none' || userRole === 'organiser' || userRole === 'follower' || userRole === 'creator'">
+                    <v-list-item-title>Become a Participant</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="roleSet('organiser')"
+                               v-if="(userRole === 'none' || userRole === 'participant' || userRole === 'follower' || userRole === 'creator') && authorId === user.profile_id">
+                    <v-list-item-title>Become an Organiser</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="roleSet('none')" v-if="userRole === 'participant' || userRole === 'organiser'">
+                    <v-list-item-title>Clear Involvement</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
           </div>
         </v-card>
         <AchievementsCard v-bind:achievements="achievements" v-bind:loading-results="loadingResults" :snackbar.sync="snackbar"
@@ -301,20 +307,22 @@
               </v-row>
             </v-card>
           </v-dialog>
-          <v-card style="border-radius: 15px" v-if="visibility === 'restricted'" class="activityPageCard">
-            <h2>Shared Users</h2>
+          <v-card style="border-radius: 15px" v-if="visibility === 'restricted'" class="activityPageCard pa-5">
+            <h2 class="activityCardTitle">Shared Users</h2>
             <form class="activityPageCardForm">
               <v-text-field v-model="emailsToAdd" class="activityPageCardTextField mb-5" label="Add email(s)"
                             outlined rounded clearable hide-details dense></v-text-field>
-              <v-select class="activityPageCardSelect mr-10" v-model="newRole"
-                        :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
-                        rounded></v-select>
-              <v-btn v-on:click="parseEmails()" class="activityPageCardButton" height="40px" color="#1cca92"
-                     outlined rounded>Add
-              </v-btn>
-              <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage
-                }}
-              </h6>
+              <v-row style="flex-wrap: nowrap;" no-gutters>
+                <v-col cols="12" class="flex-grow-0 flex-shrink-1">
+                  <v-select class="activityPageCardSelect mr-4" v-model="newRole"
+                            :items="roleOptions" name="roleValue" required label="Role" outlined hide-details dense
+                            rounded></v-select>
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn v-on:click="parseEmails()"  height="40px" color="#1cca92" outlined rounded>Add</v-btn>
+                </v-col>
+              </v-row>
+              <h6 class="activityPageErrorMessage" v-if="displayInvalidInputError">{{ invalidInputErrorMessage}}</h6>
               <h6 class="editSuccessMessage" v-if="displaySharedUsersSuccessMsg">{{ sharedUsersStatusMsg }}
               </h6>
               <div id="usersCard" class="activityPageCardDiv">
@@ -327,7 +335,7 @@
                       <v-list-item-title v-else>
                         {{ user.firstname + " " + user.lastname}}
                       </v-list-item-title>
-                      <v-list-item-subtitle>{{ user.primary_email }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-card>
@@ -337,7 +345,7 @@
         </div>
       </div>
       <div id="activityPageRight" class="activityPageColumn">
-        <v-card id="profileMapCard" :loading="mapLoading" class="activityPageMapCard">
+        <v-card :loading="mapLoading" class="activityPageMapCard">
           <div id="profileMap" style="height: 350px"></div>
           <button v-if="!mapLoading" class="genericConfirmButton profileMapButton" type="button" v-on:click="goToFullMap">Full Map</button>
         </v-card>
@@ -456,6 +464,8 @@
         loadingRole: true,
         loadingChanges: true,
         loadingParticipants: true,
+        userParticipant: null,
+        userOrganiser: null,
       }
     },
 
@@ -539,6 +549,8 @@
                 this.showMoreDialog = false;
                 this.getOrganisers();
                 this.getParticipants();
+                this.getStats();
+                this.checkFollowing();
                 this.roleChanging = false;
                 this.userRole = role;
               }).catch((err) => {
@@ -552,6 +564,8 @@
                 this.showMoreDialog = false;
                 this.getOrganisers();
                 this.getParticipants();
+                this.getStats();
+                this.checkFollowing();
                 this.roleChanging = false;
                 this.userRole = role;
               }).catch((err) => {
@@ -683,6 +697,14 @@
       async getParticipants() {
         try {
           let response = await apiActivity.getParticipants(this.$route.params.activityId, this.participantsPageInfo.currentPage, this.participantsPageInfo.currentSize);
+          for (let i = 0; i < response.data.content.length; i++) {
+            if (this.user.primary_email === response.data.content[i].email) {
+              this.userParticipant = true;
+            }
+          }
+          if (!this.userParticipant) {
+            this.userParticipant = false;
+          }
           this.userTabs[0].content = response.data.content;
           this.userTabs[0].preview = this.userTabs[0].content.slice(0, 3);
           this.loadingParticipants = false;
@@ -710,6 +732,14 @@
       async getOrganisers() {
         try {
           let response = await apiActivity.getOrganisers(this.$route.params.activityId, this.organisersPageInfo.currentPage, this.organisersPageInfo.currentSize);
+          for (let i = 0; i < response.data.content.length; i++) {
+            if (this.user.primary_email === response.data.content[i].email) {
+              this.userOrganiser = true;
+            }
+          }
+          if (this.userOrganiser == null) {
+            this.userOrganiser = false;
+          }
           this.userTabs[1].content = response.data.content;
           this.userTabs[1].preview = this.userTabs[1].content.slice(0, 3);
         } catch (err) {
@@ -875,6 +905,9 @@
             this.userFollowing = false;
             this.getStats();
             this.loadingFollowButton = false;
+            this.userRole = "none";
+            this.getParticipants();
+            this.getOrganisers();
           }
         });
       },
@@ -902,9 +935,16 @@
         this.geocoder.geocode({'address': address}, function (results, status) {
           if (status === 'OK') {
             map.setCenter(latLng);
+            let activityMarkerIcon = {
+              url: outer.pickMarkerImage(outer.visibility, outer.authorId),
+              scaledSize: new window.google.maps.Size(30, 30),
+              origin: new window.google.maps.Point(0, 0),
+              anchor: new window.google.maps.Point(15, 30)
+            };
             new window.google.maps.Marker({
               map: map,
-              position: latLng
+              position: latLng,
+              icon: activityMarkerIcon
             });
             outer.mapLoading = false;
           } else {
@@ -922,7 +962,34 @@
        */
       goToFullMap() {
         this.$router.push('/map/activity@' + this.location.latitude + ',' + this.location.longitude);
-      }
+      },
+
+      /**
+       * Decides on which marker image to use for an activity
+       */
+      pickMarkerImage(visibility, authorId) {
+        let url;
+        if (visibility === "public") {
+          if (authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/Hz5QgGa.png"
+          } else {
+            url = "https://i.imgur.com/MUWKzz9.png"
+          }
+        } else if (visibility === "restricted") {
+          if (authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/61rB4dm.png"
+          } else {
+            url = "https://i.imgur.com/Y0JUUox.png"
+          }
+        } else if (visibility === "private") {
+          if (authorId === this.user.profile_id) {
+            url = "https://i.imgur.com/jNY9HSw.png"
+          } else {
+            url = "https://i.imgur.com/lanhJgs.png"
+          }
+        }
+        return url;
+      },
     }
   }
 </script>

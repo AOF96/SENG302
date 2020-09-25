@@ -224,6 +224,9 @@ public class ActivityService {
      */
     private void addToChangesDatabase(Activity newActivity, Activity oldActivity, Long profileId, Long activityId) {
         Set<ActivityAttribute> activityChanges = oldActivity.findActivityChanges(newActivity);
+        if(activityChanges.size() == 0){
+            return;
+        }
         StringBuilder description = new StringBuilder();
         for (ActivityAttribute attribute : activityChanges) {
             if (attribute == ActivityAttribute.NAME) {
@@ -239,11 +242,15 @@ public class ActivityService {
                     description.append("*Activity changed to duration.");
                 }
             } else if (attribute == ActivityAttribute.START_TIME) {
-                description.append("*Start time changed to ").append(newActivity.getStartTime()).append("\n");
+                if(newActivity.getStartTime() != null) {
+                    description.append("*Start time changed to ").append(newActivity.getStartTime()).append("\n");
+                }
             } else if (attribute == ActivityAttribute.VISIBILITY) {
                 description.append("*Visibility was changed.");
             }  else if (attribute == ActivityAttribute.END_TIME) {
-                description.append("*End time changed to: ").append(newActivity.getEndTime()).append("\n");
+                if(newActivity.getEndTime() != null) {
+                    description.append("*End time changed to: ").append(newActivity.getEndTime()).append("\n");
+                }
             } else if (attribute == ActivityAttribute.LOCATION) {
                 description.append("*Location was updated.");
             }
@@ -435,8 +442,13 @@ public class ActivityService {
                 Activity activityToUpdate = activityRepository.getOne(activityId);
                 activityToUpdate.addAchievement(achievementToAdd);
                 activityRepository.save(activityToUpdate);
-
                 result = responseHandler.formatSuccessResponse(201, "Achievement added successfully");
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                HomeFeedEntry userChangeToAdd = new HomeFeedEntry("Achievement " + achievement.getName() + " has been added", timestamp,
+                        userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                        FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
+                homeFeedRepository.save(userChangeToAdd);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot add achievement");
@@ -482,8 +494,14 @@ public class ActivityService {
             achievement.setName(newAchievement.getName());
             achievement.setDescription(newAchievement.getDescription());
             achievement.setResultType(newAchievement.getResultType());
-
             achievementRepository.save(achievement);
+
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+            HomeFeedEntry userChangeToAdd = new HomeFeedEntry("Achievement " + achievement.getName() + " has been updated", timestamp,
+                    userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                    FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
+            homeFeedRepository.save(userChangeToAdd);
 
             return new ResponseEntity("Achievement has been successfully updated", HttpStatus.valueOf(200));
         } catch (Exception e) {
@@ -521,6 +539,12 @@ public class ActivityService {
                 achievementRepository.delete(achievementToDelete);
                 activityRepository.save(activity);
                 result = responseHandler.formatSuccessResponse(200, "Achievement successfully deleted");
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                HomeFeedEntry userChangeToAdd = new HomeFeedEntry("Achievement " + achievementToDelete.getName() + " has been removed", timestamp,
+                        userRepository.getOne(profileId), activityRepository.getOne(activityId),
+                        FeedEntryType.ACTIVITYUPDATE, FeedEntryScope.ACTIVITY);
+                homeFeedRepository.save(userChangeToAdd);
             }
         } catch (Exception e) {
             ErrorHandler.printProgramException(e, "Cannot delete achievement");

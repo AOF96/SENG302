@@ -40,7 +40,7 @@
 .loginFormContainer h2 {
     font-size: 13px;
     color: #808080;
-    padding-bottom: 20px;
+    padding-bottom: 25px;
     text-align: center;
 }
 
@@ -73,12 +73,12 @@
     margin: 5px auto 0;
     width: 100%;
     padding: 10px 0;
-    border-radius: 5px;
+    border-radius: 50px;
+    transition: all .25s ease;
 }
 
 .loginButton:hover {
-    background-color: var(--v-primary-base);
-    color: var(--v-tertiaryText-base);
+    background-color:rgba(0,0,0,0.03);
 }
 
 /* -- Login form container elements ---- */
