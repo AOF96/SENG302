@@ -195,59 +195,64 @@
         };
 
         for (let activity of this.activities) {
-          activityMarkerIcon.url = this.pickMarkerImage(activity);
-
-          let activityPosition = new window.google.maps.LatLng(activity.location.latitude, activity.location.longitude);
-          let pos = innerThis.mapActivities.length;
-          innerThis.mapActivities.push(new window.google.maps.Marker({
-            map: map,
-            position: activityPosition,
-            icon: activityMarkerIcon,
-          }));
-
-          let contentString;
-
-          if (activity.continuous === true) {
-            contentString = '<div class="content">' +
-                '<h1 class="activityPopupActivityVisibility" style="background:' + this.getVisibilityColour(activity.visibility) + ';">' + activity.visibility + '</h1>' +
-                '<h1 class="activityPopupLocation">' + this.locationToString(activity.location) + '</h1>' +
-                '<h1 class="activityPopupTitle">' + activity.name + '</h1>' +
-                '<h1 class="activityPopupDescription">' + activity.description + '</h1>' +
-                '<h1 class="activityPopupActivityTypes">' + activity.activity_types + '</h1>' +
-                '<h1 class="activityPopupActivityFollowers">' + activity.numFollowers + ' followers</h1>' +
-                '<hr class="activityPopupActivityLine">' +
-                '<a href= "' + BASE_URL + 'activity/' + activity.id + '"><button class="activityPopupActivityButton">Go to Activity</button></a>' +
-                '</div>';
+          let result = apiActivity.checkUserActivityVisibility(this.user.profile_id, activity.id);
+          if (activity.visibility === "private" && activity.authorId !== this.user.profile_id || activity.visibility === "restricted" && !result) {
+            continue;
           } else {
+            activityMarkerIcon.url = this.pickMarkerImage(activity);
 
-            let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time));
-            let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time));
+            let activityPosition = new window.google.maps.LatLng(activity.location.latitude, activity.location.longitude);
+            let pos = innerThis.mapActivities.length;
+            innerThis.mapActivities.push(new window.google.maps.Marker({
+              map: map,
+              position: activityPosition,
+              icon: activityMarkerIcon,
+            }));
 
-            contentString = '<div class="content">' +
-                '<h1 class="activityPopupActivityVisibility" style="background:' + this.getVisibilityColour(activity.visibility) + ';">' + activity.visibility + '</h1>' +
-                '<h1 class="activityPopupLocation">' + this.locationToString(activity.location) + '</h1>' +
-                '<h1 class="activityPopupTitle">' + activity.name + '</h1>' +
-                '<h1 class="activityPopupDescription">' + activity.description + '</h1>' +
-                '<h1 class="activityPopupStartTime">' + "Starts: " + activityStartDate + '</h1>' +
-                '<h1 class="activityPopupEndTime">' + "Ends: " + activityEndDate + '</h1>' +
-                '<h1 class="activityPopupActivityTypes">' + activity.activity_types + '</h1>' +
-                '<h1 class="activityPopupActivityFollowers">' + activity.numFollowers + ' followers</h1>' +
-                '<hr class="activityPopupActivityLine">' +
-                '<a href= "' + BASE_URL + 'activity/' + activity.id + '"><button class="activityPopupActivityButton">Go to Activity</button></a>' +
-                '</div>';
+            let contentString;
+
+            if (activity.continuous === true) {
+              contentString = '<div class="content">' +
+                  '<h1 class="activityPopupActivityVisibility" style="background:' + this.getVisibilityColour(activity.visibility) + ';">' + activity.visibility + '</h1>' +
+                  '<h1 class="activityPopupLocation">' + this.locationToString(activity.location) + '</h1>' +
+                  '<h1 class="activityPopupTitle">' + activity.name + '</h1>' +
+                  '<h1 class="activityPopupDescription">' + activity.description + '</h1>' +
+                  '<h1 class="activityPopupActivityTypes">' + activity.activity_types + '</h1>' +
+                  '<h1 class="activityPopupActivityFollowers">' + activity.numFollowers + ' followers</h1>' +
+                  '<hr class="activityPopupActivityLine">' +
+                  '<a href= "' + BASE_URL + 'activity/' + activity.id + '"><button class="activityPopupActivityButton">Go to Activity</button></a>' +
+                  '</div>';
+            } else {
+
+              let activityStartDate = this.dateFormatterToEnglish(new Date(activity.start_time));
+              let activityEndDate = this.dateFormatterToEnglish(new Date(activity.end_time));
+
+              contentString = '<div class="content">' +
+                  '<h1 class="activityPopupActivityVisibility" style="background:' + this.getVisibilityColour(activity.visibility) + ';">' + activity.visibility + '</h1>' +
+                  '<h1 class="activityPopupLocation">' + this.locationToString(activity.location) + '</h1>' +
+                  '<h1 class="activityPopupTitle">' + activity.name + '</h1>' +
+                  '<h1 class="activityPopupDescription">' + activity.description + '</h1>' +
+                  '<h1 class="activityPopupStartTime">' + "Starts: " + activityStartDate + '</h1>' +
+                  '<h1 class="activityPopupEndTime">' + "Ends: " + activityEndDate + '</h1>' +
+                  '<h1 class="activityPopupActivityTypes">' + activity.activity_types + '</h1>' +
+                  '<h1 class="activityPopupActivityFollowers">' + activity.numFollowers + ' followers</h1>' +
+                  '<hr class="activityPopupActivityLine">' +
+                  '<a href= "' + BASE_URL + 'activity/' + activity.id + '"><button class="activityPopupActivityButton">Go to Activity</button></a>' +
+                  '</div>';
+            }
+
+            let infowindow = new window.google.maps.InfoWindow({
+              content: contentString
+            });
+
+            innerThis.mapActivities[pos].addListener('click', function () {
+              infowindow.open(map, innerThis.mapActivities[pos]);
+            });
+
+            window.google.maps.event.addListener(map, "click", function () {
+              infowindow.close();
+            });
           }
-
-          let infowindow = new window.google.maps.InfoWindow({
-            content: contentString
-          });
-
-          innerThis.mapActivities[pos].addListener('click', function () {
-            infowindow.open(map, innerThis.mapActivities[pos]);
-          });
-
-          window.google.maps.event.addListener(map, "click", function () {
-            infowindow.close();
-          });
         }
       },
 

@@ -204,7 +204,11 @@ public class ActivityService {
             activity.setStartTime(newActivity.getStartTime());
             activity.setEndTime(newActivity.getEndTime());
             activity.setLocation(newActivity.getLocation());
+            if (activity.getVisibility() == Visibility.RESTRICTED && newActivity.getVisibility() == Visibility.PRIVATE) {
+                activityRepository.removeSharedUsersFromActivity(activity.getId());
+            }
             activity.setVisibility(newActivity.getVisibility());
+
 
             activityRepository.save(activity);
 
